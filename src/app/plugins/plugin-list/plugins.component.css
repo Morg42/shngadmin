@@ -20,14 +20,14 @@
 
     display: grid;
 /*  grid-template-rows: 50px auto 65px;  */
-    grid-template-rows: 0px auto 65px;
+    grid-template-rows: 0 auto 65px;
     grid-template-columns: 1fr;
 
     grid-template-areas: "body-header"
                       "body-content"
                       "body-footer";
 
-    grid-gap: 0px;
+    grid-gap: 0;
     grid-auto-flow: row;
 }
 

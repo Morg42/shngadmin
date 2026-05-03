@@ -11,7 +11,7 @@
   <div class="shng_headline" style="margin-top: 5px; margin-left: 8px;">
     <h3>
       {{'PLUGIN.PLUGIN_CONFIGURATION'|translate}}
-      <button pButton type="button" style="margin-left: 0px; margin-top: 5px; font-size: medium;" id="btn-monitor" [disabled]="false" (click)="addPluginDialog();" icon="fa fa-plus" label="{{ 'BUTTON.ADD_PLUGIN'|translate }}" class="ui-button-success float-sm-right"></button>
+      <button pButton type="button" style="margin-left: 0; margin-top: 5px; font-size: medium;" id="btn-monitor" [disabled]="false" (click)="addPluginDialog();" icon="fa fa-plus" label="{{ 'BUTTON.ADD_PLUGIN'|translate }}" class="ui-button-success float-sm-right"></button>
     </h3>
   </div>
 
@@ -40,13 +40,13 @@
 
           <!-- icon for plugin-type -->
           <ng-container *ngIf="col.field === 'type' && ['web','protocol','interface','gateway','system'].includes(rowData[col.field])">
-            <img src="assets/img/plugin_{{ rowData[col.field] }}.svg" style="width: 25px;"/>
+            <img ngSrc="assets/img/plugin_{{ rowData[col.field] }}.svg" style="width: 25px;"/>
           </ng-container>
           <ng-container *ngIf="col.field === 'type' && ['classic'].includes(rowData[col.field])">
             &nbsp; -
           </ng-container>
           <ng-container *ngIf="col.field === 'type' && !['web','protocol','interface','gateway','system','classic'].includes(rowData[col.field])">
-            <img src="assets/img/plugin_defaultlogo.png" style="width: 25px;"/>
+            <img ngSrc="assets/img/plugin_defaultlogo.png" style="width: 25px;" height="300" width="300"/>
           </ng-container>
 
           <ng-container *ngIf="col.field !== 'enabled' && col.field !== 'type'">
@@ -126,13 +126,13 @@
           <fa-icon style="color: var(--shng-warning);" title="{{'PLUGIN.DEPRECATED'|translate}}" [icon]="faExclamationTriangle"></fa-icon> &nbsp;
         </td>
         <td colspan="3">
-          <a style="width: 50%; padding:0px; background-color: #ffffff; border:0;"><strong>{{'PLUGIN.DEPRECATED'|translate}}:</strong></a>
+          <a style="width: 50%; padding:0; background-color: #ffffff; border:0;"><strong>{{'PLUGIN.DEPRECATED'|translate}}:</strong></a>
         </td>
       </tr>
       <tr>
         <td></td>
         <td colspan="3">
-          <p style="padding:0px; background-color: #f2f2f2; border:0;">{{'PLUGIN.DEPRECATED_TEXT'|translate}}</p>
+          <p style="padding:0; background-color: #f2f2f2; border:0;">{{'PLUGIN.DEPRECATED_TEXT'|translate}}</p>
         </td>
       </tr>
     </ng-container>
@@ -285,7 +285,7 @@
     <ng-container *ngFor="let plugintype of plugintypes; let i = index">
       <p-accordionTab [(selected)]="plugintypes_expanded[i]" (click)="pluginadd.maximize()">
         <p-header style="font-size: larger;">
-          <img src="assets/img/plugin_{{ plugintype }}.svg" style="width: 30px; cursor: pointer;"/> {{plugintype.charAt(0).toUpperCase() + plugintype.substring(1)}} Plugins
+          <img ngSrc="assets/img/plugin_{{ plugintype }}.svg" style="width: 30px; cursor: pointer;"/> {{plugintype.charAt(0).toUpperCase() + plugintype.substring(1)}} Plugins
         </p-header>
         <!--
           <table class="table table-striped table-hover" [columns]="cols" [value]="configuredplugins" selectionMode="single">

@@ -3,7 +3,7 @@
 <div style="margin-left: 10px; margin-right: 10px;">
 -->
 <div class="shngbody">
-  <div class="body-content" style="margin-top: 0px; margin-left: 8px;">
+  <div class="body-content" style="margin-top: 0; margin-left: 8px;">
   <table id="1" class="table table-striped table-hover">
     <thead>
     <tr class="shng_heading">
@@ -36,13 +36,14 @@
 
           <td class="py-1" (click)="details.show()">
             <ng-container *ngIf="['web','protocol','interface','gateway','system'].includes(plugin.metadata.type)">
-              <img src="assets/img/plugin_{{ plugin.metadata.type }}.svg" style="width: 25px; cursor: pointer;" title="{{ 'PLUGIN.'+plugin.metadata.type | uppercase | translate}}"/>
+              <img ngSrc="assets/img/plugin_{{ plugin.metadata.type }}.svg" style="width: 25px; cursor: pointer;" title="{{ 'PLUGIN.'+plugin.metadata.type | uppercase | translate}}"/>
             </ng-container>
             <ng-container *ngIf="plugin.smartplugin !== true">
               -
             </ng-container>
             <ng-container *ngIf="(plugin.smartplugin === true) && !['web','protocol','interface','gateway','system', 'classic'].includes(plugin.metadata.type)">
-              <img src="assets/img/plugin_defaultlogo.png" style="width: 25px; cursor: pointer;"/>
+              <img ngSrc="assets/img/plugin_defaultlogo.png" style="width: 25px; cursor: pointer;" height="300"
+                   width="300"/>
             </ng-container>
           </td>
 
@@ -167,27 +168,27 @@
               <div class="modal-body" style="min-width: 900px;">
                 <ng-container *ngIf="plugin.metadata.state && plugin.metadata.state.toLowerCase() === 'deprecated'">
                   <fa-icon style="color: var(--shng-warning);" [icon]="faExclamationTriangle"></fa-icon>
-                  <a style="width: 50%; padding:0px; background-color: #ffffff; border:0;"><strong>&nbsp; {{'PLUGIN.DEPRECATED'|translate}}:</strong></a>
+                  <a style="width: 50%; padding:0; background-color: #ffffff; border:0;"><strong>&nbsp; {{'PLUGIN.DEPRECATED'|translate}}:</strong></a>
                   <br>
-                  <p style="padding:0px; background-color: #f2f2f2; border:0;">{{'PLUGIN.DEPRECATED_TEXT'|translate}}</p>
+                  <p style="padding:0; background-color: #f2f2f2; border:0;">{{'PLUGIN.DEPRECATED_TEXT'|translate}}</p>
 
                 </ng-container>
 
                 <ng-container *ngIf="plugin.parameters && plugin.parameters.length !== 0">
-                  <table class="table" style="padding: 0px;">
+                  <table class="table" style="padding: 0;">
                   <tr>
-                    <td style="width: 50%; padding:0px; background-color: #ffffff; border:0;"><strong>{{'PLUGIN.PARAMETERS'|translate}}:</strong></td>
-                    <td style="width: 50%; padding:0px; background-color: #ffffff; border:0;"></td>
+                    <td style="width: 50%; padding:0; background-color: #ffffff; border:0;"><strong>{{'PLUGIN.PARAMETERS'|translate}}:</strong></td>
+                    <td style="width: 50%; padding:0; background-color: #ffffff; border:0;"></td>
                   </tr>
                   <tr>
                     <!-- Parameters: left column -->
-                    <td style="padding-left:5px; padding-right:5px; padding-bottom:0px;">
+                    <td style="padding-left:5px; padding-right:5px; padding-bottom:0;">
                       <table class="table">
                         <tbody>
                         <ng-container *ngFor="let param of plugin.parameters; index as i">
                           <tr *ngIf="i+1 <= parameterLines(plugin.parameters.length)">
-                            <td style="padding:0px;">{{param.name}} ( {{param.type}} ):&nbsp;</td>
-                            <td style="padding:0px;">
+                            <td style="padding:0;">{{param.name}} ( {{param.type}} ):&nbsp;</td>
+                            <td style="padding:0;">
                               <strong>{{param.value}}</strong>
                               <ng-container *ngIf="param.value === param.default">&nbsp;[default]</ng-container>
                             </td>
@@ -197,13 +198,13 @@
                       </table>
                     </td>
                     <!-- Parameters: right column -->
-                    <td style="padding-left:5px; padding-right:5px; padding-bottom:0px;">
+                    <td style="padding-left:5px; padding-right:5px; padding-bottom:0;">
                       <table class="table">
                         <tbody>
                         <ng-container *ngFor="let param of plugin.parameters; index as i">
                           <tr *ngIf="i+1 > parameterLines(plugin.parameters.length)">
-                            <td style="padding:0px;">{{param.name}} ( {{param.type}} ):&nbsp;</td>
-                            <td style="padding:0px;">
+                            <td style="padding:0;">{{param.name}} ( {{param.type}} ):&nbsp;</td>
+                            <td style="padding:0;">
                               <strong>{{param.value}}</strong>
                               <ng-container *ngIf="param.value === param.default">&nbsp;[default]</ng-container>
                             </td>
@@ -219,45 +220,45 @@
                 <ng-container *ngIf="plugin.attributes && plugin.attributes.length !== 0">
                   <table class="table">
                     <tr>
-                      <td style="width: 33%; padding:0px; background-color: #ffffff; border:0;"><strong>{{'PLUGIN.ITEM ATTRIBUTES'|translate}}:</strong></td>
-                      <td style="width: 33%; padding:0px; background-color: #ffffff; border:0;"></td>
-                      <td style="width: 33%; padding:0px; background-color: #ffffff; border:0;"></td>
+                      <td style="width: 33%; padding:0; background-color: #ffffff; border:0;"><strong>{{'PLUGIN.ITEM ATTRIBUTES'|translate}}:</strong></td>
+                      <td style="width: 33%; padding:0; background-color: #ffffff; border:0;"></td>
+                      <td style="width: 33%; padding:0; background-color: #ffffff; border:0;"></td>
                     </tr>
                     <tr>
                       <!-- Item Attributes: left column -->
-                      <td style="padding-left:5px; padding-right:5px; padding-bottom:0px;">
+                      <td style="padding-left:5px; padding-right:5px; padding-bottom:0;">
                       <table class="table">
                         <tbody>
                         <ng-container *ngFor="let attr of plugin.attributes; index as i">
                           <tr *ngIf="i+1 <= attributeLines(plugin.attributes.length)">
-                            <td style="padding:0px;">{{attr.name}}:&nbsp;</td>
-                            <td style="padding:0px;"><strong>{{attr.type}}</strong></td>
+                            <td style="padding:0;">{{attr.name}}:&nbsp;</td>
+                            <td style="padding:0;"><strong>{{attr.type}}</strong></td>
                           </tr>
                         </ng-container>
                         </tbody>
                       </table>
                       </td>
                       <!-- Item Attributes: middle column -->
-                      <td style="padding-left:5px; padding-right:5px; padding-bottom:0px;">
+                      <td style="padding-left:5px; padding-right:5px; padding-bottom:0;">
                         <table class="table">
                           <tbody>
                           <ng-container *ngFor="let attr of plugin.attributes; index as i">
                             <tr *ngIf="i+1 > attributeLines(plugin.attributes.length) && i+1 <= 2*attributeLines(plugin.attributes.length)">
-                              <td style="padding:0px;">{{attr.name}}:&nbsp;</td>
-                              <td style="padding:0px;"><strong>{{attr.type}}</strong></td>
+                              <td style="padding:0;">{{attr.name}}:&nbsp;</td>
+                              <td style="padding:0;"><strong>{{attr.type}}</strong></td>
                             </tr>
                           </ng-container>
                           </tbody>
                         </table>
                       </td>
                       <!-- Item Attributes: right column -->
-                      <td style="padding-left:5px; padding-right:5px; padding-bottom:0px;">
+                      <td style="padding-left:5px; padding-right:5px; padding-bottom:0;">
                         <table class="table">
                           <tbody>
                           <ng-container *ngFor="let attr of plugin.attributes; index as i">
                             <tr *ngIf="i+1 > 2*attributeLines(plugin.attributes.length)">
-                              <td style="padding:0px;">{{attr.name}}:&nbsp;</td>
-                              <td style="padding:0px;"><strong>{{attr.type}}</strong></td>
+                              <td style="padding:0;">{{attr.name}}:&nbsp;</td>
+                              <td style="padding:0;"><strong>{{attr.type}}</strong></td>
                             </tr>
                           </ng-container>
                           </tbody>
@@ -268,39 +269,39 @@
                 </ng-container>
 
                 <ng-container *ngIf="plugin.triggers && plugin.triggers.length !== 0">
-                  <p style="padding-top: 0px; padding-left: 2px;" [translate]="'PLUGIN.UPDATES TRIGGERED BY'" [translateParams]="{count: plugin.triggers.length}"></p>
+                  <p style="padding-top: 0; padding-left: 2px;" [translate]="'PLUGIN.UPDATES TRIGGERED BY'" [translateParams]="{count: plugin.triggers.length}"></p>
                 </ng-container>
 
                 <strong>{{'PLUGIN.PLUGIN METADATA'|translate}}:</strong>
                 <table class="table">
                   <tr>
-                    <td style="padding:0px; width:25%;">{{'PLUGIN.DESCRIPTION'|translate}}:&nbsp;</td>
+                    <td style="padding:0; width:25%;">{{'PLUGIN.DESCRIPTION'|translate}}:&nbsp;</td>
                     <ng-container *ngIf="plugin.metadata.description_long !==''">
-                      <td style="padding:0px; width:75%;">
+                      <td style="padding:0; width:75%;">
                         <div *ngFor="let s of plugin.metadata.description_long.split('\n')">
                           {{s}} <br/>
                         </div>
                       </td>
                     </ng-container>
                     <ng-container *ngIf="plugin.metadata.description_long ===''">
-                      <td style="padding:0px; width:75%;">{{plugin.metadata.description}}</td>
+                      <td style="padding:0; width:75%;">{{plugin.metadata.description}}</td>
                     </ng-container>
                   </tr>
                   <tr>
-                    <td style="padding:0px;">{{'PLUGIN.KEYWORDS'|translate}}:&nbsp;</td>
-                    <td style="padding:0px;">{{plugin.metadata.keywords}}</td>
+                    <td style="padding:0;">{{'PLUGIN.KEYWORDS'|translate}}:&nbsp;</td>
+                    <td style="padding:0;">{{plugin.metadata.keywords}}</td>
                   </tr>
                   <tr>
-                    <td style="padding:0px;">{{'PLUGIN.MAINTAINER'|translate}}:&nbsp;</td>
-                    <td style="padding:0px;">{{plugin.metadata.maintainer}}</td>
+                    <td style="padding:0;">{{'PLUGIN.MAINTAINER'|translate}}:&nbsp;</td>
+                    <td style="padding:0;">{{plugin.metadata.maintainer}}</td>
                   </tr>
                   <tr>
-                    <td style="padding:0px;">{{'PLUGIN.TESTER'|translate}}:&nbsp;</td>
-                    <td style="padding:0px;">{{plugin.metadata.tester}}</td>
+                    <td style="padding:0;">{{'PLUGIN.TESTER'|translate}}:&nbsp;</td>
+                    <td style="padding:0;">{{plugin.metadata.tester}}</td>
                   </tr>
                   <tr>
-                    <td style="padding:0px;">{{'PLUGIN.SUPPORT'|translate}}:&nbsp;</td>
-                    <td style="padding:0px;">
+                    <td style="padding:0;">{{'PLUGIN.SUPPORT'|translate}}:&nbsp;</td>
+                    <td style="padding:0;">
                       <ng-container *ngIf="plugin.metadata.support && plugin.metadata.support.startsWith('http')">
                         <a href="{{plugin.metadata.support}}" target="_blank">{{plugin.metadata.support}}</a>
                       </ng-container>
@@ -310,8 +311,8 @@
                     </td>
                   </tr>
                   <tr>
-                    <td style="padding:0px;">{{'PLUGIN.DOCUMENTATION'|translate}}:&nbsp;</td>
-                    <td style="padding:0px;">
+                    <td style="padding:0;">{{'PLUGIN.DOCUMENTATION'|translate}}:&nbsp;</td>
+                    <td style="padding:0;">
                       <ng-container *ngIf="plugin.metadata.documentation && plugin.metadata.documentation.startsWith('http')">
                         <a href="{{plugin.metadata.documentation}}" target="_blank">{{plugin.metadata.documentation}}</a>
                       </ng-container>

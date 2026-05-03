@@ -14,14 +14,14 @@
   padding-right: 10px;
 
   display: grid;
-  grid-template-rows: 0px auto 10px;
+  grid-template-rows: 0 auto 10px;
   grid-template-columns: 1fr;
 
   grid-template-areas: "body-header"
                       "body-content"
                       "body-footer";
 
-  grid-gap: 0px;
+  grid-gap: 0;
   grid-auto-flow: row;
 }
 
@@ -50,7 +50,7 @@
                        "tab-footer";
   grid-template-columns: 1fr;
 /*grid-auto-rows: minmax(50px, max-content);*/
-  grid-template-rows: 00px auto 0px;
+  grid-template-rows: 00px auto 0;
 }
 
 
@@ -62,7 +62,7 @@
 .tab-header {
   grid-area: tab-header;
   width: 100%;
-  height: 0px;
+  height: 0;
   overflow: auto;
   border: 1px solid #dee2e6;
   border-top: 0;
@@ -88,7 +88,7 @@
 .tab-footer {
   grid-area: tab-footer;
   width: 100%;
-  height: 0px;
+  height: 0;
   overflow: auto;
   background: thistle;
 }

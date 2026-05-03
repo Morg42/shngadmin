@@ -72,14 +72,14 @@ textarea {
 
 .ui-table .ui-table-thead > tr {
   background-color: #f0f0f0 !important;
-  border: 0px solid var(--shng-border) !important;
+  border: 0 solid var(--shng-border) !important;
   border-bottom-color: var(--shng-border) !important;
 }
 
 .ui-table .ui-table-thead > tr > th,
 .ui-table .ui-table-tfoot > tr > td {
   background-color: #ffffff !important;
-  border: 0px solid var(--shng-border) !important;
+  border: 0 solid var(--shng-border) !important;
   border-bottom-color: var(--shng-border) !important;
   color: #1b1d1f !important; }
 
@@ -97,7 +97,7 @@ textarea {
   color: #222222 !important; }
 */
 .ui-table .ui-table-tbody > tr > td {
-  border: 0px solid var(--shng-border) !important;
+  border: 0 solid var(--shng-border) !important;
   border-top: 1px solid var(--shng-border) !important;
   border-bottom: 1px solid var(--shng-border) !important;
   background-color: inherit;

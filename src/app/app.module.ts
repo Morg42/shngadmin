@@ -75,6 +75,8 @@ import { TopNavigationComponent } from './top-navigation/top-navigation.componen
 import { LoggerLineComponent } from './logs/logger-line/logger-line.component';
 import { LoggerTabComponent } from './logs/logger-tab/logger-tab.component';
 import { LogicsGroupsComponent } from './logics/logics-groups/logics-groups.component';
+import {InputSwitch} from 'primeng/inputswitch';
+import {NgOptimizedImage} from '@angular/common';
 
 export function translateHttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -111,7 +113,7 @@ export function translateHttpLoaderFactory(http: HttpClient) {
         LoggerTabComponent,
         LogicsGroupsComponent
     ],
-    bootstrap: [AppComponent], 
+    bootstrap: [AppComponent],
     imports: [BrowserModule,
         FormsModule,
         AppRoutingModule,
@@ -162,7 +164,7 @@ export function translateHttpLoaderFactory(http: HttpClient) {
                 useFactory: HttpLoaderFactory,
                 deps: [HttpClient]
             }
-        })
+        }), InputSwitch, NgOptimizedImage,
         //        useFactory: translateHttpLoaderFactory,
     ], providers: [
         { provide: 'BASE_URL', useFactory: getBaseUrl },

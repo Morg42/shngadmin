@@ -2,7 +2,7 @@
 <div class="shngbody">
 
   <div class="button-row">
-    <button pButton label="{{ 'BUTTON.SAVE'|translate }}" type="button" [disabled]="(myEditFilename === '') || (myTextarea === myTextareaOrig)" icon="fa fa-check" style="margin-right: 0px;" (click)="saveConfig()" class="float-sm-right ui-button-success"></button>
+    <button pButton label="{{ 'BUTTON.SAVE'|translate }}" type="button" [disabled]="(myEditFilename === '') || (myTextarea === myTextareaOrig)" icon="fa fa-check" style="margin-right: 0;" (click)="saveConfig()" class="float-sm-right ui-button-success"></button>
     <button pButton label="{{ 'BUTTON.DISCARD'|translate }}" type="button" [disabled]="(myEditFilename === '') || (myTextarea === myTextareaOrig)" icon="fa fa-times" style="margin-right: 10px;" (click)="this.myTextarea = this.myTextareaOrig;" class="float-sm-right ui-button-secondary"></button>
     <button pButton label="{{ 'BUTTON.HELP'|translate }}" type="button" [disabled]="false" icon="fa fa-info" style="margin-right: 10px;" (click)="this.editorHelp_display = true;" class="float-sm-right ui-button-success"></button>
     <ng-container *ngIf="myEditFilename !== ''">
@@ -12,7 +12,7 @@
 
   <div class="items-filelist">
     <button pButton label="{{ 'BUTTON.NEW_DEFINITION_FILE'|translate }}" type="button" [disabled]="!((myEditFilename === '') || (myTextarea === myTextareaOrig))" icon="far fa-file" style="margin-right: 10px;" (click)="newConfig()" class="float-sm-left ui-button-success"></button>
-    <button pButton type="button" [disabled]="myEditFilename === ''" icon="far fa-trash-alt" style="margin-right: 0px;" (click)="deleteConfig()" class="float-sm-left ui-button-danger"></button>
+    <button pButton type="button" [disabled]="myEditFilename === ''" icon="far fa-trash-alt" style="margin-right: 0;" (click)="deleteConfig()" class="float-sm-left ui-button-danger"></button>
     <br>
     <br>
 

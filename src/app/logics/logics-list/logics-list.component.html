@@ -7,7 +7,7 @@
     <tab customClass="tab-content tab-shng" heading="{{ 'LOGICS.USERLOGICS'|translate }}">
 
       <div style="height: 45px; width: 200px">
-        <button pButton type="button" style="margin-left: 0px; margin-left: 10px; margin-top: 10px; font-size: medium;" id="newLogicButton" [disabled]="false" (click)="newLogic();" icon="fa fa-plus" label="{{ 'BUTTON.NEW_LOGIC'|translate }}" class="ui-button-success float-sm-left"></button>
+        <button pButton type="button" style="margin-left: 0; margin-left: 10px; margin-top: 10px; font-size: medium;" id="newLogicButton" [disabled]="false" (click)="newLogic();" icon="fa fa-plus" label="{{ 'BUTTON.NEW_LOGIC'|translate }}" class="ui-button-success float-sm-left"></button>
       </div>
 
       <ng-container *ngIf="nogroups === false">
@@ -261,7 +261,7 @@
                 <th class="p-1" style="width: 250px; border-top: 0;">{{ 'LOGICS.FILENAME'|translate }}</th>
                 <th class="p-1" style="width: 260px; border-top: 0;">
                   <div style="width: 200px">
-                    <button pButton type="button" style="margin-left: 0px; margin-top: 5px; font-size: medium;" id="newLogicButton_ng" [disabled]="false" (click)="newLogic();" icon="fa fa-plus" label="{{ 'BUTTON.NEW_LOGIC'|translate }}" class="ui-button-success float-sm-left"></button>
+                    <button pButton type="button" style="margin-left: 0; margin-top: 5px; font-size: medium;" id="newLogicButton_ng" [disabled]="false" (click)="newLogic();" icon="fa fa-plus" label="{{ 'BUTTON.NEW_LOGIC'|translate }}" class="ui-button-success float-sm-left"></button>
                     {{ 'LOGICS.ACTIONS'|translate }}
                   </div>
                 </th>

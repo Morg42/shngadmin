@@ -10,19 +10,19 @@
             <span><strong>{{ 'SYSTEM.STATE'|translate }}</strong></span>
           </div>
           <div class="info-content">
-            <span><img src="assets/img/logo_small_76x76.png"></span>
+            <span><img ngSrc="assets/img/logo_small_76x76.png" height="76" width="76"></span>
             <span>{{'SYSTEM.SHNG_VERSION'|translate}}:</span>
             <span>{{ systeminfo.sh_vers }} &nbsp; {{ 'SYSTEM.IN'|translate }} &nbsp; {{ systeminfo.sh_dir }} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ({{ systeminfo.sh_desc }})</span>
 
-            <span><img src="assets/img/logo_small_76x76.png"></span>
+            <span><img ngSrc="assets/img/logo_small_76x76.png" height="76" width="76"></span>
             <span>{{'SYSTEM.SHNG_PLG_VERSION'|translate}}:</span>
             <span>{{ systeminfo.plg_vers }} &nbsp; {{ 'SYSTEM.IN'|translate }} &nbsp; {{ systeminfo.sh_dir }}/plugins &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ({{ systeminfo.plg_desc }})</span>
 
-            <span><img src="assets/img/logo_small_76x76.png"></span>
+            <span><img ngSrc="assets/img/logo_small_76x76.png" height="76" width="76"></span>
             <span>{{'SYSTEM.SHNG_ADMIN_GUI'|translate}}:</span>
             <span>{{ appName }} {{ appVersion }}</span>
 
-            <span><img src="assets/img/python.png"></span>
+            <span><img ngSrc="assets/img/python.png" height="236" width="230"></span>
             <span>{{ 'SYSTEM.PYTHON VERSION'|translate }}:</span>
 
             <ng-container *ngIf="systeminfo.pyvirtual">
@@ -32,7 +32,7 @@
               <span>{{ systeminfo.pyversion }} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ({{ systeminfo.pypath }})</span>
             </ng-container>
 
-            <span><img src="assets/img/terminal-server.svg"></span>
+            <span><img ngSrc="assets/img/terminal-server.svg" height="16" width="16"></span>
             <span>{{ 'SYSTEM.HOST'|translate }}:</span>
             <span>{{ systeminfo.node }}
               <span *ngIf="systeminfo.ip !== '0.0.0.0'"> &nbsp; &nbsp; - &nbsp; &nbsp; IPv4: {{ systeminfo.ip }}</span>
@@ -40,14 +40,14 @@
             </span>
 
             <ng-container *ngIf="['debian','raspbian'].includes(systeminfo.osflavor)">
-              <span><img src="assets/img/{{systeminfo.osflavor}}.svg"></span>
+              <span><img ngSrc="assets/img/{{systeminfo.osflavor}}.svg"></span>
             </ng-container>
             <ng-container *ngIf="!(['debian','raspbian'].includes(systeminfo.osflavor))">
               <ng-container *ngIf="['linux','macos','windows'].includes(systeminfo.ostype)">
-                <span><img src="assets/img/{{systeminfo.ostype}}.svg"></span>
+                <span><img ngSrc="assets/img/{{systeminfo.ostype}}.svg"></span>
               </ng-container>
               <ng-container *ngIf="!(['linux','macos','windows'].includes(systeminfo.ostype))">
-                <span><img src="assets/img/os.png"></span>
+                <span><img ngSrc="assets/img/os.png" height="224" width="224"></span>
               </ng-container>
             </ng-container>
 
@@ -57,24 +57,24 @@
             -->
             <span>{{ systeminfo.vers }}</span>
 
-            <span><img src="assets/img/tux_hdd.svg"></span>
+            <span><img ngSrc="assets/img/tux_hdd.svg" height="945" width="1122"></span>
             <span>{{ 'SYSTEM.PID'|translate }}:</span>
             <span>{{ systeminfo.pid }}</span>
 
-            <span><img src="assets/img/user.svg"></span>
+            <span><img ngSrc="assets/img/user.svg" height="793" width="793"></span>
             <span>{{'SYSTEM.USER'|translate}}:</span>
             <span>{{ systeminfo.user }}</span>
 
-            <span><img src="assets/img/hd.svg"></span>
+            <span><img ngSrc="assets/img/hd.svg" height="793" width="793"></span>
             <span>{{ 'SYSTEM.FREE DISC SPACE'|translate }}:</span>
             <span>{{ (systeminfo.freespace)|number:'1.0-0' }} MByte</span>
 
             <ng-container *ngIf="systeminfo.hardware">
               <ng-container *ngIf="systeminfo.rasppi">
-                <span><img src="assets/img/raspberry_pi.svg"></span>
+                <span><img ngSrc="assets/img/raspberry_pi.svg" height="720" width="570"></span>
               </ng-container>
               <ng-container *ngIf="!systeminfo.rasppi">
-                <span><img src="assets/img/terminal-server.svg"></span>
+                <span><img ngSrc="assets/img/terminal-server.svg" height="16" width="16"></span>
               </ng-container>
               <span>{{ 'SYSTEM.HARDWARE'|translate }}:</span>
               <ng-container *ngIf="!systeminfo.hwspeed">
@@ -85,15 +85,15 @@
               </ng-container>
             </ng-container>
 
-            <span><img src="assets/img/clock.svg"></span>
+            <span><img ngSrc="assets/img/clock.svg" height="16" width="16"></span>
             <span>{{ 'SYSTEM.DATE'|translate }} / {{ 'SYSTEM.TIME'|translate }}:</span>
             <span>{{ shared.displayDateTime(systeminfo.now) }}</span>
 
-            <span><img src="assets/img/logo_small_76x76.png"></span>
+            <span><img ngSrc="assets/img/logo_small_76x76.png" height="76" width="76"></span>
             <span>{{ 'SYSTEM.UPTIME'|translate }} SmartHomeNG:</span>
             <span>{{ sh_uptime }}</span>
 
-            <span><img src="assets/img/terminal-server.svg"></span>
+            <span><img ngSrc="assets/img/terminal-server.svg" height="16" width="16"></span>
             <span>{{ 'SYSTEM.UPTIME_HOST'|translate }}:</span>
             <span>{{ os_uptime }}</span>
           </div>

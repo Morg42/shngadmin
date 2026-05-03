@@ -45,7 +45,7 @@
                       "content"
                       "footer";
 
-  grid-gap: 0px;
+  grid-gap: 0;
   grid-auto-flow: row;
 }
 
@@ -161,14 +161,14 @@
   border-top: 0;
 
   display: grid;
-  grid-template-rows: 0px auto 10px;
+  grid-template-rows: 0 auto 10px;
   grid-template-columns: 1fr;
 
   grid-template-areas: "header"
                       "content"
                       "footer";
 
-  grid-gap: 0px;
+  grid-gap: 0;
   grid-auto-flow: row;
 }
 
@@ -211,7 +211,7 @@
                       "content"
                       "footer";
 
-  grid-gap: 0px;
+  grid-gap: 0;
   grid-auto-flow: row;
 }
 
@@ -259,7 +259,7 @@
 .shngdisclosure {
   overflow: hidden;
   border-top: 0;
-  padding: 0px;
+  padding: 0;
   padding-top: 5px;
 }
 

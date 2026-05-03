@@ -28,7 +28,7 @@
     <picture>
       <source media="(min-width: 980px)" srcset="assets/img/logo_long.png">
       <source media="(min-width: 480px)" srcset="assets/img/logo_small_32x32.png">
-      <img id="logo" style="display: inline; position: fixed" routerLink="/system" src="no.png"/>
+      <img id="logo" style="display: inline; position: fixed" routerLink="/system" ngSrc="no.png"/>
     </picture>
 
     <button id="logoutButtonL" pButton label="{{'BUTTON.LOGOUT'|translate}}" (click)="logout()" [disabled]="!(authService.isLoggedIn() && authService.loginRequired())" icon="fa fa-sign-out-alt" style="margin-left:.25em" class="hide-on-small ui-button-success"></button>

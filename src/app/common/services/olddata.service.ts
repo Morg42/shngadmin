@@ -5,7 +5,7 @@ import {HttpClient} from '@angular/common/http';
 import {ItemDetails} from '../models/item-details';
 import {TranslateService} from '@ngx-translate/core';
 //import {SystemInfo} from '../models/system-info';
-import {ServerInfo} from '../models/server-info';
+// import {ServerInfo} from '../models/server-info';
 
 let url_start : string = 'http://';
 let host_ip : string = '';
@@ -19,7 +19,6 @@ let host_ip : string = '';
 export class OlddataService implements OnInit {
 
   baseUrl: string;
-  shng_serverinfo: ServerInfo = <ServerInfo>{'itemtree_fullpath': true};
 
   href = '';
 
@@ -35,12 +34,7 @@ export class OlddataService implements OnInit {
 
     if (host_ip === '') {
       host_ip = location.host;
-      if (host_ip === 'localhost:4200') {
-        //url_start = (baseUrl + '/assets/testdata/').replace(/\/+/g, '/');  // replace double slashes from pathes;
-        url_start = new URL('/assets/testdata/', baseUrl).toString();
-      } else {
-        url_start = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
-      }
+      url_start = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
       console.log('OlddataService.constructor ', {url_start}, {host_ip});
     }
   }
@@ -49,32 +43,6 @@ export class OlddataService implements OnInit {
   ngOnInit() {
     console.log('OlddataService.ngOnInit:');
   }
-
-
-  getconfigDefaultLanguage() {
-//    console.log('getconfigDefaultLanguage: default_language=' + shng_serverinfo.default_language);
-    if (this.shng_serverinfo.default_language === undefined) {
-      console.warn('OlddataService.getconfigDefaultLanguage: is undefined! (en used)');
-      return 'en';
-    }
-    const result = sessionStorage.getItem('default_language');
-    if (result !== undefined) {
-      return result;
-    }
-    return this.shng_serverinfo.default_language;
-  }
-
-
-  getconfig(key) {
-    if (this.shng_serverinfo[key] === undefined) {
-      console.log('OlddataService.getconfig: key ' + key + ' is undefined!');
-    }
-    return this.shng_serverinfo[key];
-  }
-
-
-
-
   getSysteminfo() {
     const url = url_start + 'systeminfo.json\\';
     console.log('OlddataService.getSysteminfo: url: ' + url);
@@ -97,21 +65,13 @@ export class OlddataService implements OnInit {
   }
 
 
-  getItemDetails(itempath) {
+  getItemDetails(itempath: string) {
 //    const url = this.url_start + 'item_detail_json.html?item_path=';
 //    const url = 'http://10.0.0.174:1234/admin/item_detail_json.html?item_path=beoremote';
 
     const url = url_start + 'item_detail_json.html?item_path=' + itempath;
     console.log('OlddataService.getItemDetails: url: ' + url);
     console.log('OlddataService.getItemDetails: itempath: ' + itempath);
-    if (host_ip === 'localhost:4200') {
-      if (itempath === 'beoremote.beo4command' || itempath === 'beoremote.beo4commandnum' ||
-          itempath === 'test.string' || itempath === 'test.number') {
-      } else {
-        console.log('getItemDetails: url: <' + itempath + '>');
-        return itempath;
-      }
-    }
     return this.http.get(url);
 
   }
@@ -120,24 +80,20 @@ export class OlddataService implements OnInit {
   // --------------------------------
   //  Change value of specified item
   //
-  changeItemValue(itempath, value) {
+  changeItemValue(itempath: string, value: string | number | boolean) {
     const url = url_start + 'item_change_value.html?item_path=' + itempath + '&value=' + encodeURIComponent(value);
     console.log('OlddataService.changeItemValue: url: ' + url);
-    if (host_ip === 'localhost:4200') {
-      alert('changeItemValue ' + itempath + ': Value not set, because running on localhost');
-    } else {
-      this.http.get(url)
-        .subscribe(
-          (response: ItemDetails[]) => {
-            console.log('updateValue:');
-            console.log({response});
-          },
-          (error) => {
-            console.log('ERROR: OlddataServicechangeItemValue(',{itempath}, ',',{value},')');
-            console.log(error);
-          }
-        );
-    }
+    this.http.get(url)
+      .subscribe(
+        (response: ItemDetails[]) => {
+          console.log('updateValue:');
+          console.log({response});
+        },
+        (error) => {
+          console.log('ERROR: OlddataServicechangeItemValue(',{itempath}, ',',{value},')');
+          console.log(error);
+        }
+      );
   }
 
 

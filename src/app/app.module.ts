@@ -1,7 +1,7 @@
-import { BrowserModule, Title } from '@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { Injector } from '@angular/core';
-import { RouterModule } from '@angular/router';  //newly integrated
+//newly integrated
 import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -18,20 +18,18 @@ import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 
 // UI from primeng
 import { TreeModule } from 'primeng/tree';
-import { TreeNode } from 'primeng/api';
 import { TableModule } from 'primeng/table';
 import { TreeTableModule } from 'primeng/treetable';
 import { AccordionModule } from 'primeng/accordion';        // deprecated --> AccordionHeader and AccordionContent components
 import { TooltipModule } from 'primeng/tooltip';
 import { MenubarModule } from 'primeng/menubar';
-import { MenuItem } from 'primeng/api';
 import { Dialog } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { Select } from 'primeng/select';          // DropdownModule was deprecated in primeng 18 --> Select
 import { ChartModule } from 'primeng/chart';
-import { ToggleSwitch } from 'primeng/toggleswitch';    // deprecated --> ToggleSwitch
+// deprecated --> ToggleSwitch
 //import { InputSwitchModule } from 'primeng/inputswitch';    // deprecated --> ToggleSwitch
 import { TabViewModule } from 'primeng/tabview';            //
 import { ProgressSpinnerModule } from 'primeng/progressspinner';

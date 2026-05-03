@@ -18,9 +18,6 @@ export class ThreadsApiService {
   getThreads() {
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'threads/';
-    if (apiUrl.includes('localhost')) {
-      url += 'default.json';
-    }
     return this.http.get(url)
       .pipe(
         map(response => {

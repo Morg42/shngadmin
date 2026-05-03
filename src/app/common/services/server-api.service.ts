@@ -33,18 +33,12 @@ export class ServerApiService {
     console.log('ServerApiService.constructor für baseUrl', baseUrl);
 
     this.baseUrl = baseUrl;
-
-    const parsedUrl = new URL(baseUrl);
-    let apiUrl = '/api/';
+      new URL(baseUrl);
+      let apiUrl = '/api/';
 
     if (host_ip === '') {
       host_ip = location.host;
-      if (host_ip === 'localhost:4200') {
-        dataUrl = baseUrl + 'assets/testdata/';
-        apiUrl = dataUrl + 'api/';
-      } else {
-        dataUrl = baseUrl;
-      }
+      dataUrl = baseUrl;
       sessionStorage.setItem('apiUrl', apiUrl);
       console.log('apiUrl = ', apiUrl);
       sessionStorage.setItem('dataUrl', dataUrl);
@@ -84,9 +78,6 @@ export class ServerApiService {
       return of({});
     }
     let url = apiUrl + 'server/';
-    if (apiUrl.includes('localhost')) {
-      url += 'default.json';
-    }
     console.log('getServerBasicinfo using url',url);
     return this.http.get(url)
       .pipe(
@@ -116,9 +107,6 @@ export class ServerApiService {
           if (hostip === null) {
             console.error('ServerApiService.getServerBasicinfo(): hostip was null');
             return of({});
-          }
-          else if (hostip === 'localhost') {
-            // sessionStorage.setItem('wsHost', this.shng_serverinfo.websocket_host);
           } else {
             sessionStorage.setItem('wsHost', hostip);
           }
@@ -140,11 +128,8 @@ export class ServerApiService {
     if (apiUrl === null) {
       return;
     }
-    let url = new URL('server/info/',apiUrl).toString();
-
-    if (apiUrl.includes('localhost')) {
-      url += 'default.json';
-    }
+    // let url = new URL('server/info/',apiUrl).toString();
+    let url = apiUrl + 'server/info';
     console.log('ServerApiService.getServerinfo() using url',url);
     return this.http.get(url)
       .pipe(
@@ -179,9 +164,6 @@ export class ServerApiService {
           const hostip = sessionStorage.getItem('hostIp');
           if (hostip === null) {
             console.error('ServerApiService.getServerinfo() hostip is null');
-          } else if (hostip === 'localhost') {
-            console.log('hostip is localhost');
-            sessionStorage.setItem('wsHost', this.shng_serverinfo.websocket_host);
           } else {
             sessionStorage.setItem('wsHost', hostip);
           }
@@ -211,9 +193,6 @@ export class ServerApiService {
 
     let url = new URL('server/status/', apiUrl).toString();
     console.log('ServerApiService.getShngServerStatus ', {url});
-    if (apiUrl.includes('localhost')) {
-      url += 'default.json';
-    }
     return this.http.get(url)
       .pipe(
         map(response => {
@@ -242,9 +221,6 @@ export class ServerApiService {
 
     let url = new URL('server/restart/',apiUrl).toString();
     console.log('ServerApiService.restartShngServer ', {url});
-    if (apiUrl.includes('localhost')) {
-      url += 'default.json';
-    }
     return this.http.put(url, JSON.stringify(''))
       .pipe(
         map(response => {
@@ -269,9 +245,6 @@ export class ServerApiService {
     }
     let url = new URL('files/backup/',apiUrl).toString();
     console.log('ServerApiService.downloadConfigBackup ', {url});
-    if (apiUrl.includes('localhost')) {
-      url += 'shng_backup.zip';
-    }
     return this.http.get(url, {responseType: 'blob'})
       .pipe(
         map(response => {

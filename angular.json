@@ -26,7 +26,7 @@
             "styles": [
               "src/styles.css",
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
+              "node_modules/@fontawesome/fontawesome-free/css/all.min.css",
               "node_modules/primeicons/primeicons.css"
             ],
             "scripts": [
@@ -99,7 +99,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "buildTarget": "shngadmin:build"
+            "buildTarget": "shngadmin:build",
+            "proxyConfig": "src/proxy.conf.json"
           },
           "configurations": {
             "production": {
@@ -149,5 +150,8 @@
     "@angular-eslint/schematics:library": {
       "setParserOptionsProject": true
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

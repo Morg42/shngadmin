@@ -67,14 +67,14 @@ export class AuthService {
 
     const hostip = sessionStorage.getItem('hostIp');
 
-    if (hostip === 'localhost') {
+    /*if (hostip === 'localhost') {
       console.log('authService.login() entering special case',{hostip});
       if (credentials.username === '') { 
         return of(false);
       }
 
       // After login:
-      /** the following token includes:
+      /!** the following token includes:
        * eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9 ==>
        * {
        *   "alg": "HS256",
@@ -88,7 +88,7 @@ export class AuthService {
        *   "iat": 1516239022  // issued at 31.01.2018 2:30:22 GMT+0100  (MEZ)
        * }
        * GpSSzk5SicKgGttwiVFq5xdOK7SM8KHU9992RBDUETU ==> secret
-       */
+       *!/
       localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiQXV0b2xvZ2luIiwiYWRtaW4iOnRydWUsImV4cCI6MTU0NjIzOTAyMiwiaWF0IjoxNTE2MjM5MDIyfQ.GpSSzk5SicKgGttwiVFq5xdOK7SM8KHU9992RBDUETU');
 
       this.currentUser = this.jwtHelper.decodeToken(localStorage.getItem('token'));
@@ -106,7 +106,7 @@ export class AuthService {
 
       return of(true);
     }
-
+*/
     // if not in develop environment:
     // return this.http.post('http://smarthomeng.fritz.box:1234/api/authenticate/user', JSON.stringify(send_credentials))
     // const apiUrl = sessionStorage.getItem('apiUrl');
@@ -187,33 +187,27 @@ export class AuthService {
     const hostip: string = sessionStorage.getItem('hostIp');
 
     let newToken: string = oldToken;
-    if (hostip === 'localhost') {
-      console.error('localhost -> Token renewal is disabled');
-    } else {
-      this.isRenewing = true;
-      this.getNewToken()
-        .subscribe(
-          (response) => {
-              newToken = response;
-              const decodedNewToken = this.jwtHelper.decodeToken(newToken);
-              const newttl = Math.round((decodedNewToken.exp - decodedNewToken.iat) / 60 / 60 * 100) / 100;
-              // console.log('authService.renewToken', {decodedNewToken});
+    this.isRenewing = true;
+    this.getNewToken()
+      .subscribe(
+        (response) => {
+            newToken = response;
+            const decodedNewToken = this.jwtHelper.decodeToken(newToken);
+            const newttl = Math.round((decodedNewToken.exp - decodedNewToken.iat) / 60 / 60 * 100) / 100;
+            // console.log('authService.renewToken', {decodedNewToken});
 
-              if (oldToken === newToken) {
-                console.warn('- Token renewal is disabled');
-                this.tokenRenewal = false;
+            if (oldToken === newToken) {
+              console.warn('- Token renewal is disabled');
+              this.tokenRenewal = false;
 
-              } else {
-                localStorage.setItem('token', newToken);
-                this.ttl = Math.round((decodedNewToken.exp - decodedNewToken.iat) / 60 / 60 * 100) / 100;
-                this.renewAfter = decodedNewToken.iat + (this.ttl * 60 * 60 / 2);
-              }
-              this.isRenewing = false;
-          }
-        );
-
-    }
-
+            } else {
+              localStorage.setItem('token', newToken);
+              this.ttl = Math.round((decodedNewToken.exp - decodedNewToken.iat) / 60 / 60 * 100) / 100;
+              this.renewAfter = decodedNewToken.iat + (this.ttl * 60 * 60 / 2);
+            }
+            this.isRenewing = false;
+        }
+      );
   }
 
 
@@ -249,10 +243,6 @@ export class AuthService {
 
     if (decodedToken.exp !== null) {
       const hostip = sessionStorage.getItem('hostIp');
-      if (hostip === 'localhost') {
-        console.log('AuthService.isLoggedIn() hostip is localhost --> return true')
-        return true;
-      }
       if (!this.expiredLogin) {
         this.expiredLogin = this.jwtHelper.isTokenExpired(localStorage.getItem('token'));
         if (this.expiredLogin) {

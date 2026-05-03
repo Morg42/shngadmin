@@ -27,7 +27,7 @@ import 'codemirror/mode/markdown/markdown';
 import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
-import { appConfig } from './app/app.config';
+// import { appConfig } from './app/app.config';
 
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';

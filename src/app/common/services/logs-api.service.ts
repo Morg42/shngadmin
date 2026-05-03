@@ -21,9 +21,6 @@ export class LogsApiService {
   getLogs() {
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'logs/';
-    if (apiUrl.includes('localhost')) {
-      url += 'default.json';
-    }
     return this.http.get<LogsType>(url)
       .pipe(
         map(response => {
@@ -47,11 +44,7 @@ export class LogsApiService {
     }
 
     if (chunk === null) { part = 1; }
-    if (apiUrl.includes('localhost')) {
-      url += '_chunk' + String(part);
-    } else {
-      url += '?chunk=' + String(part);
-    }
+    url += '?chunk=' + String(part);
 
     // return this.http.get(url, { responseType: 'text' })
     return this.http.get(url)

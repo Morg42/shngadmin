@@ -204,27 +204,20 @@ export class SystemComponent implements OnDestroy, OnInit {
     let filepath = '/3rdpartylicenses.txt';
     const hostip = sessionStorage.getItem('hostIp');
     const disclosureText = document.getElementById('disclosuretext');
-    if (hostip !== 'localhost') {
-      filepath = '/admin' + filepath;
-      this.http.get(filepath, {responseType: 'text'})
-        .subscribe(
-          response => {
-            const message = response.toString();
-            if (disclosureText) {
-              disclosureText.textContent = message;
-            }
-          },
-          error => {
-            if (disclosureText) {
-              disclosureText.textContent = '\nERROR ' + error.status + ':\n\n    ' + error.url + '   ' + error.statusText;
-            }
-          });
-
-    } else {
-      if (disclosureText) {
-        disclosureText.textContent = "\nYou are in develop mode: \n\nThe file '3dpartylicenses.txt' is created only in production mode. In develop mode the file does not exist.";
-      }
-    }
+    filepath = '/admin' + filepath;
+    this.http.get(filepath, {responseType: 'text'})
+      .subscribe(
+        response => {
+          const message = response.toString();
+          if (disclosureText) {
+            disclosureText.textContent = message;
+          }
+        },
+        error => {
+          if (disclosureText) {
+            disclosureText.textContent = '\nERROR ' + error.status + ':\n\n    ' + error.url + '   ' + error.statusText;
+          }
+        });
   }
 
 

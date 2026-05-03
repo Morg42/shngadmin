@@ -20,19 +20,6 @@ export class FilesApiService {
 
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'files/' + filetype + '/';
-
-    if (apiUrl.includes('localhost')) {
-      if (filename === '') {
-        url += 'default' + '.txt';
-      } else {
-        url += filename + '.txt';
-      }
-    } else {
-      if (filename !== '') {
-        url += '?filename=' + filename;
-      }
-    }
-
     return this.http.get(url, { responseType: 'text' })
       .pipe(
         map(response => {
@@ -58,38 +45,9 @@ export class FilesApiService {
 
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'files/' + filetype + '/';
-    if (apiUrl.includes('localhost')) {
-      if (filename === '') {
-        url += 'default' + '.txt';
-      } else {
-        url += filename + '.txt';
-      }
-    }
-
     if (filename !== '') {
       url += '?filename=' + filename;
     }
-
-    if (apiUrl.includes('localhost')) {
-      if (filename === '') {
-        console.warn('FilesApiService.saveFile', 'Cannot save file in dev environment\n', '- filetype: ', filetype);
-      } else {
-        console.error('FilesApiService.saveFile: Cannot save file in dev environment filetype \'' + filetype + '\', filename \'' + filename + '\'');
-      }
-
-      return this.http.get(url, { responseType: 'text' })
-        .pipe(
-          map(response => {
-            const result = response;
-            return result;
-          }),
-          catchError((err: HttpErrorResponse) => {
-            console.error('FilesApiService.saveFile: Could not read result data' + ' - ' + err.error.error);
-            return of({});
-          })
-        );
-    }
-
     return this.http.put(url, content, { responseType: 'text' })
       .pipe(
         map(response => {
@@ -116,19 +74,6 @@ export class FilesApiService {
 
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'files/' + filetype + '/';
-
-    if (apiUrl.includes('localhost')) {
-      if (filename === '') {
-        url += 'default' + '.txt';
-      } else {
-        url += filename + '.txt';
-      }
-    } else {
-      if (filename !== '') {
-        url += '?filename=' + filename;
-      }
-    }
-
     console.log('FilesApiService.deleteFile()', {url});
 
     return this.http.delete(url, { responseType: 'text' })
@@ -156,9 +101,6 @@ export class FilesApiService {
 
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'files/' + filetype + '/';
-    if (apiUrl.includes('localhost')) {
-      url += 'default.json';
-    }
     return this.http.get(url)
       .pipe(
         map(response => {

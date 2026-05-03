@@ -18,9 +18,6 @@ export class ItemsApiService {
   getItemList() {
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'items/list/';
-    if (apiUrl.includes('localhost')) {
-      url += 'default.json';
-    }
     return this.http.get(url)
       .pipe(
         map(response => {

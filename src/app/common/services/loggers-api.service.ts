@@ -20,9 +20,6 @@ export class LoggersApiService {
   getLoggers() {
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'loggers/';
-    if (apiUrl.includes('localhost')) {
-      url += 'default.json';
-    }
     return this.http.get<LoggersType>(url)
       .pipe(
         map(response => {
@@ -42,26 +39,6 @@ export class LoggersApiService {
 
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'loggers/' + logger + '?level=' + level;
-    if (apiUrl.includes('localhost')) {
-      url += 'default.txt';
-    }
-
-    if (apiUrl.includes('localhost')) {
-      console.warn('LoggersApiService.setLoggerLevel', 'Cannot set level dev environment\n', '- logger:', logger, 'level:', level);
-
-      return this.http.get(url)
-        .pipe(
-          map(response => {
-            const result = response;
-            return result;
-          }),
-          catchError((err: HttpErrorResponse) => {
-            console.error('LoggersApiService.setLoggerLevel: Could not read result data' + ' - ' + err.error.error);
-            return of({});
-          })
-        );
-    }
-
     return this.http.put(url, 'level')
       .pipe(
         map(response => {
@@ -87,26 +64,6 @@ export class LoggersApiService {
 
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'loggers/' + logger + '?handlers=' + handlerList;
-    if (apiUrl.includes('localhost')) {
-      url += 'default.txt';
-    }
-
-    if (apiUrl.includes('localhost')) {
-      console.warn('LoggersApiService.setHandlers', 'Cannot set level dev environment\n', '- logger:', logger, 'handlers:', handlerList);
-
-      return this.http.get(url)
-        .pipe(
-          map(response => {
-            const result = response;
-            return result;
-          }),
-          catchError((err: HttpErrorResponse) => {
-            console.error('LoggersApiService.setHandlers: Could not read result data' + ' - ' + err.error.error);
-            return of({});
-          })
-        );
-    }
-
     return this.http.put(url, 'handlers')
       .pipe(
         map(response => {
@@ -130,13 +87,6 @@ export class LoggersApiService {
   addLogger(logger) {
         const apiUrl = sessionStorage.getItem('apiUrl');
         let url = apiUrl + 'loggers/' + logger + '/';
-        if (apiUrl.includes('localhost')) {
-            url += 'default.json';
-        }
-        if (apiUrl.includes('localhost')) {
-          return of({'result': 'error', 'description': 'unable to simulate addition of logger \'' + logger + '\' in dev environment'});
-        }
-
         return this.http.post(url, 'xxx')
             .pipe(
                 map(response => {
@@ -154,13 +104,6 @@ export class LoggersApiService {
     deleteLogger(logger) {
         const apiUrl = sessionStorage.getItem('apiUrl');
         let url = apiUrl + 'loggers/' + logger + '/';
-        if (apiUrl.includes('localhost')) {
-            url += 'default.json';
-        }
-        if (apiUrl.includes('localhost')) {
-            return of({'result': 'error', 'description': 'unable to simulate deletion of logger \'' + logger + '\' in dev environment'});
-        }
-
         return this.http.delete(url)
             .pipe(
                 map(response => {

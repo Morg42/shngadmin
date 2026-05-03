@@ -251,7 +251,7 @@ export class WebsocketPluginService implements OnInit {
     const wsPort = sessionStorage.getItem('wsPort');
     const adm_url = 'ws://' + wsHost + ':' + wsPort + '/adm';
 
-    if (hostip === 'localhost' || hostip === null) {
+    if (hostip === null) {
       console.log({adm_url}, 'Für mockup Environment ip und port in \'testdata/api/server/info/default.json\' anpassen');
     }
     this.wsService = new WebsocketService();

@@ -18,9 +18,6 @@ export class FunctionsApiService {
   getFunctions() {
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'functions/';
-    if (apiUrl.includes('localhost')) {
-      url += 'default.json';
-    }
     return this.http.get(url)
         .pipe(
             map(response => {

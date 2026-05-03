@@ -18,9 +18,6 @@ export class ScenesApiService {
   getScenes() {
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'scenes/';
-    if (apiUrl.includes('localhost')) {
-      url += 'default.json';
-    }
     return this.http.get(url)
       .pipe(
         map(response => {

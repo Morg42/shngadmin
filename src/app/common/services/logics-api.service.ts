@@ -24,10 +24,6 @@ export class LogicsApiService {
   getGroupsInfo() {
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'logics/' + '?infotype=groups';
-    if (apiUrl.includes('localhost')) {
-      // url += '.json';
-      url = apiUrl + 'logics/groups.json';
-    }
     return this.http.get(url)
       .pipe(
         map(response => {
@@ -46,9 +42,6 @@ export class LogicsApiService {
   getLogics() {
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'logics/';
-    if (apiUrl.includes('localhost')) {
-      url += 'default.json';
-    }
     return this.http.get(url)
       .pipe(
         map(response => {
@@ -66,9 +59,6 @@ export class LogicsApiService {
   getLogic(logicname) {
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'logics/' + logicname;
-    if (apiUrl.includes('localhost')) {
-      url += '.json';
-    }
     return this.http.get(url)
       .pipe(
         map(response => {
@@ -86,9 +76,6 @@ export class LogicsApiService {
   getLogicState(logicname) {
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'logics/' + logicname + '?infotype=status';
-    if (apiUrl.includes('localhost')) {
-      url += '.json';
-    }
     return this.http.get(url)
       .pipe(
         map(response => {
@@ -114,11 +101,6 @@ export class LogicsApiService {
     if (filename !== '') {
       url += '&filename=' + filename;
     }
-    if (apiUrl.includes('localhost')) {
-      console.warn('LogicsApiService.setLogicState', 'Cannot simulate setting states in dev environment\n', '- logic', logicName, ', action', action);
-      return of(true);
-    }
-
     return this.http.put(url, JSON.stringify(''))
       .pipe(
         map(response => {
@@ -155,11 +137,6 @@ export class LogicsApiService {
 
     const apiUrl = sessionStorage.getItem('apiUrl');
     const url = apiUrl + 'logics/' + logicName + '?action=' + 'saveparameters';
-    if (apiUrl.includes('localhost')) {
-      console.warn('LogicsApiService.saveLogicParameters', 'Cannot simulate saving parameters in dev environment\n', '- logic', logicName, ', action', paramObj);
-      return of(true);
-    }
-
     return this.http.put(url, JSON.stringify(paramObj))
       .pipe(
         map(response => {
@@ -193,11 +170,6 @@ export class LogicsApiService {
 
     const apiUrl = sessionStorage.getItem('apiUrl');
     const url = apiUrl + 'logics/' + groupName + '?action=' + 'savegroup';
-    if (apiUrl.includes('localhost')) {
-      console.warn('LogicsApiService.saveLogicGroup', 'Cannot simulate saving group in dev environment\n', '- group', groupName, ', data', group);
-      return of(true);
-    }
-
     return this.http.put(url, JSON.stringify(group))
       .pipe(
         map(response => {
@@ -231,11 +203,6 @@ export class LogicsApiService {
 
     const apiUrl = sessionStorage.getItem('apiUrl');
     const url = apiUrl + 'logics/' + groupName + '?action=' + 'deletegroup';
-    if (apiUrl.includes('localhost')) {
-      console.warn('LogicsApiService.deleteLogicGroup', 'Cannot simulate deleting group in dev environment\n', '- group', groupName);
-      return of(true);
-    }
-
     return this.http.put(url, JSON.stringify(''))
       .pipe(
         map(response => {

@@ -20,26 +20,6 @@ export class ServicesApiService {
   CheckEvalData(evalData) {
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'services/evalcheck/';
-    if (apiUrl.includes('localhost')) {
-      url += 'default.json';
-    }
-
-    if (apiUrl.includes('localhost')) {
-      console.warn('ServicesApiService.CheckEvalData', 'Cannot check eval data in dev environment\n', '- yamlText: ', evalData);
-
-      return this.http.get(url)
-        .pipe(
-          map(response => {
-            const result = response;
-            return result;
-          }),
-          catchError((err: HttpErrorResponse) => {
-            console.error('ServicesApiService (CheckEvalData): Could not read result data' + ' - ' + err.error.error);
-            return of({});
-          })
-        );
-    }
-
     return this.http.put(url, evalData)
       .pipe(
         map(response => {
@@ -69,26 +49,6 @@ export class ServicesApiService {
 
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'services/yamlcheck/';
-    if (apiUrl.includes('localhost')) {
-      url += 'default.txt';
-    }
-
-    if (apiUrl.includes('localhost')) {
-      console.warn('ServicesApiService.CheckYamlText', 'Cannot check yaml text in dev environment\n', '- yamlText: ', yamlText);
-
-      return this.http.get(url, { responseType: 'text' })
-        .pipe(
-          map(response => {
-            const result = response;
-            return result;
-          }),
-          catchError((err: HttpErrorResponse) => {
-            console.error('ServicesApiService (CheckYamlText): Could not read result data' + ' - ' + err.error.error);
-            return of({});
-          })
-        );
-    }
-
     return this.http.put(url, yamlText, { responseType: 'text' })
       .pipe(
         map(response => {
@@ -120,26 +80,6 @@ export class ServicesApiService {
 
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'services/yamlconvert/';
-    if (apiUrl.includes('localhost')) {
-      url += 'default.txt';
-    }
-
-    if (apiUrl.includes('localhost')) {
-      console.warn('ServicesApiService.ConvertToYamlText', 'Cannot convert conf text to yaml in dev environment\n', '- yamlText: ', confText);
-
-      return this.http.get(url, {responseType: 'text'})
-        .pipe(
-          map(response => {
-            const result = response;
-            return result;
-          }),
-          catchError((err: HttpErrorResponse) => {
-            console.error('ServicesApiService (ConvertToYamlText): Could not read result data' + ' - ' + err.error.error);
-            return of({});
-          })
-        );
-    }
-
     return this.http.put(url, confText, {responseType: 'text'})
       .pipe(
         map(response => {
@@ -163,9 +103,6 @@ export class ServicesApiService {
   getCacheOrphans() {
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'services/cachecheck/';
-    if (apiUrl.includes('localhost')) {
-      url += 'default.json';
-    }
     return this.http.get(url)
       .pipe(
         map(response => {
@@ -185,26 +122,6 @@ export class ServicesApiService {
 
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'services/cachefile_delete?filename=' + filename;
-    if (apiUrl.includes('localhost')) {
-      url += 'default.txt';
-    }
-
-    if (apiUrl.includes('localhost')) {
-      console.warn('ServicesApiService.deleteCacheFile', 'Cannot delete cache file in dev environment\n', '- filename:', filename);
-
-      return this.http.get(url)
-        .pipe(
-          map(response => {
-            const result = response;
-            return result;
-          }),
-          catchError((err: HttpErrorResponse) => {
-            console.error('ServicesApiService (deleteCacheFile): Could not read result data' + ' - ' + err.error.error);
-            return of({});
-          })
-        );
-    }
-
     return this.http.put(url, 'xxx')
       .pipe(
         map(response => {

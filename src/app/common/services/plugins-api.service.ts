@@ -24,9 +24,6 @@ export class PluginsApiService {
 
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'plugins/installed/';
-    if (apiUrl.includes('localhost')) {
-      url += 'default.json';
-    }
     return this.http.get(url)
       .pipe(
         map(response => {
@@ -50,9 +47,6 @@ export class PluginsApiService {
 
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'plugins/config/';
-    if (apiUrl.includes('localhost')) {
-      url += 'default.json';
-    }
     return this.http.get(url)
       .pipe(
         map(response => {
@@ -77,9 +71,6 @@ export class PluginsApiService {
 
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'plugins/info/';
-    if (apiUrl.includes('localhost')) {
-      url += 'default.json';
-    }
     return this.http.get(url)
       .pipe(
         map(response => {
@@ -104,9 +95,6 @@ export class PluginsApiService {
 
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'plugins/logicparams/';
-    if (apiUrl.includes('localhost')) {
-      url += 'default.json';
-    }
     return this.http.get(url)
       .pipe(
         map(response => {
@@ -131,9 +119,6 @@ export class PluginsApiService {
 
     const apiUrl = sessionStorage.getItem('apiUrl');
     let url = apiUrl + 'plugins/api/';
-    if (apiUrl.includes('localhost')) {
-      url += 'default.json';
-    }
     return this.http.get(url)
       .pipe(
         map(response => {
@@ -158,11 +143,6 @@ export class PluginsApiService {
 
     const apiUrl = sessionStorage.getItem('apiUrl');
     const url = apiUrl + 'plugin/' + pluginsection + '/';
-    if (apiUrl.includes('localhost')) {
-      console.warn('PluginsApiService.setPluginConfig', 'Cannot simulate saving data in dev environment\n', '- config', config);
-      return of(true);
-    }
-
     return this.http.put(url, JSON.stringify(config))
       .pipe(
         map(response => {
@@ -200,11 +180,6 @@ export class PluginsApiService {
 
     const apiUrl = sessionStorage.getItem('apiUrl');
     const url = apiUrl + 'plugin/' + pluginsection + '/';
-    if (apiUrl.includes('localhost')) {
-      console.warn('PluginsApiService.addPluginConfig', 'Cannot simulate saving data in dev environment\n', '- config', config);
-      return of(true);
-    }
-
     return this.http.post(url, JSON.stringify(config))
       .pipe(
         map(response => {
@@ -244,11 +219,6 @@ export class PluginsApiService {
 
     const apiUrl = sessionStorage.getItem('apiUrl');
     const url = apiUrl + 'plugin/' + pluginsection + '/';
-    if (apiUrl.includes('localhost')) {
-      console.warn('PluginsApiService.deletePluginConfig', 'Cannot simulate deleting data in dev environment\n', '- section', pluginsection);
-      return of(true);
-    }
-
     return this.http.delete(url)
       .pipe(
         map(response => {
@@ -292,11 +262,6 @@ export class PluginsApiService {
     if (filename !== '') {
       url += '&filename=' + filename;
     }
-    if (apiUrl.includes('localhost')) {
-      console.warn('PluginsApiService.setPluginState', 'Cannot simulate setting states in dev environment\n', '- plugin', pluginConfigName, ', action', action);
-      return of(true);
-    }
-
     return this.http.put(url, JSON.stringify(''))
       .pipe(
         map(response => {

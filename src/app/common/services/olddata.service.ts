@@ -34,7 +34,7 @@ export class OlddataService implements OnInit {
 
     if (host_ip === '') {
       host_ip = location.host;
-      url_start = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
+      url_start = (baseUrl.endsWith('/') ? baseUrl : baseUrl + '/') + 'admin/';
       console.log('OlddataService.constructor ', {url_start}, {host_ip});
     }
   }

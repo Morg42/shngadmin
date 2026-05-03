@@ -20,9 +20,10 @@ interface MenuItem {
   items: MenuEntry[];
 }
 @Component({
-  selector: 'app-top-navigation',
-  templateUrl: './top-navigation.component.html',
-  styleUrls: ['./top-navigation.component.css']
+    selector: 'app-top-navigation',
+    templateUrl: './top-navigation.component.html',
+    styleUrls: ['./top-navigation.component.css'],
+    standalone: false
 })
 
 

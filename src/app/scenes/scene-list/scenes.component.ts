@@ -18,10 +18,11 @@ import {Title} from '@angular/platform-browser';
 
 
 @Component({
-  selector: 'app-scenes',
-  templateUrl: './scenes.component.html',
-  styleUrls: ['./scenes.component.css'],
-  providers: [MessageService]
+    selector: 'app-scenes',
+    templateUrl: './scenes.component.html',
+    styleUrls: ['./scenes.component.css'],
+    providers: [MessageService],
+    standalone: false
 })
 export class ScenesComponent implements OnInit {
 

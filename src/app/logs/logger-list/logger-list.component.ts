@@ -9,10 +9,11 @@ import {Title} from '@angular/platform-browser';
 import {ServerApiService} from '../../common/services/server-api.service';
 
 @Component({
-  selector: 'app-logger-list',
-  templateUrl: './logger-list.component.html',
-  styleUrls: ['./logger-list.component.css'],
-  encapsulation: ViewEncapsulation.None
+    selector: 'app-logger-list',
+    templateUrl: './logger-list.component.html',
+    styleUrls: ['./logger-list.component.css'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class LoggerListComponent implements OnInit {
 

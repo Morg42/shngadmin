@@ -12,9 +12,10 @@ import {FunctionsApiService} from '../../common/services/functions-api.service';
 
 
 @Component({
-  selector: 'app-function-configuration',
-  templateUrl: './function-configuration.component.html',
-  styleUrls: ['./function-configuration.component.css']
+    selector: 'app-function-configuration',
+    templateUrl: './function-configuration.component.html',
+    styleUrls: ['./function-configuration.component.css'],
+    standalone: false
 })
 export class FunctionConfigurationComponent implements AfterViewChecked, OnInit {
 

@@ -15,9 +15,10 @@ import {Title} from '@angular/platform-browser';
 
 
 @Component({
-  selector: 'app-system-config',
-  templateUrl: './system-config.component.html',
-  styleUrls: ['./system-config.component.css']
+    selector: 'app-system-config',
+    templateUrl: './system-config.component.html',
+    styleUrls: ['./system-config.component.css'],
+    standalone: false
 })
 
 export class SystemConfigComponent implements OnInit {

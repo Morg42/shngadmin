@@ -7,9 +7,10 @@ import {Title} from '@angular/platform-browser';
 import {TranslateService} from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-struct-configuration',
-  templateUrl: './struct-configuration.component.html',
-  styleUrls: ['./struct-configuration.component.css']
+    selector: 'app-struct-configuration',
+    templateUrl: './struct-configuration.component.html',
+    styleUrls: ['./struct-configuration.component.css'],
+    standalone: false
 })
 export class StructConfigurationComponent implements AfterViewChecked, OnInit {
 

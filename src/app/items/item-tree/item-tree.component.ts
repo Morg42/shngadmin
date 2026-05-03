@@ -29,10 +29,11 @@ import {Subscription} from 'rxjs';
 
 
 @Component({
-  selector: 'app-items',
-  templateUrl: 'item-tree.component.html',
-  styleUrls: ['item-tree.component.css'],
-  providers:  [AppComponent, WebsocketService, WebsocketPluginService ]
+    selector: 'app-items',
+    templateUrl: 'item-tree.component.html',
+    styleUrls: ['item-tree.component.css'],
+    providers: [AppComponent, WebsocketService, WebsocketPluginService],
+    standalone: false
 })
 export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   @ViewChild('vc', { read: ViewContainerRef, static: true }) vc: ViewContainerRef;

@@ -13,9 +13,10 @@ import {Title} from '@angular/platform-browser';
 
 
 @Component({
-  selector: 'app-schedulers',
-  templateUrl: './schedulers.component.html',
-  styleUrls: ['./schedulers.component.css']
+    selector: 'app-schedulers',
+    templateUrl: './schedulers.component.html',
+    styleUrls: ['./schedulers.component.css'],
+    standalone: false
 })
 
 export class SchedulersComponent implements OnInit {

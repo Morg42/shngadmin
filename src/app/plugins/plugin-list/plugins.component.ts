@@ -17,10 +17,11 @@ import {TranslateService} from '@ngx-translate/core';
 import {Title} from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-plugins',
-  templateUrl: './plugins.component.html',
-  styleUrls: ['./plugins.component.css'],
-  providers: [OlddataService]
+    selector: 'app-plugins',
+    templateUrl: './plugins.component.html',
+    styleUrls: ['./plugins.component.css'],
+    providers: [OlddataService],
+    standalone: false
 })
 export class PluginsComponent implements OnInit {
 

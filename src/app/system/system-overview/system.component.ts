@@ -23,10 +23,11 @@ import {AppComponent} from '../../app.component';
 
 
 @Component({
-  selector: 'app-system',
-  templateUrl: './system.component.html',
-  styleUrls: ['./system.component.css'],
-  providers: [ WebsocketService, WebsocketPluginService ]
+    selector: 'app-system',
+    templateUrl: './system.component.html',
+    styleUrls: ['./system.component.css'],
+    providers: [WebsocketService, WebsocketPluginService],
+    standalone: false
 })
 export class SystemComponent implements OnDestroy, OnInit {
 

@@ -12,9 +12,10 @@ import {ServerApiService} from '../../common/services/server-api.service';
 
 
 @Component({
-  selector: 'app-item-configuration',
-  templateUrl: './item-configuration.component.html',
-  styleUrls: ['./item-configuration.component.css']
+    selector: 'app-item-configuration',
+    templateUrl: './item-configuration.component.html',
+    styleUrls: ['./item-configuration.component.css'],
+    standalone: false
 })
 export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
 

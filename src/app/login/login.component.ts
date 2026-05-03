@@ -7,9 +7,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from './../common/services/auth.service';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.css'],
+    standalone: false
 })
 export class LoginComponent {
   invalidLogin: boolean;

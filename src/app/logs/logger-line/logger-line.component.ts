@@ -1,9 +1,10 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
-  selector: 'logger-line',
-  templateUrl: './logger-line.component.html',
-  styleUrls: ['./logger-line.component.css']
+    selector: 'logger-line',
+    templateUrl: './logger-line.component.html',
+    styleUrls: ['./logger-line.component.css'],
+    standalone: false
 })
 export class LoggerLineComponent implements OnInit {
 

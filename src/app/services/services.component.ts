@@ -28,11 +28,12 @@ export interface CacheEntryType {
 
 
 @Component({
-  selector: 'app-services',
-  templateUrl: './services.component.html',
-  styleUrls: ['./services.component.css'],
-  encapsulation: ViewEncapsulation.None,
-  providers: []
+    selector: 'app-services',
+    templateUrl: './services.component.html',
+    styleUrls: ['./services.component.css'],
+    encapsulation: ViewEncapsulation.None,
+    providers: [],
+    standalone: false
 })
 
 

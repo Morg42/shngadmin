@@ -9,9 +9,10 @@ import {LogicsApiService} from '../../common/services/logics-api.service';
 import {LogicsGroupType} from '../../common/models/logics-info';
 
 @Component({
-  selector: 'app-logics-groups',
-  templateUrl: './logics-groups.component.html',
-  styleUrls: ['./logics-groups.component.css']
+    selector: 'app-logics-groups',
+    templateUrl: './logics-groups.component.html',
+    styleUrls: ['./logics-groups.component.css'],
+    standalone: false
 })
 export class LogicsGroupsComponent implements OnInit {
 

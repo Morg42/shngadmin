@@ -10,9 +10,10 @@ import {Title} from '@angular/platform-browser';
 
 
 @Component({
-  selector: 'app-threads',
-  templateUrl: './threads.component.html',
-  styleUrls: ['./threads.component.css'],
+    selector: 'app-threads',
+    templateUrl: './threads.component.html',
+    styleUrls: ['./threads.component.css'],
+    standalone: false
 })
 
 

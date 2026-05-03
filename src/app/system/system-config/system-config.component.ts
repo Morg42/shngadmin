@@ -162,7 +162,7 @@ export class SystemConfigComponent implements OnInit {
 
     // generate a valid_list for bool parameters
     if (meta['parameters'][param]['type'] === 'bool') {
-      let wrk = {};
+      let wrk: {};
       wrk = {label: 'true', value: true};
       vl.push(wrk);
       wrk = {label: 'false', value: false};

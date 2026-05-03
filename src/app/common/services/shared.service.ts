@@ -97,7 +97,7 @@ export class SharedService {
       const date = dateparts[2] + '.' + dateparts[1] + '.' + dateparts[0];
 
       const time = datetime.split(' ')[1].split('.')[0];
-      let tz: string | null = '';
+      let tz: string | null;
       if (is_dst) {
         tz = sessionStorage.getItem('tznameDST');
       } else {

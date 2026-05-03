@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
-<svg xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:cc="http://creativecommons.org/ns#" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:svg="http://www.w3.org/2000/svg" xmlns:ns1="http://sozi.baierouge.fr" id="svg2953" sodipodi:docname="Hello, World In Several Languages.svg" viewBox="0 0 402.68 312.89" version="1.1" inkscape:version="0.48.3.1 r9886">
+<svg xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg"
+     xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:cc="http://creativecommons.org/ns#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     id="svg2953" sodipodi:docname="Hello, World In Several Languages.svg" viewBox="0 0 402.68 312.89" version="1.1"
+     inkscape:version="0.48.3.1 r9886">
   <defs id="defs2955">
     <filter id="filter3660" inkscape:collect="always" color-interpolation-filters="sRGB">
       <feGaussianBlur id="feGaussianBlur3662" stdDeviation="4.0644417" inkscape:collect="always"/>

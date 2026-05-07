@@ -6,6 +6,7 @@ import {map} from 'rxjs/operators';
 import {of} from 'rxjs';
 
 import {sha512} from 'js-sha512';
+import {AppConfigService} from './app-config.service';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +27,8 @@ export class AuthService {
   logTimestamp: number = 0;
 
   constructor(private http: HttpClient,
-              public jwtHelper: JwtHelperService) {
+              public jwtHelper: JwtHelperService,
+              private appConfig: AppConfigService) {
 
 
     this.isLoginRequired = true;
@@ -65,7 +67,7 @@ export class AuthService {
       send_credentials.password = sha512(sha512(credentials.password) + send_hash);
     }
 
-    const hostip = sessionStorage.getItem('hostIp');
+    const hostip = this.appConfig.hostIp;
 
     /*if (hostip === 'localhost') {
       console.log('authService.login() entering special case',{hostip});
@@ -184,7 +186,7 @@ export class AuthService {
 
     this.logTimestamp = this.getTimestamp();
     const oldToken: string = localStorage.getItem('token');
-    const hostip: string = sessionStorage.getItem('hostIp');
+    const hostip: string = this.appConfig.hostIp;
 
     let newToken: string = oldToken;
     this.isRenewing = true;
@@ -242,7 +244,7 @@ export class AuthService {
     }
 
     if (decodedToken.exp !== null) {
-      const hostip = sessionStorage.getItem('hostIp');
+      const hostip = this.appConfig.hostIp;
       if (!this.expiredLogin) {
         this.expiredLogin = this.jwtHelper.isTokenExpired(localStorage.getItem('token'));
         if (this.expiredLogin) {

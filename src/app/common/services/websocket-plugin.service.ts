@@ -9,6 +9,7 @@ import { webSocket } from 'rxjs/webSocket'; // for RxJS 6, for v5 use Observable
 
 import { AppComponent } from '../../app.component';
 import { WebsocketService } from './websocket.service';
+import { AppConfigService } from './app-config.service';
 import { SharedService } from './shared.service';
 import {OlddataService} from './olddata.service';
 
@@ -212,7 +213,8 @@ export class WebsocketPluginService implements OnInit {
   public diskUpdate$ = this.diskSource.asObservable();
 
 
-  constructor(private dataService: OlddataService,
+  constructor(private appConfig: AppConfigService,
+              private dataService: OlddataService,
               private websocketService: WebsocketService,
               private shared: SharedService,
               private app: AppComponent) {
@@ -246,12 +248,12 @@ export class WebsocketPluginService implements OnInit {
 
 
   connect() {
-    const hostip = sessionStorage.getItem('hostip');
-    const wsHost = sessionStorage.getItem('wsHost');
-    const wsPort = sessionStorage.getItem('wsPort');
+    const wsHost = this.appConfig.wsHost;
+    const wsPort = this.appConfig.wsPort;
+    const hostIp = this.appConfig.hostIp;
     const adm_url = 'ws://' + wsHost + ':' + wsPort + '/adm';
 
-    if (hostip === null) {
+    if (hostIp === null) {
       console.log({adm_url}, 'Für mockup Environment ip und port in \'testdata/api/server/info/default.json\' anpassen');
     }
     this.wsService = new WebsocketService();

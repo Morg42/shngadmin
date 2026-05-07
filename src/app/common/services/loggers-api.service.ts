@@ -6,6 +6,7 @@ import { LoggersType } from '../models/loggers-info';
 import { ServerApiService } from './server-api.service';
 import { map, catchError } from 'rxjs/operators';
 import {of} from 'rxjs';
+import {AppConfigService} from './app-config.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,12 +14,13 @@ import {of} from 'rxjs';
 export class LoggersApiService {
 
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+              private appConfig: AppConfigService) {
   }
 
 
   getLoggers() {
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'loggers/';
     return this.http.get<LoggersType>(url)
       .pipe(
@@ -37,7 +39,7 @@ export class LoggersApiService {
   setLoggerLevel(logger, level) {
     // console.log('LoggersApiService.setLoggerLevel');
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'loggers/' + logger + '?level=' + level;
     return this.http.put(url, 'level')
       .pipe(
@@ -62,7 +64,7 @@ export class LoggersApiService {
   setHandlers(logger, handlerList) {
     // console.log('LoggersApiService.setHandlers');
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'loggers/' + logger + '?handlers=' + handlerList;
     return this.http.put(url, 'handlers')
       .pipe(
@@ -85,7 +87,7 @@ export class LoggersApiService {
 
 
   addLogger(logger) {
-        const apiUrl = sessionStorage.getItem('apiUrl');
+        const apiUrl = this.appConfig.apiUrl;
         let url = apiUrl + 'loggers/' + logger + '/';
         return this.http.post(url, 'xxx')
             .pipe(
@@ -102,7 +104,7 @@ export class LoggersApiService {
 
 
     deleteLogger(logger) {
-        const apiUrl = sessionStorage.getItem('apiUrl');
+        const apiUrl = this.appConfig.apiUrl;
         let url = apiUrl + 'loggers/' + logger + '/';
         return this.http.delete(url)
             .pipe(

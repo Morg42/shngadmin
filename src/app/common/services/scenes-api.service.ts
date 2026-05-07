@@ -4,6 +4,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { map, catchError } from 'rxjs/operators';
 import {of} from 'rxjs';
+import {AppConfigService} from './app-config.service';
 
 
 
@@ -12,11 +13,12 @@ import {of} from 'rxjs';
 })
 export class ScenesApiService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+              private appConfig: AppConfigService) { }
 
 
   getScenes() {
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'scenes/';
     return this.http.get(url)
       .pipe(
@@ -34,7 +36,7 @@ export class ScenesApiService {
 
   reloadScene(name) {
 
-      const apiUrl = sessionStorage.getItem('apiUrl');
+      const apiUrl = this.appConfig.apiUrl;
       const url = apiUrl + 'scenes/reload/' + name;
 
       return this.http.put(url, '', { responseType: 'text' })
@@ -61,7 +63,7 @@ export class ScenesApiService {
 
     reloadScenes() {
 
-        const apiUrl = sessionStorage.getItem('apiUrl');
+        const apiUrl = this.appConfig.apiUrl;
         const url = apiUrl + 'scenes/reload/all';
 
         return this.http.put(url, '', { responseType: 'text' })

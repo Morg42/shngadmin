@@ -1,5 +1,6 @@
 
 import { Component, OnInit, TemplateRef } from '@angular/core';
+import {AppConfigService} from '../../common/services/app-config.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -100,7 +101,8 @@ export class PluginConfigComponent implements OnInit {
               private translate: TranslateService,
               private shared: SharedService,
               private router: Router,
-              private titleService: Title) { }
+              private titleService: Title,
+              private appConfig: AppConfigService) { }
 
 
   public setTitle(newTitle: string) {
@@ -156,7 +158,7 @@ ngOnInit() {
                     // is plugin enabled?
                     conf['enabled'] = enabled;
 
-                    if (meta == null || meta === undefined) {
+                    if (meta == null) {
                       conf['type'] = 'classic';
                     } else {
                       conf['type'] = meta.plugin.type;
@@ -317,7 +319,7 @@ ngOnInit() {
     this.parameter_cols = columnDefinitions;
     this.parameters = [];
 
-    this.lang = sessionStorage.getItem('default_language');
+    this.lang = this.appConfig.defaultLanguage;
     if (meta != null && meta !== undefined && meta['parameters'] !== 'NONE') {
       for (const param in meta['parameters']) {
         if (meta['parameters'].hasOwnProperty(param) ) {
@@ -608,7 +610,9 @@ ngOnInit() {
           // select display language for plugin descriptions
           for (let p in this.plugins_installed) {
             if (p in this.plugins_installed) {
-              this.plugins_installed[p]['disp_description'] = this.shared.getDescription(this.plugins_installed[p].description);
+              this.plugins_installed[p]['disp_description'] = this.plugins_installed[p].description
+                  // getDescription wants a dict {"lang": "text}, but we only have a string...
+                  // this.shared.getDescription(this.plugins_installed[p].description);
             }
           }
           for (let i = 0; i < this.plugintypes.length; i++) {

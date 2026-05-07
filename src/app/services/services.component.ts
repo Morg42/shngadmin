@@ -1,5 +1,6 @@
 
 import { Component, AfterViewChecked, OnInit, ViewEncapsulation, ViewChild } from '@angular/core';
+import {AppConfigService} from '../common/services/app-config.service';
 import { BrowserModule, Title } from '@angular/platform-browser';
 // import { Title } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
@@ -46,7 +47,8 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
               private fileService: FilesApiService,
               private dataService: ServicesApiService,
               private dataServiceServer: ServerApiService,
-              private titleService: Title) {
+              private titleService: Title,
+              private appConfig: AppConfigService) {
   }
 
   serverInfo = <ServerInfo>{};
@@ -225,7 +227,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
       .subscribe(
         (response) => {
           this.shng_status = '?';
-          this.default_language = sessionStorage.getItem('default_language');
+          this.default_language = this.appConfig.defaultLanguage;
 
           this.serverInfo = <ServerInfo> response;
 
@@ -388,9 +390,9 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
 
   setLanguage() {
     console.log('setLanguage', this.selected_language);
-    sessionStorage.setItem('default_language', this.selected_language);
+    this.appConfig.setDefaultLanguage(this.selected_language);
     this.shared.setGuiLanguage();
-    this.default_language = sessionStorage.getItem('default_language');
+    this.default_language = this.appConfig.defaultLanguage;
   }
 
 

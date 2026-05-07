@@ -4,6 +4,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { map, catchError } from 'rxjs/operators';
 import {of} from 'rxjs';
+import {AppConfigService} from './app-config.service';
 
 
 
@@ -12,13 +13,14 @@ import {of} from 'rxjs';
 })
 export class FilesApiService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+              private appConfig: AppConfigService) { }
 
 
   readFile(filetype, filename = '') {
     // console.log('FilesApiService.readFile()', {filename});
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'files/' + filetype + '/';
     return this.http.get(url, { responseType: 'text' })
       .pipe(
@@ -43,7 +45,7 @@ export class FilesApiService {
   saveFile(filetype, filename = '', content = '') {
     // console.log('FilesApiService.saveFile');
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'files/' + filetype + '/';
     if (filename !== '') {
       url += '?filename=' + filename;
@@ -72,7 +74,7 @@ export class FilesApiService {
   deleteFile(filetype, filename = '') {
     console.log('FilesApiService.deleteFile()', {filename});
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'files/' + filetype + '/';
     console.log('FilesApiService.deleteFile()', {url});
 
@@ -99,7 +101,7 @@ export class FilesApiService {
   getfileList(filetype) {
     console.log('FilesApiService.getfileList()', {filetype});
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'files/' + filetype + '/';
     return this.http.get(url)
       .pipe(

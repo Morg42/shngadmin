@@ -5,6 +5,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { map, catchError } from 'rxjs/operators';
 import {of} from 'rxjs';
 import {PluginsConfig} from '../models/plugins-config';
+import {AppConfigService} from './app-config.service';
 
 
 @Injectable({
@@ -12,7 +13,8 @@ import {PluginsConfig} from '../models/plugins-config';
 })
 export class PluginsApiService {
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+              private appConfig: AppConfigService) {
   }
 
 
@@ -22,7 +24,7 @@ export class PluginsApiService {
   getInstalledPlugins() {
     // console.log('PluginsApiService.getInstalledPlugins');
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'plugins/installed/';
     return this.http.get(url)
       .pipe(
@@ -45,7 +47,7 @@ export class PluginsApiService {
   getPluginsConfig() {
     // console.log('PluginsApiService.getPluginsConfig');
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'plugins/config/';
     return this.http.get(url)
       .pipe(
@@ -69,7 +71,7 @@ export class PluginsApiService {
   getPluginsInfo() {
     // console.log('PluginsApiService.getPluginsInfo');
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'plugins/info/';
     return this.http.get(url)
       .pipe(
@@ -93,7 +95,7 @@ export class PluginsApiService {
   getPluginsLogicParameters() {
     // console.log('PluginsApiService.getPluginsInfo');
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'plugins/logicparams/';
     return this.http.get(url)
       .pipe(
@@ -117,7 +119,7 @@ export class PluginsApiService {
   getPluginsAPI() {
     // console.log('PluginsApiService.getPluginsApi');
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'plugins/api/';
     return this.http.get(url)
       .pipe(
@@ -141,7 +143,7 @@ export class PluginsApiService {
   setPluginConfig(pluginsection, config) {
     // console.log('PluginsApiService.setPluginConfig');
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     const url = apiUrl + 'plugin/' + pluginsection + '/';
     return this.http.put(url, JSON.stringify(config))
       .pipe(
@@ -178,7 +180,7 @@ export class PluginsApiService {
   addPluginConfig(pluginsection, config) {
     // console.log('PluginsApiService.addPluginConfig');
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     const url = apiUrl + 'plugin/' + pluginsection + '/';
     return this.http.post(url, JSON.stringify(config))
       .pipe(
@@ -217,7 +219,7 @@ export class PluginsApiService {
   deletePluginConfig(pluginsection) {
     // console.log('PluginsApiService.deletePluginConfig\n', {pluginsection});
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     const url = apiUrl + 'plugin/' + pluginsection + '/';
     return this.http.delete(url)
       .pipe(
@@ -257,7 +259,7 @@ export class PluginsApiService {
     action = action.toLowerCase();
     console.warn('PluginsApiService.setPluginState', {pluginConfigName}, {action});
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'plugin/' + pluginConfigName + '?action=' + action;
     if (filename !== '') {
       url += '&filename=' + filename;

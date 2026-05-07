@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChildren, EventEmitter } from '@angular/core';
+import {AppConfigService} from '../../common/services/app-config.service';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -89,7 +90,8 @@ export class SystemComponent implements OnDestroy, OnInit {
               private websocketPluginService: WebsocketPluginService,
               public app: AppComponent,
               public shared: SharedService,
-              private titleService: Title) {
+              private titleService: Title,
+              private appConfig: AppConfigService) {
   }
 
   appName = this.app.APP_NAME;
@@ -202,7 +204,7 @@ export class SystemComponent implements OnDestroy, OnInit {
 
 
     let filepath = '/3rdpartylicenses.txt';
-    const hostip = sessionStorage.getItem('hostIp');
+    const hostip = this.appConfig.hostIp;
     const disclosureText = document.getElementById('disclosuretext');
     filepath = '/admin' + filepath;
     this.http.get(filepath, {responseType: 'text'})

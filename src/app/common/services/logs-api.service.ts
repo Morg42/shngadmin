@@ -6,6 +6,7 @@ import { LogsType } from '../models/logfiles-info';
 import { ServerApiService } from './server-api.service';
 import { map, catchError } from 'rxjs/operators';
 import {of} from 'rxjs';
+import {AppConfigService} from './app-config.service';
 
 
 
@@ -15,11 +16,12 @@ import {of} from 'rxjs';
 export class LogsApiService {
 
   constructor(private http: HttpClient,
-              private dataService: ServerApiService) { }
+              private dataService: ServerApiService,
+              private appConfig: AppConfigService) { }
 
 
   getLogs() {
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'logs/';
     return this.http.get<LogsType>(url)
       .pipe(
@@ -35,7 +37,7 @@ export class LogsApiService {
   }
 
   readLogfile(filename: string, chunk = null) {
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'logs/' + filename;
     let part = 0;
     if (apiUrl === null) {

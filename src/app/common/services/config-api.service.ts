@@ -5,6 +5,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { map, catchError } from 'rxjs/operators';
 import {of} from 'rxjs';
 import {JwtHelperService} from '@auth0/angular-jwt';
+import {AppConfigService} from './app-config.service';
 
 
 
@@ -13,13 +14,14 @@ import {JwtHelperService} from '@auth0/angular-jwt';
 })
 export class ConfigApiService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+              private appConfig: AppConfigService) { }
 
 
   getConfig() {
     // console.log('ConfigApiService.getConfig');
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'config/';
     return this.http.get(url)
       .pipe(
@@ -37,7 +39,7 @@ export class ConfigApiService {
   saveConfig(data) {
     // console.log('ConfigApiService.saveConfig');
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     const url = apiUrl + 'config/core/';
     return this.http.put(url, JSON.stringify(data))
       .pipe(map(response => {

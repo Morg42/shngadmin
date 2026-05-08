@@ -1,4 +1,5 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, DestroyRef, inject} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Title} from '@angular/platform-browser';
 import {HttpClient} from '@angular/common/http';
 
@@ -22,6 +23,8 @@ export function HttpLoaderFactory(http: HttpClient) {
 })
 
 export class AppComponent implements OnInit {
+
+  private readonly destroyRef = inject(DestroyRef);
 
   public APP_NAME = 'shngAdmin';
   public APP_VERSION = '0.9.18';
@@ -47,6 +50,7 @@ export class AppComponent implements OnInit {
     console.log('AppComponent.constructor getServerBasicInfo:');
     //    this.dataService.getServerBasicinfo()
     this.dataService.getServerBasicinfo()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response: ServerInfo) => {
           this.dataService.shng_serverinfo = response;

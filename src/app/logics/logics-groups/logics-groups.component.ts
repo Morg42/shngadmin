@@ -1,4 +1,5 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, DestroyRef, inject} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {TranslateService} from '@ngx-translate/core';
 import {ServerApiService} from '../../common/services/server-api.service';
 import {FilesApiService} from '../../common/services/files-api.service';
@@ -14,6 +15,8 @@ import {LogicsGroupType} from '../../common/models/logics-info';
   styleUrls: ['./logics-groups.component.css']
 })
 export class LogicsGroupsComponent implements OnInit {
+
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor(private translate: TranslateService,
               private dataServiceServer: ServerApiService,
@@ -64,6 +67,7 @@ export class LogicsGroupsComponent implements OnInit {
           }
 
     this.dataService.getGroupsInfo()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.logicGroups = <any>response['groups'];
@@ -121,7 +125,7 @@ export class LogicsGroupsComponent implements OnInit {
     // delete on backend server
 
     this.dataService.deleteLogicGroup(this.myEditGroup)
-
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response: any) => {
           if (response) {
@@ -206,6 +210,7 @@ export class LogicsGroupsComponent implements OnInit {
     const newGroup = {'title': '', 'description': ''};
 
     this.dataService.saveLogicGroup(this.myEditGroup, newGroup)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.groupTitleOrig = this.group['title'];
@@ -290,6 +295,7 @@ export class LogicsGroupsComponent implements OnInit {
     this.group['description'] = desc.trim();
 
     this.dataService.saveLogicGroup(this.myEditGroup, this.group)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.groupTitleOrig = this.group['title'];

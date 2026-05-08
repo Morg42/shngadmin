@@ -1,5 +1,6 @@
 
-import {Component, OnInit, AfterViewChecked, ViewChild} from '@angular/core';
+import {Component, OnInit, AfterViewChecked, ViewChild, DestroyRef, inject} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 import { TranslateService } from '@ngx-translate/core';
 import {SelectItem} from 'primeng/api';
@@ -17,6 +18,8 @@ import {ServerApiService} from '../../common/services/server-api.service';
   styleUrls: ['./item-configuration.component.css']
 })
 export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
+
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor(private translate: TranslateService,
               private dataServiceServer: ServerApiService,
@@ -108,10 +111,12 @@ export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
     this.itemFiles = [];
 
     this.dataServiceServer.getServerinfo()
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(
             (response) => {
               this.setTitle(this.translate.instant('MENU.ITEM_CONFIGURATION'));
               this.fileService.getfileList('items')
+                  .pipe(takeUntilDestroyed(this.destroyRef))
                   .subscribe(
                       (response) => {
                         this.filelist = <string[]> response;
@@ -169,6 +174,7 @@ export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
 
     // delete on backend server
     this.fileService.deleteFile('items', this.myEditFilename)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response: any) => {
           if (response) {
@@ -213,12 +219,14 @@ export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
     this.cmOptions.readOnly = false;
 
     this.fileService.saveFile('items', this.myEditFilename, this.myTextarea)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response2) => {
           this.myTextareaOrig = this.myTextarea;
 
           this.itemFiles = [];
           this.fileService.getfileList('items')
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(
               (response) => {
                 this.filelist = <string[]> response;
@@ -257,6 +265,7 @@ export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
     }
 
     this.fileService.readFile('items', filename)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.myTextarea = response;
@@ -276,6 +285,7 @@ export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
     // console.log('LoggingConfigurationComponent.saveConfig');
 
     this.dataService.CheckYamlText(this.myTextarea)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.myTextOutput = <any> response;
@@ -283,6 +293,7 @@ export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
             this.error_display = true;
           } else {
             this.fileService.saveFile('items', this.myEditFilename, this.myTextarea)
+              .pipe(takeUntilDestroyed(this.destroyRef))
               .subscribe(
                 (response2) => {
                   this.myTextareaOrig = this.myTextarea;

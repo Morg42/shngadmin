@@ -1,5 +1,6 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 
 import { TranslateService } from '@ngx-translate/core';
@@ -31,6 +32,8 @@ export class ScenesComponent implements OnInit {
   systeminfo: SystemInfo = <SystemInfo>{};
 
 
+  private readonly destroyRef = inject(DestroyRef);
+
   constructor(private http: HttpClient,
               private dataServiceServer: ServerApiService,
               private translate: TranslateService,
@@ -47,11 +50,13 @@ export class ScenesComponent implements OnInit {
     console.log('ScenesComponent.ngOnInit');
 
       this.dataServiceServer.getServerinfo()
+          .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe(
               (response) => {
                   this.setTitle(this.translate.instant('MENU.SCENE_LIST'));
 
                   this.dataService.getScenes()
+                      .pipe(takeUntilDestroyed(this.destroyRef))
                       .subscribe(
                           (response2) => {
                               this.sceneList = <SceneInfo[]>response2;

@@ -1,5 +1,6 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 import { ThreadInfo } from '../../common/models/thread-info';
 import {ThreadsApiService} from '../../common/services/threads-api.service';
@@ -17,6 +18,8 @@ import {Title} from '@angular/platform-browser';
 
 
 export class ThreadsComponent implements OnInit {
+
+  private readonly destroyRef = inject(DestroyRef);
 
   threadsList: ThreadInfo[];
   threads_count: number;
@@ -36,11 +39,13 @@ export class ThreadsComponent implements OnInit {
     // console.log('ThreadsComponent.ngOnInit');
 
       this.dataServiceServer.getServerinfo()
+          .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe(
               (response) => {
                   this.setTitle(this.translate.instant('MENU.THREADS'));
 
                   this.dataService.getThreads()
+                      .pipe(takeUntilDestroyed(this.destroyRef))
                       .subscribe(
                           (response2) => {
                               this.threadsList = response2[1];

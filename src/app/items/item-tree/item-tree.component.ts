@@ -1,5 +1,5 @@
 
-import {Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectorRef, ViewChild, ViewRef, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectorRef, ViewChild, ViewRef, TemplateRef, ViewContainerRef, DestroyRef, inject} from '@angular/core';
 import {AppConfigService} from '../../common/services/app-config.service';
 import { HttpClient } from '@angular/common/http';
 
@@ -27,6 +27,7 @@ import {ServerApiService} from '../../common/services/server-api.service';
 
 import {Title} from '@angular/platform-browser';
 import {Subscription} from 'rxjs';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 
 @Component({
@@ -78,6 +79,8 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   previous_change_age = '';
 
   data: any;
+
+  private readonly destroyRef = inject(DestroyRef);
 
   monitoredItemsUpdateSubscription: Subscription = null;
 
@@ -131,6 +134,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     console.log('ItemTreeComponent.ngOnInit:');
 
     this.dataServiceServer.getServerinfo()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.setTitle(this.translate.instant('ITEMS.ITEMS'));
@@ -182,6 +186,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
 
   getItemtree() {
     this.dataService.getItemtree()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response: [number, ItemTree]) => {
 //          console.log('ItemsComponent: dataService.getItemtree()');
@@ -346,7 +351,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   getMonitoredValues() {
     console.log('getMonitoredValues()');
     this.monitoredItemsUpdateSubscription?.unsubscribe();
-    this.monitoredItemsUpdateSubscription = this.websocketPluginService.monitoredItemsUpdate$.subscribe(() => {
+    this.monitoredItemsUpdateSubscription = this.websocketPluginService.monitoredItemsUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       console.error('monitoredItemsUpdate$');
       // this.updateChartData(this.chartSystemload, this.chartdataLoad, this.websocketPluginService.monitor.items);
       console.log(this.websocketPluginService.monitor.items);
@@ -358,6 +363,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     console.warn('- this', this);
     if ((path !== undefined)) {
       this.dataService.getItemDetails(path)
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(
           (response: ItemDetails[]) => {
             const details = response[0];

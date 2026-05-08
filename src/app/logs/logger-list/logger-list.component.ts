@@ -1,5 +1,6 @@
 
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, OnInit, ViewEncapsulation, DestroyRef, inject} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Router} from '@angular/router';
 
 import { LoggersType } from '../../common/models/loggers-info';
@@ -15,6 +16,8 @@ import {ServerApiService} from '../../common/services/server-api.service';
   encapsulation: ViewEncapsulation.None
 })
 export class LoggerListComponent implements OnInit {
+
+  private readonly destroyRef = inject(DestroyRef);
 
   loggers: LoggersType;
   active_plugins: any[];
@@ -50,11 +53,13 @@ export class LoggerListComponent implements OnInit {
     console.log('LoggerListComponent.ngOnInit');
 
     this.dataServiceServer.getServerinfo()
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(
             (response) => {
               this.setTitle(this.translate.instant('MENU.LOGGER_CONFIGURATION'));
 
               this.dataService.getLoggers()
+                  .pipe(takeUntilDestroyed(this.destroyRef))
                   .subscribe(
                       (response2: LoggersType) => {
                         this.loggers = response2['loggers'];
@@ -88,6 +93,7 @@ export class LoggerListComponent implements OnInit {
     this.loggers[logger].level = this.loggers[logger].active.level;
 
     this.dataService.setLoggerLevel(logger, level)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           const result = response['result'];
@@ -254,6 +260,7 @@ export class LoggerListComponent implements OnInit {
     this.newlogger_display = false;
 
     this.dataService.addLogger(this.newlogger_name)
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(
             (response) => {
               const result = response['result'];
@@ -264,6 +271,7 @@ export class LoggerListComponent implements OnInit {
 
               if (result === 'ok') {
                 this.dataService.getLoggers()
+                    .pipe(takeUntilDestroyed(this.destroyRef))
                     .subscribe(
                         (response2: LoggersType) => {
                           this.loggers = response2['loggers'];
@@ -284,6 +292,7 @@ export class LoggerListComponent implements OnInit {
     // console.log('list: loggerDelete', loggerName);
 
     this.dataService.deleteLogger(loggerName)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           const result = response['result'];
@@ -294,6 +303,7 @@ export class LoggerListComponent implements OnInit {
 
           if (result === 'ok') {
             this.dataService.getLoggers()
+              .pipe(takeUntilDestroyed(this.destroyRef))
               .subscribe(
                 (response2: LoggersType) => {
                   this.loggers = response2['loggers'];
@@ -317,6 +327,7 @@ export class LoggerListComponent implements OnInit {
     console.log('modifyHandlers: Logger \'' + logger + '\' ' + ' to \'' + handlers + '\'');
 
     this.dataService.setHandlers(logger, handlers)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           const result = response['result'];
@@ -327,6 +338,7 @@ export class LoggerListComponent implements OnInit {
 
           if (result === 'ok') {
             this.dataService.getLoggers()
+              .pipe(takeUntilDestroyed(this.destroyRef))
               .subscribe(
                 (response2: LoggersType) => {
                   this.loggers = response2['loggers'];

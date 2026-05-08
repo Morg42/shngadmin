@@ -1,5 +1,6 @@
 
-import {Component, OnInit, AfterViewChecked, ViewChild} from '@angular/core';
+import {Component, OnInit, AfterViewChecked, ViewChild, DestroyRef, inject} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import { BrowserModule, Title } from '@angular/platform-browser';
 
 import { TranslateService } from '@ngx-translate/core';
@@ -17,6 +18,8 @@ import {FunctionsApiService} from '../../common/services/functions-api.service';
   styleUrls: ['./function-configuration.component.css']
 })
 export class FunctionConfigurationComponent implements AfterViewChecked, OnInit {
+
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor(private translate: TranslateService,
               private fileService: FilesApiService,
@@ -110,6 +113,7 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
 
     this.functionFiles = [];
     this.fileService.getfileList('functions')
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.filelist = <string[]> response;
@@ -167,6 +171,7 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
 
     // delete on backend server
     this.fileService.deleteFile('functions', this.myEditFilename)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response: any) => {
           if (response) {
@@ -207,6 +212,7 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
 
     // prefill file with template
     this.fileService.readFile('functions', 'uf.tpl')
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(
             (response) => {
               this.myTextarea = response;
@@ -223,12 +229,14 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
 
               // save new file before editing
               this.fileService.saveFile('functions', this.myEditFilename, this.myTextarea)
+                  .pipe(takeUntilDestroyed(this.destroyRef))
                   .subscribe(
                       (response2) => {
                         this.myTextareaOrig = this.myTextarea;
 
                         this.functionFiles = [];
                         this.fileService.getfileList('functions')
+                            .pipe(takeUntilDestroyed(this.destroyRef))
                             .subscribe(
                                 (response) => {
                                   this.filelist = <string[]> response;
@@ -271,6 +279,7 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
     }
 
     this.fileService.readFile('functions', filename)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.myTextarea = response;
@@ -296,6 +305,7 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
       this.error_display = true;
     } else {
       this.fileService.saveFile('functions', this.myEditFilename, this.myTextarea)
+          .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe(
               (response2) => {
                 this.myTextareaOrig = this.myTextarea;
@@ -317,6 +327,7 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
     console.log('reloadFunctions:', name);
     this.reloadButtonDisabled = true;
     this.functionApiService.reloadFunction(name)
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(
             (response) => {
               console.log('reloadFunction', '\nresponse', {response});
@@ -332,6 +343,7 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
     console.log('reloadFunctions: all');
     this.reloadAllButtonDisabled = true;
     this.functionApiService.reloadFunctions()
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(
             (response) => {
               console.log('reloadFunctions', '\nresponse', {response});

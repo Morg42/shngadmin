@@ -1,6 +1,7 @@
 
 // import { Component, OnInit } from '@angular/core';
-import { Component, ElementRef, ViewChild, OnInit, Renderer2 } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, Renderer2, DestroyRef, inject } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 import { TemplateRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -23,6 +24,8 @@ import {ServerApiService} from '../../common/services/server-api.service';
   providers: [OlddataService]
 })
 export class LogicsListComponent implements OnInit {
+
+  private readonly destroyRef = inject(DestroyRef);
 
   groupdefinitions = {};
   groupList: LogicsGroupType[];
@@ -71,6 +74,7 @@ export class LogicsListComponent implements OnInit {
     this.groupExpanded = this.dataService.groupExpanded;
 
     this.dataServiceServer.getServerinfo()
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(
             (response) => {
               this.setTitle(this.translate.instant('MENU.LOGICS'));
@@ -158,6 +162,7 @@ export class LogicsListComponent implements OnInit {
 
   getLogics() {
     this.dataService.getLogics()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.groupdefinitions = response['groups'];
@@ -202,6 +207,7 @@ export class LogicsListComponent implements OnInit {
   triggerLogic(logicName) {
     // console.log('triggerLogic', {logicName});
     this.dataService.setLogicState(logicName, 'trigger')
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.getLogics();
@@ -213,6 +219,7 @@ export class LogicsListComponent implements OnInit {
   disableLogic(logicName) {
     // console.log('disableLogic', {logicName});
     this.dataService.setLogicState(logicName, 'disable')
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.getLogics();
@@ -224,6 +231,7 @@ export class LogicsListComponent implements OnInit {
   enableLogic(logicName) {
     // console.log('enableLogic', {logicName});
     this.dataService.setLogicState(logicName, 'enable')
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.getLogics();
@@ -235,6 +243,7 @@ export class LogicsListComponent implements OnInit {
   unloadLogic(logicName) {
     // console.log('unloadLogic', {logicName});
     this.dataService.setLogicState(logicName, 'unload')
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.getLogics();
@@ -246,6 +255,7 @@ export class LogicsListComponent implements OnInit {
   reloadLogic(logicName) {
     // console.log('reloadLogic', {logicName});
     this.dataService.setLogicState(logicName, 'reload')
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.getLogics();
@@ -257,6 +267,7 @@ export class LogicsListComponent implements OnInit {
   loadLogic(logicName) {
     // console.log('loadLogic', {logicName});
     this.dataService.setLogicState(logicName, 'load')
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.getLogics();
@@ -335,6 +346,7 @@ export class LogicsListComponent implements OnInit {
     console.warn('createLogic', this.newlogic_name, this.newlogic_filename);
     this.newlogic_display = false;
     this.dataService.setLogicState(this.newlogic_name, 'create', this.newlogic_filename)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.getLogics();
@@ -364,6 +376,7 @@ export class LogicsListComponent implements OnInit {
     }
 
     this.dataService.setLogicState(this.logicToDelete, action)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.getLogics();

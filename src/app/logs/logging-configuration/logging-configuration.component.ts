@@ -1,5 +1,6 @@
 
-import {Component, OnInit, AfterViewChecked, ViewChild} from '@angular/core';
+import {Component, OnInit, AfterViewChecked, ViewChild, DestroyRef, inject} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {FilesApiService} from '../../common/services/files-api.service';
 import {ServerInfo} from '../../common/models/server-info';
 import {ServicesApiService} from '../../common/services/services-api.service';
@@ -14,6 +15,8 @@ import {Title} from '@angular/platform-browser';
   styleUrls: ['./logging-configuration.component.css']
 })
 export class LoggingConfigurationComponent implements AfterViewChecked, OnInit {
+
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor(private fileService: FilesApiService,
               private dataService: ServicesApiService,
@@ -91,11 +94,13 @@ export class LoggingConfigurationComponent implements AfterViewChecked, OnInit {
     }
 
     this.dataServiceServer.getServerinfo()
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(
             (response) => {
               this.setTitle(this.translate.instant('MENU.LOGGING_CONFIGURATION'));
 
               this.fileService.readFile('logging')
+                  .pipe(takeUntilDestroyed(this.destroyRef))
                   .subscribe(
                       (response2) => {
                         this.myTextarea = response2;
@@ -125,6 +130,7 @@ export class LoggingConfigurationComponent implements AfterViewChecked, OnInit {
     // console.log('LoggingConfigurationComponent.saveConfig');
 
     this.dataService.CheckYamlText(this.myTextarea)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.myTextOutput = <any> response;
@@ -132,6 +138,7 @@ export class LoggingConfigurationComponent implements AfterViewChecked, OnInit {
             this.error_display = true;
           } else {
             this.fileService.saveFile('logging', '', this.myTextarea)
+              .pipe(takeUntilDestroyed(this.destroyRef))
               .subscribe(
                 (response2) => {
                   this.myTextareaOrig = this.myTextarea;

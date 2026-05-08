@@ -1,5 +1,6 @@
 
-import {AfterViewChecked, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewChecked, Component, OnInit, ViewChild, DestroyRef, inject} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {ActivatedRoute} from '@angular/router';
 import {FilesApiService} from '../../common/services/files-api.service';
 import * as CodeMirror from 'codemirror';
@@ -21,6 +22,8 @@ import {ServerApiService} from '../../common/services/server-api.service';
 })
 
 export class LogicsEditComponent implements AfterViewChecked, OnInit {
+
+  private readonly destroyRef = inject(DestroyRef);
 
   logics: LogicsinfoType[];
   newlogics: LogicsinfoType[];
@@ -161,11 +164,13 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
     this.getLogicInfo(this.myLogicName);
 
     this.dataServiceServer.getServerinfo()
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(
             (response) => {
               this.setTitle(this.translate.instant('LOGICS.LOGIC') + ' ' + this.myLogicName);
 
               this.pluginsapiService.getPluginsAPI()
+                  .pipe(takeUntilDestroyed(this.destroyRef))
                   .subscribe(
                       (response2) => {
                         const result = <any>response2;
@@ -179,6 +184,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
 
 
     this.itemsapiService.getItemList()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           const result = <any>response;
@@ -217,6 +223,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
     ];
 
     this.pluginsapiService.getPluginsLogicParameters()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.pluginParameters = <any>response;
@@ -353,6 +360,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   getLogicInfo(logicname) {
     // console.warn({logicname});
     this.dataService.getLogic(logicname)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.logic = <any>response;
@@ -389,6 +397,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
           }
 
           this.fileService.readFile('logics', this.myEditFilename)
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(
               (responseFile) => {
                 this.myTextarea = responseFile;
@@ -424,6 +433,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
 
         console.warn('getLogicInfo *3', this.logic);
         this.dataService.getLogicState(logicname)
+          .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe(
             (response) => {
               if (response['watch_item'] !== undefined) {
@@ -666,6 +676,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   saveCode(reload = false) {
     // console.log('LoggingConfigurationComponent.saveCode');
     this.fileService.saveFile('logics', this.myEditFilename, this.myTextarea)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           // after saving the code, set Orig var to signal the editor shows "unchanged code"
@@ -728,6 +739,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
     }
 
     this.dataService.saveLogicParameters(this.myLogicName, params)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           // after saving the parameters, set Orig vars to signal the editor shows "unchanged values"
@@ -770,6 +782,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   triggerLogic() {
     // console.log('triggerLogic', {logicName});
     this.dataService.setLogicState(this.logic.name, 'trigger')
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           // this.getLogics();
@@ -785,6 +798,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
       logicName = this.myLogicName;
     }
     this.dataService.setLogicState(logicName, 'reload')
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           // console.warn('reloadLogic: setLogicState response', response);
@@ -803,6 +817,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
       logicName = this.myLogicName;
     }
     this.dataService.setLogicState(logicName, 'load')
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           // console.warn('loadLogic: setLogicState response', response);
@@ -816,6 +831,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   disableLogic(logicName) {
     // console.log('disableLogic', {logicName});
     this.dataService.setLogicState(logicName, 'disable')
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           // this.getLogics();
@@ -828,6 +844,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   enableLogic(logicName) {
     // console.log('enableLogic', {logicName});
     this.dataService.setLogicState(logicName, 'enable')
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           // this.getLogics();

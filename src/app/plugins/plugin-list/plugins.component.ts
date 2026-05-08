@@ -1,5 +1,6 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AppConfigService} from '../../common/services/app-config.service';
 import { TemplateRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -24,6 +25,8 @@ import {Title} from '@angular/platform-browser';
   providers: [OlddataService]
 })
 export class PluginsComponent implements OnInit {
+
+  private readonly destroyRef = inject(DestroyRef);
 
   faPlayCircle = faPlayCircle;
   faPauseCircle = faPauseCircle;
@@ -51,6 +54,7 @@ export class PluginsComponent implements OnInit {
     console.log('PluginsComponent.ngOnInit');
 
     this.dataServiceServer.getServerinfo()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.setTitle(this.translate.instant('MENU.PLUGINS_LIST'));
@@ -81,6 +85,7 @@ export class PluginsComponent implements OnInit {
 
   getPlugins() {
     this.pluginsDataService.getPluginsInfo()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.plugininfo = <any>response;
@@ -121,6 +126,7 @@ export class PluginsComponent implements OnInit {
     // console.log('stopPlugin', {pluginConfigName});
 
     this.pluginsDataService.setPluginState(pluginConfigName, 'stop')
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.getPlugins();
@@ -133,6 +139,7 @@ export class PluginsComponent implements OnInit {
     // console.log('startPlugin', {pluginConfigName});
 
     this.pluginsDataService.setPluginState(pluginConfigName, 'start')
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.getPlugins();
@@ -145,6 +152,7 @@ export class PluginsComponent implements OnInit {
     // console.log('reloadPlugin', {pluginConfigName});
 
     this.pluginsDataService.setPluginState(pluginConfigName, 'reload')
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.getPlugins();

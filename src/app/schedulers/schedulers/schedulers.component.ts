@@ -1,5 +1,6 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AppConfigService} from '../../common/services/app-config.service';
 import { HttpClient } from '@angular/common/http';
 
@@ -21,6 +22,8 @@ import {Title} from '@angular/platform-browser';
 
 export class SchedulersComponent implements OnInit {
 
+  private readonly destroyRef = inject(DestroyRef);
+
   schedulerinfo: SchedulerInfo[];
   developerMode: boolean;
 
@@ -41,11 +44,13 @@ export class SchedulersComponent implements OnInit {
     console.log('SchedulersComponent.ngOnInit');
 
       this.dataServiceServer.getServerinfo()
+          .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe(
               (response) => {
                   this.setTitle(this.translate.instant('MENU.SCHEDULERS'));
 
                   this.dataService.getSchedulers()
+                      .pipe(takeUntilDestroyed(this.destroyRef))
                       .subscribe(
                           (response2) => {
                               this.schedulerinfo = <SchedulerInfo[]>response2;

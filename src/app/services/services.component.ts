@@ -1,5 +1,6 @@
 
-import { Component, AfterViewChecked, OnInit, ViewEncapsulation, ViewChild } from '@angular/core';
+import { Component, AfterViewChecked, OnInit, ViewEncapsulation, ViewChild, DestroyRef, inject } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AppConfigService} from '../common/services/app-config.service';
 import { BrowserModule, Title } from '@angular/platform-browser';
 // import { Title } from '@angular/platform-browser';
@@ -38,6 +39,8 @@ export interface CacheEntryType {
 
 
 export class ServicesComponent implements AfterViewChecked, OnInit {
+
+  private readonly destroyRef = inject(DestroyRef);
 
 //  schedulerinfo: SchedulerInfo[];
 
@@ -224,6 +227,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     }
 
     this.dataServiceServer.getServerinfo()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.shng_status = '?';
@@ -256,6 +260,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
   loadCacheOrphans() {
 
     this.dataService.getCacheOrphans()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.cacheInfo = <CacheEntryType[]> response;
@@ -269,6 +274,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
   deleteCacheEntry(entryNr) {
     // console.log('deleteCacheEntry', this.cacheInfo[entryNr].filename);
     this.dataService.deleteCacheFile(this.cacheInfo[entryNr].filename)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         () => {
           this.loadCacheOrphans();
@@ -286,6 +292,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     }
 
     this.dataService.deleteCacheFile(JSON.stringify(filelist))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         () => {
           this.loadCacheOrphans();
@@ -334,6 +341,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     // this.myTextoutput = this.myTextarea;
 
     this.dataService.CheckYamlText(this.myTextarea)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.myTextOutput = <any> response;
@@ -353,6 +361,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
   checkEval() {
     const evalData = {'expression': this.myEvalTextarea, 'relative_to': this.myRelativeTo};
     this.dataService.CheckEvalData(evalData)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           const myResponse = <any> response;
@@ -373,6 +382,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     // this.myTextoutput = this.myTextarea;
 
     this.dataService.ConvertToYamlText(this.myConverterTextarea)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.myConverterTextOutput = <any> response;
@@ -417,6 +427,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     const interval2 = 1000;    // polling while (re)starting: every second
     const interval3 = 3000;    // polling while in error state (shng not running)
     this.dataServiceServer.getShngServerStatus()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           const res = <any> response;
@@ -469,6 +480,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
   //
   restartShng() {
     this.dataServiceServer.restartShngServer()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           const res = <any> response;
@@ -499,6 +511,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     filename += 'shng_config_backup_' + today + '.zip';
 
     this.dataServiceServer.downloadConfigBackup()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           const res = <any> response;
@@ -563,6 +576,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
       filecontent = reader.result;
 
       this.fileService.saveFile('restore', event.files[0].name, filecontent)
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(
           () => {
             this.ngOnInit();

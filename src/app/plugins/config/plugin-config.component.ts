@@ -1,5 +1,6 @@
 
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, DestroyRef, inject } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AppConfigService} from '../../common/services/app-config.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
@@ -36,6 +37,8 @@ export interface ConfiguredPlugin { confname: string; instance: string; plugin: 
   providers: [AppComponent]
 })
 export class PluginConfigComponent implements OnInit {
+
+  private readonly destroyRef = inject(DestroyRef);
 
   faPlus = faPlus;
   faPlusCircle = faPlusCircle;
@@ -113,6 +116,7 @@ ngOnInit() {
     // console.log('PluginConfigComponent.ngOnInit');
 
     this.serverdataService.getServerinfo()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (serverdataResponse) => {
 
@@ -122,6 +126,7 @@ ngOnInit() {
           this.spinner_header = this.translate.instant('PLUGIN.LOADCONFIG');
           this.spinner_display = true;
           this.pluginsdataService.getPluginsConfig()
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(
               (response) => {
                 this.pluginconflist = <any>response;
@@ -559,6 +564,7 @@ ngOnInit() {
 
       // transfer to backend server
       this.pluginsdataService.setPluginConfig(this.dialog_configname, {'config': config})
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(
             (response: any) => {
               if (response.result !== 'ok') {
@@ -572,6 +578,7 @@ ngOnInit() {
 
   restartShng() {
     this.serverdataService.restartShngServer()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           const res = <any> response;
@@ -597,6 +604,7 @@ ngOnInit() {
     this.spinner_header = this.translate.instant('PLUGIN.LOADLIST');
     this.spinner_display = true;
     this.pluginsdataService.getInstalledPlugins()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.plugins_installed = <PluginsInstalled>response;
@@ -672,6 +680,7 @@ ngOnInit() {
 
       // transfer to backend server
       this.pluginsdataService.addPluginConfig(this.pluginconfig_name, {'config': config})
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(
           (response: any) => {
             if (response) {
@@ -707,6 +716,7 @@ ngOnInit() {
 
     // delete on backend server
     this.pluginsdataService.deletePluginConfig(this.dialog_configname)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response: any) => {
           if (response) {

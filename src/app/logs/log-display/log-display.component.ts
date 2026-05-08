@@ -1,5 +1,6 @@
 
-import {AfterViewChecked, Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import {AfterViewChecked, Component, OnInit, ViewChild, ViewEncapsulation, DestroyRef, inject} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {ActivatedRoute, convertToParamMap} from '@angular/router';
 
 import { LogsType, LogsInfoDict } from '../../common/models/logfiles-info';
@@ -23,6 +24,8 @@ interface DropDownEntry {
   encapsulation: ViewEncapsulation.None
 })
 export class LogDisplayComponent implements AfterViewChecked, OnInit {
+
+  private readonly destroyRef = inject(DestroyRef);
 
   @ViewChild('codeeditor', { static: true }) private codeEditor;
 
@@ -116,11 +119,13 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
     this.loglevels.push({label: 'CRITICAL', value: ' CRITICAL '});
 
     this.dataServiceServer.getServerinfo()
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(
             (response) => {
               this.setTitle(this.translate.instant('MENU.LOGS_DISPLAY'));
 
               this.dataService.getLogs()
+                  .pipe(takeUntilDestroyed(this.destroyRef))
                   .subscribe(
                       (response2: LogsType) => {
                         this.logs_info = response2['logs'];
@@ -267,6 +272,7 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
       this.displayLogfile = String(this.selectedFile);
 
       this.dataService.readLogfile(this.displayLogfile, chunk)
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(
           (response: string) => {
             // console.log({response});

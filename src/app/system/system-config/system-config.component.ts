@@ -1,6 +1,7 @@
 
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AppConfigService} from '../../common/services/app-config.service';
 
 import { TranslateService } from '@ngx-translate/core';
@@ -22,6 +23,8 @@ import {Title} from '@angular/platform-browser';
 })
 
 export class SystemConfigComponent implements OnInit {
+
+  private readonly destroyRef = inject(DestroyRef);
 
   config: any;
   lang: string;
@@ -90,11 +93,13 @@ export class SystemConfigComponent implements OnInit {
     // console.log('SystemConfigComponent.ngOnInit');
 
     this.dataServiceServer.getServerinfo()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.setTitle(this.translate.instant('MENU.SYSTEM_CONFIGURATION'));
 
           this.dataService.getConfig()
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(
               (configResponse) => {
                 this.config = configResponse;
@@ -666,6 +671,7 @@ export class SystemConfigComponent implements OnInit {
 
 
     this.dataService.saveConfig(data)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((result: boolean) => {
         if (result) {
           console.log('saveSettings', 'success');
@@ -689,6 +695,7 @@ export class SystemConfigComponent implements OnInit {
 
   restartShng() {
     this.dataServiceServer.restartShngServer()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           const res = <any> response;

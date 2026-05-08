@@ -1,10 +1,10 @@
-import { Component, OnInit, OnDestroy, ViewChildren, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChildren, EventEmitter, DestroyRef, inject } from '@angular/core';
 import {AppConfigService} from '../../common/services/app-config.service';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Subscription } from 'rxjs';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 import { TranslateService } from '@ngx-translate/core';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
@@ -30,6 +30,8 @@ import {AppComponent} from '../../app.component';
   providers: [ WebsocketService, WebsocketPluginService ]
 })
 export class SystemComponent implements OnDestroy, OnInit {
+
+  private readonly destroyRef = inject(DestroyRef);
 
   faCheckCircle = faCheckCircle;
 
@@ -72,17 +74,6 @@ export class SystemComponent implements OnDestroy, OnInit {
   loadData: any;
   varChartSystemload: any;
 
-  systemloadUpdateSubscription: Subscription | null = null;
-  systemmemoryUpdateSubscription: Subscription | null = null;
-  systemswapUpdateSubscription: Subscription | null = null;
-  memoryUpdateSubscription: Subscription | null = null;
-  threadsUpdateSubscription: Subscription | null = null;
-  workerThreadsUpdateSubscription: Subscription | null = null;
-  idleWorkerThreadsUpdateSubscription: Subscription | null = null;
-  activeWorkerThreadsUpdateSubscription: Subscription | null = null;
-  diskUpdateSubscription: Subscription | null = null;
-
-
   constructor(private http: HttpClient,
               private dataService: OlddataService,
               private dataServiceServer: ServerApiService,
@@ -107,6 +98,7 @@ export class SystemComponent implements OnDestroy, OnInit {
     // this.setTitle(this.translate.instant('System Eigenschaften'));
 
     this.dataServiceServer!.getServerinfo()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.setTitle(this.translate.instant('MENU.SYSTEM_PROPERTIES'));
@@ -127,6 +119,7 @@ export class SystemComponent implements OnDestroy, OnInit {
     // Initialize system info (from OlddataService)
     //
     this.dataService.getSysteminfo()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response: SystemInfo) => {
           this.systeminfo = response;
@@ -146,6 +139,7 @@ export class SystemComponent implements OnDestroy, OnInit {
     // Initialize Pypi info
     //
     this.dataService.getPypiinfo()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response: PypiInfo[]) => {
           this.pypiinfo = response;
@@ -208,6 +202,7 @@ export class SystemComponent implements OnDestroy, OnInit {
     const disclosureText = document.getElementById('disclosuretext');
     filepath = '/admin' + filepath;
     this.http.get(filepath, {responseType: 'text'})
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         response => {
           const message = response.toString();
@@ -489,29 +484,29 @@ export class SystemComponent implements OnDestroy, OnInit {
 
   drawCharts() {
     console.log('DrawCharts()');
-    this.systemloadUpdateSubscription = this.websocketPluginService.systemloadUpdate$.subscribe(() => {
+    this.websocketPluginService.systemloadUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       // console.error('systemloadUpdate$');
       this.updateChartData(this.chartSystemload, this.chartdataLoad, this.websocketPluginService.systemload.series);
     });
-    this.systemmemoryUpdateSubscription = this.websocketPluginService.systemmemoryUpdate$.subscribe(() => {
+    this.websocketPluginService.systemmemoryUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
 //      console.error('systemmemoryUpdate$');
       this.updateChartData(this.chartSystemMemory, this.chartdataSystemMemory, this.websocketPluginService.systemmemory.series);
     });
-    this.systemswapUpdateSubscription = this.websocketPluginService.systemswapUpdate$.subscribe(() => {
+    this.websocketPluginService.systemswapUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
 //      console.error('systemswapUpdate$');
       this.updateChartData(this.chartSwap, this.chartdataSwap, this.websocketPluginService.systemswap.series);
     });
-    this.memoryUpdateSubscription = this.websocketPluginService.memoryUpdate$.subscribe(() => {
+    this.websocketPluginService.memoryUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
 //      console.error('memoryUpdate$');
       this.updateChartData(this.chartMemory, this.chartdataMemory, this.websocketPluginService.memory.series);
     });
-    this.threadsUpdateSubscription = this.websocketPluginService.threadsUpdate$.subscribe(() => {
+    this.websocketPluginService.threadsUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
 //      console.error('threadsUpdate$');
       this.updateChartData(this.chartThreads, this.chartdataThreads, this.websocketPluginService.threads.series);
     });
-    this.workerThreadsUpdateSubscription = this.websocketPluginService.workerThreadsUpdate$.subscribe(() => {
+    this.websocketPluginService.workerThreadsUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
 //      console.error('workerThreadsUpdate$');
-        this.idleWorkerThreadsUpdateSubscription = this.websocketPluginService.idleWorkerThreadsUpdate$.subscribe(() => {
+        this.websocketPluginService.idleWorkerThreadsUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
     //      console.error('idleWorkerThreadsUpdate$');
           this.websocketPluginService.activeWorkerThreads.series = [];
           this.websocketPluginService.activeWorkerThreads.tsdiff = this.websocketPluginService.idleWorkerThreads.tsdiff ;
@@ -523,7 +518,7 @@ export class SystemComponent implements OnDestroy, OnInit {
 
         });
     });
-    this.diskUpdateSubscription = this.websocketPluginService.diskUpdate$.subscribe(() => {
+    this.websocketPluginService.diskUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
 //      console.error('diskUpdate$');
       this.updateChartData(this.chartDisk, this.chartdataDisk, this.websocketPluginService.disk.series);
     });

@@ -1,5 +1,6 @@
 
-import {Component, OnInit, DoCheck, SimpleChanges, HostListener} from '@angular/core';
+import {Component, OnInit, DoCheck, SimpleChanges, HostListener, DestroyRef, inject} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AppConfigService} from '../common/services/app-config.service';
 import {TranslateService} from '@ngx-translate/core';
 import {AppComponent} from '../app.component';
@@ -28,6 +29,8 @@ interface MenuItem {
 
 
 export class TopNavigationComponent implements OnInit {
+
+  private readonly destroyRef = inject(DestroyRef);
 
   labels: string[] = [];
   menu: MenuItem[] = [];
@@ -67,6 +70,7 @@ export class TopNavigationComponent implements OnInit {
     console.log('TopNavigationComponent.ngOnInit() entered');
 
     this.dataServiceServer!.getServerinfo()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.developerMode = (this.appConfig.developerMode);
@@ -89,6 +93,7 @@ export class TopNavigationComponent implements OnInit {
           const credentials = {'username': '', 'password': ''};
           console.log('signIn', {credentials});
           this.authService.login(credentials)
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((result: boolean) => {
               console.log('Anonymous login:', {result});
               this.buildMenu();

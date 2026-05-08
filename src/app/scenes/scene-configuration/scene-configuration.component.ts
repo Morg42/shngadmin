@@ -1,5 +1,6 @@
 
-import {Component, OnInit, AfterViewChecked, ViewChild} from '@angular/core';
+import {Component, OnInit, AfterViewChecked, ViewChild, DestroyRef, inject} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 import { TranslateService } from '@ngx-translate/core';
 import {SelectItem} from 'primeng/api';
@@ -19,6 +20,8 @@ import {ServerApiService} from '../../common/services/server-api.service';
   styleUrls: ['./scene-configuration.component.css']
 })
 export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
+
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor(private translate: TranslateService,
               private dataServiceServer: ServerApiService,
@@ -111,11 +114,13 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
     this.sceneFiles = [];
 
     this.dataServiceServer.getServerinfo()
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(
             (response) => {
               this.setTitle(this.translate.instant('MENU.SCENE_CONFIGURATION'));
 
               this.fileService.getfileList('scenes')
+                  .pipe(takeUntilDestroyed(this.destroyRef))
                   .subscribe(
                       (response) => {
                         this.filelist = <string[]> response;
@@ -179,6 +184,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
 
     // delete on backend server
     this.fileService.deleteFile('scenes', this.myEditFilename)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response: any) => {
           if (response) {
@@ -223,12 +229,14 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
     this.cmOptions.readOnly = false;
 
     this.fileService.saveFile('scenes', this.myEditFilename, this.myTextarea)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response2) => {
           this.myTextareaOrig = this.myTextarea;
 
           this.sceneFiles = [];
           this.fileService.getfileList('scenes')
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(
               (response) => {
                 this.filelist = <string[]> response;
@@ -267,6 +275,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
     }
 
     this.fileService.readFile('scenes', filename)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.myTextarea = response;
@@ -286,6 +295,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
     // console.log('SceneConfigurationComponent.saveConfig');
 
     this.dataService.CheckYamlText(this.myTextarea)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.myTextOutput = <any> response;
@@ -293,6 +303,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
             this.error_display = true;
           } else {
             this.fileService.saveFile('scenes', this.myEditFilename, this.myTextarea)
+              .pipe(takeUntilDestroyed(this.destroyRef))
               .subscribe(
                 (response2) => {
                   this.myTextareaOrig = this.myTextarea;
@@ -314,6 +325,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
     // console.log('reloadPlugin', {pluginConfigName});
 
     this.sceneApiService.reloadScene(name)
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(
             (response) => {
               console.log('reloadScene', '\nresponse', {response});
@@ -327,6 +339,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
 
     this.reloadScenesButtonDisabled = true;
     this.sceneApiService.reloadScenes()
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(
             (response) => {
               console.log('reloadScenes', '\nresponse', {response});

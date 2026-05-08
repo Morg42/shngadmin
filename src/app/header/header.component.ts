@@ -1,5 +1,6 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AppConfigService} from '../common/services/app-config.service';
 // import { isSuccess } from '@angular/http/src/http_utils';
 
@@ -22,6 +23,8 @@ import { Router } from '@angular/router';
 
 
 export class HeaderComponent implements OnInit {
+
+  private readonly destroyRef = inject(DestroyRef);
 
 //  faCircleNotch = faCircleNotch;
 
@@ -48,6 +51,7 @@ export class HeaderComponent implements OnInit {
     // console.log('HeaderComponent.ngOnInit');
 
     this.dataServiceServer.getServerinfo()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.developerMode = (this.appConfig.developerMode);
@@ -56,6 +60,7 @@ export class HeaderComponent implements OnInit {
           const credentials = {'username': '', 'password': ''};
           // console.log('signIn', {credentials});
           this.authService.login(credentials)
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((result: boolean) => {
               // console.log('Anonymous login:', {result});
 

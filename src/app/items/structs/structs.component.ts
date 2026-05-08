@@ -1,5 +1,6 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 
 import { ServerInfo } from '../../common/models/server-info';
@@ -43,6 +44,8 @@ export class StructsComponent implements OnInit {
   // systeminfo: SystemInfo = <SystemInfo>{};
 
 
+  private readonly destroyRef = inject(DestroyRef);
+
   constructor(private http: HttpClient,
               private dataServiceServer: ServerApiService,
               private translate: TranslateService,
@@ -69,6 +72,7 @@ export class StructsComponent implements OnInit {
     this.globalStructsID = 'Individual';
 
     this.dataServiceServer.getServerinfo()
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(
             (response) => {
               this.serverInfo = <ServerInfo> response;
@@ -81,6 +85,7 @@ export class StructsComponent implements OnInit {
 
   getStructsData() {
     this.dataService.getStructs()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.structsDict = <any>response;

@@ -1,5 +1,6 @@
 
-import { Component, OnInit, AfterViewChecked, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewChecked, ViewChild, DestroyRef, inject } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 import {FilesApiService} from '../../common/services/files-api.service';
 import {ServicesApiService} from '../../common/services/services-api.service';
@@ -12,6 +13,8 @@ import {TranslateService} from '@ngx-translate/core';
   styleUrls: ['./struct-configuration.component.css']
 })
 export class StructConfigurationComponent implements AfterViewChecked, OnInit {
+
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor(private fileService: FilesApiService,
               private dataService: ServicesApiService,
@@ -95,6 +98,7 @@ export class StructConfigurationComponent implements AfterViewChecked, OnInit {
     }
 
     this.fileService.readFile('structs')
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.myTextarea = response;
@@ -123,6 +127,7 @@ export class StructConfigurationComponent implements AfterViewChecked, OnInit {
     // console.log('LoggingConfigurationComponent.saveConfig');
 
     this.dataService.CheckYamlText(this.myTextarea)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
           this.myTextOutput = <any> response;
@@ -130,6 +135,7 @@ export class StructConfigurationComponent implements AfterViewChecked, OnInit {
             this.error_display = true;
           } else {
             this.fileService.saveFile('structs', '', this.myTextarea)
+              .pipe(takeUntilDestroyed(this.destroyRef))
               .subscribe(
                 (response2) => {
                   this.myTextareaOrig = this.myTextarea;

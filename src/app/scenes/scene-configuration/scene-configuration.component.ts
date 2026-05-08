@@ -1,5 +1,5 @@
 
-import {Component, OnInit, AfterViewChecked, ViewChild, DestroyRef, inject} from '@angular/core';
+import {Component, OnInit, AfterViewChecked, ViewChild, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 import { TranslateService } from '@ngx-translate/core';
@@ -17,11 +17,13 @@ import {ServerApiService} from '../../common/services/server-api.service';
 @Component({
   selector: 'app-scene-configuration',
   templateUrl: './scene-configuration.component.html',
-  styleUrls: ['./scene-configuration.component.css']
+  styleUrls: ['./scene-configuration.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   constructor(private translate: TranslateService,
               private dataServiceServer: ServerApiService,
@@ -136,6 +138,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
                           //
                           this.sceneFiles = [...this.sceneFiles, <SelectItem> {'label': this.filelist[i], 'value': this.filelist[i]}];
                         }
+                        this.cdr.markForCheck();
                       }
                   );
             }
@@ -193,7 +196,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
             console.log('SceneConfigurationComponent.DeleteConfigConfirm(): call ngOnInit()');
             this.ngOnInit();
 //            this.restart_core_button = true;
-
+            this.cdr.markForCheck();
           }
         }
       );
@@ -243,8 +246,10 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
                 for (let i = 0; i < this.filelist.length; i++) {
                   this.sceneFiles = [...this.sceneFiles, <SelectItem> {'label': this.filelist[i], 'value': this.filelist[i]}];
                 }
+                this.cdr.markForCheck();
               }
             );
+          this.cdr.markForCheck();
         }
       );
   }
@@ -286,6 +291,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
             this.myEditFilename = filename;
             this.cmOptions.readOnly = false;
           }
+          this.cdr.markForCheck();
         }
       );
   }
@@ -307,6 +313,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
               .subscribe(
                 (response2) => {
                   this.myTextareaOrig = this.myTextarea;
+                  this.cdr.markForCheck();
                 }
               );
 
@@ -315,6 +322,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
             const editor = this.codeEditor.codeMirror;
             editor.refresh();
           }
+          this.cdr.markForCheck();
         }
       );
 

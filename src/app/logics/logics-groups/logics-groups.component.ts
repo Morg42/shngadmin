@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, DestroyRef, inject} from '@angular/core';
+import {Component, OnInit, ViewChild, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {TranslateService} from '@ngx-translate/core';
 import {ServerApiService} from '../../common/services/server-api.service';
@@ -12,11 +12,13 @@ import {LogicsGroupType} from '../../common/models/logics-info';
 @Component({
   selector: 'app-logics-groups',
   templateUrl: './logics-groups.component.html',
-  styleUrls: ['./logics-groups.component.css']
+  styleUrls: ['./logics-groups.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LogicsGroupsComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   constructor(private translate: TranslateService,
               private dataServiceServer: ServerApiService,
@@ -81,6 +83,7 @@ export class LogicsGroupsComponent implements OnInit {
           }
 
           this.myEditGroup = '';
+          this.cdr.markForCheck();
         }
 
       );
@@ -150,7 +153,7 @@ export class LogicsGroupsComponent implements OnInit {
             if (groupDesc) {
               groupDesc.textContent = this.group.description;
             }
-
+            this.cdr.markForCheck();
           }
         }
       );
@@ -236,6 +239,7 @@ export class LogicsGroupsComponent implements OnInit {
           }
           this.selectedGroup = {'label': this.myEditGroup, 'value': this.myEditGroup};
           console.warn('LogicsGroupsComponent.addGroup: selectedGroup:', this.selectedGroup);
+          this.cdr.markForCheck();
         }
       );
 
@@ -307,6 +311,7 @@ export class LogicsGroupsComponent implements OnInit {
             groupDesc.textContent = this.group.description;
           }
           this.groupChanged = false;
+          this.cdr.markForCheck();
         }
       );
 

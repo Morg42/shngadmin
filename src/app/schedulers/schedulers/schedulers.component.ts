@@ -1,5 +1,5 @@
 
-import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AppConfigService} from '../../common/services/app-config.service';
 import { HttpClient } from '@angular/common/http';
@@ -17,12 +17,14 @@ import {Title} from '@angular/platform-browser';
 @Component({
   selector: 'app-schedulers',
   templateUrl: './schedulers.component.html',
-  styleUrls: ['./schedulers.component.css']
+  styleUrls: ['./schedulers.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class SchedulersComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   schedulerinfo: SchedulerInfo[];
   developerMode: boolean;
@@ -58,6 +60,7 @@ export class SchedulersComponent implements OnInit {
                               this.developerMode = (this.appConfig.developerMode);
 
                               console.log('getSchedulers', {response2});
+                              this.cdr.markForCheck();
                           }
                       );
               }

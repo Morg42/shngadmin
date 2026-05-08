@@ -1,5 +1,5 @@
 
-import {Component, OnInit, AfterViewChecked, ViewChild, DestroyRef, inject} from '@angular/core';
+import {Component, OnInit, AfterViewChecked, ViewChild, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 import { TranslateService } from '@ngx-translate/core';
@@ -15,11 +15,13 @@ import {ServerApiService} from '../../common/services/server-api.service';
 @Component({
   selector: 'app-item-configuration',
   templateUrl: './item-configuration.component.html',
-  styleUrls: ['./item-configuration.component.css']
+  styleUrls: ['./item-configuration.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   constructor(private translate: TranslateService,
               private dataServiceServer: ServerApiService,
@@ -132,6 +134,7 @@ export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
                           //
                           this.itemFiles = [...this.itemFiles, <SelectItem> {'label': this.filelist[i], 'value': this.filelist[i]}];
                         }
+                        this.cdr.markForCheck();
                       }
                   );
             }
@@ -183,7 +186,7 @@ export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
             console.log('ItemConfigurationComponent.DeleteConfigConfirm(): call ngOnInit()');
             this.ngOnInit();
 //            this.restart_core_button = true;
-
+            this.cdr.markForCheck();
           }
         }
       );
@@ -233,8 +236,10 @@ export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
                 for (let i = 0; i < this.filelist.length; i++) {
                   this.itemFiles = [...this.itemFiles, <SelectItem> {'label': this.filelist[i], 'value': this.filelist[i]}];
                 }
+                this.cdr.markForCheck();
               }
             );
+          this.cdr.markForCheck();
         }
       );
   }
@@ -276,6 +281,7 @@ export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
             this.myEditFilename = filename;
             this.cmOptions.readOnly = false;
           }
+          this.cdr.markForCheck();
         }
       );
   }
@@ -297,6 +303,7 @@ export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
               .subscribe(
                 (response2) => {
                   this.myTextareaOrig = this.myTextarea;
+                  this.cdr.markForCheck();
                 }
               );
 
@@ -305,6 +312,7 @@ export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
             const editor = this.codeEditor.codeMirror;
             editor.refresh();
           }
+          this.cdr.markForCheck();
         }
       );
 

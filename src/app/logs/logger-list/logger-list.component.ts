@@ -1,5 +1,5 @@
 
-import {Component, OnInit, ViewEncapsulation, DestroyRef, inject} from '@angular/core';
+import {Component, OnInit, ViewEncapsulation, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Router} from '@angular/router';
 
@@ -13,11 +13,13 @@ import {ServerApiService} from '../../common/services/server-api.service';
   selector: 'app-logger-list',
   templateUrl: './logger-list.component.html',
   styleUrls: ['./logger-list.component.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoggerListComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   loggers: LoggersType;
   active_plugins: any[];
@@ -69,6 +71,7 @@ export class LoggerListComponent implements OnInit {
                         this.loggersList = this.loggersList.sort();
                         this.definedHandlers = response2['defined_handlers'];
                         console.log('ngOnInit: response2', response2);
+                        this.cdr.markForCheck();
                       }
                   );
             }
@@ -279,6 +282,7 @@ export class LoggerListComponent implements OnInit {
                           this.active_logics = response2['active_logics'];
                           this.loggersList = Object.keys(response2['loggers']);
                           this.loggersList = this.loggersList.sort();
+                          this.cdr.markForCheck();
                         }
                     );
 
@@ -313,6 +317,7 @@ export class LoggerListComponent implements OnInit {
                   this.loggersList = this.loggersList.sort();
                   this.definedHandlers = response2['defined_handlers'];
                   console.log('loggerDelete: response2', response2);
+                  this.cdr.markForCheck();
                 }
               );
 
@@ -348,6 +353,7 @@ export class LoggerListComponent implements OnInit {
                   this.loggersList = this.loggersList.sort();
                   this.definedHandlers = response2['defined_handlers'];
                   console.log('loggerDelete: response2', response2);
+                  this.cdr.markForCheck();
                 }
               );
 

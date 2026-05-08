@@ -1,8 +1,7 @@
 
-import { Component, OnInit, TemplateRef, DestroyRef, inject } from '@angular/core';
+import { Component, OnInit, TemplateRef, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AppConfigService} from '../../common/services/app-config.service';
-import { ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
@@ -34,11 +33,13 @@ export interface ConfiguredPlugin { confname: string; instance: string; plugin: 
   selector: 'app-config',
   templateUrl: './plugin-config.component.html',
   styleUrls: ['./plugin-config.component.css'],
-  providers: [AppComponent]
+  providers: [AppComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PluginConfigComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   faPlus = faPlus;
   faPlusCircle = faPlusCircle;
@@ -191,7 +192,7 @@ ngOnInit() {
                   }
                 }
                 this.spinner_display = false;
-
+                this.cdr.markForCheck();
               }
             );
 
@@ -626,6 +627,7 @@ ngOnInit() {
           for (let i = 0; i < this.plugintypes.length; i++) {
             this.plugintypes_expanded[i] = false;
           }
+          this.cdr.markForCheck();
         }
       );
 
@@ -686,6 +688,7 @@ ngOnInit() {
             if (response) {
               console.log('PluginConfigComponent.addPlugin(): call ngOnInit()');
               this.ngOnInit();
+              this.cdr.markForCheck();
             }
           }
         );
@@ -725,7 +728,7 @@ ngOnInit() {
             console.log('PluginConfigComponent.DeleteConfigConfirm(): call ngOnInit()');
             this.ngOnInit();
             this.restart_core_button = true;
-
+            this.cdr.markForCheck();
           }
         }
       );

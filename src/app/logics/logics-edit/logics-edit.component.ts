@@ -1,5 +1,5 @@
 
-import {AfterViewChecked, Component, OnInit, ViewChild, DestroyRef, inject} from '@angular/core';
+import {AfterViewChecked, Component, OnInit, ViewChild, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {ActivatedRoute} from '@angular/router';
 import {FilesApiService} from '../../common/services/files-api.service';
@@ -18,12 +18,14 @@ import {ServerApiService} from '../../common/services/server-api.service';
 @Component({
   selector: 'app-logics-edit',
   templateUrl: './logics-edit.component.html',
-  styleUrls: ['./logics-edit.component.css']
+  styleUrls: ['./logics-edit.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class LogicsEditComponent implements AfterViewChecked, OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   logics: LogicsinfoType[];
   newlogics: LogicsinfoType[];
@@ -177,6 +179,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
                         for (let i = 0; i < result.length; i++) {
                           this.autocomplete_list.push({ text: 'sh.' + result[i], displayText: 'sh.' + result[i] + ' | Plugin'});
                         }
+                        this.cdr.markForCheck();
                       }
                   );
             }
@@ -194,6 +197,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
             this.valid_item_list.push(result[i]);
             this.autocomplete_list.push({text: 'sh.' + result[i] + '()', displayText: 'sh.' + result[i] + '() | Item'});
           }
+          this.cdr.markForCheck();
       }
     );
 
@@ -310,6 +314,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
               this.parameters.push(paramdata);
             }
           }
+          this.cdr.markForCheck();
         }
       );
 
@@ -408,10 +413,12 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
                   editor.setOption('lineSeparator', '\r\n');
                 }
                 this.myTextareaOrig = this.myTextarea;
+                this.cdr.markForCheck();
               }
             );
 
           this.getPluginParameterDefinitions();
+          this.cdr.markForCheck();
 
           this.logicDescriptionOrig = this.logic.logic_description;
           this.logicGroupOrig = this.logic.group;
@@ -443,6 +450,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
               console.warn('getLogicInfo *4', this.logic, response);
               this.myLogicIsLoaded = response['is_loaded'];
               // console.warn('LogicsEditComponent.getLogicInfo() state isLoaded', response['is_loaded']);
+              this.cdr.markForCheck();
             }
 
           );
@@ -685,6 +693,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
           if (reload) {
             this.loadLogic(this.logic.name);    // reloadLogic
           }
+          this.cdr.markForCheck();
         }
       );
   }
@@ -755,6 +764,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
           if (reload) {
             this.loadLogic(this.logic.name); // reloadLogic
           }
+          this.cdr.markForCheck();
         }
       );
 
@@ -804,6 +814,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
           // console.warn('reloadLogic: setLogicState response', response);
           this.myLogicIsLoaded = response !== false;
           // this.getLogics();
+          this.cdr.markForCheck();
         }
       );
   }
@@ -823,6 +834,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
           // console.warn('loadLogic: setLogicState response', response);
           this.myLogicIsLoaded = response !== false;
           // this.getLogics();
+          this.cdr.markForCheck();
         }
       );
   }
@@ -836,6 +848,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
         (response) => {
           // this.getLogics();
           this.logic.enabled = false;
+          this.cdr.markForCheck();
         }
       );
   }
@@ -849,6 +862,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
         (response) => {
           // this.getLogics();
           this.logic.enabled = true;
+          this.cdr.markForCheck();
         }
       );
   }

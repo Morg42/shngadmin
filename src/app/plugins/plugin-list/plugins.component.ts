@@ -1,5 +1,5 @@
 
-import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AppConfigService} from '../../common/services/app-config.service';
 import { TemplateRef } from '@angular/core';
@@ -22,11 +22,13 @@ import {Title} from '@angular/platform-browser';
   selector: 'app-plugins',
   templateUrl: './plugins.component.html',
   styleUrls: ['./plugins.component.css'],
-  providers: [OlddataService]
+  providers: [OlddataService],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PluginsComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   faPlayCircle = faPlayCircle;
   faPauseCircle = faPauseCircle;
@@ -91,6 +93,7 @@ export class PluginsComponent implements OnInit {
           this.plugininfo = <any>response;
           this.plugininfo.sort(function (a, b) {return (a.pluginname + a.configname.toLowerCase() > b.pluginname + b.configname.
           toLowerCase()) ? 1 : ((b.pluginname + b.configname.toLowerCase() > a.pluginname + a.configname.toLowerCase()) ? -1 : 0); });
+          this.cdr.markForCheck();
         }
       );
   }

@@ -1,5 +1,5 @@
 
-import { Component, OnInit, AfterViewChecked, ViewChild, DestroyRef, inject } from '@angular/core';
+import { Component, OnInit, AfterViewChecked, ViewChild, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 import {FilesApiService} from '../../common/services/files-api.service';
@@ -10,11 +10,13 @@ import {TranslateService} from '@ngx-translate/core';
 @Component({
   selector: 'app-struct-configuration',
   templateUrl: './struct-configuration.component.html',
-  styleUrls: ['./struct-configuration.component.css']
+  styleUrls: ['./struct-configuration.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StructConfigurationComponent implements AfterViewChecked, OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   constructor(private fileService: FilesApiService,
               private dataService: ServicesApiService,
@@ -103,6 +105,7 @@ export class StructConfigurationComponent implements AfterViewChecked, OnInit {
         (response) => {
           this.myTextarea = response;
           this.myTextareaOrig = response;
+          this.cdr.markForCheck();
         }
       );
 
@@ -139,12 +142,14 @@ export class StructConfigurationComponent implements AfterViewChecked, OnInit {
               .subscribe(
                 (response2) => {
                   this.myTextareaOrig = this.myTextarea;
+                  this.cdr.markForCheck();
                 }
               );
 
           }
           const editor = this.codeEditor.codeMirror;
           editor.refresh();
+          this.cdr.markForCheck();
         }
       );
 

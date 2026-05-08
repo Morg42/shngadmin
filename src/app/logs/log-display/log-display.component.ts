@@ -1,5 +1,5 @@
 
-import {AfterViewChecked, Component, OnInit, ViewChild, ViewEncapsulation, DestroyRef, inject} from '@angular/core';
+import {AfterViewChecked, Component, OnInit, ViewChild, ViewEncapsulation, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {ActivatedRoute, convertToParamMap} from '@angular/router';
 
@@ -21,11 +21,13 @@ interface DropDownEntry {
   templateUrl: './log-display.component.html',
   styleUrls: ['./log-display.component.css'],
 //  styles: ['.CodeMirror { width: 100%; height: 50vh; }' ],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LogDisplayComponent implements AfterViewChecked, OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   @ViewChild('codeeditor', { static: true }) private codeEditor;
 
@@ -149,6 +151,7 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
                         }
                         // this.selectedFile = this.translate.instant('LOGS.ACTUAL');
                         // console.log('getLogs', {response2});
+                        this.cdr.markForCheck();
                       }
                   );
             }
@@ -298,6 +301,7 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
 
             this.filterLogChunk();
             this.spinner_display = false;
+            this.cdr.markForCheck();
           }
         );
     }

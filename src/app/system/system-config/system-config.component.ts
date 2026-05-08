@@ -1,6 +1,6 @@
 
 
-import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AppConfigService} from '../../common/services/app-config.service';
 
@@ -19,12 +19,14 @@ import {Title} from '@angular/platform-browser';
 @Component({
   selector: 'app-system-config',
   templateUrl: './system-config.component.html',
-  styleUrls: ['./system-config.component.css']
+  styleUrls: ['./system-config.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class SystemConfigComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   config: any;
   lang: string;
@@ -105,6 +107,7 @@ export class SystemConfigComponent implements OnInit {
                 this.config = configResponse;
                 // console.log({response}, {configResponse});
                 this.fillDialogData();
+                this.cdr.markForCheck();
               }
             );
         }
@@ -684,6 +687,7 @@ export class SystemConfigComponent implements OnInit {
 
           this.data_changed = false;
           this.restart_core_button = true;
+          this.cdr.markForCheck();
         } else {
           console.warn('saveSettings', 'fail');
         }

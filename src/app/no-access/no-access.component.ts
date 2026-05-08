@@ -1,11 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 
 @Component({
   selector: 'app-no-access',
   templateUrl: './no-access.component.html',
-  styleUrls: ['./no-access.component.css']
+  styleUrls: ['./no-access.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NoAccessComponent implements OnInit {
+
+  private readonly cdr = inject(ChangeDetectorRef);
 
   constructor() { }
 

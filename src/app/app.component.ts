@@ -1,4 +1,4 @@
-import {Component, OnInit, DestroyRef, inject} from '@angular/core';
+import {Component, OnInit, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Title} from '@angular/platform-browser';
 import {HttpClient} from '@angular/common/http';
@@ -19,12 +19,14 @@ export function HttpLoaderFactory(http: HttpClient) {
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class AppComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   public APP_NAME = 'shngAdmin';
   public APP_VERSION = '0.9.18';
@@ -56,6 +58,7 @@ export class AppComponent implements OnInit {
           this.dataService.shng_serverinfo = response;
 
           this.shared.setGuiLanguage();
+          this.cdr.markForCheck();
         },
         (error) => {
           console.warn('DataService: getServerBasicinfo():', {error});

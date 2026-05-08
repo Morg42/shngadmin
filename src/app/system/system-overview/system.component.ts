@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChildren, EventEmitter, DestroyRef, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChildren, EventEmitter, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {AppConfigService} from '../../common/services/app-config.service';
 import { Title } from '@angular/platform-browser';
 import { Injectable } from '@angular/core';
@@ -27,11 +27,13 @@ import {AppComponent} from '../../app.component';
   selector: 'app-system',
   templateUrl: './system.component.html',
   styleUrls: ['./system.component.css'],
-  providers: [ WebsocketService, WebsocketPluginService ]
+  providers: [ WebsocketService, WebsocketPluginService ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SystemComponent implements OnDestroy, OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   faCheckCircle = faCheckCircle;
 
@@ -103,6 +105,7 @@ export class SystemComponent implements OnDestroy, OnInit {
         (response) => {
           this.setTitle(this.translate.instant('MENU.SYSTEM_PROPERTIES'));
           this.initSystemInfo();
+          this.cdr.markForCheck();
         }
       );
   }
@@ -126,7 +129,7 @@ export class SystemComponent implements OnDestroy, OnInit {
 
           this.os_uptime = this.shared.ageToString(this.systeminfo.uptime);
           this.sh_uptime = this.shared.ageToString(this.systeminfo.sh_uptime);
-
+          this.cdr.markForCheck();
         },
         (error) => {
           console.log('SystemComponent: dataService.getSysteminfo():');
@@ -185,7 +188,7 @@ export class SystemComponent implements OnDestroy, OnInit {
           for (let i = 0; i < this.pypiinfo.length; ++i) {
             this.reqinfodisplay[this.pypiinfo[i].name] = this.buildreqinfostring(this.pypiinfo[i]);
           }
-
+          this.cdr.markForCheck();
         },
         (error) => console.log('SystemComponent: dataService.getPypiinfo():' + error)
       );
@@ -487,22 +490,27 @@ export class SystemComponent implements OnDestroy, OnInit {
     this.websocketPluginService.systemloadUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       // console.error('systemloadUpdate$');
       this.updateChartData(this.chartSystemload, this.chartdataLoad, this.websocketPluginService.systemload.series);
+      this.cdr.markForCheck();
     });
     this.websocketPluginService.systemmemoryUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
 //      console.error('systemmemoryUpdate$');
       this.updateChartData(this.chartSystemMemory, this.chartdataSystemMemory, this.websocketPluginService.systemmemory.series);
+      this.cdr.markForCheck();
     });
     this.websocketPluginService.systemswapUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
 //      console.error('systemswapUpdate$');
       this.updateChartData(this.chartSwap, this.chartdataSwap, this.websocketPluginService.systemswap.series);
+      this.cdr.markForCheck();
     });
     this.websocketPluginService.memoryUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
 //      console.error('memoryUpdate$');
       this.updateChartData(this.chartMemory, this.chartdataMemory, this.websocketPluginService.memory.series);
+      this.cdr.markForCheck();
     });
     this.websocketPluginService.threadsUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
 //      console.error('threadsUpdate$');
       this.updateChartData(this.chartThreads, this.chartdataThreads, this.websocketPluginService.threads.series);
+      this.cdr.markForCheck();
     });
     this.websocketPluginService.workerThreadsUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
 //      console.error('workerThreadsUpdate$');
@@ -515,12 +523,13 @@ export class SystemComponent implements OnDestroy, OnInit {
             this.websocketPluginService.activeWorkerThreads.series[i][1] = this.websocketPluginService.workerThreads.series[i][1] - this.websocketPluginService.idleWorkerThreads.series[i][1];
           }
           this.updateChartData(this.chartWorkerThreads, this.chartdataWorkerThreads, this.websocketPluginService.workerThreads.series, this.websocketPluginService.activeWorkerThreads.series);
-
+          this.cdr.markForCheck();
         });
     });
     this.websocketPluginService.diskUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
 //      console.error('diskUpdate$');
       this.updateChartData(this.chartDisk, this.chartdataDisk, this.websocketPluginService.disk.series);
+      this.cdr.markForCheck();
     });
   }
 

@@ -1,6 +1,6 @@
 
 // import { Component, OnInit } from '@angular/core';
-import { Component, ElementRef, ViewChild, OnInit, Renderer2, DestroyRef, inject } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, Renderer2, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 import { TemplateRef } from '@angular/core';
@@ -21,11 +21,13 @@ import {ServerApiService} from '../../common/services/server-api.service';
   selector: 'app-logics',
   templateUrl: './logics-list.component.html',
   styleUrls: ['./logics-list.component.css'],
-  providers: [OlddataService]
+  providers: [OlddataService],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LogicsListComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   groupdefinitions = {};
   groupList: LogicsGroupType[];
@@ -199,6 +201,7 @@ export class LogicsListComponent implements OnInit {
               1 : ((b.name.toLowerCase() > a.name.toLowerCase()) ?
                 -1 : 0);
           });
+          this.cdr.markForCheck();
         }
       );
   }

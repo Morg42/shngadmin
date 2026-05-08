@@ -1,5 +1,5 @@
 
-import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 import { ThreadInfo } from '../../common/models/thread-info';
@@ -14,12 +14,14 @@ import {Title} from '@angular/platform-browser';
   selector: 'app-threads',
   templateUrl: './threads.component.html',
   styleUrls: ['./threads.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 
 export class ThreadsComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   threadsList: ThreadInfo[];
   threads_count: number;
@@ -52,6 +54,7 @@ export class ThreadsComponent implements OnInit {
                               this.threads_count = response2[0];
 //          this.schedulerinfo.sort(function (a, b) {return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)});
                               console.log('getThreads', {response2});
+                              this.cdr.markForCheck();
                           }
                       );
               }

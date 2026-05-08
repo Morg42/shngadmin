@@ -1,9 +1,10 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 
 @Component({
   selector: 'logger-line',
   templateUrl: './logger-line.component.html',
-  styleUrls: ['./logger-line.component.css']
+  styleUrls: ['./logger-line.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoggerLineComponent implements OnInit {
 
@@ -41,6 +42,8 @@ export class LoggerLineComponent implements OnInit {
   choosableHandlers1 = [];
   choosableHandlers2 = [];
   handlersChangeEnabled = false;
+
+  private readonly cdr = inject(ChangeDetectorRef);
 
   constructor() {
   }

@@ -1,5 +1,5 @@
 
-import { Component, DestroyRef, inject } from '@angular/core';
+import { Component, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {ActivatedRoute, Router} from '@angular/router';
 
@@ -10,10 +10,12 @@ import { AuthService } from './../common/services/auth.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginComponent {
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
   invalidLogin: boolean;
 
   constructor(
@@ -30,6 +32,7 @@ export class LoginComponent {
           this.router.navigate([returnUrl || '/']);
         } else {
           this.invalidLogin = true;
+          this.cdr.markForCheck();
         }
       });
   }

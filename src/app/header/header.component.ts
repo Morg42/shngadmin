@@ -1,5 +1,5 @@
 
-import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AppConfigService} from '../common/services/app-config.service';
 // import { isSuccess } from '@angular/http/src/http_utils';
@@ -18,13 +18,15 @@ import { Router } from '@angular/router';
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
-  providers: []
+  providers: [],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 
 export class HeaderComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
 //  faCircleNotch = faCircleNotch;
 
@@ -56,6 +58,7 @@ export class HeaderComponent implements OnInit {
         (response) => {
           this.developerMode = (this.appConfig.developerMode);
           this.buildMenu();
+          this.cdr.markForCheck();
 
           const credentials = {'username': '', 'password': ''};
           // console.log('signIn', {credentials});
@@ -65,6 +68,7 @@ export class HeaderComponent implements OnInit {
               // console.log('Anonymous login:', {result});
 
               this.buildMenu();
+              this.cdr.markForCheck();
             });
 
         }

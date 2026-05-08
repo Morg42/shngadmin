@@ -1,5 +1,5 @@
 
-import { Component, AfterViewChecked, OnInit, ViewEncapsulation, ViewChild, DestroyRef, inject } from '@angular/core';
+import { Component, AfterViewChecked, OnInit, ViewEncapsulation, ViewChild, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AppConfigService} from '../common/services/app-config.service';
 import { Title } from '@angular/platform-browser';
@@ -34,13 +34,15 @@ export interface CacheEntryType {
   templateUrl: './services.component.html',
   styleUrls: ['./services.component.css'],
   encapsulation: ViewEncapsulation.None,
-  providers: []
+  providers: [],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 
 export class ServicesComponent implements AfterViewChecked, OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
 //  schedulerinfo: SchedulerInfo[];
 
@@ -251,6 +253,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
           this.setTitle(this.translate.instant('SERVICES.SERVICES'));
 
           this.loadCacheOrphans();
+          this.cdr.markForCheck();
         }
       );
 
@@ -266,6 +269,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
           this.cacheInfo = <CacheEntryType[]> response;
           this.cacheAllChecked = false;
           // console.log('loadChacheOrphans', this.cacheInfo);
+          this.cdr.markForCheck();
         }
       );
   }
@@ -352,6 +356,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
           this.cmOptionsOutput.lineNumbers = !(this.myTextOutput.startsWith('ERROR:'));
           const editor2 = this.codeEditor2.codeMirror;
           editor2.refresh();
+          this.cdr.markForCheck();
         }
       );
 
@@ -372,6 +377,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
           } else {
             this.myEvalResult = myResponse.result;
           }
+          this.cdr.markForCheck();
         }
       );
 
@@ -392,6 +398,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
 //          }
 //          const editor4 = this.converterCodeEditor2.codeMirror;
 //          editor4.refresh();
+          this.cdr.markForCheck();
         }
       );
 
@@ -464,6 +471,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
             this.shng_status = this.translate_shngStatus('not active');
             this.shng_statuscode = -1;
           }
+          this.cdr.markForCheck();
         }
       );
   }
@@ -487,6 +495,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
           console.log('restartShng', res.result);
           this.shng_status = this.translate_shngStatus('Restart clicked');
           this.shng_statuscode = -1;
+          this.cdr.markForCheck();
         }
       );
   }
@@ -522,6 +531,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
           this.restore_disabled = false;
 
           this.ngOnInit();
+          this.cdr.markForCheck();
         }
       );
   }

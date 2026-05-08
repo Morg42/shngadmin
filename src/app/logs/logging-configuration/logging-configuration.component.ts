@@ -1,5 +1,5 @@
 
-import {Component, OnInit, AfterViewChecked, ViewChild, DestroyRef, inject} from '@angular/core';
+import {Component, OnInit, AfterViewChecked, ViewChild, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {FilesApiService} from '../../common/services/files-api.service';
 import {ServerInfo} from '../../common/models/server-info';
@@ -12,11 +12,13 @@ import {Title} from '@angular/platform-browser';
 @Component({
   selector: 'app-logging-configuration',
   templateUrl: './logging-configuration.component.html',
-  styleUrls: ['./logging-configuration.component.css']
+  styleUrls: ['./logging-configuration.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoggingConfigurationComponent implements AfterViewChecked, OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   constructor(private fileService: FilesApiService,
               private dataService: ServicesApiService,
@@ -105,6 +107,7 @@ export class LoggingConfigurationComponent implements AfterViewChecked, OnInit {
                       (response2) => {
                         this.myTextarea = response2;
                         this.myTextareaOrig = response2;
+                        this.cdr.markForCheck();
                       }
                   );
             }
@@ -142,12 +145,14 @@ export class LoggingConfigurationComponent implements AfterViewChecked, OnInit {
               .subscribe(
                 (response2) => {
                   this.myTextareaOrig = this.myTextarea;
+                  this.cdr.markForCheck();
                 }
               );
 
           }
           const editor = this.codeEditor.codeMirror;
           editor.refresh();
+          this.cdr.markForCheck();
         }
       );
 

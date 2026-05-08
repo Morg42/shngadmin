@@ -1,5 +1,5 @@
 
-import {Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectorRef, ViewChild, ViewRef, TemplateRef, ViewContainerRef, DestroyRef, inject} from '@angular/core';
+import {Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy, ViewChild, ViewRef, TemplateRef, ViewContainerRef, DestroyRef, inject} from '@angular/core';
 import {AppConfigService} from '../../common/services/app-config.service';
 import { HttpClient } from '@angular/common/http';
 
@@ -34,7 +34,8 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
   selector: 'app-items',
   templateUrl: 'item-tree.component.html',
   styleUrls: ['item-tree.component.css'],
-  providers:  [AppComponent, WebsocketService, WebsocketPluginService ]
+  providers:  [AppComponent, WebsocketService, WebsocketPluginService ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   @ViewChild('vc', { read: ViewContainerRef, static: true }) vc: ViewContainerRef;
@@ -81,6 +82,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   data: any;
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   monitoredItemsUpdateSubscription: Subscription = null;
 
@@ -197,6 +199,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
           // this.plugininfo.sort(function (a, b) {return (a.pluginname > b.pluginname) ? 1 : ((b.pluginname > a.pluginname) ? -1 : 0)});
 //          this.searchStart_param = {'number': String(this.appConfig.itemtreeSearchstart)};
           this.searchStart_param = {'number': String(this.appConfig.itemtreeSearchstart)};
+          this.cdr.markForCheck();
         },
         (error) => {
           console.log('ERROR: ItemsComponent: dataService.getItemtree():');
@@ -387,6 +390,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
             this.showDetails(details);
 
             console.warn('getDetails', details.logics);
+            this.cdr.markForCheck();
           },
           (error) => {
             console.log('ERROR: ItemsComponent: dataService.getItemDetails():');

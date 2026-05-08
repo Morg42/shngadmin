@@ -1,5 +1,5 @@
 
-import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 
@@ -23,7 +23,8 @@ import {Title} from '@angular/platform-browser';
 @Component({
   selector: 'app-structs',
   templateUrl: './structs.component.html',
-  styleUrls: ['./structs.component.css']
+  styleUrls: ['./structs.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StructsComponent implements OnInit {
 
@@ -45,6 +46,7 @@ export class StructsComponent implements OnInit {
 
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   constructor(private http: HttpClient,
               private dataServiceServer: ServerApiService,
@@ -81,6 +83,7 @@ export class StructsComponent implements OnInit {
               this.getStructsData();
             }
         );
+
   }
 
   getStructsData() {
@@ -126,7 +129,7 @@ export class StructsComponent implements OnInit {
               }
             }
           }
-
+          this.cdr.markForCheck();
         }
       );
   }

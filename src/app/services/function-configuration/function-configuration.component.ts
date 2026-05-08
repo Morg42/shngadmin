@@ -1,5 +1,5 @@
 
-import {Component, OnInit, AfterViewChecked, ViewChild, DestroyRef, inject} from '@angular/core';
+import {Component, OnInit, AfterViewChecked, ViewChild, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 
@@ -15,11 +15,13 @@ import {FunctionsApiService} from '../../common/services/functions-api.service';
 @Component({
   selector: 'app-function-configuration',
   templateUrl: './function-configuration.component.html',
-  styleUrls: ['./function-configuration.component.css']
+  styleUrls: ['./function-configuration.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FunctionConfigurationComponent implements AfterViewChecked, OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   constructor(private translate: TranslateService,
               private fileService: FilesApiService,
@@ -129,6 +131,7 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
             //
             this.functionFiles = [...this.functionFiles, <SelectItem> {'label': this.filelist[i], 'value': this.filelist[i]}];
           }
+          this.cdr.markForCheck();
         }
       );
 
@@ -226,6 +229,7 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
               this.myTextareaOrig = this.myTextarea;
               this.myEditFilename = this.newFilename;
               this.cmOptions.readOnly = false;
+              this.cdr.markForCheck();
 
               // save new file before editing
               this.fileService.saveFile('functions', this.myEditFilename, this.myTextarea)
@@ -243,8 +247,10 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
                                   for (let i = 0; i < this.filelist.length; i++) {
                                     this.functionFiles = [...this.functionFiles, <SelectItem> {'label': this.filelist[i], 'value': this.filelist[i]}];
                                   }
+                                  this.cdr.markForCheck();
                                 }
                             );
+                        this.cdr.markForCheck();
                       }
                   );
 
@@ -292,6 +298,7 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
             this.myEditFilename = filename;
             this.cmOptions.readOnly = false;
           }
+          this.cdr.markForCheck();
         }
       );
   }
@@ -309,6 +316,7 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
           .subscribe(
               (response2) => {
                 this.myTextareaOrig = this.myTextarea;
+                this.cdr.markForCheck();
               }
           );
 

@@ -1,5 +1,5 @@
 
-import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 
@@ -22,7 +22,8 @@ import {Title} from '@angular/platform-browser';
   selector: 'app-scenes',
   templateUrl: './scenes.component.html',
   styleUrls: ['./scenes.component.css'],
-  providers: [MessageService]
+  providers: [MessageService],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ScenesComponent implements OnInit {
 
@@ -33,6 +34,7 @@ export class ScenesComponent implements OnInit {
 
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   constructor(private http: HttpClient,
               private dataServiceServer: ServerApiService,
@@ -62,6 +64,7 @@ export class ScenesComponent implements OnInit {
                               this.sceneList = <SceneInfo[]>response2;
     //          this.schedulerinfo.sort(function (a, b) {return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)});
                               console.log('getScenes', {response2});
+                              this.cdr.markForCheck();
                           }
                       );
               }

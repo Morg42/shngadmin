@@ -174,6 +174,8 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
 
 
   ngOnDestroy(): void {
+    window.removeEventListener('resize', ItemTreeComponent.resizeItemTree, false);
+    this.monitoredItemsUpdateSubscription?.unsubscribe();
     this.websocketPluginService.disconnect();
   }
 
@@ -343,6 +345,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
 
   getMonitoredValues() {
     console.log('getMonitoredValues()');
+    this.monitoredItemsUpdateSubscription?.unsubscribe();
     this.monitoredItemsUpdateSubscription = this.websocketPluginService.monitoredItemsUpdate$.subscribe(() => {
       console.error('monitoredItemsUpdate$');
       // this.updateChartData(this.chartSystemload, this.chartdataLoad, this.websocketPluginService.monitor.items);

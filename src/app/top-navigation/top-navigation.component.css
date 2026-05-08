@@ -97,6 +97,10 @@ body {
   display: none;
 }
 
+.dropdown-content.dropdown-touch-open {
+  display: block;
+}
+
 .topnav a:hover, .dropdown:hover .dropbtn {
   background-color: var(--menu-background-color-hover);
   color: var(--menu-textcolor-hover);

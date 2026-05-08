@@ -104,6 +104,9 @@ export class TopNavigationComponent implements OnInit {
     console.log('TopNavigationComponent.ngOnInit() leaving');
   }
 
+  // Label of the section whose dropdown is currently forced open (touch mode).
+  openMenuLabel: string | null = null;
+
   toggleResponsiveMenu() {
     console.log('TopNavigationComponent.toggleResponsiveMenu');
     const x = document.getElementById('myTopnav');
@@ -117,7 +120,6 @@ export class TopNavigationComponent implements OnInit {
   }
 
   enableDropdownMenu() {
-
     const x = document.getElementsByClassName('dropdown-content-hidden');
     for (let i = 0; i < x.length; i++) {
       x[i].className = 'dropdown-content';
@@ -125,6 +127,7 @@ export class TopNavigationComponent implements OnInit {
   }
 
   disableResponsiveMenu(menuEntry, hideDropdown: boolean = true) {
+    this.closeTouchDropdown();
 
     // disable dropped down menu if in mobile mode
     const m = document.getElementById('myTopnav');
@@ -138,6 +141,38 @@ export class TopNavigationComponent implements OnInit {
       if (x === null) return;
       x.className = 'dropdown-content-hidden';
     }
+  }
+
+  onMenuHeaderClick(menuEntry: MenuItem) {
+    if (this.isTouchDevice) {
+      if (this.openMenuLabel === menuEntry.label) {
+        // Second tap while dropdown is open → navigate to first sub-item
+        const firstItem = menuEntry.items[0];
+        if (firstItem?.routerLink) {
+          this.router.navigate(firstItem.routerLink);
+        }
+        this.closeTouchDropdown();
+      } else {
+        // First tap → open this dropdown, close any other
+        this.closeTouchDropdown();
+        document.getElementById('menu-' + menuEntry.label)?.classList.add('dropdown-touch-open');
+        this.openMenuLabel = menuEntry.label;
+      }
+    } else {
+      // Desktop: dropdown was visible via hover → navigate to first sub-item
+      const firstItem = menuEntry.items[0];
+      if (firstItem?.routerLink) {
+        this.router.navigate(firstItem.routerLink);
+      }
+      this.disableResponsiveMenu(menuEntry, false);
+    }
+  }
+
+  private closeTouchDropdown() {
+    document.querySelectorAll('.dropdown-touch-open').forEach(el =>
+      el.classList.remove('dropdown-touch-open')
+    );
+    this.openMenuLabel = null;
   }
 
   setMenuEntry(menu: number, label: string, routerLink: string[] = [], visible: boolean = true) {

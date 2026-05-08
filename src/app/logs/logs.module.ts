@@ -9,6 +9,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { SharedModule } from '../common/shared.module';
 import { LogsRoutingModule } from './logs-routing.module';
 import { LogDisplayComponent } from './log-display/log-display.component';
@@ -28,6 +29,7 @@ import { LoggerTabComponent } from './logger-tab/logger-tab.component';
   imports: [
     SharedModule,
     LogsRoutingModule,
+    CodemirrorModule,
     FontAwesomeModule,
     TabsModule,
     Checkbox,

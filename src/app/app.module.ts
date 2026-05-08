@@ -14,6 +14,8 @@ import { AlertModule } from 'ngx-bootstrap/alert';
 import { ModalModule } from 'ngx-bootstrap/modal';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { MenubarModule } from 'primeng/menubar';
+import { ButtonModule } from 'primeng/button';
 
 import { JwtModule, JWT_OPTIONS } from '@auth0/angular-jwt';
 
@@ -78,6 +80,8 @@ export function jwtOptionsFactory(injector: Injector) {
     AlertModule.forRoot(),
     ModalModule.forRoot(),
     FontAwesomeModule,
+    MenubarModule,
+    ButtonModule,
     NgOptimizedImage,
     TranslateModule.forRoot({
       loader: {

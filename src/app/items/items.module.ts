@@ -10,6 +10,7 @@ import { ListboxModule } from 'primeng/listbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
 import { ButtonModule } from 'primeng/button';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { AppComponent } from '../app.component';
 import { WebsocketService } from '../common/services/websocket.service';
 import { WebsocketPluginService } from '../common/services/websocket-plugin.service';
@@ -33,6 +34,7 @@ import { StructConfigurationComponent } from './struct-configuration/struct-conf
   imports: [
     SharedModule,
     ItemsRoutingModule,
+    CodemirrorModule,
     FontAwesomeModule,
     TabsModule,
     ModalModule,

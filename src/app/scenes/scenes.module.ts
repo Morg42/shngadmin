@@ -5,6 +5,7 @@ import { ListboxModule } from 'primeng/listbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { SharedModule } from '../common/shared.module';
 import { ScenesRoutingModule } from './scenes-routing.module';
 import { ScenesComponent } from './scene-list/scenes.component';
@@ -18,6 +19,7 @@ import { SceneConfigurationComponent } from './scene-configuration/scene-configu
   imports: [
     SharedModule,
     ScenesRoutingModule,
+    CodemirrorModule,
     AccordionModule,
     Dialog,
     ListboxModule,

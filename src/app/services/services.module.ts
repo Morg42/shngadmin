@@ -8,6 +8,7 @@ import { Select } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { SharedModule } from '../common/shared.module';
 import { ServicesRoutingModule } from './services-routing.module';
 import { ServicesComponent } from './services.component';
@@ -21,6 +22,7 @@ import { FunctionConfigurationComponent } from './function-configuration/functio
   imports: [
     SharedModule,
     ServicesRoutingModule,
+    CodemirrorModule,
     TabsModule,
     ModalModule,
     Dialog,

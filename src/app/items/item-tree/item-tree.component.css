@@ -24,6 +24,19 @@
   overflow: visible;
 }
 
+:host ::ng-deep .p-tree-node-content {
+  padding: 1px 4px;
+}
+
+:host ::ng-deep .p-tree-node-children {
+  padding-left: 1rem;
+}
+
+:host ::ng-deep .p-tree-node-toggle-button {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
 
 /*
 :host ::ng-deep .ui-treenode-content {

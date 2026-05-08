@@ -2,13 +2,13 @@
 
 <div class="body-content">
   <p-accordion [multiple]="true">
-    <ng-container *ngFor="let scene of sceneList">
+    @for (scene of sceneList; track $index) {
       <p-accordionTab>
         <p-header>
           <span style="font-size: large; font-weight: bold; ">{{scene['path']}}</span>
-          <ng-container *ngIf="scene['name'] && scene['name'] !== ''">
+          @if (scene['name'] && scene['name'] !== '') {
             &nbsp;  &nbsp; ({{scene['name']}})
-          </ng-container>
+          }
         </p-header>
         <div style="margin-left: 17px;">
           <table class="table table-striped table-hover" style="border: 1px solid #ddd; ">
@@ -30,59 +30,59 @@
           </thead>
           <tbody>
 
-          <ng-container *ngFor="let value of scene['values']">
-          <ng-container *ngFor="let action of value['action_list']">
+          @for (value of scene['values']; track $index) {
+            @for (action of value['action_list']; track $index) {
 
-            <ng-container *ngIf="(action === value['action_list'][0]) && (value['action_name'] !== '')">
+              @if ((action === value['action_list'][0]) && (value['action_name'] !== '')) {
+                <tr>
+                  <td class="p-1"></td>
+                  <td class="p-1" colspan="3"><strong>{{ value['action'] }}</strong>: {{ value['action_name'] }}</td>
+                  <td class="p-1"></td>
+                  <td class="p-1"></td>
+                </tr>
+              }
+
               <tr>
                 <td class="p-1"></td>
-                <td class="p-1" colspan="3"><strong>{{ value['action'] }}</strong>: {{ value['action_name'] }}</td>
-                <td class="p-1"></td>
-                <td class="p-1"></td>
+                <td class="p-1">
+                  @if (action === value['action_list'][0] && value['action_name'] === '') {
+                    <strong>{{ value['action'] }}</strong>:
+                  }
+                </td>
+
+                <td class="p-1">
+                  @if (action[2]) {
+                    {{ 'ja'|translate }}
+                  }
+                  @if (!action[2]) {
+                    {{ 'nein'|translate }}
+                  }
+                </td>
+
+                <td class="p-1">{{ action[0] }}</td>
+
+                <td class="p-1">
+                  @if (!action[3] || action[3] === action[1]) {
+                    {{ action[1] }}
+                  }
+                  @if (!(!action[3] || action[3] === action[1])) {
+                    {{ action[3] }} (default: {{ action[1] }})
+                  }
+                </td>
+
+                <td class="p-1">
+                </td>
+
               </tr>
-            </ng-container>
 
-            <tr>
-              <td class="p-1"></td>
-              <td class="p-1">
-                <ng-container *ngIf="action === value['action_list'][0] && value['action_name'] === ''" >
-                  <strong>{{ value['action'] }}</strong>:
-                </ng-container>
-              </td>
-
-              <td class="p-1">
-                <ng-container *ngIf="action[2]" >
-                  {{ 'ja'|translate }}
-                </ng-container>
-                <ng-container *ngIf="!action[2]" >
-                  {{ 'nein'|translate }}
-                </ng-container>
-              </td>
-
-              <td class="p-1">{{ action[0] }}</td>
-
-              <td class="p-1">
-                <ng-container *ngIf="!action[3] || action[3] === action[1]" >
-                  {{ action[1] }}
-                </ng-container>
-                <ng-container *ngIf="!(!action[3] || action[3] === action[1])" >
-                  {{ action[3] }} (default: {{ action[1] }})
-                </ng-container>
-              </td>
-
-              <td class="p-1">
-              </td>
-
-            </tr>
-
-          </ng-container>
-          </ng-container>
+            }
+          }
 
           </tbody>
         </table>
         </div>
       </p-accordionTab>
-    </ng-container>
+    }
   </p-accordion>
 </div>
 

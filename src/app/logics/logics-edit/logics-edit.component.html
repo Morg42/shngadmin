@@ -12,12 +12,12 @@
             <tr>
               <td>
                 <div style="font-weight: normal; padding-top: 10px; padding-left: 10px; padding-right: 5px">
-                  <ng-container *ngIf="logic && logic.enabled && myLogicIsLoaded">
+                  @if (logic && logic.enabled && myLogicIsLoaded) {
                     <span style="color: var(--shng-green);" class="fas fa-play-circle" title="{{ 'LOGIC_EDIT.ACTIVE'|translate }}"></span>
-                  </ng-container>
-                  <ng-container *ngIf="logic && (!logic.enabled  || !myLogicIsLoaded)">
+                  }
+                  @if (logic && (!logic.enabled  || !myLogicIsLoaded)) {
                     <span style="color: var(--shng-red);" class="fas fa-pause-circle" title="{{ 'LOGIC_EDIT.INACTIVE'|translate }}"></span>
-                  </ng-container>
+                  }
                   {{ 'LOGIC_EDIT.FILENAME'|translate }}: <strong>../logics/{{ myEditFilename }}</strong>
                   <button pButton label="{{ 'BUTTON.SAVE_LOAD'|translate }}" type="button" [disabled]="!this.logicChanged" icon="fa fa-check" style="margin-right: 0;" (click)="saveLogic(true)" class="float-sm-right ui-button-success"></button>
                   <button pButton label="{{ 'BUTTON.SAVE'|translate }}" type="button" [disabled]="!this.logicChanged" icon="fa fa-check" style="margin-right: 5px;" (click)="saveLogic()" class="float-sm-right ui-button-success"></button>
@@ -27,25 +27,21 @@
 -->
                   <button pButton label="{{ 'BUTTON.HELP'|translate }}" type="button" [disabled]="false" icon="fa fa-info" style="margin-left: 20px; margin-right: 5px;" (click)="editorHelp_display = true;" class="float-sm-right ui-button-success"></button>
 
-                  <ng-container *ngIf="this.myLogicIsLoaded; then logicIsLoaded; else logicIsNotLoaded"></ng-container>
-                  <ng-template #logicIsLoaded>
-                    <ng-container *ngIf="logic.enabled; then logicEnabledActions; else logicDisabledActions"></ng-container>
-                    <ng-template #logicEnabledActions>
+                  @if (this.myLogicIsLoaded) {
+                    @if (logic.enabled) {
                       <button name="disable" title="{{ 'LOGICS.DISABLE'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="disableLogic(logic.name);"><i class="fas fa-pause"></i></button>
                       <button name="reload"  title="{{ 'LOGICS.RELOAD'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="reloadLogic(logic.name);"><i class="fas fa-sync"></i></button>
                       <button name="trigger" title="{{ 'LOGICS.TRIGGER'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="triggerLogic();"><i class="fas fa-hand-pointer"></i></button>
-                    </ng-template>
-                    <ng-template #logicDisabledActions>
+                    } @else {
                       <button name="enable"  title="{{ 'LOGICS.ENABLE'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="enableLogic(logic.name);"><i class="fas fa-play"></i></button>
                       <button name="reload"  title="{{ 'LOGICS.RELOAD'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="reloadLogic(logic.name);"><i class="fas fa-sync"></i></button>
                       <button disabled="true" name="trigger" title="{{ 'LOGICS.TRIGGER'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right"><i class="fas fa-hand-pointer"></i></button>
-                    </ng-template>
-                  </ng-template>
-                  <ng-template #logicIsNotLoaded>
+                    }
+                  } @else {
                     <button disabled="true" name="enable"  title="{{ 'LOGICS.ENABLE'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="enableLogic(logic.name);"><i class="fas fa-play"></i></button>
                     <button disabled="true" name="reload"  title="{{ 'LOGICS.RELOAD'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="reloadLogic(logic.name);"><i class="fas fa-sync"></i></button>
                     <button disabled="true" name="trigger" title="{{ 'LOGICS.TRIGGER'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right"><i class="fas fa-hand-pointer"></i></button>
-                  </ng-template>
+                  }
 
                 </div>
               </td>
@@ -75,9 +71,9 @@
       <tab customClass="tab-shng" heading="{{ 'LOGIC_EDIT.PARAMETERS'|translate }}">
 
         <div  class="tab-header-parameter">
-          <ng-container *ngIf="logic">
+          @if (logic) {
             {{ 'LOGIC_EDIT.LOGICNAME'|translate }}: <strong>{{ logic.name }}</strong>
-          </ng-container>
+          }
           <button pButton label="{{ 'BUTTON.SAVE_LOAD'|translate }}" type="button" [disabled]="!this.logicChanged" icon="fa fa-check" style="margin-right: 0;" (click)="saveLogic(true)" class="float-sm-right ui-button-success"></button>
           <button pButton label="{{ 'BUTTON.SAVE'|translate }}" type="button" [disabled]="!this.logicChanged" icon="fa fa-check" style="margin-right: 5px;" (click)="saveLogic()" class="float-sm-right ui-button-success"></button>
           <button pButton label="{{ 'BUTTON.DISCARD'|translate }}" type="button" [disabled]="(myEditFilename === '') || (!this.logicChanged)" icon="fa fa-times" style="margin-right: 5px;" (click)="discardChanges();" class="float-sm-right ui-button-secondary"></button>
@@ -87,25 +83,21 @@
           <button pButton label="{{ 'BUTTON.HELP'|translate }}" type="button" [disabled]="false" icon="fa fa-info" style="margin-left: 20px; margin-right: 5px;" (click)="editorHelp_display = true;" class="float-sm-right ui-button-success"></button>
 
 
-          <ng-container *ngIf="this.myLogicIsLoaded; then logicIsLoaded; else logicIsNotLoaded"></ng-container>
-          <ng-template #logicIsLoaded>
-            <ng-container *ngIf="logic.enabled; then logicEnabledActions; else logicDisabledActions"></ng-container>
-            <ng-template #logicEnabledActions>
+          @if (this.myLogicIsLoaded) {
+            @if (logic.enabled) {
               <button name="disable" title="{{ 'LOGICS.DISABLE'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="disableLogic(logic.name);"><i class="fas fa-pause"></i></button>
               <button name="reload"  title="{{ 'LOGICS.RELOAD'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="reloadLogic(logic.name);"><i class="fas fa-sync"></i></button>
               <button name="trigger" title="{{ 'LOGICS.TRIGGER'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="triggerLogic();"><i class="fas fa-hand-pointer"></i></button>
-            </ng-template>
-            <ng-template #logicDisabledActions>
+            } @else {
               <button name="enable"  title="{{ 'LOGICS.ENABLE'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="enableLogic(logic.name);"><i class="fas fa-play"></i></button>
               <button name="reload"  title="{{ 'LOGICS.RELOAD'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="reloadLogic(logic.name);"><i class="fas fa-sync"></i></button>
               <button disabled="true" name="trigger" title="{{ 'LOGICS.TRIGGER'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right"><i class="fas fa-hand-pointer"></i></button>
-            </ng-template>
-          </ng-template>
-          <ng-template #logicIsNotLoaded>
+            }
+          } @else {
             <button disabled="true" name="enable"  title="{{ 'LOGICS.ENABLE'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="enableLogic(logic.name);"><i class="fas fa-play"></i></button>
             <button disabled="true" name="reload"  title="{{ 'LOGICS.RELOAD'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="reloadLogic(logic.name);"><i class="fas fa-sync"></i></button>
             <button disabled="true" name="trigger" title="{{ 'LOGICS.TRIGGER'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right"><i class="fas fa-hand-pointer"></i></button>
-          </ng-template>
+          }
 
         </div>
         <div class="tab-content-parameter">
@@ -125,27 +117,27 @@
             </tr>
             <tr>
               <td width="15%">{{ 'LOGIC_EDIT.STATUS'|translate }}</td>
-              <ng-container *ngIf="logic && logic.enabled">
+              @if (logic && logic.enabled) {
                 <td width="35%"><span style="color: var(--shng-green);  vertical-align: middle" class="fas fa-play-circle"></span> {{ 'LOGIC_EDIT.ACTIVE'|translate }}</td>
-              </ng-container>
-              <ng-container *ngIf="logic && !logic.enabled">
+              }
+              @if (logic && !logic.enabled) {
                 <td width="35%"><span style="color: var(--shng-red);  vertical-align: middle" class="fas fa-play-circle"></span> {{ 'LOGIC_EDIT.INACTIVE'|translate }}</td>
-              </ng-container>
+              }
               <td width="20%"></td>
               <td width="30%"></td>
             </tr>
             <tr>
               <td>{{ 'LOGIC_EDIT.LAST_EXEC'|translate }}</td>
               <td>
-                <ng-container *ngIf="logic">
+                @if (logic) {
                   {{ logic.last_run }}
-                </ng-container>
+                }
               </td>
               <td>{{ 'LOGIC_EDIT.NEXT_EXEC'|translate }}</td>
               <td>
-                <ng-container *ngIf="logic">
+                @if (logic) {
                   {{ logic.next_exec }}
-                </ng-container>
+                }
               </td>
             </tr>
 
@@ -167,19 +159,21 @@
               </td>
             </tr>
             <tr>
-              <td>Watch Item(s)<ng-container *ngIf='this.logic.watch_item!==undefined'>: {{ this.logic.watch_item.length }}</ng-container></td>
+              <td>Watch Item(s)@if (this.logic.watch_item!==undefined) {: {{ this.logic.watch_item.length }}}</td>
               <td colspan="3">
-                <ng-container *ngIf='this.logic.watch_item!==undefined'>
-                  <ng-container *ngFor="let watch_item of this.logic.watch_item">
+                @if (this.logic.watch_item!==undefined) {
+                  @for (watch_item of this.logic.watch_item; track $index) {
                     <button pButton label="{{watch_item}}" type="button" id="{{watch_item}}" icon="fa fa-times" (click)="removeItem(watch_item)" class="float-sm-left ui-button-secondary mr-2 mb-2"></button>
-                  </ng-container>
-                  <ng-container *ngIf="this.logic.watch_item.length > 0">
+                  }
+                  @if (this.logic.watch_item.length > 0) {
                     <br style="clear:both;"/>
-                  </ng-container>
-                </ng-container>
-                <alert *ngIf="this.wrongWatchItem" type="danger" [dismissible]="true" (onClosed)="this.wrongWatchItem = false">
-                  {{ 'LOGIC_EDIT.ITEM_INVALID'|translate }}
-                </alert>
+                  }
+                }
+                @if (this.wrongWatchItem) {
+                  <alert type="danger" [dismissible]="true" (onClosed)="this.wrongWatchItem = false">
+                    {{ 'LOGIC_EDIT.ITEM_INVALID'|translate }}
+                  </alert>
+                }
                 <div>
                   <div style="float:left;">
                   <ngx-codemirror #watchitems (keyup)="watchItemKeyUp($event)"
@@ -204,55 +198,61 @@
           <p-table [columns]="parameter_cols" [value]="parameters" selectionMode="single">
             <ng-template pTemplate="header" let-columns>
               <tr>
-                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [ngStyle]="{'width': col.width}">
-                  {{col.header|translate}}
-                  <p-sortIcon *ngIf="col.field !== ''" [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
-                </th>
+                @for (col of columns; track $index) {
+                  <th [pSortableColumn]="col.field" [ngStyle]="{'width': col.width}">
+                    {{col.header|translate}}
+                    @if (col.field !== '') {
+                      <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    }
+                  </th>
+                }
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-rowData let-columns="columns">
               <tr>
-                <td *ngFor="let col of columns">
+                @for (col of columns; track $index) {
+                <td>
 
-                  <ng-container *ngIf="col.field === 'value'">
-                    <ng-container *ngIf="rowData.valid_list.length > 0">
+                  @if (col.field === 'value') {
+                    @if (rowData.valid_list.length > 0) {
                       <p-select [options]="rowData.valid_list" (onChange)="this.logicChanged = hasLogicChanged()" [showClear]="true" placeholder="{{rowData.default}}" [(ngModel)]="rowData[col.field]" (ngModelChange)="rowData[col.field] = $event"></p-select>
-                    </ng-container>
+                    }
 
-                    <ng-container *ngIf="(['int','num','float','scene'].indexOf(rowData.type) > -1) && rowData.valid_list.length === 0">
+                    @if ((['int','num','float','scene'].indexOf(rowData.type) > -1) && rowData.valid_list.length === 0) {
                       <input [(ngModel)]="rowData[col.field]" (keyup)="this.logicChanged = hasLogicChanged()" type="number" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                    </ng-container>
+                    }
 
-                    <ng-container *ngIf="rowData.type === 'hide-int' && rowData.valid_list.length === 0">
+                    @if (rowData.type === 'hide-int' && rowData.valid_list.length === 0) {
                       <input [(ngModel)]="rowData[col.field]" (keyup)="this.logicChanged = hasLogicChanged()" type="number" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                    </ng-container>
-                    <ng-container *ngIf="rowData.type === 'hide-str' && rowData.valid_list.length === 0">
+                    }
+                    @if (rowData.type === 'hide-str' && rowData.valid_list.length === 0) {
                       <input [(ngModel)]="rowData[col.field]" (keyup)="this.logicChanged = hasLogicChanged()" type="password" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                    </ng-container>
+                    }
 
-                    <ng-container *ngIf="rowData.type !== 'bool' && ['int','num','float','scene','hide-str', 'hide-int'].indexOf(rowData.type) === -1 && rowData.valid_list.length === 0">
+                    @if (rowData.type !== 'bool' && ['int','num','float','scene','hide-str', 'hide-int'].indexOf(rowData.type) === -1 && rowData.valid_list.length === 0) {
                       <input [(ngModel)]="rowData[col.field]" (keyup)="this.logicChanged = hasLogicChanged()" type="text" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                    </ng-container>
-                  </ng-container>
+                    }
+                  }
 
-                  <ng-container *ngIf="col.field !== 'value'">
-                    <ng-container *ngIf="col.field !== 'desc'">
+                  @if (col.field !== 'value') {
+                    @if (col.field !== 'desc') {
                       {{rowData[col.field]}}
-                    </ng-container>
-                    <ng-container *ngIf="col.field === 'desc'">
-                      <ng-container *ngFor="let bl of rowData[col.field].split('\n')">
+                    }
+                    @if (col.field === 'desc') {
+                      @for (bl of rowData[col.field].split('\n'); track $index) {
                         {{ bl }}<br>
-                      </ng-container>
-                    </ng-container>
+                      }
+                    }
                     <!--
-                                  <ng-container *ngIf="typeof rowData[col.field]  !== 'string'">
-                                    <ng-container *ngFor="let bl of col.field">
+                                  @if (typeof rowData[col.field]  !== 'string') {
+                                    @for (bl of col.field; track $index) {
                                       {{ bl }}}
-                                    </ng-container>
-                                  </ng-container>
+                                    }
+                                  }
                     -->
-                  </ng-container>
+                  }
                 </td>
+                }
               </tr>
             </ng-template>
 
@@ -330,4 +330,3 @@
     <button pButton type="button" (click)="parameterHelp_display = false;" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
   </p-footer>
 </p-dialog>
-

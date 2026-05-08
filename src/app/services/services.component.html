@@ -58,14 +58,14 @@
                   <td><strong>{{serverInfo.daemon_mqtt|translate}}</strong></td>
                   <td></td>
                 </tr>
-                <ng-container *ngIf="serverInfo.daemon_node_red !== 'SERVICES.INACTIVE'">
+                @if (serverInfo.daemon_node_red !== 'SERVICES.INACTIVE') {
                   <tr>
                     <td class="row-icon"><img ngSrc="assets/img/node-red.png" alt="Icon node_red" width="48" height="48"></td>
                     <td>{{'SERVICES.NODE_RED_SUPPORT'|translate}}</td>
                     <td><strong>{{serverInfo.daemon_node_red|translate}}</strong></td>
                     <td></td>
                   </tr>
-                </ng-container>
+                }
                 <tr>
                   <td class="row-icon">
                     <img ngSrc="assets/img/password.svg" alt="Icon password" width="48" height="48">
@@ -254,7 +254,7 @@
             </tr></thead>
 
             <tbody>
-              <ng-container *ngFor="let cacheEntry of cacheInfo; index as i">
+              @for (cacheEntry of cacheInfo; track $index; let i = $index) {
                 <tr>
                   <td><input [(ngModel)]="cacheEntry.checked" type="checkbox"/></td>
                   <td>{{ cacheEntry.filename }}</td>
@@ -264,18 +264,18 @@
                     <button pButton type="button" (click)="deleteCacheEntry(i)" label="{{'BUTTON.DELETE'|translate}}" class="ui-button-success"></button>
                   </td>
                 </tr>
-              </ng-container>
+              }
             </tbody>
           </table>
           </div>
 
           <div class="tab-content-services-cache-footer">
-          <ng-container *ngIf="cacheInfo.length !== 0">
+          @if (cacheInfo.length !== 0) {
             <button pButton type="button" (click)="deleteCacheSelected()" label="{{'BUTTON.DELETE_SELECTED'|translate}}" class="ui-button-success"></button>
-          </ng-container>
-          <ng-container *ngIf="cacheInfo.length === 0">
+          }
+          @if (cacheInfo.length === 0) {
             <button pButton type="button" (click)="loadCacheOrphans()" label="{{'BUTTON.UPDATE'|translate}}" class="ui-button-success"></button>
-          </ng-container>
+          }
           </div>
       </div>
     </tab>

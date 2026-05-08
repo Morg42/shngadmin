@@ -6,8 +6,12 @@
   <form class="form-signin" #f="ngForm" (ngSubmit)="signIn(f.value)">
     <h2 class="form-signin-heading">{{ 'LOGIN.PLEASE_SIGN_IN'|translate }}</h2>
 
-    <div *ngIf="invalidLogin" class="alert alert-danger">{{ 'LOGIN.INVALID_SIGNIN'|translate }}</div>
-    <div *ngIf="authService.expiredLogin" class="alert alert-warning">{{ 'LOGIN.EXPIRED_SIGNIN'|translate }}</div>
+    @if (invalidLogin) {
+      <div class="alert alert-danger">{{ 'LOGIN.INVALID_SIGNIN'|translate }}</div>
+    }
+    @if (authService.expiredLogin) {
+      <div class="alert alert-warning">{{ 'LOGIN.EXPIRED_SIGNIN'|translate }}</div>
+    }
 
     <label for="inputUsername" class="sr-only">{{ 'LOGIN.USERNAME'|translate }}</label>
     <input type="text" autocomplete="off" id="inputUsername" name="username" ngModel class="form-control" placeholder="{{ 'LOGIN.USERNAME'|translate }}" required autofocus>

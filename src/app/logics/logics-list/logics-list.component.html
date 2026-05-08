@@ -10,27 +10,27 @@
         <button pButton type="button" style="margin-left: 0; margin-left: 10px; margin-top: 10px; font-size: medium;" id="newLogicButton" [disabled]="false" (click)="newLogic();" icon="fa fa-plus" label="{{ 'BUTTON.NEW_LOGIC'|translate }}" class="ui-button-success float-sm-left"></button>
       </div>
 
-      <ng-container *ngIf="nogroups === false">
+      @if (nogroups === false) {
         <div style="max-width: 1425px">
         <p-accordion [activeIndex]="groupExpandedOnStart" [multiple]="true" (onOpen)="groupOpened($event)" (onClose)="groupClosed($event)">
-          <ng-container *ngFor="let group of groupList">
+          @for (group of groupList; track $index) {
             <p-accordionTab>
               <p-header>
-                <ng-container *ngIf="group.name === ''">
+                @if (group.name === '') {
                   <span style="font-size: large; font-weight: bold; ">{{ 'LOGICS.NOGROUP_TITLE'|translate }}</span>
-                </ng-container>
-                <ng-container *ngIf="group.name !== '' && group.title !== ''">
+                }
+                @if (group.name !== '' && group.title !== '') {
                   <span style="font-size: large; font-weight: bold; ">{{ group.name }} - {{ group.title }}</span>
-                </ng-container>
-                <ng-container *ngIf="group.name !== '' && group.title === ''">
+                }
+                @if (group.name !== '' && group.title === '') {
                   <span style="font-size: large; font-weight: bold; ">{{ group.name }}</span>
-                </ng-container>
+                }
               </p-header>
 
-              <ng-container *ngIf="group.description !== undefined && group.description !== ''">
+              @if (group.description !== undefined && group.description !== '') {
                 <span style="margin-left: 20px">{{ group.description }}</span>
                 <br><br>
-              </ng-container>
+              }
 
               <table id="1g" class="table table-striped table-hover" style="margin-left: 20px">
 
@@ -49,13 +49,12 @@
                   </thead>
 
                   <tbody>
-                  <ng-container *ngIf="userlogics?.length > 0">
-                    <ng-container *ngFor="let logic of userlogics">
-                      <ng-container *ngIf="logic.userlogic === true">
-                        <ng-container *ngIf="logic.group.indexOf(group.name) > -1">
+                  @if (userlogics?.length > 0) {
+                    @for (logic of userlogics; track $index) {
+                      @if (logic.userlogic === true) {
+                        @if (logic.group.indexOf(group.name) > -1) {
                           <tr>
-                            <ng-container *ngIf="logic.enabled === true, then logicEnabled; else logicDisabled"></ng-container>
-                            <ng-template #logicEnabled>
+                            @if (logic.enabled === true) {
                               <td class="p-1 pl-2"><span style="color: var(--shng-green);" title="{{ 'LOGICS.ENABLED'|translate }}" class="fas fa-play-circle"></span></td>
                               <td class="p-1">
                                 {{ logic.name }}<br>
@@ -64,8 +63,7 @@
                               <td class="p-1">{{ logic.next_exec }}</td>
                               <td class="p-1">{{ logic.cycle }}</td>
                               <td class="p-1">{{ logic.crontab }}</td>
-                            </ng-template>
-                            <ng-template #logicDisabled>
+                            } @else {
                               <td class="p-1 pl-2"><span style="color: var(--shng-red)" title="{{ 'LOGICS.DISABLED'|translate }}" class="fas fa-pause-circle"></span></td>
                               <td class="p-1">
                                 {{ logic.name }}<br>
@@ -74,52 +72,46 @@
                               <td class="p-1" style="color: var(--shng-disabled)">{{ logic.next_exec }}</td>
                               <td class="p-1" style="color: var(--shng-disabled)">{{ logic.cycle }}</td>
                               <td class="p-1" style="color: var(--shng-disabled)">{{ logic.crontab }}</td>
-                            </ng-template>
+                            }
 
-                            <ng-container *ngIf="logic.watch_item_list?.length > 0">
+                            @if (logic.watch_item_list?.length > 0) {
                               <td style="cursor: pointer;" (click)="details.show()">
-                                <ng-container *ngIf="logic.enabled; then watchItemSizeEnabled; else watchItemSizeDisabled"></ng-container>
-                                <ng-template #watchItemSizeEnabled>
+                                @if (logic.enabled) {
                                   <span>
                                     {{ logic.watch_item_list?.length }}
                                     <span class="fas fa-search"></span>
                                   </span>
-                                </ng-template>
-                                <ng-template #watchItemSizeDisabled>
+                                } @else {
                                   <span style="color:var(--shng-disabled);">
                                     {{ logic.watch_item_list?.length }}
                                     <span class="fas fa-search" style="color: var(--shng-disabled);"></span>
                                   </span>
-                                </ng-template>
+                                }
                               </td>
-                            </ng-container>
-                            <ng-container *ngIf="logic.watch_item_list?.length === 0">
+                            }
+                            @if (logic.watch_item_list?.length === 0) {
                               <td class="p-1">-</td>
-                            </ng-container>
+                            }
 
                             <td class="p-1">
-                              <ng-container *ngIf="logic.logictype === 'Blockly'; then blocklyLink; else noBlocklyLink">
-                              </ng-container>
-                              <ng-template #blocklyLink></ng-template>
-                              <ng-template #noBlocklyLink>
+                              @if (logic.logictype === 'Blockly') {
+                              } @else {
                                 <!--
                                 <a class="text-shng" [routerLink]="['/logics/edit', logic.filename]">{{ logic.filename }}</a>
                                 -->
                                 <a id="userlogics_{{ logic.filename }}" class="text-shng" [routerLink]="['/logics/edit', logic.name + '|' + logic.filename]">{{ logic.filename }}</a>
-                              </ng-template>
+                              }
                             </td>
                             <td class="p-1">
-                              <ng-container *ngIf="logic.enabled; then logicEnabledActions; else logicDisabledActions"></ng-container>
-                              <ng-template #logicEnabledActions>
+                              @if (logic.enabled) {
                                 <button name="trigger" title="{{ 'LOGICS.TRIGGER'|translate }}" class="btn btn-outline-dark btn-sm mr-1" (click)="triggerLogic(logic.name);"><i class="fas fa-hand-pointer"></i></button>
                                 <button name="reload"  title="{{ 'LOGICS.RELOAD'|translate }}" class="btn btn-outline-dark btn-sm mr-1" (click)="reloadLogic(logic.name);"><i class="fas fa-sync"></i></button>
                                 <button name="disable" title="{{ 'LOGICS.DISABLE'|translate }}" class="btn btn-outline-dark btn-sm mr-1" (click)="disableLogic(logic.name);"><i class="fas fa-pause"></i></button>
-                              </ng-template>
-                              <ng-template #logicDisabledActions>
+                              } @else {
                                 <button disabled="true" name="trigger" title="{{ 'LOGICS.TRIGGER'|translate }}" class="btn btn-outline-dark btn-sm mr-1"><i class="fas fa-hand-pointer"></i></button>
                                 <button name="reload"  title="{{ 'LOGICS.RELOAD'|translate }}" class="btn btn-outline-dark btn-sm mr-1" (click)="reloadLogic(logic.name);"><i class="fas fa-sync"></i></button>
                                 <button name="enable"  title="{{ 'LOGICS.ENABLE'|translate }}" class="btn btn-outline-dark btn-sm mr-1" (click)="enableLogic(logic.name);"><i class="fas fa-play"></i></button>
-                              </ng-template>
+                              }
                               <button name="unload" title="{{ 'LOGICS.UNLOAD'|translate }}" class="btn btn-outline-dark btn-sm mr-1" (click)="unloadLogic(logic.name);"><i class="fas fa-eject"></i></button>
                               <button name="delete" title="{{ 'LOGICS.DELETE'|translate }}" class="btn btn-outline-danger btn-sm" (click)="deleteLogic(logic.name, logic.filename);"><i class="far fa-trash-alt" aria-hidden="true" style="color: var(--shng-red);"></i></button>
                             </td>
@@ -139,9 +131,9 @@
                                   <div class="modal-body">
                                     <div class="card" style="margin-bottom: 5px;">
                                       <div class="card-body p-1">
-                                        <ng-container *ngFor="let watch_item of logic.watch_item_list">
+                                        @for (watch_item of logic.watch_item_list; track $index) {
                                           <div class="item-box m-1 p-1">{{ watch_item }}</div>
-                                        </ng-container>
+                                        }
                                       </div>
                                     </div>
                                   </div>
@@ -149,13 +141,13 @@
                               </div>
                             </div>
                           </div>
-                        </ng-container>
-                      </ng-container>
-                    </ng-container>
-                  </ng-container>
-                  <ng-container *ngIf="userlogics?.length == 0">
+                        }
+                      }
+                    }
+                  }
+                  @if (userlogics?.length == 0) {
                     <tr><td colspan="8">{{ 'LOGICS.NO_DATA'|translate }}</td></tr>
-                  </ng-container>
+                  }
 
                   </tbody>
                 </div>
@@ -163,7 +155,7 @@
               </table>
 
             </p-accordionTab>
-          </ng-container>
+          }
         </p-accordion>
         </div>
 
@@ -172,7 +164,7 @@
           <div  class="tab-header">
           </div>
           <div>
-            <ng-container *ngIf="newlogics?.length >0">
+            @if (newlogics?.length >0) {
               <thead>
               <tr class="shng_heading">
                 <th style="width: 30px; border-top:0;"></th>
@@ -186,28 +178,26 @@
                 </th>
               </tr>
               </thead>
-            </ng-container>
+            }
 
             <tbody>
-            <ng-container *ngIf="userlogics?.length == 0">
+            @if (userlogics?.length == 0) {
               <tr><td colspan="8">{{ 'LOGICS.NO_DATA'|translate }}</td></tr>
-            </ng-container>
+            }
 
-            <ng-container *ngIf="newlogics?.length >0">
+            @if (newlogics?.length >0) {
               <tr></tr>
               <tr><th colspan="8">{{ 'LOGICS.NEW_LOGICS'|translate }}</th><tr>
-            </ng-container>
-            <ng-container *ngFor="let logic of newlogics">
-              <ng-container *ngIf="logic.userlogic === true">
+            }
+            @for (logic of newlogics; track $index) {
+              @if (logic.userlogic === true) {
                 <tr>
                   <td class="p-1 pl-2">
-                    <ng-container *ngIf="logic.enabled === true, then logicEnabled; else logicDisabled"></ng-container>
-                    <ng-template #logicEnabled>
+                    @if (logic.enabled === true) {
                       <span style="color: var(--shng-green);" class="fas fa-play-circle"></span>
-                    </ng-template>
-                    <ng-template #logicDisabled>
+                    } @else {
                       <span style="color: var(--shng-red)" class="fas fa-pause-circle"></span>
-                    </ng-template>
+                    }
                   </td>
                   <td class="p-1">
                     {{ logic.name }}<br>
@@ -218,39 +208,37 @@
                   <td class="p-1"></td>
                   <td class="p-1"></td>
                   <td class="p-1">
-                    <ng-container *ngIf="logic.logictype === 'Blockly'; then blocklyLink; else noBlocklyLink">
-                    </ng-container>
-                    <ng-template #blocklyLink></ng-template>
-                    <ng-template #noBlocklyLink>
+                    @if (logic.logictype === 'Blockly') {
+                    } @else {
                       <!--
                       <a class="text-shng" href="logics_view.html?file_path={{ logic.pathname }}&logicname={{ logic.name }}">{{ logic.filename }}</a>
                       -->
                       <a id="newlogics_{{ logic.filename }}" class="text-shng" [routerLink]="['/logics/edit', logic.name + '|' + logic.filename]">{{ logic.filename }}</a>
-                    </ng-template>
+                    }
                   </td>
                   <td class="p-1">
-                    <ng-container *ngIf="logic.filename != ''">
+                    @if (logic.filename != '') {
                       <button name="add" title="{{ 'LOGICS.ADD'|translate }}" type="submit" class="btn btn-outline-dark btn-sm mr-1" (click)="loadLogic(logic.name);"><i class="fas fa-plus"></i></button>
-                    </ng-container>
+                    }
                     <button name="delete" title="{{ 'LOGICS.DELETE'|translate }}" class="btn btn-outline-danger btn-sm" (click)="deleteLogic(logic.name, logic.filename);"><i class="far fa-trash-alt" aria-hidden="true" style="color: var(--shng-red);"></i></button>
                   </td>
                 </tr>
-              </ng-container>
-            </ng-container>
+              }
+            }
             </tbody>
           </div>
 
         </table>
-      </ng-container>
+      }
 
-      <ng-container *ngIf="nogroups === true">
+      @if (nogroups === true) {
         <table id="1ng" class="table table-striped table-hover">
 
           <div  class="tab-header">
           </div>
           <div  class="tab-content">
             <thead>
-            <ng-container *ngIf="userlogics?.length > 0">
+            @if (userlogics?.length > 0) {
               <tr class="shng_heading">
                 <th style="width: 30px; border-top:0;"></th>
                 <th class="p-1" style="width: 320px; border-top: 0;">{{ 'LOGICS.LOGIC'|translate }}</th>
@@ -266,74 +254,66 @@
                   </div>
                 </th>
               </tr>
-            </ng-container>
+            }
             </thead>
 
             <tbody>
-            <ng-container *ngIf="userlogics?.length > 0">
-              <ng-container *ngFor="let logic of userlogics">
-                <ng-container *ngIf="logic.userlogic === true">
+            @if (userlogics?.length > 0) {
+              @for (logic of userlogics; track $index) {
+                @if (logic.userlogic === true) {
                   <tr>
-                    <ng-container *ngIf="logic.enabled === true, then logicEnabled; else logicDisabled"></ng-container>
-                    <ng-template #logicEnabled>
+                    @if (logic.enabled === true) {
                       <td class="p-1 pl-2"><span style="color: var(--shng-green);" title="{{ 'LOGICS.ENABLED'|translate }}" class="fas fa-play-circle"></span></td>
                       <td class="p-1">{{ logic.name }}</td>
                       <td class="p-1">{{ logic.next_exec }}</td>
                       <td class="p-1">{{ logic.cycle }}</td>
                       <td class="p-1">{{ logic.crontab }}</td>
-                    </ng-template>
-                    <ng-template #logicDisabled>
+                    } @else {
                       <td class="p-1 pl-2"><span style="color: var(--shng-red)" title="{{ 'LOGICS.DISABLED'|translate }}" class="fas fa-pause-circle"></span></td>
                       <td class="p-1">{{ logic.name }}</td>
                       <td class="p-1" style="color: var(--shng-disabled)">{{ logic.next_exec }}</td>
                       <td class="p-1" style="color: var(--shng-disabled)">{{ logic.cycle }}</td>
                       <td class="p-1" style="color: var(--shng-disabled)">{{ logic.crontab }}</td>
-                    </ng-template>
+                    }
 
-                    <ng-container *ngIf="logic.watch_item_list?.length > 0">
+                    @if (logic.watch_item_list?.length > 0) {
                       <td style="cursor: pointer;" (click)="details.show()">
-                        <ng-container *ngIf="logic.enabled; then watchItemSizeEnabled; else watchItemSizeDisabled"></ng-container>
-                        <ng-template #watchItemSizeEnabled>
-                                  <span>
-                                    {{ logic.watch_item_list?.length }}
-                                    <span class="fas fa-search"></span>
-                                  </span>
-                        </ng-template>
-                        <ng-template #watchItemSizeDisabled>
-                                  <span style="color:var(--shng-disabled);">
-                                    {{ logic.watch_item_list?.length }}
-                                    <span class="fas fa-search" style="color: var(--shng-disabled);"></span>
-                                  </span>
-                        </ng-template>
+                        @if (logic.enabled) {
+                          <span>
+                            {{ logic.watch_item_list?.length }}
+                            <span class="fas fa-search"></span>
+                          </span>
+                        } @else {
+                          <span style="color:var(--shng-disabled);">
+                            {{ logic.watch_item_list?.length }}
+                            <span class="fas fa-search" style="color: var(--shng-disabled);"></span>
+                          </span>
+                        }
                       </td>
-                    </ng-container>
-                    <ng-container *ngIf="logic.watch_item_list?.length === 0">
+                    }
+                    @if (logic.watch_item_list?.length === 0) {
                       <td class="p-1">-</td>
-                    </ng-container>
+                    }
 
                     <td class="p-1">
-                      <ng-container *ngIf="logic.logictype === 'Blockly'; then blocklyLink; else noBlocklyLink">
-                      </ng-container>
-                      <ng-template #blocklyLink></ng-template>
-                      <ng-template #noBlocklyLink>
+                      @if (logic.logictype === 'Blockly') {
+                      } @else {
                         <!--
                         <a class="text-shng" [routerLink]="['/logics/edit', logic.filename]">{{ logic.filename }}</a>
                         -->
                         <a id="userlogics_{{ logic.filename }}" class="text-shng" [routerLink]="['/logics/edit', logic.name + '|' + logic.filename]">{{ logic.filename }}</a>
-                      </ng-template>
+                      }
                     </td>
                     <td class="p-1">
-                      <ng-container *ngIf="logic.enabled; then logicEnabledActions; else logicDisabledActions"></ng-container>
-                      <ng-template #logicEnabledActions>
+                      @if (logic.enabled) {
                         <button name="trigger" title="{{ 'LOGICS.TRIGGER'|translate }}" class="btn btn-outline-dark btn-sm mr-1" (click)="triggerLogic(logic.name);"><i class="fas fa-hand-pointer"></i></button>
                         <button name="reload"  title="{{ 'LOGICS.RELOAD'|translate }}" class="btn btn-outline-dark btn-sm mr-1" (click)="reloadLogic(logic.name);"><i class="fas fa-sync"></i></button>
                         <button name="disable" title="{{ 'LOGICS.DISABLE'|translate }}" class="btn btn-outline-dark btn-sm mr-1" (click)="disableLogic(logic.name);"><i class="fas fa-pause"></i></button>
-                      </ng-template>
-                      <ng-template #logicDisabledActions>
+                      } @else {
                         <button disabled="true" name="trigger" title="{{ 'LOGICS.TRIGGER'|translate }}" class="btn btn-outline-dark btn-sm mr-1"><i class="fas fa-hand-pointer"></i></button>
                         <button name="reload"  title="{{ 'LOGICS.RELOAD'|translate }}" class="btn btn-outline-dark btn-sm mr-1" (click)="reloadLogic(logic.name);"><i class="fas fa-sync"></i></button>
                         <button name="enable"  title="{{ 'LOGICS.ENABLE'|translate }}" class="btn btn-outline-dark btn-sm mr-1" (click)="enableLogic(logic.name);"><i class="fas fa-play"></i></button>
-                      </ng-template>
+                      }
                       <button name="unload" title="{{ 'LOGICS.UNLOAD'|translate }}" class="btn btn-outline-dark btn-sm mr-1" (click)="unloadLogic(logic.name);"><i class="fas fa-eject"></i></button>
                       <button name="delete" title="{{ 'LOGICS.DELETE'|translate }}" class="btn btn-outline-danger btn-sm" (click)="deleteLogic(logic.name, logic.filename);"><i class="far fa-trash-alt" aria-hidden="true" style="color: var(--shng-red);"></i></button>
                     </td>
@@ -353,9 +333,9 @@
                           <div class="modal-body">
                             <div class="card" style="margin-bottom: 5px;">
                               <div class="card-body p-1">
-                                <ng-container *ngFor="let watch_item of logic.watch_item_list">
+                                @for (watch_item of logic.watch_item_list; track $index) {
                                   <div class="item-box m-1 p-1">{{ watch_item }}</div>
-                                </ng-container>
+                                }
                               </div>
                             </div>
                           </div>
@@ -363,27 +343,25 @@
                       </div>
                     </div>
                   </div>
-                </ng-container>
-              </ng-container>
-            </ng-container>
-            <ng-container *ngIf="userlogics?.length == 0">
+                }
+              }
+            }
+            @if (userlogics?.length == 0) {
               <tr><td colspan="8">{{ 'LOGICS.NO_DATA'|translate }}</td></tr>
-            </ng-container>
+            }
 
-            <ng-container *ngIf="newlogics?.length >0">
+            @if (newlogics?.length >0) {
               <tr><th colspan="8">{{ 'LOGICS.NEW_LOGICS'|translate }}</th><tr>
-            </ng-container>
-            <ng-container *ngFor="let logic of newlogics">
-              <ng-container *ngIf="logic.userlogic === true">
+            }
+            @for (logic of newlogics; track $index) {
+              @if (logic.userlogic === true) {
                 <tr>
                   <td class="p-1 pl-2">
-                    <ng-container *ngIf="logic.enabled === true, then logicEnabled; else logicDisabled"></ng-container>
-                    <ng-template #logicEnabled>
+                    @if (logic.enabled === true) {
                       <span style="color: var(--shng-green);" class="fas fa-play-circle"></span>
-                    </ng-template>
-                    <ng-template #logicDisabled>
+                    } @else {
                       <span style="color: var(--shng-red)" class="fas fa-pause-circle"></span>
-                    </ng-template>
+                    }
                   </td>
                   <td class="p-1">{{ logic.name }}</td>
                   <td class="p-1"></td>
@@ -391,178 +369,28 @@
                   <td class="p-1"></td>
                   <td class="p-1"></td>
                   <td class="p-1">
-                    <ng-container *ngIf="logic.logictype === 'Blockly'; then blocklyLink; else noBlocklyLink">
-                    </ng-container>
-                    <ng-template #blocklyLink></ng-template>
-                    <ng-template #noBlocklyLink>
+                    @if (logic.logictype === 'Blockly') {
+                    } @else {
                       <!--
                       <a class="text-shng" href="logics_view.html?file_path={{ logic.pathname }}&logicname={{ logic.name }}">{{ logic.filename }}</a>
                       -->
                       <a id="newlogics_{{ logic.filename }}" class="text-shng" [routerLink]="['/logics/edit', logic.name + '|' + logic.filename]">{{ logic.filename }}</a>
-                    </ng-template>
+                    }
                   </td>
                   <td class="p-1">
-                    <ng-container *ngIf="logic.filename != ''">
+                    @if (logic.filename != '') {
                       <button name="add" title="{{ 'LOGICS.ADD'|translate }}" type="submit" class="btn btn-outline-dark btn-sm mr-1" (click)="loadLogic(logic.name);"><i class="fas fa-plus"></i></button>
-                    </ng-container>
+                    }
                     <button name="delete" title="{{ 'LOGICS.DELETE'|translate }}" class="btn btn-outline-danger btn-sm" (click)="deleteLogic(logic.name, logic.filename);"><i class="far fa-trash-alt" aria-hidden="true" style="color: var(--shng-red);"></i></button>
                   </td>
                 </tr>
-              </ng-container>
-            </ng-container>
+              }
+            }
             </tbody>
           </div>
 
-          <!--
-
-                    <div class="tab-content">
-                  <tbody>
-                  <ng-container *ngIf="userlogics?.length > 0">
-                    <ng-container *ngFor="let logic of userlogics">
-                      <ng-container *ngIf="logic.userlogic === true">
-                        <tr>
-                          <ng-container *ngIf="logic.enabled === true, then logicEnabled; else logicDisabled"></ng-container>
-                          <ng-template #logicEnabled>
-                            <td class="p-1 pl-2"><span style="color: var(--shng-green);" title="{{ 'LOGICS.ENABLED'|translate }}" class="fas fa-play-circle"></span></td>
-                            <td class="p-1">{{ logic.name }}</td>
-                            <td class="p-1">{{ logic.next_exec }}</td>
-                            <td class="p-1">{{ logic.cycle }}</td>
-                            <td class="p-1">{{ logic.crontab }}</td>
-                          </ng-template>
-                          <ng-template #logicDisabled>
-                            <td class="p-1 pl-2"><span style="color: var(--shng-red)" title="{{ 'LOGICS.DISABLED'|translate }}" class="fas fa-pause-circle"></span></td>
-                            <td class="p-1">{{ logic.name }}</td>
-                            <td class="p-1" style="color: var(--shng-disabled)">{{ logic.next_exec }}</td>
-                            <td class="p-1" style="color: var(--shng-disabled)">{{ logic.cycle }}</td>
-                            <td class="p-1" style="color: var(--shng-disabled)">{{ logic.crontab }}</td>
-                          </ng-template>
-
-                          <ng-container *ngIf="logic.watch_item_list?.length > 0">
-                            <td style="cursor: pointer;" (click)="details.show()">
-                              <ng-container *ngIf="logic.enabled; then watchItemSizeEnabled; else watchItemSizeDisabled"></ng-container>
-                                <ng-template #watchItemSizeEnabled>
-                                  <span>
-                                    {{ logic.watch_item_list?.length }}
-                                    <span class="fas fa-search"></span>
-                                  </span>
-                                </ng-template>
-                                <ng-template #watchItemSizeDisabled>
-                                  <span style="color:var(--shng-disabled);">
-                                    {{ logic.watch_item_list?.length }}
-                                    <span class="fas fa-search" style="color: var(--shng-disabled);"></span>
-                                  </span>
-                                </ng-template>
-                            </td>
-                          </ng-container>
-                          <ng-container *ngIf="logic.watch_item_list?.length === 0">
-                            <td class="p-1">-</td>
-                          </ng-container>
-
-                          <td class="p-1">
-                            <ng-container *ngIf="logic.logictype === 'Blockly'; then blocklyLink; else noBlocklyLink">
-                            </ng-container>
-                            <ng-template #blocklyLink></ng-template>
-                            <ng-template #noBlocklyLink>
-                              < !--
-                              <a class="text-shng" [routerLink]="['/logics/edit', logic.filename]">{{ logic.filename }}</a>
-                              -- >
-                              <a id="userlogics_{{ logic.filename }}" class="text-shng" [routerLink]="['/logics/edit', logic.name + '|' + logic.filename]">{{ logic.filename }}</a>
-                            </ng-template>
-                          </td>
-                          <td class="p-1">
-                            <ng-container *ngIf="logic.enabled; then logicEnabledActions; else logicDisabledActions"></ng-container>
-                              <ng-template #logicEnabledActions>
-                                <button name="trigger" title="{{ 'LOGICS.TRIGGER'|translate }}" class="btn btn-outline-dark btn-sm mr-1" (click)="triggerLogic(logic.name);"><i class="fas fa-hand-pointer"></i></button>
-                                <button name="reload"  title="{{ 'LOGICS.RELOAD'|translate }}" class="btn btn-outline-dark btn-sm mr-1" (click)="reloadLogic(logic.name);"><i class="fas fa-sync"></i></button>
-                                <button name="disable" title="{{ 'LOGICS.DISABLE'|translate }}" class="btn btn-outline-dark btn-sm mr-1" (click)="disableLogic(logic.name);"><i class="fas fa-pause"></i></button>
-                              </ng-template>
-                              <ng-template #logicDisabledActions>
-                                <button disabled="true" name="trigger" title="{{ 'LOGICS.TRIGGER'|translate }}" class="btn btn-outline-dark btn-sm mr-1"><i class="fas fa-hand-pointer"></i></button>
-                                <button name="reload"  title="{{ 'LOGICS.RELOAD'|translate }}" class="btn btn-outline-dark btn-sm mr-1" (click)="reloadLogic(logic.name);"><i class="fas fa-sync"></i></button>
-                                <button name="enable"  title="{{ 'LOGICS.ENABLE'|translate }}" class="btn btn-outline-dark btn-sm mr-1" (click)="enableLogic(logic.name);"><i class="fas fa-play"></i></button>
-                              </ng-template>
-                              <button name="unload" title="{{ 'LOGICS.UNLOAD'|translate }}" class="btn btn-outline-dark btn-sm mr-1" (click)="unloadLogic(logic.name);"><i class="fas fa-eject"></i></button>
-                              <button name="delete" title="{{ 'LOGICS.DELETE'|translate }}" class="btn btn-outline-danger btn-sm" (click)="deleteLogic(logic.name, logic.filename);"><i class="far fa-trash-alt" aria-hidden="true" style="color: var(--shng-red);"></i></button>
-                          </td>
-                        </tr>
-                        <div bsModal #details="bs-modal" class="modal fade" tabindex="1" role="dialog" aria-labelledby="dialog-sizes-name2">
-                          <div class="vertical-alignment-helper">
-                            <div class="modal-dialog modal-lg vertical-align-center">
-                              <div class="modal-content">
-                                <div class="modal-header">
-                                  <h5 id="dialog-sizes-name2" class="modal-title pull-left">
-                                    {{ 'LOGICS.WATCH_ITEMS'|translate }}
-                                  </h5>
-                                  <button type="button" class="close pull-right" aria-label="Close" (click)="details.hide()">
-                                    <span aria-hidden="true">&times;</span>
-                                  </button>
-                                </div>
-                                <div class="modal-body">
-                                  <div class="card" style="margin-bottom: 5px;">
-                                    <div class="card-body p-1">
-                                      <ng-container *ngFor="let watch_item of logic.watch_item_list">
-                                      <div class="item-box m-1 p-1">{{ watch_item }}</div>
-                                      </ng-container>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </ng-container>
-                    </ng-container>
-                  </ng-container>
-                  <ng-container *ngIf="userlogics?.length == 0">
-                    <tr><td colspan="8">{{ 'LOGICS.NO_DATA'|translate }}</td></tr>
-                  </ng-container>
-
-                  <ng-container *ngIf="newlogics?.length >0">
-                    <tr><th colspan="8">{{ 'LOGICS.NEW_LOGICS'|translate }}</th><tr>
-                  </ng-container>
-                  <ng-container *ngFor="let logic of newlogics">
-                    <ng-container *ngIf="logic.userlogic === true">
-                      <tr>
-                        <td class="p-1 pl-2">
-                          <ng-container *ngIf="logic.enabled === true, then logicEnabled; else logicDisabled"></ng-container>
-                          <ng-template #logicEnabled>
-                            <span style="color: var(--shng-green);" class="fas fa-play-circle"></span>
-                          </ng-template>
-                          <ng-template #logicDisabled>
-                            <span style="color: var(--shng-red)" class="fas fa-pause-circle"></span>
-                          </ng-template>
-                        </td>
-                        <td class="p-1">{{ logic.name }}</td>
-                        <td class="p-1"></td>
-                        <td class="p-1"></td>
-                        <td class="p-1"></td>
-                        <td class="p-1"></td>
-                        <td class="p-1">
-                          <ng-container *ngIf="logic.logictype === 'Blockly'; then blocklyLink; else noBlocklyLink">
-                          </ng-container>
-                          <ng-template #blocklyLink></ng-template>
-                          <ng-template #noBlocklyLink>
-                            < !--
-                            <a class="text-shng" href="logics_view.html?file_path={{ logic.pathname }}&logicname={{ logic.name }}">{{ logic.filename }}</a>
-                            -- >
-                            <a id="newlogics_{{ logic.filename }}" class="text-shng" [routerLink]="['/logics/edit', logic.name + '|' + logic.filename]">{{ logic.filename }}</a>
-                          </ng-template>
-                        </td>
-                        <td class="p-1">
-                          <ng-container *ngIf="logic.filename != ''">
-                            <button name="add" title="{{ 'LOGICS.ADD'|translate }}" type="submit" class="btn btn-outline-dark btn-sm mr-1" (click)="loadLogic(logic.name);"><i class="fas fa-plus"></i></button>
-                          </ng-container>
-                          <button name="delete" title="{{ 'LOGICS.DELETE'|translate }}" class="btn btn-outline-danger btn-sm" (click)="deleteLogic(logic.name, logic.filename);"><i class="far fa-trash-alt" aria-hidden="true" style="color: var(--shng-red);"></i></button>
-                        </td>
-                      </tr>
-                    </ng-container>
-                  </ng-container>
-                  </tbody>
-                    </div>
-          -->
         </table>
-
-      </ng-container>
+      }
 
     </tab>
 
@@ -584,18 +412,16 @@
         </tr>
         </thead>
         <tbody>
-        <ng-container *ngIf="systemlogics?.length > 0">
-          <ng-container *ngFor="let logic of systemlogics">
-            <ng-container *ngIf="logic.userlogic === false">
+        @if (systemlogics?.length > 0) {
+          @for (logic of systemlogics; track $index) {
+            @if (logic.userlogic === false) {
               <tr>
                 <td class="p-1 pl-2">
-                  <ng-container *ngIf="logic.enabled === true, then logicEnabled; else logicDisabled"></ng-container>
-                  <ng-template #logicEnabled>
+                  @if (logic.enabled === true) {
                     <span style="color: green;" title="{{ 'LOGICS.ENABLED'|translate }}" class="fas fa-play-circle"></span>
-                  </ng-template>
-                  <ng-template #logicDisabled>
+                  } @else {
                     <span style="color: red" title="{{ 'LOGICS.DISABLED'|translate }}" class="fas fa-pause-circle"></span>
-                  </ng-template>
+                  }
                 </td>
                 <td class="p-1">
                   {{ logic.name }}<br>
@@ -608,12 +434,12 @@
                 <td class="p-1">{{ logic.filename }}</td>
                 <td></td>
               </tr>
-            </ng-container>
-          </ng-container>
-        </ng-container>
-        <ng-container *ngIf="systemlogics?.length == 0">
+            }
+          }
+        }
+        @if (systemlogics?.length == 0) {
           <tr><td colspan="8">{{ 'LOGICS.NO_DATA'|translate }}</td></tr>
-        </ng-container>
+        }
         </tbody>
       </table>
 
@@ -678,14 +504,15 @@
     <input [(ngModel)]="newlogic_filename" id="nfn" type="text" (focus)="onFocus();" (input)="checkNewLogicInput();" pInputText placeholder="" style="position: absolute; margin-left: 100px" [ngStyle]="{'width': 30}" autofocus/>
   </label>
   <br>
-  <alert *ngIf="this.wrongNewLogicName" type="danger" [dismissible]="true" (onClosed)="this.wrongNewLogicName=''" class="mt-2" id="newLogicsAlert">
-    {{ this.wrongNewLogicName|translate }}
-  </alert>
+  @if (this.wrongNewLogicName) {
+    <alert type="danger" [dismissible]="true" (onClosed)="this.wrongNewLogicName=''" class="mt-2" id="newLogicsAlert">
+      {{ this.wrongNewLogicName|translate }}
+    </alert>
+  }
   <p-footer>
     <button pButton type="button" id="createLogicsButton" icon="pi pi-check" (click)="this.wrongNewLogicName=''; this.createLogic()" [disabled]="!newlogic_add_enabled" (disabledChange)="newlogic_add_enabled = $event" label="{{'BUTTON.CREATE'|translate}}" class="ui-button-success"></button>
     <button pButton type="button" id="cancleCreateLogicsButton" icon="pi pi-times" (click)="this.wrongNewLogicName=''; newlogic_display=false" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
   </p-footer>
 </p-dialog>
-
 
 

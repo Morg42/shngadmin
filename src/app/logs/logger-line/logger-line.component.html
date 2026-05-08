@@ -1,44 +1,44 @@
 
-<ng-container *ngIf="loggerActive">
+@if (loggerActive) {
     <td class="py-1">{{ loggerName }}</td>
 
     <td class="py-1">
-        <ng-container *ngIf="loggerName !== 'root'">
+        @if (loggerName !== 'root') {
             <p-select [options]="levelOptions" [showClear]="false" placeholder="{{levelDefault}}" [(ngModel)]="logger.active.level" (ngModelChange)="levelChanged(loggerName, $event)"></p-select>
-        </ng-container>
-        <ng-container *ngIf="loggerName === 'root'">
+        }
+        @if (loggerName === 'root') {
             <a><b>{{ logger.active.level }}</b></a>
-        </ng-container>
+        }
     </td>
 
-    <ng-container *ngIf="logger.handlers === undefined || logger.handlers.length === 0">
+    @if (logger.handlers === undefined || logger.handlers.length === 0) {
         <td class="py-1" colspan="2">
             <a>( --> logger '{{ getParent(loggerName) }}' )</a>
         </td>
-    </ng-container>
-    <ng-container *ngIf="!(logger.handlers === undefined || logger.handlers.length === 0)">
+    }
+    @if (!(logger.handlers === undefined || logger.handlers.length === 0)) {
         <td class="py-1">
-            <ng-container *ngIf="(logger.propagate === false)">
+            @if (logger.propagate === false) {
                 <a><b>{{'LOGGERS.NO_PROPAGATION'|translate}}</b></a><br>
-            </ng-container>
-            <ng-container *ngFor="let h of logger.handlers; let i = index">
+            }
+            @for (h of logger.handlers; track i; let i = $index) {
                 <a>{{ h }}</a>
-                <ng-container *ngIf="h !== '' && i < logger.handlers.length - 1">,<br></ng-container>
-            </ng-container>
+                @if (h !== '' && i < logger.handlers.length - 1) {,<br>}
+            }
         </td>
         <td class="py-1">
-            <ng-container *ngIf="(logger.propagate === false)">
+            @if (logger.propagate === false) {
                 <a><b>{{'LOGGERS.NO_PROPAGATION_2'|translate}}</b></a><br>
-            </ng-container>
-            <ng-container *ngFor="let ah of logger.active.handlers; let i = index">
+            }
+            @for (ah of logger.active.handlers; track i; let i = $index) {
                 <a>{{ ah }}</a>
-                <ng-container *ngIf="ah !== '' && i < logger.active.handlers.length - 1">,<br></ng-container>
-            </ng-container>
+                @if (ah !== '' && i < logger.active.handlers.length - 1) {,<br>}
+            }
         </td>
-    </ng-container>
-</ng-container>
+    }
+}
 
-<ng-container *ngIf="!loggerActive">
+@if (!loggerActive) {
     <td class="py-1" style="color:darkgrey">{{ loggerName }}</td>
     <td class="py-1" style="color:darkgrey">
         <a>{{ logger.active.level }}</a>
@@ -47,43 +47,43 @@
         -->
     </td>
 
-    <ng-container *ngIf="logger.handlers === undefined || logger.handlers.length === 0">
+    @if (logger.handlers === undefined || logger.handlers.length === 0) {
         <td class="py-1" colspan="2" style="color:darkgrey">
             <a>( --> logger '{{ getParent(loggerName) }}' )</a>
         </td>
-    </ng-container>
-    <ng-container *ngIf="!(logger.handlers === undefined || logger.handlers.length === 0)">
+    }
+    @if (!(logger.handlers === undefined || logger.handlers.length === 0)) {
         <td class="py-1" style="color:darkgrey">
-            <ng-container *ngFor="let h of logger.handlers; let i = index">
+            @for (h of logger.handlers; track i; let i = $index) {
                 <a>{{ h }}</a>
-                <ng-container *ngIf="h !== '' && i < logger.handlers.length - 1">,<br></ng-container>
-            </ng-container>
+                @if (h !== '' && i < logger.handlers.length - 1) {,<br>}
+            }
         </td>
         <td class="py-1" style="color:darkgrey">
-            <ng-container *ngFor="let ah of logger.active.handlers; let i = index">
+            @for (ah of logger.active.handlers; track i; let i = $index) {
                 <a>{{ ah }}</a>
-                <ng-container *ngIf="ah !== '' && i < logger.active.handlers.length - 1">,<br></ng-container>
-            </ng-container>
+                @if (ah !== '' && i < logger.active.handlers.length - 1) {,<br>}
+            }
         </td>
-    </ng-container>
+    }
 
-</ng-container>
+}
 
 <td class="py-1">
-    <ng-container *ngIf="(logger.propagate === false)">
+    @if (logger.propagate === false) {
         <br>
-    </ng-container>
-    <ng-container *ngFor="let fn of logger.active.logfiles; let i = index">
+    }
+    @for (fn of logger.active.logfiles; track i; let i = $index) {
         <a class="text-shng" [routerLink]="['/logs/display', this.baseName(fn)]">{{ this.baseName(fn) }}</a>
-        <ng-container *ngIf="fn !== '' && i < logger.active.logfiles.length - 1 && logger.active.logfiles[i+1] !=''">,<br></ng-container>
-    </ng-container>
+        @if (fn !== '' && i < logger.active.logfiles.length - 1 && logger.active.logfiles[i+1] !='') {,<br>}
+    }
 </td>
 
 <td class="py-1">
     <button name="delete" title="{{ 'LOGGERS.HANDLER'|translate }}" class="btn btn-outline-dark btn-sm mr-1" (click)="chooseHandlers(loggerName);"><i class="far fa-hand-paper" aria-hidden="true"></i></button>
-    <ng-container *ngIf="loggerIsDeletable(loggerName)">
+    @if (loggerIsDeletable(loggerName)) {
         <button name="delete" title="{{ 'LOGGERS.DELETE'|translate }}" class="btn btn-outline-danger btn-sm mr-1" (click)="deleteLogger(loggerName);"><i class="far fa-trash-alt" aria-hidden="true" style="color: var(--shng-red);"></i></button>
-    </ng-container>
+    }
 </td>
 
 
@@ -125,53 +125,59 @@
     </p-header>
 
 
-    <ng-container *ngIf="this.choosableHandlers.length > 0">
+    @if (this.choosableHandlers.length > 0) {
         {{'LOGGERS.CHOOSE_HANDLERS_TEXT'|translate}}<br>
-        <ng-container *ngIf="!(logger.propagate === false)">
+        @if (!(logger.propagate === false)) {
             {{'LOGGERS.CHOOSE_HANDLERS_PROPAGATION_TEXT'|translate}}<br>
-        </ng-container>
+        }
         <br>
         <span style="display: inline-block; width: 120px;">{{ 'LOGGERS.HANDLERS'|translate }}:</span>
         <label style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 10px;">
             <div class="col1" style="border: 0.5px solid lightgrey">
-                <div *ngFor="let hndlr of choosableHandlers1">
-                    <ng-container *ngIf="!hndlr.disabled || logger.propagate === false">
+                @for (hndlr of choosableHandlers1; track $index) {
+                  <div>
+                    @if (!hndlr.disabled || logger.propagate === false) {
                         &nbsp;
                         <p-checkbox name="group" [value]="true" [(ngModel)]="hndlr.value" [inputId]="hndlr.key"></p-checkbox>
                         <label [for]="hndlr.key">{{ hndlr.name }}</label>
-                    </ng-container>
-                    <ng-container *ngIf="!(!hndlr.disabled || logger.propagate === false)">
+                    }
+                    @if (!(!hndlr.disabled || logger.propagate === false)) {
                         &nbsp;
                         <p-checkbox [disabled]="true" name="group" [value]="true" [(ngModel)]="hndlr.value" [inputId]="hndlr.key"></p-checkbox>
                         <label style="color: darkgrey" [for]="hndlr.key">{{ hndlr.name }}</label>
-                    </ng-container>
-                </div>
+                    }
+                  </div>
+                }
             </div>
             <div class="col2" style="border: 0.5px solid lightgrey">
-                <div *ngFor="let hndlr of choosableHandlers2">
-                    <ng-container *ngIf="!hndlr.disabled || logger.propagate === false">
+                @for (hndlr of choosableHandlers2; track $index) {
+                  <div>
+                    @if (!hndlr.disabled || logger.propagate === false) {
                         &nbsp;
                         <p-checkbox name="group" [value]="true" [(ngModel)]="hndlr.value" [inputId]="hndlr.key"></p-checkbox>
                         <label [for]="hndlr.key">{{ hndlr.name }}</label>
-                    </ng-container>
-                    <ng-container *ngIf="!(!hndlr.disabled || logger.propagate === false)">
+                    }
+                    @if (!(!hndlr.disabled || logger.propagate === false)) {
                         &nbsp;
                         <p-checkbox [disabled]="true" name="group" [value]="true" [(ngModel)]="hndlr.value" [inputId]="hndlr.key"></p-checkbox>
                         <label style="color: darkgrey" [for]="hndlr.key">{{ hndlr.name }}</label>
-                    </ng-container>
-                </div>
+                    }
+                  </div>
+                }
             </div>
         </label>
-    </ng-container>
+    }
 
     <br><br>
     <br><br>
     <br><br>
     <br><br>
     <br>
-    <alert *ngIf="this.choosableHandlers.length === 0" type="danger" [dismissible]="true" class="mt-2" id="newLogicsAlert">
-        {{ 'LOGGERS.NO_HANDLER_DEFINED'|translate }}
-    </alert>
+    @if (this.choosableHandlers.length === 0) {
+      <alert type="danger" [dismissible]="true" class="mt-2" id="newLogicsAlert">
+          {{ 'LOGGERS.NO_HANDLER_DEFINED'|translate }}
+      </alert>
+    }
 
     <p-footer>
 
@@ -180,4 +186,3 @@
         <button pButton type="button" id="cancelChooseHandlersButton" icon="pi pi-times" (click)="chooseHandlers_display=false;" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
     </p-footer>
 </p-dialog>
-

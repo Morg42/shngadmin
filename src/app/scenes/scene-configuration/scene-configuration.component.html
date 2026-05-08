@@ -13,9 +13,9 @@
     -->
     <button pButton label="{{ 'BUTTON.HELP'|translate }}" type="button" [disabled]="false" icon="fa fa-info" style="margin-right: 10px;" (click)="this.editorHelp_display = true;" class="float-sm-right ui-button-success"></button>
 
-    <ng-container *ngIf="myEditFilename !== ''">
+    @if (myEditFilename !== '') {
       <strong>../scenes/{{ myEditFilename }}.yaml</strong>
-    </ng-container>
+    }
   </div>
 
   <div class="items-filelist">
@@ -148,4 +148,3 @@
     <button pButton type="button" (click)="editorHelp_display = false;" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
   </p-footer>
 </p-dialog>
-

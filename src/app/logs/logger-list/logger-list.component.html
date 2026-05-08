@@ -20,9 +20,9 @@
             </tr>
             </thead>
           <tbody>
-            <ng-container *ngFor="let l of loggersList">
-              <ng-container *ngIf="l.startsWith('logics.') || l === 'logics'">
-                <ng-container *ngIf="loggers[l].level !== undefined">
+            @for (l of loggersList; track $index) {
+              @if (l.startsWith('logics.') || l === 'logics') {
+                @if (loggers[l].level !== undefined) {
                   <tr>
                     <logger-line
                             [loggerName]=l
@@ -34,9 +34,9 @@
                             (modifyHandlers)="modifyHandlers(l, $event)"
                     ></logger-line>
                   </tr>
-                </ng-container>
-              </ng-container>
-            </ng-container>
+                }
+              }
+            }
 
           </tbody>
           <tfoot>
@@ -61,9 +61,9 @@
           </tr>
         </thead>
         <tbody>
-          <ng-container *ngFor="let l of loggersList">
-            <ng-container *ngIf="l.startsWith('plugins.') || l === 'plugins'">
-              <ng-container *ngIf="loggers[l].level !== undefined">
+          @for (l of loggersList; track $index) {
+            @if (l.startsWith('plugins.') || l === 'plugins') {
+              @if (loggers[l].level !== undefined) {
                 <tr>
                   <logger-line
                       [loggerName]=l
@@ -74,9 +74,9 @@
                       (loggerDelete)="loggerDelete(l)"
                   ></logger-line>
                 </tr>
-              </ng-container>
-            </ng-container>
-          </ng-container>
+              }
+            }
+          }
 
         </tbody>
         <tfoot>
@@ -101,9 +101,9 @@
           </tr>
           </thead>
           <tbody>
-          <ng-container *ngFor="let l of loggersList">
-            <ng-container *ngIf="l.startsWith('items.') || l === 'items'">
-              <ng-container *ngIf="loggers[l].level !== undefined">
+          @for (l of loggersList; track $index) {
+            @if (l.startsWith('items.') || l === 'items') {
+              @if (loggers[l].level !== undefined) {
                 <tr>
                   <logger-line
                           [loggerName]=l
@@ -114,9 +114,9 @@
                           (loggerDelete)="loggerDelete(l)"
                   ></logger-line>
                 </tr>
-              </ng-container>
-            </ng-container>
-          </ng-container>
+              }
+            }
+          }
 
           </tbody>
           <tfoot>
@@ -141,7 +141,7 @@
           </tr>
         </thead>
         <tbody>
-           <ng-container *ngIf="loggers !== undefined">
+           @if (loggers !== undefined) {
              <tr>
                <logger-line
                        [loggerName]="'root'"
@@ -152,11 +152,11 @@
                        (loggerDelete)="loggerDelete('root')"
                ></logger-line>
              </tr>
-            </ng-container>
+            }
 
-            <ng-container *ngFor="let l of loggersList">
-              <ng-container *ngIf="l.startsWith('functions.') || l.startsWith('lib.') || l.startsWith('modules.') || l === 'functions' || l === 'lib' || l === 'modules' || l === '__main__'">
-                <ng-container *ngIf="loggers[l].level !== undefined">
+            @for (l of loggersList; track $index) {
+              @if (l.startsWith('functions.') || l.startsWith('lib.') || l.startsWith('modules.') || l === 'functions' || l === 'lib' || l === 'modules' || l === '__main__') {
+                @if (loggers[l].level !== undefined) {
                   <tr>
                     <logger-line
                             [loggerName]=l
@@ -167,9 +167,9 @@
                             (loggerDelete)="loggerDelete(l)"
                     ></logger-line>
                   </tr>
-                </ng-container>
-              </ng-container>
-            </ng-container>
+                }
+              }
+            }
 
           </tbody>
           <tfoot>
@@ -192,9 +192,9 @@
         </tr>
         </thead>
         <tbody>
-        <ng-container *ngFor="let l of loggersList">
-          <ng-container *ngIf="!(l === 'functions' || l.startsWith('functions.') || l.startsWith('items.') || l.startsWith('logics.') || l === 'items' || l === 'logics' || l.startsWith('plugins.') || l === 'plugins' || l.startsWith('lib.') || l.startsWith('modules.') || l === 'lib' || l === 'modules' || l === 'root' || l === '__main__' )">
-            <ng-container *ngIf="loggers[l].level !== undefined">
+        @for (l of loggersList; track $index) {
+          @if (!(l === 'functions' || l.startsWith('functions.') || l.startsWith('items.') || l.startsWith('logics.') || l === 'items' || l === 'logics' || l.startsWith('plugins.') || l === 'plugins' || l.startsWith('lib.') || l.startsWith('modules.') || l === 'lib' || l === 'modules' || l === 'root' || l === '__main__' )) {
+            @if (loggers[l].level !== undefined) {
               <tr>
                 <logger-line
                         [loggerName]=l
@@ -205,9 +205,9 @@
                         (loggerDelete)="loggerDelete(l)"
                 ></logger-line>
               </tr>
-          </ng-container>
-          </ng-container>
-        </ng-container>
+            }
+          }
+        }
 
         </tbody>
         <tfoot>
@@ -259,12 +259,13 @@
   <br><br>
   <br><br>
   <br>
-  <alert *ngIf="this.noLoggerToAdd" type="danger" [dismissible]="true" (onClosed)="this.wrongNewLogicName=''" class="mt-2" id="newLogicsAlert">
-    {{ 'LOGGERS.NO_LOGGER_TO_ADD'|translate }}
-  </alert>
+  @if (this.noLoggerToAdd) {
+    <alert type="danger" [dismissible]="true" (onClosed)="this.wrongNewLogicName=''" class="mt-2" id="newLogicsAlert">
+      {{ 'LOGGERS.NO_LOGGER_TO_ADD'|translate }}
+    </alert>
+  }
   <p-footer>
     <button pButton type="button" id="createLoggerButton" icon="pi pi-check" (click)="this.createLogger()" [disabled]="!newlogger_add_enabled" (disabledChange)="newlogger_add_enabled = $event" label="{{'BUTTON.CREATE'|translate}}" class="ui-button-success" autofocus></button>
     <button pButton type="button" id="cancleCreateLoggerButton" icon="pi pi-times" (click)="newlogger_display=false" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
   </p-footer>
 </p-dialog>
-

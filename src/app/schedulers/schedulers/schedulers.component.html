@@ -19,16 +19,18 @@
               </tr>
             </thead>
             <tbody>
-              <ng-container  *ngFor="let scheduler of schedulerinfo">
-                <tr *ngIf="scheduler.group === 'item'">
-                  <td class="py-1">{{ scheduler.name }}</td>
-                  <td class="py-1">{{ scheduler.next }}</td>
-                  <td class="py-1">{{ scheduler.prio }}</td>
-                  <td class="py-1">{{ scheduler.value }}</td>
-                  <td class="py-1">{{ scheduler.cycle }}</td>
-                  <td class="py-1">{{ scheduler.cron }}</td>
-                </tr>
-              </ng-container>
+              @for (scheduler of schedulerinfo; track $index) {
+                @if (scheduler.group === 'item') {
+                  <tr>
+                    <td class="py-1">{{ scheduler.name }}</td>
+                    <td class="py-1">{{ scheduler.next }}</td>
+                    <td class="py-1">{{ scheduler.prio }}</td>
+                    <td class="py-1">{{ scheduler.value }}</td>
+                    <td class="py-1">{{ scheduler.cycle }}</td>
+                    <td class="py-1">{{ scheduler.cron }}</td>
+                  </tr>
+                }
+              }
             </tbody>
           </div>
         </table>
@@ -51,16 +53,18 @@
             </tr>
             </thead>
             <tbody>
-            <ng-container  *ngFor="let scheduler of schedulerinfo">
-              <tr *ngIf="scheduler.group === 'logic'">
-                <td class="py-1">{{ scheduler.name }}</td>
-                <td class="py-1">{{ scheduler.next }}</td>
-                <td class="py-1">{{ scheduler.prio }}</td>
-                <td class="py-1">{{ scheduler.value }}</td>
-                <td class="py-1">{{ scheduler.cycle }}</td>
-                <td class="py-1">{{ scheduler.cron }}</td>
-              </tr>
-            </ng-container>
+            @for (scheduler of schedulerinfo; track $index) {
+              @if (scheduler.group === 'logic') {
+                <tr>
+                  <td class="py-1">{{ scheduler.name }}</td>
+                  <td class="py-1">{{ scheduler.next }}</td>
+                  <td class="py-1">{{ scheduler.prio }}</td>
+                  <td class="py-1">{{ scheduler.value }}</td>
+                  <td class="py-1">{{ scheduler.cycle }}</td>
+                  <td class="py-1">{{ scheduler.cron }}</td>
+                </tr>
+              }
+            }
             </tbody>
           </div>
         </table>
@@ -79,31 +83,33 @@
               <th style="width: 50px; border-top: 0">{{ 'SCHEDULERS.PRIO'|translate }}</th>
               <th style="width: 130px; border-top: 0">{{ 'SCHEDULERS.PARAMETERS'|translate }}</th>
               <th style="min-width: 130px; border-top: 0">{{ 'SCHEDULERS.CYCLE'|translate }}</th>
-              <ng-container *ngIf="developerMode === false">
+              @if (developerMode === false) {
                 <th style="width: 100%; border-top: 0">{{ 'SCHEDULERS.CRONTAB'|translate }}</th>
-              </ng-container>
-              <ng-container *ngIf="developerMode === true">
+              }
+              @if (developerMode === true) {
                 <th style="min-width: 150px; border-top: 0">{{ 'SCHEDULERS.CRONTAB'|translate }}</th>
                 <th style="min-width: 140px; border-top: 0">{{ 'SCHEDULERS.TASK_TYPE'|translate }}</th>
                 <th style="width: 100%; border-top: 0">{{ 'SCHEDULERS.TASK_NAME'|translate }}</th>
-              </ng-container>
+              }
             </tr>
             </thead>
             <tbody>
-              <ng-container  *ngFor="let scheduler of schedulerinfo">
-                <tr *ngIf="scheduler.group === 'plugin'">
-                  <td class="py-1">{{ scheduler.name }}</td>
-                  <td class="py-1">{{ scheduler.next }}</td>
-                  <td class="py-1">{{ scheduler.prio }}</td>
-                  <td class="py-1">{{ scheduler.value }}</td>
-                  <td class="py-1">{{ scheduler.cycle }}</td>
-                  <td class="py-1">{{ scheduler.cron }}</td>
-                  <ng-container *ngIf="developerMode === true">
-                    <td class="py-1">{{ scheduler.task_type }}</td>
-                    <td class="py-1">{{ scheduler.task_name }}</td>
-                  </ng-container>
-                </tr>
-              </ng-container>
+              @for (scheduler of schedulerinfo; track $index) {
+                @if (scheduler.group === 'plugin') {
+                  <tr>
+                    <td class="py-1">{{ scheduler.name }}</td>
+                    <td class="py-1">{{ scheduler.next }}</td>
+                    <td class="py-1">{{ scheduler.prio }}</td>
+                    <td class="py-1">{{ scheduler.value }}</td>
+                    <td class="py-1">{{ scheduler.cycle }}</td>
+                    <td class="py-1">{{ scheduler.cron }}</td>
+                    @if (developerMode === true) {
+                      <td class="py-1">{{ scheduler.task_type }}</td>
+                      <td class="py-1">{{ scheduler.task_name }}</td>
+                    }
+                  </tr>
+                }
+              }
             </tbody>
           </div>
         </table>
@@ -122,31 +128,33 @@
               <th style="width: 50px; border-top: 0">{{ 'SCHEDULERS.PRIO'|translate }}</th>
               <th style="width: 130px; border-top: 0">{{ 'SCHEDULERS.VALUE'|translate }}</th>
               <th style="min-width: 130px; border-top: 0">{{ 'SCHEDULERS.CYCLE'|translate }}</th>
-              <ng-container *ngIf="developerMode === false">
+              @if (developerMode === false) {
                 <th style="width: 100%; border-top: 0">{{ 'SCHEDULERS.CRONTAB'|translate }}</th>
-              </ng-container>
-              <ng-container *ngIf="developerMode === true">
+              }
+              @if (developerMode === true) {
                 <th style="min-width: 140px; border-top: 0">{{ 'SCHEDULERS.CRONTAB'|translate }}</th>
                 <th style="min-width: 140px; border-top: 0">{{ 'SCHEDULERS.TASK_TYPE'|translate }}</th>
                 <th style="width: 100%; border-top: 0">{{ 'SCHEDULERS.TASK_NAME'|translate }}</th>
-              </ng-container>
+              }
             </tr>
             </thead>
             <tbody>
-              <ng-container  *ngFor="let scheduler of schedulerinfo">
-                <tr *ngIf="scheduler.group === 'other'">
-                  <td class="py-1">{{ scheduler.name }}</td>
-                  <td class="py-1">{{ scheduler.next }}</td>
-                  <td class="py-1">{{ scheduler.prio }}</td>
-                  <td class="py-1">{{ scheduler.value }}</td>
-                  <td class="py-1">{{ scheduler.cycle }}</td>
-                  <td class="py-1">{{ scheduler.cron }}</td>
-                  <ng-container *ngIf="developerMode === true">
-                    <td class="py-1">{{ scheduler.task_type }}</td>
-                    <td class="py-1">{{ scheduler.task_name }}</td>
-                  </ng-container>
-                </tr>
-              </ng-container>
+              @for (scheduler of schedulerinfo; track $index) {
+                @if (scheduler.group === 'other') {
+                  <tr>
+                    <td class="py-1">{{ scheduler.name }}</td>
+                    <td class="py-1">{{ scheduler.next }}</td>
+                    <td class="py-1">{{ scheduler.prio }}</td>
+                    <td class="py-1">{{ scheduler.value }}</td>
+                    <td class="py-1">{{ scheduler.cycle }}</td>
+                    <td class="py-1">{{ scheduler.cron }}</td>
+                    @if (developerMode === true) {
+                      <td class="py-1">{{ scheduler.task_type }}</td>
+                      <td class="py-1">{{ scheduler.task_name }}</td>
+                    }
+                  </tr>
+                }
+              }
             </tbody>
           </div>
         </table>
@@ -162,31 +170,33 @@
               <th style="width: 280px; border-top: 0">{{ 'SCHEDULERS.TRIGGER'|translate }}</th>
               <th style="width: 250px; border-top: 0">{{ 'SCHEDULERS.NEXT EXECUTION'|translate }}</th>
               <th style="width: 50px; border-top: 0">{{ 'SCHEDULERS.PRIO'|translate }}</th>
-              <ng-container *ngIf="developerMode === false">
+              @if (developerMode === false) {
                 <th style="width: 100%; border-top: 0">{{ 'SCHEDULERS.VALUE'|translate }}</th>
-              </ng-container>
-              <ng-container *ngIf="developerMode === true">
+              }
+              @if (developerMode === true) {
                 <th style="width: 130px; border-top: 0">{{ 'SCHEDULERS.VALUE'|translate }}</th>
                 <th style="border-top: 0">{{ 'SCHEDULERS.TRIGGERED_BY'|translate }}</th>
                 <th style="border-top: 0">{{ 'SCHEDULERS.TASK_TYPE'|translate }}</th>
                 <th style="width: 100%; border-top: 0">{{ 'SCHEDULERS.TASK_NAME'|translate }}</th>
-              </ng-container>
+              }
             </tr>
             </thead>
             <tbody>
-              <ng-container  *ngFor="let scheduler of schedulerinfo">
-                <tr *ngIf="scheduler.group === 'trigger'">
-                  <td class="py-1">{{ scheduler.name }}</td>
-                  <td class="py-1">{{ scheduler.next }}</td>
-                  <td class="py-1">{{ scheduler.prio }}</td>
-                  <td class="py-1">{{ scheduler.value }}</td>
-                  <ng-container *ngIf="developerMode === true">
-                    <td class="py-1">{{ scheduler.by }}</td>
-                    <td class="py-1">{{ scheduler.task_type }}</td>
-                    <td class="py-1">{{ scheduler.task_name }}</td>
-                  </ng-container>
-                </tr>
-              </ng-container>
+              @for (scheduler of schedulerinfo; track $index) {
+                @if (scheduler.group === 'trigger') {
+                  <tr>
+                    <td class="py-1">{{ scheduler.name }}</td>
+                    <td class="py-1">{{ scheduler.next }}</td>
+                    <td class="py-1">{{ scheduler.prio }}</td>
+                    <td class="py-1">{{ scheduler.value }}</td>
+                    @if (developerMode === true) {
+                      <td class="py-1">{{ scheduler.by }}</td>
+                      <td class="py-1">{{ scheduler.task_type }}</td>
+                      <td class="py-1">{{ scheduler.task_name }}</td>
+                    }
+                  </tr>
+                }
+              }
             </tbody>
           </div>
         </table>

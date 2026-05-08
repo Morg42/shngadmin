@@ -16,48 +16,51 @@
           <p-table [columns]="common_parameter_cols" [value]="common_parameters" selectionMode="single">
           <ng-template pTemplate="header" let-columns>
             <tr>
-              <ng-container *ngFor="let col of columns">
+              @for (col of columns; track $index) {
                 <th [pSortableColumn]="col.field" [ngStyle]="{'width': col.width}">
                   {{col.header|translate}}
-                  <p-sortIcon *ngIf="col.field !== ''" [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                  @if (col.field !== '') {
+                    <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                  }
                 </th>
-              </ng-container>
+              }
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-rowData let-columns="columns">
             <tr>
-              <td *ngFor="let col of columns">
+              @for (col of columns; track $index) {
+                <td>
+                  @if (dialog_readonly === false && col.field === 'value') {
+                    @if (rowData.valid_list.length > 0) {
+                      <p-select [options]="rowData.valid_list" [showClear]="true" placeholder="{{rowData.default}}" [(ngModel)]="rowData[col.field]" (ngModelChange)="rowData[col.field] = $event; check_values()"></p-select>
+                    }
 
-                <ng-container *ngIf="dialog_readonly === false && col.field === 'value'">
-                  <ng-container *ngIf="rowData.valid_list.length > 0">
-                    <p-select [options]="rowData.valid_list" [showClear]="true" placeholder="{{rowData.default}}" [(ngModel)]="rowData[col.field]" (ngModelChange)="rowData[col.field] = $event; check_values()"></p-select>
-                  </ng-container>
+                    @if ((['int','num','float','scene'].indexOf(rowData.type) > -1) && rowData.valid_list.length === 0) {
+                      <input [(ngModel)]="rowData[col.field]" type="number" (ngModelChange)="check_values()" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
+                    }
 
-                  <ng-container *ngIf="(['int','num','float','scene'].indexOf(rowData.type) > -1) && rowData.valid_list.length === 0">
-                    <input [(ngModel)]="rowData[col.field]" type="number" (ngModelChange)="check_values()" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                  </ng-container>
+                    @if (rowData.type !== 'bool' && ['int','num','float','scene'].indexOf(rowData.type) === -1 && rowData.valid_list.length === 0) {
+                      @if (rowData.gui_type !== 'wide_str') {
+                        <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
+                      }
+                      @if (rowData.gui_type == 'wide_str') {
+                        <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidthwide}"/>
+                      }
+                    }
+                  }
 
-                  <ng-container *ngIf="rowData.type !== 'bool' && ['int','num','float','scene'].indexOf(rowData.type) === -1 && rowData.valid_list.length === 0">
-                    <ng-container  *ngIf="rowData.gui_type !== 'wide_str'">
-                      <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                    </ng-container>
-                    <ng-container  *ngIf="rowData.gui_type == 'wide_str'">
-                      <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidthwide}"/>
-                    </ng-container>
-                  </ng-container>
-                </ng-container>
-
-                <ng-container *ngIf="dialog_readonly === true || col.field !== 'value'">
-                  <ng-container *ngIf="col.field !== 'desc' || rowData.gui_type !== 'wide_str'">
-                    <div [innerHTML]="rowData[col.field]"></div>
-                  </ng-container>
-                  <ng-container *ngIf="col.field == 'desc' && rowData.gui_type == 'wide_str'">
-                    <div [ngStyle]="{'padding-left': col.paddingleft}">
+                  @if (dialog_readonly === true || col.field !== 'value') {
+                    @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
                       <div [innerHTML]="rowData[col.field]"></div>
-                    </div>
-                  </ng-container>
-                </ng-container>
-              </td>
+                    }
+                    @if (col.field == 'desc' && rowData.gui_type == 'wide_str') {
+                      <div [ngStyle]="{'padding-left': col.paddingleft}">
+                        <div [innerHTML]="rowData[col.field]"></div>
+                      </div>
+                    }
+                  }
+                </td>
+              }
             </tr>
           </ng-template>
         </p-table>
@@ -71,54 +74,58 @@
           <p-table [columns]="http_parameter_cols" [value]="http_parameters" selectionMode="single">
           <ng-template pTemplate="header" let-columns>
             <tr>
-              <th *ngFor="let col of columns" [pSortableColumn]="col.field" [ngStyle]="{'width': col.width}">
-                {{col.header|translate}}
-                <p-sortIcon *ngIf="col.field !== ''" [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
-              </th>
+              @for (col of columns; track $index) {
+                <th [pSortableColumn]="col.field" [ngStyle]="{'width': col.width}">
+                  {{col.header|translate}}
+                  @if (col.field !== '') {
+                    <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                  }
+                </th>
+              }
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-rowData let-columns="columns">
             <tr>
-              <td *ngFor="let col of columns">
+              @for (col of columns; track $index) {
+                <td>
+                  @if (dialog_readonly === false && col.field === 'value') {
+                    @if (rowData.valid_list.length > 0) {
+                      <p-select [options]="rowData.valid_list" [showClear]="true" placeholder="{{rowData.default}}" [(ngModel)]="rowData[col.field]" (ngModelChange)="rowData[col.field] = $event; check_values()"></p-select>
+                    }
 
-                <ng-container *ngIf="dialog_readonly === false && col.field === 'value'">
-                  <ng-container *ngIf="rowData.valid_list.length > 0">
-                    <p-select [options]="rowData.valid_list" [showClear]="true" placeholder="{{rowData.default}}" [(ngModel)]="rowData[col.field]" (ngModelChange)="rowData[col.field] = $event; check_values()"></p-select>
-                  </ng-container>
+                    @if ((['int','num','float','scene'].indexOf(rowData.type) > -1) && rowData.valid_list.length === 0) {
+                      <input [(ngModel)]="rowData[col.field]" (ngModelChange)="check_values()" type="number" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
+                    }
 
-                  <ng-container *ngIf="(['int','num','float','scene'].indexOf(rowData.type) > -1) && rowData.valid_list.length === 0">
-                    <input [(ngModel)]="rowData[col.field]" (ngModelChange)="check_values()" type="number" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                  </ng-container>
+                    @if (rowData.type !== 'bool' && ['int','num','float','scene', 'password'].indexOf(rowData.type) === -1 && rowData.valid_list.length === 0) {
+                      @if (rowData.gui_type !== 'wide_str') {
+                        <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
+                      }
+                      @if (rowData.gui_type == 'wide_str') {
+                        <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidthwide}"/>
+                      }
+                    }
 
-                  <ng-container *ngIf="rowData.type !== 'bool' && ['int','num','float','scene', 'password'].indexOf(rowData.type) === -1 && rowData.valid_list.length === 0">
-                    <ng-container  *ngIf="rowData.gui_type !== 'wide_str'">
-                      <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                    </ng-container>
-                    <ng-container  *ngIf="rowData.gui_type == 'wide_str'">
-                      <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidthwide}"/>
-                    </ng-container>
-                  </ng-container>
+                    @if (rowData.type === 'password' && rowData[col.field] === null) {
+                      <button pButton type="button" class="float-sm-left btn-shng btn btn-sm ui-button-secondary" (click)="change_password_dialog($event, rowData, col.field)" style="margin-left: 5px;" label="{{ 'SYSTEM.SET_PASSWORD'|translate }}"></button>
+                    }
+                    @if (rowData.type === 'password' && rowData[col.field] !== null) {
+                      <button pButton type="button" class="float-sm-left btn-shng btn btn-sm ui-button-secondary" (click)="change_password_dialog($event, rowData, col.field)" style="margin-left: 5px;" label="{{ 'SYSTEM.CHANGE_PASSWORD'|translate }}"></button>
+                    }
+                  }
 
-                  <ng-container *ngIf="rowData.type === 'password' && rowData[col.field] === null">
-                    <button pButton type="button" class="float-sm-left btn-shng btn btn-sm ui-button-secondary" (click)="change_password_dialog($event, rowData, col.field)" style="margin-left: 5px;" label="{{ 'SYSTEM.SET_PASSWORD'|translate }}"></button>
-                  </ng-container>
-                  <ng-container *ngIf="rowData.type === 'password' && rowData[col.field] !== null">
-                    <button pButton type="button" class="float-sm-left btn-shng btn btn-sm ui-button-secondary" (click)="change_password_dialog($event, rowData, col.field)" style="margin-left: 5px;" label="{{ 'SYSTEM.CHANGE_PASSWORD'|translate }}"></button>
-                  </ng-container>
-
-                </ng-container>
-
-                <ng-container *ngIf="dialog_readonly === true || col.field !== 'value'">
-                  <ng-container *ngIf="col.field !== 'desc' || rowData.gui_type !== 'wide_str'">
-                    <div [innerHTML]="rowData[col.field]"></div>
-                  </ng-container>
-                  <ng-container *ngIf="col.field == 'desc' && rowData.gui_type == 'wide_str'">
-                    <div [ngStyle]="{'padding-left': col.paddingleft}">
+                  @if (dialog_readonly === true || col.field !== 'value') {
+                    @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
                       <div [innerHTML]="rowData[col.field]"></div>
-                    </div>
-                  </ng-container>
-                </ng-container>
-              </td>
+                    }
+                    @if (col.field == 'desc' && rowData.gui_type == 'wide_str') {
+                      <div [ngStyle]="{'padding-left': col.paddingleft}">
+                        <div [innerHTML]="rowData[col.field]"></div>
+                      </div>
+                    }
+                  }
+                </td>
+              }
             </tr>
           </ng-template>
         </p-table>
@@ -132,54 +139,58 @@
           <p-table [columns]="websocket_parameter_cols" [value]="websocket_parameters" selectionMode="single">
             <ng-template pTemplate="header" let-columns>
               <tr>
-                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [ngStyle]="{'width': col.width}">
-                  {{col.header|translate}}
-                  <p-sortIcon *ngIf="col.field !== ''" [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
-                </th>
+                @for (col of columns; track $index) {
+                  <th [pSortableColumn]="col.field" [ngStyle]="{'width': col.width}">
+                    {{col.header|translate}}
+                    @if (col.field !== '') {
+                      <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    }
+                  </th>
+                }
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-rowData let-columns="columns">
               <tr>
-                <td *ngFor="let col of columns">
+                @for (col of columns; track $index) {
+                  <td>
+                    @if (dialog_readonly === false && col.field === 'value') {
+                      @if (rowData.valid_list.length > 0) {
+                        <p-select [options]="rowData.valid_list" [showClear]="true" placeholder="{{rowData.default}}" [(ngModel)]="rowData[col.field]" (ngModelChange)="rowData[col.field] = $event; check_values()"></p-select>
+                      }
 
-                  <ng-container *ngIf="dialog_readonly === false && col.field === 'value'">
-                    <ng-container *ngIf="rowData.valid_list.length > 0">
-                      <p-select [options]="rowData.valid_list" [showClear]="true" placeholder="{{rowData.default}}" [(ngModel)]="rowData[col.field]" (ngModelChange)="rowData[col.field] = $event; check_values()"></p-select>
-                    </ng-container>
+                      @if ((['int','num','float','scene'].indexOf(rowData.type) > -1) && rowData.valid_list.length === 0) {
+                        <input [(ngModel)]="rowData[col.field]" (ngModelChange)="check_values()" type="number" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
+                      }
 
-                    <ng-container *ngIf="(['int','num','float','scene'].indexOf(rowData.type) > -1) && rowData.valid_list.length === 0">
-                      <input [(ngModel)]="rowData[col.field]" (ngModelChange)="check_values()" type="number" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                    </ng-container>
+                      @if (rowData.type !== 'bool' && ['int','num','float','scene', 'password'].indexOf(rowData.type) === -1 && rowData.valid_list.length === 0) {
+                        @if (rowData.gui_type !== 'wide_str') {
+                          <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values('str')" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
+                        }
+                        @if (rowData.gui_type == 'wide_str') {
+                          <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values('str')" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidthwide}"/>
+                        }
+                      }
 
-                    <ng-container *ngIf="rowData.type !== 'bool' && ['int','num','float','scene', 'password'].indexOf(rowData.type) === -1 && rowData.valid_list.length === 0">
-                      <ng-container  *ngIf="rowData.gui_type !== 'wide_str'">
-                        <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values('str')" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                      </ng-container>
-                      <ng-container  *ngIf="rowData.gui_type == 'wide_str'">
-                        <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values('str')" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidthwide}"/>
-                      </ng-container>
-                    </ng-container>
+                      @if (rowData.type === 'password' && rowData[col.field] === null) {
+                        <button pButton type="button" class="float-sm-left btn-shng btn btn-sm ui-button-secondary" (click)="change_password_dialog($event, rowData, col.field)" style="margin-left: 5px;" label="{{ 'SYSTEM.SET_PASSWORD'|translate }}"></button>
+                      }
+                      @if (rowData.type === 'password' && rowData[col.field] !== null) {
+                        <button pButton type="button" class="float-sm-left btn-shng btn btn-sm ui-button-secondary" (click)="change_password_dialog($event, rowData, col.field)" style="margin-left: 5px;" label="{{ 'SYSTEM.CHANGE_PASSWORD'|translate }}"></button>
+                      }
+                    }
 
-                    <ng-container *ngIf="rowData.type === 'password' && rowData[col.field] === null">
-                      <button pButton type="button" class="float-sm-left btn-shng btn btn-sm ui-button-secondary" (click)="change_password_dialog($event, rowData, col.field)" style="margin-left: 5px;" label="{{ 'SYSTEM.SET_PASSWORD'|translate }}"></button>
-                    </ng-container>
-                    <ng-container *ngIf="rowData.type === 'password' && rowData[col.field] !== null">
-                      <button pButton type="button" class="float-sm-left btn-shng btn btn-sm ui-button-secondary" (click)="change_password_dialog($event, rowData, col.field)" style="margin-left: 5px;" label="{{ 'SYSTEM.CHANGE_PASSWORD'|translate }}"></button>
-                    </ng-container>
-
-                  </ng-container>
-
-                  <ng-container *ngIf="dialog_readonly === true || col.field !== 'value'">
-                    <ng-container *ngIf="col.field !== 'desc' || rowData.gui_type !== 'wide_str'">
-                      <div [innerHTML]="rowData[col.field]"></div>
-                    </ng-container>
-                    <ng-container *ngIf="col.field == 'desc' && rowData.gui_type == 'wide_str'">
-                      <div [ngStyle]="{'padding-left': col.paddingleft}">
+                    @if (dialog_readonly === true || col.field !== 'value') {
+                      @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
                         <div [innerHTML]="rowData[col.field]"></div>
-                      </div>
-                    </ng-container>
-                  </ng-container>
-                </td>
+                      }
+                      @if (col.field == 'desc' && rowData.gui_type == 'wide_str') {
+                        <div [ngStyle]="{'padding-left': col.paddingleft}">
+                          <div [innerHTML]="rowData[col.field]"></div>
+                        </div>
+                      }
+                    }
+                  </td>
+                }
               </tr>
             </ng-template>
           </p-table>
@@ -193,46 +204,51 @@
           <p-table [columns]="admin_parameter_cols" [value]="admin_parameters" selectionMode="single">
           <ng-template pTemplate="header" let-columns>
             <tr>
-              <th *ngFor="let col of columns" [pSortableColumn]="col.field" [ngStyle]="{'width': col.width}">
-                {{col.header|translate}}
-                <p-sortIcon *ngIf="col.field !== ''" [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
-              </th>
+              @for (col of columns; track $index) {
+                <th [pSortableColumn]="col.field" [ngStyle]="{'width': col.width}">
+                  {{col.header|translate}}
+                  @if (col.field !== '') {
+                    <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                  }
+                </th>
+              }
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-rowData let-columns="columns">
             <tr>
-              <td *ngFor="let col of columns">
+              @for (col of columns; track $index) {
+                <td>
+                  @if (dialog_readonly === false && col.field === 'value') {
+                    @if (rowData.valid_list.length > 0) {
+                      <p-select [options]="rowData.valid_list" [showClear]="true" placeholder="{{rowData.default}}" [(ngModel)]="rowData[col.field]" (ngModelChange)="rowData[col.field] = $event; check_values()"></p-select>
+                    }
 
-                <ng-container *ngIf="dialog_readonly === false && col.field === 'value'">
-                  <ng-container *ngIf="rowData.valid_list.length > 0">
-                    <p-select [options]="rowData.valid_list" [showClear]="true" placeholder="{{rowData.default}}" [(ngModel)]="rowData[col.field]" (ngModelChange)="rowData[col.field] = $event; check_values()"></p-select>
-                  </ng-container>
+                    @if ((['int','num','float','scene'].indexOf(rowData.type) > -1) && rowData.valid_list.length === 0) {
+                      <input [(ngModel)]="rowData[col.field]" (ngModelChange)="check_values()" type="number" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
+                    }
 
-                  <ng-container *ngIf="(['int','num','float','scene'].indexOf(rowData.type) > -1) && rowData.valid_list.length === 0">
-                    <input [(ngModel)]="rowData[col.field]" (ngModelChange)="check_values()" type="number" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                  </ng-container>
+                    @if (rowData.type !== 'bool' && ['int','num','float','scene'].indexOf(rowData.type) === -1 && rowData.valid_list.length === 0) {
+                      @if (rowData.gui_type !== 'wide_str') {
+                        <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
+                      }
+                      @if (rowData.gui_type == 'wide_str') {
+                        <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidthwide}"/>
+                      }
+                    }
+                  }
 
-                  <ng-container *ngIf="rowData.type !== 'bool' && ['int','num','float','scene'].indexOf(rowData.type) === -1 && rowData.valid_list.length === 0">
-                    <ng-container  *ngIf="rowData.gui_type !== 'wide_str'">
-                      <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                    </ng-container>
-                    <ng-container  *ngIf="rowData.gui_type == 'wide_str'">
-                      <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidthwide}"/>
-                    </ng-container>
-                  </ng-container>
-                </ng-container>
-
-                <ng-container *ngIf="dialog_readonly === true || col.field !== 'value'">
-                  <ng-container *ngIf="col.field !== 'desc' || rowData.gui_type !== 'wide_str'">
-                    <div [innerHTML]="rowData[col.field]"></div>
-                  </ng-container>
-                  <ng-container *ngIf="col.field == 'desc' && rowData.gui_type == 'wide_str'">
-                    <div [ngStyle]="{'padding-left': col.paddingleft}">
+                  @if (dialog_readonly === true || col.field !== 'value') {
+                    @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
                       <div [innerHTML]="rowData[col.field]"></div>
-                    </div>
-                  </ng-container>
-                </ng-container>
-              </td>
+                    }
+                    @if (col.field == 'desc' && rowData.gui_type == 'wide_str') {
+                      <div [ngStyle]="{'padding-left': col.paddingleft}">
+                        <div [innerHTML]="rowData[col.field]"></div>
+                      </div>
+                    }
+                  }
+                </td>
+              }
             </tr>
           </ng-template>
         </p-table>
@@ -245,46 +261,51 @@
           <p-table [columns]="mqtt_parameter_cols" [value]="mqtt_parameters" selectionMode="single">
           <ng-template pTemplate="header" let-columns>
             <tr>
-              <th *ngFor="let col of columns" [pSortableColumn]="col.field" [ngStyle]="{'width': col.width}">
-                {{col.header|translate}}
-                <p-sortIcon *ngIf="col.field !== ''" [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
-              </th>
+              @for (col of columns; track $index) {
+                <th [pSortableColumn]="col.field" [ngStyle]="{'width': col.width}">
+                  {{col.header|translate}}
+                  @if (col.field !== '') {
+                    <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                  }
+                </th>
+              }
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-rowData let-columns="columns">
             <tr>
-              <td *ngFor="let col of columns">
+              @for (col of columns; track $index) {
+                <td>
+                  @if (dialog_readonly === false && col.field === 'value') {
+                    @if (rowData.valid_list.length > 0) {
+                      <p-select [options]="rowData.valid_list" [showClear]="true" placeholder="{{rowData.default}}" [(ngModel)]="rowData[col.field]" (ngModelChange)="rowData[col.field] = $event; check_values()"></p-select>
+                    }
 
-                <ng-container *ngIf="dialog_readonly === false && col.field === 'value'">
-                  <ng-container *ngIf="rowData.valid_list.length > 0">
-                    <p-select [options]="rowData.valid_list" [showClear]="true" placeholder="{{rowData.default}}" [(ngModel)]="rowData[col.field]" (ngModelChange)="rowData[col.field] = $event; check_values()"></p-select>
-                  </ng-container>
+                    @if ((['int','num','float','scene'].indexOf(rowData.type) > -1) && rowData.valid_list.length === 0) {
+                      <input [(ngModel)]="rowData[col.field]" (ngModelChange)="check_values()" type="number" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
+                    }
 
-                  <ng-container *ngIf="(['int','num','float','scene'].indexOf(rowData.type) > -1) && rowData.valid_list.length === 0">
-                    <input [(ngModel)]="rowData[col.field]" (ngModelChange)="check_values()" type="number" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                  </ng-container>
+                    @if (rowData.type !== 'bool' && ['int','num','float','scene'].indexOf(rowData.type) === -1 && rowData.valid_list.length === 0) {
+                      @if (rowData.gui_type !== 'wide_str') {
+                        <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
+                      }
+                      @if (rowData.gui_type == 'wide_str') {
+                        <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidthwide}"/>
+                      }
+                    }
+                  }
 
-                  <ng-container *ngIf="rowData.type !== 'bool' && ['int','num','float','scene'].indexOf(rowData.type) === -1 && rowData.valid_list.length === 0">
-                    <ng-container  *ngIf="rowData.gui_type !== 'wide_str'">
-                      <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                    </ng-container>
-                    <ng-container  *ngIf="rowData.gui_type == 'wide_str'">
-                      <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidthwide}"/>
-                    </ng-container>
-                  </ng-container>
-                </ng-container>
-
-                <ng-container *ngIf="dialog_readonly === true || col.field !== 'value'">
-                  <ng-container *ngIf="col.field !== 'desc' || rowData.gui_type !== 'wide_str'">
-                    <div [innerHTML]="rowData[col.field]"></div>
-                  </ng-container>
-                  <ng-container *ngIf="col.field == 'desc' && rowData.gui_type == 'wide_str'">
-                    <div [ngStyle]="{'padding-left': col.paddingleft}">
+                  @if (dialog_readonly === true || col.field !== 'value') {
+                    @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
                       <div [innerHTML]="rowData[col.field]"></div>
-                    </div>
-                  </ng-container>
-                </ng-container>
-              </td>
+                    }
+                    @if (col.field == 'desc' && rowData.gui_type == 'wide_str') {
+                      <div [ngStyle]="{'padding-left': col.paddingleft}">
+                        <div [innerHTML]="rowData[col.field]"></div>
+                      </div>
+                    }
+                  }
+                </td>
+              }
             </tr>
           </ng-template>
         </p-table>
@@ -294,12 +315,12 @@
     </tabset>
   </div>
     <div class="body-footer">
-      <ng-container *ngIf="dialog_readonly === false && restart_core_button">
+      @if (dialog_readonly === false && restart_core_button) {
         <a style="font-size: small">{{ 'RESTART FOR CHANGES'|translate }}</a>
-      </ng-container>
-      <ng-container *ngIf="dialog_readonly === false && !restart_core_button">
+      }
+      @if (dialog_readonly === false && !restart_core_button) {
         <a style="font-size: small">&nbsp;</a>
-      </ng-container>
+      }
       <br>
       <button pButton type="button" class="float-sm-left btn-shng btn btn-sm ui-button-success" style="float: left;" [disabled]="!restart_core_button" (click)="restartShng()" icon="fa fa-circle-notch" label="{{'BUTTON.RESTART_SHNG'|translate}}"></button>
       <button pButton type="button" tabindex="1" autofocus="autofocus" class="btn btn-primary btn-sm btn-shng" style="float: right;" [disabled]="!this.data_changed" (click)="saveSettings()" icon="fas fa-check" label="{{'BUTTON.SAVE_SETTINGS'|translate}}"></button>
@@ -313,8 +334,6 @@
 
 
 
-
-
 <!--
   -- Validation dialog, showing information about the error, if from validation fails
   -->
@@ -324,11 +343,11 @@
     {{'PLUGIN.CONFIGURATION_ERRORS'|translate}}
   </p-header>
 
-  <ng-container *ngFor="let l of this.validation_dialog_text">
+  @for (l of this.validation_dialog_text; track $index) {
     <li>
       {{ l }}
     </li>
-  </ng-container>
+  }
 
   <p-footer>
     <button pButton type="button" icon="pi pi-times" (click)="validation_dialog_display=false" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
@@ -343,26 +362,32 @@
 
 <p-dialog header="" [(visible)]="pwd_change_dialog_display" [modal]="true" blockScroll="true">
   <p-header>
-    <ng-container *ngIf="pwd_hash_old === null">
+    @if (pwd_hash_old === null) {
       {{'SYSTEM.SET_PASSWORD'|translate}}
-    </ng-container>
-    <ng-container *ngIf="pwd_hash_old !== null">
+    }
+    @if (pwd_hash_old !== null) {
       {{'SYSTEM.CHANGE_PASSWORD'|translate}}
-    </ng-container>
+    }
   </p-header>
 
-  <div *ngIf="pwd_old_is_empty" class="alert alert-warning">{{ 'SYSTEM.OLDPWD_EMPTY'|translate }}</div>
-  <div *ngIf="pwd_old_is_wrong" class="alert alert-danger">{{ 'SYSTEM.OLDPWD_WRONG'|translate }}</div>
-  <div *ngIf="pwd_new_not_identical" class="alert alert-danger">{{ 'SYSTEM.NEWPWDS_DIFFER'|translate }}</div>
+  @if (pwd_old_is_empty) {
+    <div class="alert alert-warning">{{ 'SYSTEM.OLDPWD_EMPTY'|translate }}</div>
+  }
+  @if (pwd_old_is_wrong) {
+    <div class="alert alert-danger">{{ 'SYSTEM.OLDPWD_WRONG'|translate }}</div>
+  }
+  @if (pwd_new_not_identical) {
+    <div class="alert alert-danger">{{ 'SYSTEM.NEWPWDS_DIFFER'|translate }}</div>
+  }
 
   <table>
-    <ng-container *ngIf="pwd_hash_old !== null">
+    @if (pwd_hash_old !== null) {
       <tr>
         <td style="padding-right: 10px">{{'SYSTEM.OLD_PASSWORD'|translate}}</td>
         <td><input [(ngModel)]="pwd_old" tabindex="1" autofocus style="width: 250px" [type]="pwd_show ? 'text' : 'password'" pInputText name="pwd_old"/></td>
       </tr>
       <tr><td>&nbsp;</td></tr>
-    </ng-container>
+    }
     <tr>
       <td style="padding-right: 10px">{{'SYSTEM.NEW_PASSWORD'|translate}}</td>
       <td><input [(ngModel)]="pwd_new1" tabindex="2" style="width: 250px" [type]="pwd_show ? 'text' : 'password'" pInputText name="pwd_new1"/></td>
@@ -384,4 +409,3 @@
     <button pButton type="button" tabindex="4" icon="pi pi-check" (click)="change_password($event)" label="{{'BUTTON.CHANGE'|translate}}" class="ui-button-success"></button>
   </p-footer>
 </p-dialog>
-

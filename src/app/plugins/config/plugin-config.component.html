@@ -19,61 +19,67 @@
     <p-table [columns]="cols" [value]="configuredplugins" selectionMode="single" autoLayout="true">
     <ng-template pTemplate="header" let-columns>
       <tr>
-        <th *ngFor="let col of columns" [pSortableColumn]="col.field" [ngStyle]="{'width': col.width, 'min-width': col.min_width}">
-          {{col.header|translate}}
-          <p-sortIcon *ngIf="col.field !== ''" [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
-        </th>
+        @for (col of columns; track $index) {
+          <th [pSortableColumn]="col.field" [ngStyle]="{'width': col.width, 'min-width': col.min_width}">
+            {{col.header|translate}}
+            @if (col.field !== '') {
+              <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+            }
+          </th>
+        }
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-rowData let-columns="columns">
       <tr (click)="rowClicked($event, rowData)">
-        <td *ngFor="let col of columns">
+        @for (col of columns; track $index) {
+        <td>
           <!-- icon with toggle-switch (enabled/disabled -->
-          <ng-container *ngIf="col.field === 'enabled'">
-            <ng-container *ngIf="rowData[col.field] === 'true'">
+          @if (col.field === 'enabled') {
+            @if (rowData[col.field] === 'true') {
               <i style="color: var(--shng-blue);" class="fa fa-toggle-on"></i>
-            </ng-container>
-            <ng-container *ngIf="rowData[col.field] === 'false'">
+            }
+            @if (rowData[col.field] === 'false') {
               <i style="color: var(--shng-toggle-off);" class="fa fa-toggle-off"></i>
-            </ng-container>
-          </ng-container>
+            }
+          }
 
           <!-- icon for plugin-type -->
-          <ng-container *ngIf="col.field === 'type' && ['web','protocol','interface','gateway','system'].includes(rowData[col.field])">
+          @if (col.field === 'type' && ['web','protocol','interface','gateway','system'].includes(rowData[col.field])) {
             <img ngSrc="assets/img/plugin_{{ rowData[col.field] }}.svg" style="width: 25px;"/>
-          </ng-container>
-          <ng-container *ngIf="col.field === 'type' && ['classic'].includes(rowData[col.field])">
+          }
+          @if (col.field === 'type' && ['classic'].includes(rowData[col.field])) {
             &nbsp; -
-          </ng-container>
-          <ng-container *ngIf="col.field === 'type' && !['web','protocol','interface','gateway','system','classic'].includes(rowData[col.field])">
+          }
+          @if (col.field === 'type' && !['web','protocol','interface','gateway','system','classic'].includes(rowData[col.field])) {
             <img ngSrc="assets/img/plugin_defaultlogo.png" style="width: 25px;" height="300" width="300"/>
-          </ng-container>
+          }
 
-          <ng-container *ngIf="col.field !== 'enabled' && col.field !== 'type'">
-            <ng-container *ngIf="col.field === 'plugin'">
+          @if (col.field !== 'enabled' && col.field !== 'type') {
+            @if (col.field === 'plugin') {
               {{rowData[col.field].substr(1)}}
-              <ng-container *ngIf="rowData[col.field].charAt(0) === '+'">
+              @if (rowData[col.field].charAt(0) === '+') {
                 &nbsp; <fa-icon style="color: var(--shng-warning);" title="{{'PLUGIN.DEPRECATED'|translate}}" [icon]="faExclamationTriangle"></fa-icon>
-              </ng-container>
-              <ng-container *ngIf="rowData[col.field].charAt(0) === 'd'">
+              }
+              @if (rowData[col.field].charAt(0) === 'd') {
                 &nbsp; <fa-icon style="color: var(--shng-orange);" title="{{'PLUGIN.DEVELOP'|translate}}" [icon]="faCode"></fa-icon>
-              </ng-container>
-            </ng-container>
-            <ng-container *ngIf="col.field !== 'plugin'">
+              }
+            }
+            @if (col.field !== 'plugin') {
               <div [innerHTML]="rowData[col.field]"></div>
-            </ng-container>
-          </ng-container>
+            }
+          }
         </td>
+        }
       </tr>
     </ng-template>
   </p-table>
 
-    <ng-container *ngIf="dialog_readonly === false && restart_core_button">
+    @if (dialog_readonly === false && restart_core_button) {
       <a style="font-size: small">{{ 'RESTART FOR CHANGES'|translate }}</a>
-    </ng-container>
-    <ng-container *ngIf="dialog_readonly === false && !restart_core_button">
+    }
+    @if (dialog_readonly === false && !restart_core_button) {
       <a style="font-size: small">&nbsp;</a>
-    </ng-container>
+    }
   </div>
   <div class="body-footer">
     <br>
@@ -103,9 +109,9 @@
 
   <p-header>
     {{'CONFIGURATION'|translate}} <strong>{{ this.dialog_configname }}</strong> &nbsp; (Plugin <strong>{{ this.dialog_pluginname }}</strong>)
-    <ng-container *ngIf="plugin_enabled === false">
+    @if (plugin_enabled === false) {
       &nbsp; - &nbsp;<strong>{{'PLUGIN.PLUGIN_DISABLED'|translate}}</strong>
-    </ng-container>
+    }
   </p-header>
 
   <table>
@@ -117,7 +123,7 @@
         {{ this.dialog_description }}
       </td>
     </tr>
-    <ng-container *ngIf="this.state && this.state.toLowerCase() === 'deprecated'">
+    @if (this.state && this.state.toLowerCase() === 'deprecated') {
       <tr>
         <td></td>
       </tr>
@@ -135,87 +141,93 @@
           <p style="padding:0; background-color: #f2f2f2; border:0;">{{'PLUGIN.DEPRECATED_TEXT'|translate}}</p>
         </td>
       </tr>
-    </ng-container>
+    }
   </table>
   <br>
 
-  <ng-container *ngIf="!this.classic">
+  @if (!this.classic) {
     <p-table [style]="{'minHeight':'200px', 'height':'calc(80vh - 200px)'}" [columns]="parameter_cols" [value]="parameters" selectionMode="single">
       <ng-template pTemplate="header" let-columns>
         <tr>
-          <th *ngFor="let col of columns" [pSortableColumn]="col.field" [ngStyle]="{'width': col.width}">
-            {{col.header|translate}}
-            <p-sortIcon *ngIf="col.field !== ''" [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
-          </th>
+          @for (col of columns; track $index) {
+            <th [pSortableColumn]="col.field" [ngStyle]="{'width': col.width}">
+              {{col.header|translate}}
+              @if (col.field !== '') {
+                <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              }
+            </th>
+          }
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-rowData let-columns="columns">
         <tr>
-          <td *ngFor="let col of columns">
+          @for (col of columns; track $index) {
+          <td>
 
-            <ng-container *ngIf="dialog_readonly === false && col.field === 'value'">
-              <ng-container *ngIf="rowData.valid_list.length > 0">
+            @if (dialog_readonly === false && col.field === 'value') {
+              @if (rowData.valid_list.length > 0) {
                 <p-select [options]="rowData.valid_list" [showClear]="true" placeholder="{{rowData.default}}" [(ngModel)]="rowData[col.field]" (ngModelChange)="rowData[col.field] = $event"></p-select>
-              </ng-container>
+              }
 
-              <ng-container *ngIf="(['int','num','float','scene'].indexOf(rowData.type) > -1) && rowData.valid_list.length === 0">
+              @if ((['int','num','float','scene'].indexOf(rowData.type) > -1) && rowData.valid_list.length === 0) {
                 <input [(ngModel)]="rowData[col.field]" type="number" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-              </ng-container>
+              }
 
-              <ng-container *ngIf="rowData.type === 'hide-int' && rowData.valid_list.length === 0">
+              @if (rowData.type === 'hide-int' && rowData.valid_list.length === 0) {
                 <input [(ngModel)]="rowData[col.field]" type="number" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-              </ng-container>
-              <ng-container *ngIf="rowData.type === 'hide-str' && rowData.valid_list.length === 0">
+              }
+              @if (rowData.type === 'hide-str' && rowData.valid_list.length === 0) {
                 <input [(ngModel)]="rowData[col.field]" type="password" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-              </ng-container>
+              }
 
-              <ng-container *ngIf="rowData.type !== 'bool' && ['int','num','float','scene','hide-str', 'hide-int'].indexOf(rowData.type) === -1 && rowData.valid_list.length === 0">
-                <ng-container  *ngIf="(rowData.gui_type !== 'wide_str') && (rowData.gui_type !== 'readonly')">
+              @if (rowData.type !== 'bool' && ['int','num','float','scene','hide-str', 'hide-int'].indexOf(rowData.type) === -1 && rowData.valid_list.length === 0) {
+                @if ((rowData.gui_type !== 'wide_str') && (rowData.gui_type !== 'readonly')) {
                   <input [(ngModel)]="rowData[col.field]" type="text" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                </ng-container>
-                <ng-container  *ngIf="rowData.gui_type == 'readonly'">
+                }
+                @if (rowData.gui_type == 'readonly') {
                   <input [(ngModel)]="rowData[col.field]" type="text" pInputText placeholder="{{rowData.default}}" readonly name="{{col.field}}" [ngStyle]="{'width': col.iwidth, 'color': '#000077'}"/>
-                </ng-container>
-                <ng-container  *ngIf="rowData.gui_type == 'wide_str'">
+                }
+                @if (rowData.gui_type == 'wide_str') {
                   <input [(ngModel)]="rowData[col.field]" type="text" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidthwide}"/>
-                </ng-container>
-              </ng-container>
-            </ng-container>
-            <ng-container *ngIf="dialog_readonly === true || col.field !== 'value'">
-              <ng-container *ngIf="dialog_readonly === true || col.field !== 'desc'">
+                }
+              }
+            }
+            @if (dialog_readonly === true || col.field !== 'value') {
+              @if (dialog_readonly === true || col.field !== 'desc') {
                 {{rowData[col.field]}}
-              </ng-container>
-              <ng-container *ngIf="dialog_readonly === true || col.field === 'desc'">
-                <ng-container *ngIf="col.field !== 'desc' || rowData.gui_type !== 'wide_str'">
+              }
+              @if (dialog_readonly === true || col.field === 'desc') {
+                @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
                   <div [innerHTML]="rowData[col.field]"></div>
-                </ng-container>
-                <ng-container *ngIf="col.field == 'desc' && rowData.gui_type == 'wide_str'">
+                }
+                @if (col.field == 'desc' && rowData.gui_type == 'wide_str') {
                   <div [ngStyle]="{'padding-left': col.paddingleft}">
                     <div [innerHTML]="rowData[col.field]"></div>
                   </div>
-                </ng-container>
-              </ng-container>
+                }
+              }
 <!--
-              <ng-container *ngIf="typeof rowData[col.field]  !== 'string'">
-                <ng-container *ngFor="let bl of col.field">
+              @if (typeof rowData[col.field]  !== 'string') {
+                @for (bl of col.field; track $index) {
                   {{ bl }}}
-                </ng-container>
-              </ng-container>
+                }
+              }
 -->
-            </ng-container>
+            }
           </td>
+          }
         </tr>
       </ng-template>
     </p-table>
-  </ng-container>
-  <ng-container *ngIf="this.classic">
+  }
+  @if (this.classic) {
     <h4>
       {{'PLUGIN.CLASSIC_NOT_CONFIGURABLE'|translate}}
     </h4><br>
-  </ng-container>
+  }
 
   <p-footer>
-    <ng-container *ngIf="dialog_readonly === false">
+    @if (dialog_readonly === false) {
       <a style="font-size: small">{{ 'RESTART FOR CHANGES'|translate }}&nbsp; &nbsp; &nbsp;</a>
 <!--
       <button pButton type="button" icon="fa fa-trash-alt" (click)="deleteConfigComponent.delete(dialog_configname)" label="{{'BUTTON.DELETE'|translate}}" class="ui-button-danger float-sm-left"></button>
@@ -223,10 +235,10 @@
       <button pButton type="button" icon="fa fa-trash-alt" (click)="DeleteConfig()" label="{{'BUTTON.DELETE'|translate}}" class="ui-button-danger float-sm-left"></button>
       <button pButton type="button" icon="fa fa-check" (click)="saveConfig()" label="{{'BUTTON.SAVE'|translate}}" class="ui-button-success"></button>
       <button pButton type="button" icon="fa fa-times" (click)="dialog_display=false" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
-    </ng-container>
-    <ng-container *ngIf="dialog_readonly === true">
+    }
+    @if (dialog_readonly === true) {
       <button pButton type="button" icon="fa fa-times" (click)="dialog_display=false" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
-    </ng-container>
+    }
   </p-footer>
 </p-dialog>
 
@@ -240,11 +252,11 @@
     {{'PLUGIN.CONFIGURATION_ERRORS'|translate}}
   </p-header>
 
-  <ng-container *ngFor="let l of this.validation_dialog_text">
+  @for (l of this.validation_dialog_text; track $index) {
     <li>
       {{ l }}
     </li>
-  </ng-container>
+  }
 
   <p-footer>
     <button pButton type="button" icon="pi pi-times" (click)="validation_dialog_display=false" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
@@ -276,13 +288,13 @@
 
   <p-header>
     {{'PLUGIN.ADD'|translate}}
-    <ng-container *ngIf="plugin_enabled === false">
+    @if (plugin_enabled === false) {
       &nbsp; - &nbsp;<strong>{{'PLUGIN.PLUGIN_DISABLED'|translate}}</strong>
-    </ng-container>
+    }
   </p-header>
 
   <p-accordion [multiple]="true">
-    <ng-container *ngFor="let plugintype of plugintypes; let i = index">
+    @for (plugintype of plugintypes; track i; let i = $index) {
       <p-accordionTab [(selected)]="plugintypes_expanded[i]" (click)="pluginadd.maximize()">
         <p-header style="font-size: larger;">
           <img ngSrc="assets/img/plugin_{{ plugintype }}.svg" style="width: 30px; cursor: pointer;"/> {{plugintype.charAt(0).toUpperCase() + plugintype.substring(1)}} Plugins
@@ -301,44 +313,44 @@
               <th>{{'PLUGIN.MULTI INSTANCE'|translate}}</th>
               <th>{{'PLUGIN.DESCRIPTION'|translate}}</th>
             </thead>
-            <ng-container *ngFor="let iplugin of plugins_installed_list">
-              <ng-container *ngIf="(plugins_installed[iplugin].type === plugintype) || (plugintype === 'unclassified' && plugintypes.indexOf(plugins_installed[iplugin].type) === -1 )">
+            @for (iplugin of plugins_installed_list; track $index) {
+              @if ((plugins_installed[iplugin].type === plugintype) || (plugintype === 'unclassified' && plugintypes.indexOf(plugins_installed[iplugin].type) === -1 )) {
                 <tr style="cursor: pointer" (click)="selectPlugin(iplugin)">
                   <td style="padding-left: 15px;">
                     {{iplugin}}
-                    <ng-container *ngIf="plugins_installed[iplugin].state && (plugins_installed[iplugin].state.toLowerCase() === 'deprecated')">
+                    @if (plugins_installed[iplugin].state && (plugins_installed[iplugin].state.toLowerCase() === 'deprecated')) {
                       &nbsp; <fa-icon style="color: var(--shng-warning);" title="{{'PLUGIN.DEPRECATED'|translate}}" [icon]="faExclamationTriangle"></fa-icon>
-                    </ng-container>
-                    <ng-container *ngIf="plugins_installed[iplugin].state && (plugins_installed[iplugin].state.toLowerCase() === 'develop')">
+                    }
+                    @if (plugins_installed[iplugin].state && (plugins_installed[iplugin].state.toLowerCase() === 'develop')) {
                       &nbsp; <fa-icon style="color: var(--shng-orange);" title="{{'PLUGIN.DEVELOP'|translate}}" [icon]="faCode"></fa-icon>
-                    </ng-container>
+                    }
                   <td>&nbsp; &nbsp;
-                    <ng-container *ngIf="plugins_installed[iplugin].multi_instance">
+                    @if (plugins_installed[iplugin].multi_instance) {
                       <i style="color: var(--shng-blue);" class="fa fa-check"></i>
-                    </ng-container>
+                    }
                   </td>
                   <td>
                     {{plugins_installed[iplugin]['disp_description']}}
                   </td>
                 </tr>
-              </ng-container>
-            </ng-container>
+              }
+            }
           </table>
       </p-accordionTab>
-    </ng-container>
+    }
   </p-accordion>
 
-  <ng-container *ngIf="dialog_readonly === false">
+  @if (dialog_readonly === false) {
     <a style="font-size: small">{{ 'RESTART FOR CHANGES'|translate }}</a>
-  </ng-container>
+  }
 
   <p-footer>
-    <ng-container *ngIf="dialog_readonly === false">
+    @if (dialog_readonly === false) {
 <!--
       <button pButton type="button" icon="pi pi-check" (click)="this.saveConfig()" label="{{'BUTTON.SAVE'|translate}}" class="ui-button-success"></button>
 -->
       <button pButton type="button" icon="pi pi-times" (click)="add_display=false" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-secondary"></button>
-    </ng-container>
+    }
   </p-footer>
 </p-dialog>
 
@@ -385,9 +397,9 @@
 
   <p-header>
     {{'PLUGIN.NAME_CONFIGURATION'|translate:translate_params}}
-    <ng-container *ngIf="plugin_enabled === false">
+    @if (plugin_enabled === false) {
       &nbsp; - &nbsp;<strong>{{'PLUGIN.PLUGIN_DISABLED'|translate}}</strong>
-    </ng-container>
+    }
   </p-header>
 
   <br>
@@ -396,14 +408,14 @@
 
   <br>
   <br>
-  <ng-container *ngIf="dialog_readonly === false">
+  @if (dialog_readonly === false) {
     <a style="font-size: small">{{ 'RESTART FOR CHANGES'|translate }}</a>
-  </ng-container>
+  }
   <p-footer>
-    <ng-container *ngIf="dialog_readonly === false">
+    @if (dialog_readonly === false) {
       <button pButton type="button" icon="pi pi-check" (click)="this.addPlugin()" [disabled]="!this.add_enabled" (disabledChange)="this.add_enabled = $event" label="{{'BUTTON.ADD'|translate}}" class="ui-button-success" autofocus></button>
       <button pButton type="button" icon="pi pi-times" (click)="setconfig_display=false" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
-    </ng-container>
+    }
   </p-footer>
 </p-dialog>
 
@@ -429,7 +441,4 @@
 
 
 
-
-
 <!-- --------------------------------------------------------------------------------------------------- -->
-

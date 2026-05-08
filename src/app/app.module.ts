@@ -152,8 +152,6 @@ export function translateHttpLoaderFactory(http: HttpClient) {
         // TriStateCheckboxModule was deprecated in primeng 18, --> Use Checkbox with indeterminate option
         Checkbox,
         ProgressSpinnerModule,
-        //CheckboxModule,
-        Checkbox,
         ListboxModule,
         FileUploadModule,
         TabsModule.forRoot(),

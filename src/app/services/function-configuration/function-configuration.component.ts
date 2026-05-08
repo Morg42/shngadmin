@@ -175,7 +175,7 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
     this.fileService.deleteFile('functions', this.myEditFilename)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
-        (response: any) => {
+        (response: unknown) => {
           if (response) {
             // close configuration dialog
             this.confirmdelete_display = false;

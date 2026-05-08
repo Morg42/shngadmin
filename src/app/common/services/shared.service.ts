@@ -83,8 +83,8 @@ export class SharedService {
   }
 
 
-  isInt(value: any) {
-    return /^-{0,1}\d+$/.test(value);
+  isInt(value: unknown) {
+    return /^-{0,1}\d+$/.test(String(value));
   }
 
 
@@ -102,10 +102,10 @@ export class SharedService {
   }
 
 
-  is_mac(mac: any) {
-    mac = String(mac);
+  is_mac(mac: unknown) {
+    const macStr = String(mac);
     const MACRegex = new RegExp('^([0-9a-fA-F][0-9a-fA-F]:){5}([0-9a-fA-F][0-9a-fA-F])$');
-    return MACRegex.test(mac);
+    return MACRegex.test(macStr);
   }
 
 

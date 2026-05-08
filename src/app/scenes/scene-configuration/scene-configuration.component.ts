@@ -188,7 +188,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
     this.fileService.deleteFile('scenes', this.myEditFilename)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
-        (response: any) => {
+        (response: unknown) => {
           if (response) {
             // close configuration dialog
             this.confirmdelete_display = false;
@@ -303,7 +303,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
-          this.myTextOutput = <any> response;
+          this.myTextOutput = response as string;
           if (this.myTextOutput.startsWith('ERROR:')) {
             this.error_display = true;
           } else {

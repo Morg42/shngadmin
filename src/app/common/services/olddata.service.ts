@@ -113,7 +113,7 @@ export class OlddataService implements OnInit {
     } else {
       this.http.get(url)
         .subscribe(
-          (response: any[]) => {
+          (response: unknown[]) => {
             console.log('updateConfig:');
             console.log({response});
           },

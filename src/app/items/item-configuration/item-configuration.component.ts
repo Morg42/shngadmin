@@ -178,7 +178,7 @@ export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
     this.fileService.deleteFile('items', this.myEditFilename)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
-        (response: any) => {
+        (response: unknown) => {
           if (response) {
             // close configuration dialog
             this.confirmdelete_display = false;
@@ -293,7 +293,7 @@ export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
-          this.myTextOutput = <any> response;
+          this.myTextOutput = response as string;
           if (this.myTextOutput.startsWith('ERROR:')) {
             this.error_display = true;
           } else {

@@ -30,7 +30,7 @@ export class StructsComponent implements OnInit {
 
 // ----
 
-  structsDict: {};
+  structsDict: Record<string, unknown>;
   structsList: string[];
   structsGroups: string[];
   selectedItem: TreeNode;
@@ -90,7 +90,7 @@ export class StructsComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
-          this.structsDict = <any>response;
+          this.structsDict = response as Record<string, unknown>;
           this.structsList = [];
           // this.structsDict.sort(function (a, b) {return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)});
           for (const k in this.structsDict) {

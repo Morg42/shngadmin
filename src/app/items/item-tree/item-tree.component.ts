@@ -471,37 +471,6 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   }
 
 
-  filterTreeY(event, value) {
-//    console.log('ItemsComponent.filterTree: >' + value + '<')
-    this.filteredTree = cloneDeep(this.filesTree0);
-    if (value && value !== '') {
-      this.filteredTree.forEach( node => {
-        this.filterRecursive(node, value, 0);
-      } );
-
-    }
-  }
-
-  private filterRecursive(node: TreeNode, filter: string, index: number) {
-    if (node.children) {
-      node.children.forEach((childNode, index2) => {
-        this.filterRecursive(childNode, filter, index2);
-        if (!childNode) {
-          console.log({index});
-        }
-      });
-    }
-    if (node.label.indexOf(filter) === -1) {
-      console.log('filtered node: ' + node.label + ', index: ' + index  + ', children: ' + node.children);
-//      node.label = '( ' + node.label + ' )';
-      node.label = '';
-    } else {
-      console.log('active node: ' + node.label + ', index: ' + index  + ', children: ' + node.children);
-
-    }
-  }
-
-
   nodeSelect(event) {
     console.log('Node Selected: ' + event.node.label);
     this.itemdetailsloaded = false;
@@ -530,33 +499,5 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     }
   }
 
-}
-
-
-
-function fuzzysearch (needle: string, haystack: string) {
-  const haystackLC = haystack.toLowerCase();
-  const needleLC = needle.toLowerCase();
-
-  const hlen = haystack.length;
-  const nlen = needleLC.length;
-
-  if (nlen > hlen) {
-    return false;
-  }
-  if (nlen === hlen) {
-    return needleLC === haystackLC;
-  }
-  outer: for (let i = 0, j = 0; i < nlen; i++) {
-    const nch = needleLC.charCodeAt(i);
-
-    while (j < hlen) {
-      if (haystackLC.charCodeAt(j++) === nch) {
-        continue outer;
-      }
-    }
-    return false;
-  }
-  return true;
 }
 

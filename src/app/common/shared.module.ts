@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -9,12 +9,14 @@ import { TranslateModule } from '@ngx-translate/core';
     CommonModule,
     FormsModule,
     RouterModule,
+    NgOptimizedImage,
     TranslateModule.forChild(),
   ],
   exports: [
     CommonModule,
     FormsModule,
     RouterModule,
+    NgOptimizedImage,
     TranslateModule,
   ],
 })

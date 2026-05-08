@@ -104,15 +104,14 @@ export class SharedService {
 
   is_mac(mac: any) {
     mac = String(mac);
-    const MACRegex = new RegExp('"^([0-9a-fA-F][0-9a-fA-F]:){5}([0-9a-fA-F][0-9a-fA-F])$');
+    const MACRegex = new RegExp('^([0-9a-fA-F][0-9a-fA-F]:){5}([0-9a-fA-F][0-9a-fA-F])$');
     return MACRegex.test(mac);
   }
 
 
   is_hostname(str: string) {
     const pattern = new RegExp(
-      '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$',
-      'gm'
+      '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$'
     );
     return pattern.test(str);
   }

@@ -10,7 +10,7 @@
 */
 
 :host ::ng-deep .p-tree {
-  border: none;
+  border: none !important;
   width: auto;
 }
 

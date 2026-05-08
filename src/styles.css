@@ -37,6 +37,7 @@ input::-webkit-inner-spin-button {
 
 
 :root {
+  color-scheme: light;
   --shng-blue: #709cc2;
   --shng-red: #c40808;
   --shng-green: green;

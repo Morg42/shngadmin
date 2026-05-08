@@ -175,7 +175,7 @@ export function translateHttpLoaderFactory(http: HttpClient) {
         TranslateService,
         JwtModule,
         provideHttpClient(withInterceptorsFromDi()),
-        providePrimeNG({ theme: { preset: Aura } })
+        providePrimeNG({ theme: { preset: Aura, options: { darkModeSelector: false } } })
     ] })
 
 

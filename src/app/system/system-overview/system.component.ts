@@ -10,6 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { UIChart } from 'primeng/chart';
+import { ChartData } from 'chart.js';
 
 //import * as $ from 'jquery';
 
@@ -67,23 +68,23 @@ export class SystemComponent implements OnDestroy, OnInit {
   os_uptime = '';
   sh_uptime = '';
 
-  chartoptions1: any;
-  chartoptionsSystem: any;
-  chartoptionsShng: any;
-  chartoptionsScheduler: any;
-  chartoptionsDisc: any;
+  chartoptions1: Record<string, unknown>;
+  chartoptionsSystem: Record<string, unknown>;
+  chartoptionsShng: Record<string, unknown>;
+  chartoptionsScheduler: Record<string, unknown>;
+  chartoptionsDisc: Record<string, unknown>;
 
-  chartdataLoad: any;
-  chartdataSystemMemory: any;
-  chartdataSwap: any;
-  chartdataMemory: any;
-  chartdataThreads: any;
-  chartdataWorkerThreads: any;
-  chartdataDisk: any;
+  chartdataLoad: ChartData;
+  chartdataSystemMemory: ChartData;
+  chartdataSwap: ChartData;
+  chartdataMemory: ChartData;
+  chartdataThreads: ChartData;
+  chartdataWorkerThreads: ChartData;
+  chartdataDisk: ChartData;
 
-  changed_chartdataLoad: any;
-  loadData: any;
-  varChartSystemload: any;
+  changed_chartdataLoad: unknown;
+  loadData: unknown;
+  varChartSystemload: unknown;
 
   appName = this.app.APP_NAME;
   appVersion = 'v' + this.app.APP_VERSION;

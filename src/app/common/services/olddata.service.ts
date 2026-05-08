@@ -88,7 +88,7 @@ export class OlddataService implements OnInit {
     console.log('OlddataService.changeItemValue: url: ' + url);
     this.http.get(url)
       .subscribe(
-        (response: ItemDetails[]) => {
+        (response: unknown) => {
           console.log('updateValue:');
           console.log({response});
         },

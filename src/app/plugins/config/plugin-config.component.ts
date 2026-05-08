@@ -24,6 +24,7 @@ import { PluginsConfig } from '../../common/models/plugins-config';
 import { PluginsInstalled } from '../../common/models/plugins-installed';
 import {SceneInfo} from '../../common/models/scene-info';
 import {Title} from '@angular/platform-browser';
+import { TableColumn, ConfigParameter } from '../../common/models/interfaces';
 
 
 export interface ConfiguredPlugin { confname: string; instance: string; plugin: string; desc: string; }
@@ -57,7 +58,7 @@ export class PluginConfigComponent implements OnInit {
   faCode = faLaptopCode;                               // signal plugin in state "develop"
 
   configuredplugins: ConfiguredPlugin[];
-  cols: any[];
+  cols: TableColumn[];
   pluginconflist: PluginsConfig;
   restart_core_button: boolean;
 
@@ -65,9 +66,9 @@ export class PluginConfigComponent implements OnInit {
   lang: string;
 
   // display modal edit dialog
-  parameters: any[];
+  parameters: ConfigParameter[];
   plugin_enabled: boolean;
-  parameter_cols: any[];
+  parameter_cols: TableColumn[];
   classic = false;
   state = '';
   rowclicked_foredit: any = false;
@@ -127,7 +128,7 @@ ngOnInit() {
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(
               (response) => {
-                this.pluginconflist = <any>response;
+                this.pluginconflist = response as PluginsConfig;
                 // console.log(this.pluginconflist);
 
                 for (const plg in this.pluginconflist.plugin_config) {
@@ -242,12 +243,12 @@ ngOnInit() {
     //   wrk =  wrk.replace(/  /g, ' ');
     // }
     if ((str === null) || (str === undefined)) {
-      return <any>[];
+      return [];
     }
     if (str.trim() === '') {
-      return <any>[];
+      return [];
     }
-    const list = <any>str.split('|');
+    const list = str.split('|');
     for (let i = 0; i < list.length; i++) {
       list[i] = list[i].trim();
     }
@@ -466,26 +467,28 @@ ngOnInit() {
 
       // checking data types
       if (this.parameters[i]['value'] !== null && this.parameters[i]['value'] !== '') {
-        error_text = '\'' + this.parameters[i]['value'] + '\' '  ;
-        if (this.parameters[i]['type'].toLowerCase() === 'knx_ga' && !this.shared.is_knx_groupaddress(this.parameters[i]['value'])) {
+        const ptype = String(this.parameters[i]['type']).toLowerCase();
+        const pvalue = this.parameters[i]['value'] as string;
+        error_text = '\'' + pvalue + '\' ';
+        if (ptype === 'knx_ga' && !this.shared.is_knx_groupaddress(pvalue)) {
           error_found = true;
           error_text += this.translate.instant('PLUGIN.INVALID_KNX_ADDRESS');
         }
-        if (this.parameters[i]['type'].toLowerCase() === 'mac' && !this.shared.is_mac(this.parameters[i]['value'])) {
+        if (ptype === 'mac' && !this.shared.is_mac(pvalue)) {
           error_found = true;
           error_text += this.translate.instant('PLUGIN.INVALID_MAC_ADDRESS');
         }
-        if (this.parameters[i]['type'].toLowerCase() === 'ipv4' && !this.shared.is_ipv4(this.parameters[i]['value'])) {
+        if (ptype === 'ipv4' && !this.shared.is_ipv4(pvalue)) {
           error_found = true;
           error_text += this.translate.instant('PLUGIN.INVALID_IP_ADDRESS') + ' (v4)';
         }
-        if (this.parameters[i]['type'].toLowerCase() === 'ipv6' && !this.shared.is_ipv6(this.parameters[i]['value'])) {
+        if (ptype === 'ipv6' && !this.shared.is_ipv6(pvalue)) {
           error_found = true;
           error_text += this.translate.instant('PLUGIN.INVALID_IP_ADDRESS') + ' (v6)';
         }
-        if (this.parameters[i]['type'].toLowerCase() === 'ip') {
-          if (!this.shared.is_ipv4(this.parameters[i]['value']) && !this.shared.is_ipv6(this.parameters[i]['value'])) {
-            if (!this.shared.is_hostname(this.parameters[i]['value'])) {
+        if (ptype === 'ip') {
+          if (!this.shared.is_ipv4(pvalue) && !this.shared.is_ipv6(pvalue)) {
+            if (!this.shared.is_hostname(pvalue)) {
               error_found = true;
               error_text += this.translate.instant('PLUGIN.INVALID_HOSTNAME');
             }
@@ -564,8 +567,9 @@ ngOnInit() {
       this.pluginsdataService.setPluginConfig(this.dialog_configname, {'config': config})
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(
-            (response: any) => {
-              if (response.result !== 'ok') {
+            (response) => {
+              const res = response as { result?: string };
+              if (res.result !== 'ok') {
                 // display error dialog, if save failed?
               }
             }
@@ -579,7 +583,7 @@ ngOnInit() {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
-          const res = <any> response;
+          const res = response as { result?: string };
           console.log('restartShng', res.result);
         }
       );
@@ -681,7 +685,7 @@ ngOnInit() {
       this.pluginsdataService.addPluginConfig(this.pluginconfig_name, {'config': config})
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(
-          (response: any) => {
+          (response) => {
             if (response) {
               console.log('PluginConfigComponent.addPlugin(): call ngOnInit()');
               this.ngOnInit();
@@ -718,7 +722,7 @@ ngOnInit() {
     this.pluginsdataService.deletePluginConfig(this.dialog_configname)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
-        (response: any) => {
+        (response) => {
           if (response) {
             // close configuration dialog
             this.dialog_display = false;

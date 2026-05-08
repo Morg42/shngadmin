@@ -8,6 +8,14 @@ import {of} from 'rxjs';
 import {sha512} from 'js-sha512';
 import {AppConfigService} from './app-config.service';
 
+interface DecodedJwtToken {
+  exp: number;
+  iat: number;
+  name?: string;
+  admin?: boolean;
+  [key: string]: unknown;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -17,8 +25,7 @@ export class AuthService {
   public jwtHelper = inject(JwtHelperService);
   private appConfig = inject(AppConfigService);
 
-  currentUser: any;
-  helper: any;
+  currentUser: DecodedJwtToken;
   isLoginRequired: boolean;
   isLoginRequiredCount = 0;
   expiredLogin: boolean;
@@ -55,7 +62,7 @@ export class AuthService {
     // this.logTimestamp += 500;
 
     const send_hash = 'shNG0160$';
-    const send_credentials = <any>{};
+    const send_credentials: Record<string, string> = {};
 
     send_credentials.username = '';
     if (credentials.username !== '') {
@@ -114,9 +121,9 @@ export class AuthService {
     // const apiUrl = sessionStorage.getItem('apiUrl');
     const apiUrl = '/api/';
     console.log('login', apiUrl + 'authenticate/user', {send_credentials});
-    return this.http.post(apiUrl + 'authenticate/user', JSON.stringify(send_credentials))
+    return this.http.post<{token?: string}>(apiUrl + 'authenticate/user', JSON.stringify(send_credentials))
       .pipe(map(response => {
-        const result = <any>response;
+        const result = response;
 
         let anon = '';
         if (credentials.username === '') {
@@ -168,10 +175,9 @@ export class AuthService {
     // const apiUrl = sessionStorage.getItem('apiUrl');
     const apiUrl = '/api/';
     console.log('getNewToken', apiUrl + 'authenticate/renew');
-    return this.http.put(apiUrl + 'authenticate/renew', '')
+    return this.http.put<{token: string}>(apiUrl + 'authenticate/renew', '')
       .pipe(map(response => {
-        const result = <any>response;
-        return result.token;
+        return response.token;
       }));
   }
 

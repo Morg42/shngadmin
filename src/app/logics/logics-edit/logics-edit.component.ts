@@ -10,6 +10,7 @@ import {LogicsinfoType} from '../../common/models/logics-info';
 import {LogicsApiService} from '../../common/services/logics-api.service';
 import {LogicsWatchItem} from '../../common/models/logics-watch-item';
 import {SharedService} from '../../common/services/shared.service';
+import { TableColumn, ConfigParameter } from '../../common/models/interfaces';
 import {RegExpTokenFn} from 'ngx-bootstrap/chronos/parse/regex';
 import {TranslateService} from '@ngx-translate/core';
 import {Title} from '@angular/platform-browser';
@@ -47,9 +48,9 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   logicCrontabOrig: string;
   logicWatchitemOrig: LogicsWatchItem[];
 
-  parameters: any[] = [];
-  parameter_cols: any[];
-  pluginParameters: {} = {};
+  parameters: ConfigParameter[] = [];
+  parameter_cols: TableColumn[];
+  pluginParameters: Record<string, Record<string, unknown>> = {};
 
   // -----------------------------------------------------------------
   //  Vars for the codemirror components
@@ -172,7 +173,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
                   .pipe(takeUntilDestroyed(this.destroyRef))
                   .subscribe(
                       (response2) => {
-                        const result = <any>response2;
+                        const result = response2 as string[];
                         for (let i = 0; i < result.length; i++) {
                           this.autocomplete_list.push({ text: 'sh.' + result[i], displayText: 'sh.' + result[i] + ' | Plugin'});
                         }
@@ -187,7 +188,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
-          const result = <any>response;
+          const result = response as string[];
           for (let i = 0; i < result.length; i++) {
             this.full_autocomplete_list.push({text: result[i], displayText: result[i]});
             this.full_autocomplete_list.push({text: result[i], displayText: 'sh.' + result[i]});
@@ -227,7 +228,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
-          this.pluginParameters = <any>response;
+          this.pluginParameters = response as Record<string, Record<string, unknown>>;
           // console.log('ngOnInit: pluginParameters', this.pluginParameters);
 
           for (const param in this.pluginParameters) {
@@ -235,9 +236,10 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
               const paramdef = this.pluginParameters[param];
 
               const vl = [];
-              if (paramdef['valid_list'] !== undefined) {
-                for (let i = 0; i < paramdef['valid_list'].length; i++) {
-                  const wrk = {label: String(paramdef['valid_list'][i]), value: paramdef['valid_list'][i]};
+              const validList = paramdef['valid_list'] as unknown[];
+              if (validList !== undefined) {
+                for (let i = 0; i < validList.length; i++) {
+                  const wrk = {label: String(validList[i]), value: validList[i]};
                   vl.push(wrk);
                 }
               }
@@ -254,7 +256,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
               }
 
               // fill description with active language
-              const paramdesc = this.shared.getDescription(paramdef['description']);
+              const paramdesc = this.shared.getDescription(paramdef['description'] as Record<string, string>);
 
               let val = null;
               val = this.logic[param];
@@ -266,9 +268,9 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
                 val = this.listToString(val);
               }
 
-              const paramdata = {
+              const paramdata: ConfigParameter = {
                 'name': param,
-                'type': paramdef['type'],
+                'type': paramdef['type'] as string,
                 'valid_list': vl,
                 'valid_min': paramdef['valid_min'],
                 'valid_max': paramdef['valid_max'],
@@ -285,8 +287,8 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
                   paramdata['default'] = this.listToString(paramdef['default']);
                 }
               }
-              if (paramdef['hide'] && (['str', 'int'].indexOf(paramdef['type']) !== -1)) {
-                paramdata['type'] = 'hide' + '-' + paramdef['type'];
+              if (paramdef['hide'] && (['str', 'int'].indexOf(paramdef['type'] as string) !== -1)) {
+                paramdata['type'] = 'hide' + '-' + (paramdef['type'] as string);
               }
 
               if (paramdata.type === 'bool') {
@@ -347,11 +349,11 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
     //   wrk =  wrk.replace(/  /g, ' ');
     // }
     if (str === null) {
-      return <any>[];
+      return [];
     } else if (str.trim() === '') {
-      return <any>[];
+      return [];
     }
-    const list = <any>str.split('|');
+    const list = str.split('|');
     for (let i = 0; i < list.length; i++) {
       list[i] = list[i].trim();
     }
@@ -365,7 +367,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
-          this.logic = <any>response;
+          this.logic = response as LogicsinfoType;
           // console.warn('LogicsEditComponent.getLogicInfo() this.logic', this.logic);
 
           if (this.logic.enabled === undefined) {
@@ -442,7 +444,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
             (response) => {
               if (response['watch_item'] !== undefined) {
                 // assign only if valid data is returned (do not assigen in localhost test mode)
-                this.logic = <any>response;
+                this.logic = response as LogicsinfoType;
               }
               console.warn('getLogicInfo *4', this.logic, response);
               this.myLogicIsLoaded = response['is_loaded'];
@@ -569,7 +571,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
 
   removeItem(itemName) {
     for (const j of this.logic.watch_item) {
-      if (<any>j === itemName) {
+      if (String(j) === itemName) {
         const index = this.logic.watch_item.indexOf(j);
         if (index > -1) {
           this.logic.watch_item.splice(index, 1);
@@ -586,7 +588,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
       if (i === this.myTextareaWatchItems) {
         // check if item is already in watch item list
         for (const j of this.logic.watch_item) {
-          if (<any>j === this.myTextareaWatchItems) {
+          if (String(j) === this.myTextareaWatchItems) {
             return false;
           }
         }
@@ -610,7 +612,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
         return;
       }
     }
-    this.logic.watch_item.push(<any>this.myTextareaWatchItems);
+    this.logic.watch_item.push(this.myTextareaWatchItems as unknown as LogicsWatchItem);
     this.myTextareaWatchItems = '';
     this.wrongWatchItem = false;
     this.logicChanged = this.hasLogicChanged();

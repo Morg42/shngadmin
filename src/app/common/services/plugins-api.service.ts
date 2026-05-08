@@ -7,6 +7,11 @@ import {of} from 'rxjs';
 import {PluginsConfig} from '../models/plugins-config';
 import {AppConfigService} from './app-config.service';
 
+interface ApiResult {
+  result: string;
+  description?: string;
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -148,7 +153,7 @@ export class PluginsApiService {
     return this.http.put(url, JSON.stringify(config))
       .pipe(
         map(response => {
-          const result = <any>response;
+          const result = response as ApiResult;
 
           if (result) {
             // console.log('PluginsApiService.setPluginConfig', '- config', config, '\nresult', {result});
@@ -185,7 +190,7 @@ export class PluginsApiService {
     return this.http.post(url, JSON.stringify(config))
       .pipe(
         map(response => {
-          const result = <any>response;
+          const result = response as ApiResult;
 
           if (result) {
             console.log('PluginsApiService.addPluginConfig', '- config', config, '\nresult', {result});
@@ -224,7 +229,7 @@ export class PluginsApiService {
     return this.http.delete(url)
       .pipe(
         map(response => {
-          const result = <any>response;
+          const result = response as ApiResult;
 
           if (result) {
             console.log('PluginsApiService.deletePluginConfig', '- section', pluginsection, '\nresult', {result});
@@ -267,7 +272,7 @@ export class PluginsApiService {
     return this.http.put(url, JSON.stringify(''))
       .pipe(
         map(response => {
-          const result = <any>response;
+          const result = response as ApiResult;
 
           if (result) {
             // console.log('PluginsApiService.setPluginState', '- config', config, '\nresult', {result});

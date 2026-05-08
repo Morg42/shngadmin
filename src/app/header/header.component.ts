@@ -5,7 +5,7 @@ import {AppConfigService} from '../common/services/app-config.service';
 // import { isSuccess } from '@angular/http/src/http_utils';
 
 import { TranslateService } from '@ngx-translate/core';
-// import { MenuItem } from 'primeng/api';
+import { MenuItem } from 'primeng/api';
 
 import { ServerInfo } from '../common/models/server-info';
 import { ServerApiService } from '../common/services/server-api.service';
@@ -36,8 +36,7 @@ export class HeaderComponent implements OnInit {
 
 //  faCircleNotch = faCircleNotch;
 
-//  items: MenuItem[];
-  items: any;
+  items: MenuItem[];
   menuInitialized: boolean;
 
   // server_info: ServerInfo;

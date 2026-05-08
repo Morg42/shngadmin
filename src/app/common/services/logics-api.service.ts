@@ -6,6 +6,11 @@ import { map, catchError } from 'rxjs/operators';
 import {of} from 'rxjs';
 import {AppConfigService} from './app-config.service';
 
+interface ApiResult {
+  result: string;
+  description?: string;
+}
+
 
 
 @Injectable({
@@ -105,7 +110,7 @@ export class LogicsApiService {
     return this.http.put(url, JSON.stringify(''))
       .pipe(
         map(response => {
-          const result = <any>response;
+          const result = response as ApiResult;
 
           if (result) {
             // console.log('LogicsApiService.setLogicState', '- config', config, '\nresult', {result});
@@ -141,7 +146,7 @@ export class LogicsApiService {
     return this.http.put(url, JSON.stringify(paramObj))
       .pipe(
         map(response => {
-          const result = <any>response;
+          const result = response as ApiResult;
 
           if (result) {
             // console.log('LogicsApiService.setLogicState', '- config', config, '\nresult', {result});
@@ -174,7 +179,7 @@ export class LogicsApiService {
     return this.http.put(url, JSON.stringify(group))
       .pipe(
         map(response => {
-          const result = <any>response;
+          const result = response as ApiResult;
 
           if (result) {
             console.log('LogicsApiService.saveLogicGroup', '- group', groupName, '\nresult', {result});
@@ -207,7 +212,7 @@ export class LogicsApiService {
     return this.http.put(url, JSON.stringify(''))
       .pipe(
         map(response => {
-          const result = <any>response;
+          const result = response as ApiResult;
 
           if (result) {
             console.log('LogicsApiService.deleteLogicGroup', '- group', groupName, '\nresult', {result});

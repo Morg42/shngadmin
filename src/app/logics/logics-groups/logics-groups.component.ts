@@ -71,7 +71,7 @@ export class LogicsGroupsComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
-          this.logicGroups = <any>response['groups'];
+          this.logicGroups = (response as { groups: LogicsGroupType[] })['groups'];
           this.groupList = Object.keys(this.logicGroups).sort(function (a, b) {
             return a.toLowerCase().localeCompare(b.toLowerCase());
           });
@@ -129,7 +129,7 @@ export class LogicsGroupsComponent implements OnInit {
     this.dataService.deleteLogicGroup(this.myEditGroup)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
-        (response: any) => {
+        (response) => {
           if (response) {
             // close configuration dialog
             this.confirmdelete_display = false;

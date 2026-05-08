@@ -6,11 +6,11 @@ import { Subject } from 'rxjs';
 @Injectable()
 export class WebsocketService {
   private ws: WebSocket;
-  private messageStream = new Subject<any>();
+  private messageStream = new Subject<MessageEvent>();
   private openSubject = new Subject<void>();
-  private messageQueue: any[] = [];
+  private messageQueue: unknown[] = [];
   private reconnectUrl: string | null = null;
-  private reconnectTimer: any = null;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
   public messages$ = this.messageStream.asObservable();
   public open$ = this.openSubject.asObservable();
@@ -44,7 +44,7 @@ export class WebsocketService {
   }
 
 
-  public sendMessage(message: any): void {
+  public sendMessage(message: unknown): void {
     if (this.ws?.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(message));
     } else {

@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
+import { LoggersType } from '../../common/models/loggers-info';
 
 @Component({
   selector: 'logger-line',
@@ -9,9 +10,9 @@ import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectionStrategy
 export class LoggerLineComponent implements OnInit {
 
   @Input() loggerName: string;
-  @Input() logger: any;
+  @Input() logger: LoggersType;
   @Input() loggerActive: boolean;
-  @Input() definedHandlers: any;
+  @Input() definedHandlers: string[];
   // @Input() loggerActiveLevel: any;
   @Output() levelChange = new EventEmitter();
   @Output() loggerDelete = new EventEmitter();

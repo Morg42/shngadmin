@@ -43,7 +43,7 @@ export class FunctionsApiService {
     return this.http.put(url, '', { responseType: 'text' })
         .pipe(
             map(response => {
-              const result = <any>response;
+              const result = response;
 
               if (result) {
                 // console.log('FunctionsApiService.reloadFunction', '\nresult', {result});
@@ -70,7 +70,7 @@ export class FunctionsApiService {
     return this.http.put(url, '', { responseType: 'text' })
         .pipe(
             map(response => {
-              const result = <any>response;
+              const result = response;
 
               if (result) {
                 console.log('FunctionsApiService.reloadFunctions', '\nresult', {result});

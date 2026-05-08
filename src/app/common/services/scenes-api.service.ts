@@ -43,7 +43,7 @@ export class ScenesApiService {
       return this.http.put(url, '', { responseType: 'text' })
           .pipe(
               map(response => {
-                  const result = <any>response;
+                  const result = response as string;
 
                   if (result) {
                       console.log('ScenesApiService.reloadScene', '\nresult', {result});
@@ -70,7 +70,7 @@ export class ScenesApiService {
         return this.http.put(url, '', { responseType: 'text' })
             .pipe(
                 map(response => {
-                    const result = <any>response;
+                    const result = response as string;
 
                     if (result) {
                         console.log('ScenesApiService.reloadScenes', '\nresult', {result});

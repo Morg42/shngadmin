@@ -29,6 +29,8 @@ import {Title} from '@angular/platform-browser';
 import {Subscription} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
+type MonitoredItem = [string, Record<string, unknown>];
+
 
 @Component({
   selector: 'app-items',
@@ -58,7 +60,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   itemdetails: ItemDetails = <ItemDetails>{};
   itemdetailsloaded = false;
 
-  monitoredItems: any[] = [];
+  monitoredItems: MonitoredItem[] = [];
 
   filesTree0: {}[];
   filteredTree: {}[];
@@ -66,7 +68,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   treeIsFiltered = false;
   selectedFile: TreeNode;
 
-  item_val: any;
+  item_val: { value: unknown };
   alertText = '';
 
   Object = Object;
@@ -79,7 +81,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   previous_update_age = '';
   previous_change_age = '';
 
-  data: any;
+  data: unknown;
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -193,7 +195,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
 //          console.log('ItemsComponent: dataService.getItemtree()');
 //          console.log(response);
           this.itemcount = response[0];
-          this.filesTree0 = <any> response[1];
+          this.filesTree0 = response[1] as unknown as {}[];
           this.filterNodes('');
           // this.plugininfo.sort(function (a, b) {return (a.pluginname > b.pluginname) ? 1 : ((b.pluginname > a.pluginname) ? -1 : 0)});
 //          this.searchStart_param = {'number': String(this.appConfig.itemtreeSearchstart)};
@@ -318,7 +320,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
       data['last_update_by'] = this.itemdetails.updated_by;
       data['last_change_by'] = this.itemdetails.changed_by;
 
-      const monItem = [path, data];
+      const monItem: MonitoredItem = [path, data as Record<string, unknown>];
       this.monitoredItems.push(monItem);
       this.sortMonitoredItems();
       // bind the callback function to the context of the item-tree component

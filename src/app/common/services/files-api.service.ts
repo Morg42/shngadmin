@@ -54,7 +54,7 @@ export class FilesApiService {
     return this.http.put(url, content, { responseType: 'text' })
       .pipe(
         map(response => {
-          const result = <any>response;
+          const result = response;
 
           if (result) {
             // console.log('ServicesApiService.CheckYamlText', '- config:', yamlText, '\nresult', {result});

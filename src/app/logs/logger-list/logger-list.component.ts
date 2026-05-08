@@ -27,9 +27,9 @@ export class LoggerListComponent implements OnInit {
   private titleService = inject(Title);
 
   loggers: LoggersType;
-  active_plugins: any[];
-  active_logics: any[];
-  loggersList: any[];
+  active_plugins: string[];
+  active_logics: string[];
+  loggersList: string[];
   definedHandlers: {};
 
   loggerOptions: {}[] = [];

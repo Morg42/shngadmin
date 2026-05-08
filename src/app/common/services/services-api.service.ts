@@ -6,6 +6,12 @@ import { map, catchError } from 'rxjs/operators';
 import {of} from 'rxjs';
 import {AppConfigService} from './app-config.service';
 
+interface EvalResult {
+  expression: string;
+  type: string;
+  result: unknown;
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -23,10 +29,10 @@ export class ServicesApiService {
   CheckEvalData(evalData) {
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'services/evalcheck/';
-    return this.http.put(url, evalData)
+    return this.http.put<EvalResult>(url, evalData)
       .pipe(
         map(response => {
-          const result = <any>response;
+          const result = response;
 
           if (result) {
             // console.log('ServicesApiService.CheckEvalData', '- config:', evalData, '\nresult', {result});
@@ -55,7 +61,7 @@ export class ServicesApiService {
     return this.http.put(url, yamlText, { responseType: 'text' })
       .pipe(
         map(response => {
-          const result = <any>response;
+          const result = response;
 
           if (result) {
             // console.log('ServicesApiService.CheckYamlText', '- config:', yamlText, '\nresult', {result});
@@ -86,7 +92,7 @@ export class ServicesApiService {
     return this.http.put(url, confText, {responseType: 'text'})
       .pipe(
         map(response => {
-          const result = <any>response;
+          const result = response;
 
           if (result) {
             // console.log('ServicesApiService.ConvertToYamlText', '- config:', confText, '\nresult', {result});
@@ -128,7 +134,7 @@ export class ServicesApiService {
     return this.http.put(url, 'xxx')
       .pipe(
         map(response => {
-          const result = <any>response;
+          const result = response;
 
           if (result) {
             // console.log('ServicesApiService.ConvertToYamlText', '- config:', confText, '\nresult', {result});

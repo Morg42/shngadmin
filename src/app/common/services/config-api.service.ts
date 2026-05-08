@@ -44,7 +44,7 @@ export class ConfigApiService {
     const url = apiUrl + 'config/core/';
     return this.http.put(url, JSON.stringify(data))
       .pipe(map(response => {
-        const result = <any>response;
+        const result = response;
 
         if (result) {
           console.log('ConfigApiService.saveConfig', 'success', {result});

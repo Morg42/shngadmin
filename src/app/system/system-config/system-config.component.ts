@@ -11,9 +11,13 @@ import {SchedulersApiService} from '../../common/services/schedulers-api.service
 import {ServerApiService} from '../../common/services/server-api.service';
 
 import { SharedService } from '../../common/services/shared.service';
+import { TableColumn, ConfigParameter } from '../../common/models/interfaces';
 
 import {sha512} from 'js-sha512';
 import {Title} from '@angular/platform-browser';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SystemConfig = any;
 
 
 @Component({
@@ -34,40 +38,41 @@ export class SystemConfigComponent implements OnInit {
   private titleService = inject(Title);
   private appConfig = inject(AppConfigService);
 
-  config: any;
+  config: SystemConfig;
   lang: string;
 
-  common_parameters: any[];
-  common_parameter_cols: any[];
-  common_parameters_beforeEdit: any[];
+  common_parameters: ConfigParameter[];
+  common_parameter_cols: TableColumn[];
+  common_parameters_beforeEdit: ConfigParameter[];
 
-  http_parameters: any[];
-  http_parameter_cols: any[];
-  http_parameters_beforeEdit: any[];
+  http_parameters: ConfigParameter[];
+  http_parameter_cols: TableColumn[];
+  http_parameters_beforeEdit: ConfigParameter[];
 
-  websocket_parameters: any[];
-  websocket_parameter_cols: any[];
-  websocket_parameters_beforeEdit: any[];
+  websocket_parameters: ConfigParameter[];
+  websocket_parameter_cols: TableColumn[];
+  websocket_parameters_beforeEdit: ConfigParameter[];
 
-  admin_parameters: any[];
-  admin_parameter_cols: any[];
-  admin_parameters_beforeEdit: any[];
+  admin_parameters: ConfigParameter[];
+  admin_parameter_cols: TableColumn[];
+  admin_parameters_beforeEdit: ConfigParameter[];
 
-  mqtt_parameters: any[];
-  mqtt_parameter_cols: any[];
-  mqtt_parameters_beforeEdit: any[];
+  mqtt_parameters: ConfigParameter[];
+  mqtt_parameter_cols: TableColumn[];
+  mqtt_parameters_beforeEdit: ConfigParameter[];
 
   data_changed = false;
   restart_core_button = false;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   rowclicked_foredit: any = false;
   dialog_readonly = false;
 
 
 
   pwd_change_dialog_display = false;
-  pwd_rowData: any;
-  pwd_col: any;
+  pwd_rowData: ConfigParameter | null = null;
+  pwd_col: string | null = null;
 
   pwd_old: string = null;
   pwd_new1: string = null;
@@ -700,7 +705,7 @@ export class SystemConfigComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
-          const res = <any> response;
+          const res = response as { result?: string };
           console.log('restartShng', res.result);
         }
       );

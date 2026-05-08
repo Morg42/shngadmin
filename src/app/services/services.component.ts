@@ -346,7 +346,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
-          this.myTextOutput = <any> response;
+          this.myTextOutput = response as string;
           this.cmOptionsOutput.lineNumbers = true;
           // if (this.myTextOutput.startsWith('ERROR:')) {
           //   this.cmOptionsOutput.lineNumbers = false;
@@ -367,13 +367,13 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
-          const myResponse = <any> response;
+          const myResponse = response as { expression: string; type: string; result: unknown };
           this.myEvalTextOutput = myResponse.expression;
           this.myResultType = myResponse.type;
           if (this.myResultType === 'list' || this.myResultType === 'dict') {
             this.myEvalResult = JSON.stringify(myResponse.result);
           } else {
-            this.myEvalResult = myResponse.result;
+            this.myEvalResult = String(myResponse.result);
           }
           this.cdr.markForCheck();
         }
@@ -389,7 +389,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
-          this.myConverterTextOutput = <any> response;
+          this.myConverterTextOutput = response as string;
           this.cmConverterOptionsOutput.lineNumbers = true;
 //          if (this.myConverterTextOutput.startsWith('ERROR:')) {
 //            this.cmConverterOptionsOutput.lineNumbers = false;
@@ -435,7 +435,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
-          const res = <any> response;
+          const res = response as { code?: number; text?: string; details?: string };
           if (res.code === undefined) {
             // shng is not running
             this.status_errorcount += 1;
@@ -489,7 +489,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
-          const res = <any> response;
+          const res = response as { result?: string };
           console.log('restartShng', res.result);
           this.shng_status = this.translate_shngStatus('Restart clicked');
           this.shng_statuscode = -1;
@@ -521,7 +521,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response) => {
-          const res = <any> response;
+          const res = response as Blob;
           // saveAs(res, 'shng_config_backup_' + today + '.zip');
           saveAs(res, filename);
           this.show_backup_confirm = true;
@@ -549,7 +549,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     console.log('myUploader', event.files);
     console.log('myUploader', event.files[0].name);
 
-    let filecontent: any;
+    let filecontent: string;
 
     const reader = new FileReader();
 
@@ -581,7 +581,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
 
     reader.onloadend = () => {
       // console.warn(reader.result);
-      filecontent = reader.result;
+      filecontent = reader.result as string;
 
       this.fileService.saveFile('restore', event.files[0].name, filecontent)
         .pipe(takeUntilDestroyed(this.destroyRef))

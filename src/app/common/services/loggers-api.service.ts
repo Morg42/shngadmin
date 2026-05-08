@@ -43,7 +43,7 @@ export class LoggersApiService {
     return this.http.put(url, 'level')
       .pipe(
         map(response => {
-          const result = <any>response;
+          const result = response;
 
           if (result) {
             // console.log('ServicesApiService.ConvertToYamlText', '- config:', confText, '\nresult', {result});
@@ -68,7 +68,7 @@ export class LoggersApiService {
     return this.http.put(url, 'handlers')
       .pipe(
         map(response => {
-          const result = <any>response;
+          const result = response;
 
           if (result) {
             // console.log('ServicesApiService.ConvertToYamlText', '- config:', confText, '\nresult', {result});

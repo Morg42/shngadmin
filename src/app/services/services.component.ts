@@ -43,18 +43,16 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  private http = inject(HttpClient);
+  private translate = inject(TranslateService);
+  public shared = inject(SharedService);
+  private fileService = inject(FilesApiService);
+  private dataService = inject(ServicesApiService);
+  private dataServiceServer = inject(ServerApiService);
+  private titleService = inject(Title);
+  private appConfig = inject(AppConfigService);
 
 //  schedulerinfo: SchedulerInfo[];
-
-  constructor(private http: HttpClient,
-              private translate: TranslateService,
-              public  shared: SharedService,
-              private fileService: FilesApiService,
-              private dataService: ServicesApiService,
-              private dataServiceServer: ServerApiService,
-              private titleService: Title,
-              private appConfig: AppConfigService) {
-  }
 
   serverInfo = <ServerInfo>{};
   default_language: string;

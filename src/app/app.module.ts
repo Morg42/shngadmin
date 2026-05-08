@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { Injector } from '@angular/core';
 import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { FormsModule } from '@angular/forms';
 import { NgOptimizedImage } from '@angular/common';
 
@@ -75,7 +75,6 @@ export function jwtOptionsFactory(injector: Injector) {
         deps: [Injector],
       },
     }),
-    BrowserAnimationsModule,
     TabsModule.forRoot(),
     AlertModule.forRoot(),
     ModalModule.forRoot(),
@@ -97,6 +96,7 @@ export function jwtOptionsFactory(injector: Injector) {
     WebsocketPluginService,
     TranslateService,
     JwtModule,
+    provideAnimationsAsync(),
     provideHttpClient(withInterceptorsFromDi()),
     providePrimeNG({ theme: { preset: Aura, options: { darkModeSelector: false } } }),
   ],

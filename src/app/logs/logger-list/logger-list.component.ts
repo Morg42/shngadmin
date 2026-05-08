@@ -20,6 +20,11 @@ export class LoggerListComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  private dataService = inject(LoggersApiService);
+  private dataServiceServer = inject(ServerApiService);
+  protected router = inject(Router);
+  private translate = inject(TranslateService);
+  private titleService = inject(Title);
 
   loggers: LoggersType;
   active_plugins: any[];
@@ -39,13 +44,6 @@ export class LoggerListComponent implements OnInit {
 
 
   levelDefault: string = '?';
-
-  constructor(private dataService: LoggersApiService,
-              private dataServiceServer: ServerApiService,
-              protected router: Router,
-              private translate: TranslateService,
-              private titleService: Title) {
-  }
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);

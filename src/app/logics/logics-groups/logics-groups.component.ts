@@ -19,11 +19,10 @@ export class LogicsGroupsComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
-
-  constructor(private translate: TranslateService,
-              private dataServiceServer: ServerApiService,
-              private dataService: LogicsApiService,
-              private titleService: Title) { }
+  private translate = inject(TranslateService);
+  private dataServiceServer = inject(ServerApiService);
+  private dataService = inject(LogicsApiService);
+  private titleService = inject(Title);
 
   // -----------------------------------------------------------------
   //  Vars for the codemirror components

@@ -15,7 +15,6 @@ export class WebsocketService {
   public messages$ = this.messageStream.asObservable();
   public open$ = this.openSubject.asObservable();
 
-  constructor() { }
 
 
   public connect(url: string): void {

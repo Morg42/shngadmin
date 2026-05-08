@@ -17,13 +17,10 @@ export class StructConfigurationComponent implements AfterViewChecked, OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
-
-  constructor(private fileService: FilesApiService,
-              private dataService: ServicesApiService,
-              private translate: TranslateService,
-              private titleService: Title) { }
-
-
+  private fileService = inject(FilesApiService);
+  private dataService = inject(ServicesApiService);
+  private translate = inject(TranslateService);
+  private titleService = inject(Title);
 
   // -----------------------------------------------------------------
   //  Vars for the codemirror components

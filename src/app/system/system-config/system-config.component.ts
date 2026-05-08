@@ -27,6 +27,12 @@ export class SystemConfigComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  private dataService = inject(ConfigApiService);
+  private dataServiceServer = inject(ServerApiService);
+  private shared = inject(SharedService);
+  private translate = inject(TranslateService);
+  private titleService = inject(Title);
+  private appConfig = inject(AppConfigService);
 
   config: any;
   lang: string;
@@ -77,14 +83,6 @@ export class SystemConfigComponent implements OnInit {
   validation_dialog_display = false;
   validation_dialog_parameter: string;
   validation_dialog_text: string[];
-
-
-  constructor(private dataService: ConfigApiService,
-              private dataServiceServer: ServerApiService,
-              private shared: SharedService,
-              private translate: TranslateService,
-              private titleService: Title,
-              private appConfig: AppConfigService) { }
 
 
   public setTitle(newTitle: string) {

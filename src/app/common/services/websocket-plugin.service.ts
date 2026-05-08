@@ -1,5 +1,5 @@
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
 
 import { AppComponent } from '../../app.component';
@@ -36,6 +36,11 @@ type SeriesCallback = ( series: any ) => void;
 })
 
 export class WebsocketPluginService {
+
+  private appConfig = inject(AppConfigService);
+  private websocketService = inject(WebsocketService);
+  private shared = inject(SharedService);
+  private app = inject(AppComponent);
 
   monitorCallbackFunction = undefined;
 
@@ -177,11 +182,6 @@ export class WebsocketPluginService {
   };
 
 
-  constructor(private appConfig: AppConfigService,
-              private websocketService: WebsocketService,
-              private shared: SharedService,
-              private app: AppComponent) {
-  }
 
 
   connect() {

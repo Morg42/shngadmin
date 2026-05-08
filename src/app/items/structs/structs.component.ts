@@ -47,13 +47,12 @@ export class StructsComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
-
-  constructor(private http: HttpClient,
-              private dataServiceServer: ServerApiService,
-              private translate: TranslateService,
-              private dataService: StructsApiService,
-              public shared: SharedService,
-              private titleService: Title) { }
+  private http = inject(HttpClient);
+  private dataServiceServer = inject(ServerApiService);
+  private translate = inject(TranslateService);
+  private dataService = inject(StructsApiService);
+  public shared = inject(SharedService);
+  private titleService = inject(Title);
 
   serverInfo = <ServerInfo>{};
 

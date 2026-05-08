@@ -16,12 +16,10 @@ import { AuthService } from './../common/services/auth.service';
 export class LoginComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  public authService = inject(AuthService);
   invalidLogin: boolean;
-
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    public  authService: AuthService) { }
 
   signIn(credentials) {
     this.authService.login(credentials)

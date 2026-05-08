@@ -1,4 +1,4 @@
-import {Inject, Injectable} from '@angular/core';
+import {Inject, Injectable, inject} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 
 import {tap, map, catchError} from 'rxjs/operators';
@@ -16,14 +16,15 @@ import {AppConfigService} from './app-config.service';
 
 export class ServerApiService {
 
+  private http = inject(HttpClient);
+  private translate = inject(TranslateService);
+  private shared = inject(SharedService);
+  private appConfig = inject(AppConfigService);
+
   shng_serverinfo: ServerInfo = <ServerInfo>{'itemtree_fullpath': true};
 
 
-  constructor(private http: HttpClient,
-              private translate: TranslateService,
-              private shared: SharedService,
-              private appConfig: AppConfigService,
-              @Inject('BASE_URL') baseUrl: string) {
+  constructor(@Inject('BASE_URL') baseUrl: string) {
 
     console.log('ServerApiService.constructor für baseUrl', baseUrl);
 

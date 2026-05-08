@@ -28,6 +28,15 @@ export class LogicsListComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  private http = inject(HttpClient);
+  private dataServiceServer = inject(ServerApiService);
+  private dataService = inject(LogicsApiService);
+  private modalService = inject(BsModalService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private translate = inject(TranslateService);
+  private titleService = inject(Title);
+  private renderer = inject(Renderer2);
 
   groupdefinitions = {};
   groupList: LogicsGroupType[];
@@ -49,15 +58,7 @@ export class LogicsListComponent implements OnInit {
   delete_param: {};
 
 
-  constructor(private http: HttpClient,
-              private dataServiceServer: ServerApiService,
-              private dataService: LogicsApiService,
-              private modalService: BsModalService,
-              private router: Router,
-              private route: ActivatedRoute,
-              private translate: TranslateService,
-              private titleService: Title,
-              private renderer: Renderer2) {
+  constructor() {
     this.userlogics = [];
     this.systemlogics = [];
     this.nogroups = true;

@@ -10,8 +10,6 @@ export class LoggerTabComponent implements OnInit {
 
   private readonly cdr = inject(ChangeDetectorRef);
 
-  constructor() { }
-
   ngOnInit() {
   }
 

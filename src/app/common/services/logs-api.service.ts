@@ -1,5 +1,5 @@
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { LogsType } from '../models/logfiles-info';
@@ -15,9 +15,10 @@ import {AppConfigService} from './app-config.service';
 })
 export class LogsApiService {
 
-  constructor(private http: HttpClient,
-              private dataService: ServerApiService,
-              private appConfig: AppConfigService) { }
+  private http = inject(HttpClient);
+  private dataService = inject(ServerApiService);
+  private appConfig = inject(AppConfigService);
+
 
 
   getLogs() {

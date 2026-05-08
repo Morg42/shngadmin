@@ -1,6 +1,6 @@
 
 //import {APP_BASE_HREF} from '@angular/common';
-import {Inject, Injectable, OnInit} from '@angular/core';
+import {Inject, Injectable, OnInit, inject} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {ItemDetails} from '../models/item-details';
 import {TranslateService} from '@ngx-translate/core';
@@ -18,16 +18,19 @@ let host_ip : string = '';
 
 export class OlddataService implements OnInit {
 
+  private http = inject(HttpClient);
+  private translate = inject(TranslateService);
+
   baseUrl: string;
 
   href = '';
 
-  constructor(private http: HttpClient, private translate: TranslateService, @Inject('BASE_URL') baseUrl: string) {
+  constructor(@Inject('BASE_URL') baseUrl: string) {
 
     console.log('OlddataService.constructor:');
 
     // this language will be used as a fallback when a translation isn't found in the current language
-    translate.setDefaultLang('en');
+    this.translate.setDefaultLang('en');
 
     console.log('OlddataService.constructor using ', {baseUrl});
     this.baseUrl = baseUrl;

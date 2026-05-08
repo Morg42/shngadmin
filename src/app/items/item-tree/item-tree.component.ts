@@ -83,20 +83,19 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  private dataService = inject(OlddataService);
+  private dataServiceServer = inject(ServerApiService);
+  private appComponent = inject(AppComponent);
+  private translate = inject(TranslateService);
+  private websocketPluginService = inject(WebsocketPluginService);
+  private modalService = inject(BsModalService);
+  public shared = inject(SharedService);
+  private titleService = inject(Title);
+  private appConfig = inject(AppConfigService);
 
   monitoredItemsUpdateSubscription: Subscription = null;
 
   modalRef: BsModalRef;
-  constructor(private dataService: OlddataService,
-              private dataServiceServer: ServerApiService,
-              private appComponent: AppComponent,
-              private translate: TranslateService,
-              private websocketPluginService: WebsocketPluginService,
-              private modalService: BsModalService,
-              public shared: SharedService,
-              private titleService: Title,
-              private appConfig: AppConfigService) {
-  }
 
 
 

@@ -1,6 +1,6 @@
 
 import {HttpClient} from '@angular/common/http';
-import {Inject, Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {JwtHelperService} from '@auth0/angular-jwt';
 import {map} from 'rxjs/operators';
 import {of} from 'rxjs';
@@ -13,6 +13,10 @@ import {AppConfigService} from './app-config.service';
 })
 
 export class AuthService {
+  private http = inject(HttpClient);
+  public jwtHelper = inject(JwtHelperService);
+  private appConfig = inject(AppConfigService);
+
   currentUser: any;
   helper: any;
   isLoginRequired: boolean;
@@ -26,11 +30,7 @@ export class AuthService {
 
   logTimestamp: number = 0;
 
-  constructor(private http: HttpClient,
-              public jwtHelper: JwtHelperService,
-              private appConfig: AppConfigService) {
-
-
+  constructor() {
     this.isLoginRequired = true;
     const token = localStorage.getItem('token');
 

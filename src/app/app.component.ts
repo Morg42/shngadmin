@@ -27,27 +27,27 @@ export class AppComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  private http = inject(HttpClient);
+  private dataService = inject(ServerApiService);
+  private translate = inject(TranslateService);
+  private shared = inject(SharedService);
+  public authService = inject(AuthService);
+  private titleService = inject(Title);
 
   public APP_NAME = 'shngAdmin';
   public APP_VERSION = '0.9.18';
 
   title = 'shngadmin';
 
-  constructor(private http: HttpClient,
-              private dataService: ServerApiService,
-              private translate: TranslateService,
-              private shared: SharedService,
-              public authService: AuthService,
-              private titleService: Title) {
-
+  constructor() {
     console.log('AppComponent.constructor:');
 
-    translate.addLangs(['en']);
-    translate.addLangs(['de']);
-    translate.addLangs(['fr']);
+    this.translate.addLangs(['en']);
+    this.translate.addLangs(['de']);
+    this.translate.addLangs(['fr']);
 
-    translate.setDefaultLang('de');
-    translate.use('de');
+    this.translate.setDefaultLang('de');
+    this.translate.use('de');
 
     console.log('AppComponent.constructor getServerBasicInfo:');
     //    this.dataService.getServerBasicinfo()

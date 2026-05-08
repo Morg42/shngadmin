@@ -1,5 +1,5 @@
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { map, catchError } from 'rxjs/operators';
@@ -13,8 +13,9 @@ import {AppConfigService} from './app-config.service';
 })
 export class ScenesApiService {
 
-  constructor(private http: HttpClient,
-              private appConfig: AppConfigService) { }
+  private http = inject(HttpClient);
+  private appConfig = inject(AppConfigService);
+
 
 
   getScenes() {

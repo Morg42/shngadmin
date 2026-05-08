@@ -22,12 +22,11 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
-
-  constructor(private translate: TranslateService,
-              private fileService: FilesApiService,
-              private functionApiService: FunctionsApiService,
-              private dataService: ServicesApiService,
-              private titleService: Title) { }
+  private translate = inject(TranslateService);
+  private fileService = inject(FilesApiService);
+  private functionApiService = inject(FunctionsApiService);
+  private dataService = inject(ServicesApiService);
+  private titleService = inject(Title);
 
   // -----------------------------------------------------------------
   //  Vars for the codemirror components

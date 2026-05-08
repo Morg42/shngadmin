@@ -22,16 +22,14 @@ export class ThreadsComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  private dataService = inject(ThreadsApiService);
+  private dataServiceServer = inject(ServerApiService);
+  private translate = inject(TranslateService);
+  private titleService = inject(Title);
 
   threadsList: ThreadInfo[];
   threads_count: number;
   thread_response: [number, ThreadInfo[]];
-
-
-  constructor(private dataService: ThreadsApiService,
-              private dataServiceServer: ServerApiService,
-              private translate: TranslateService,
-              private titleService: Title) { }
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);

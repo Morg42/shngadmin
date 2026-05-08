@@ -31,6 +31,14 @@ interface MenuItem {
 export class TopNavigationComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
+  private appComponent = inject(AppComponent);
+  private translate = inject(TranslateService);
+  public shared = inject(SharedService);
+  private dataServiceServer = inject(ServerApiService);
+  protected router = inject(Router);
+  public authService = inject(AuthService);
+  private titleService = inject(Title);
+  private appConfig = inject(AppConfigService);
 
   labels: string[] = [];
   menu: MenuItem[] = [];
@@ -40,16 +48,7 @@ export class TopNavigationComponent implements OnInit {
   lastLanguage : string = '-';
   isTouchDevice = false;
 
-
-  constructor(private appComponent: AppComponent,
-              private translate: TranslateService,
-              public  shared: SharedService,
-              private dataServiceServer: ServerApiService,
-              protected router: Router,
-              public authService: AuthService,
-              private titleService: Title,
-              private appConfig: AppConfigService) {
-
+  constructor() {
     console.log('TopNavigationComponent - constructor()');
   }
 

@@ -27,6 +27,12 @@ export class HeaderComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  private appComponent = inject(AppComponent);
+  private dataServiceServer = inject(ServerApiService);
+  private translate = inject(TranslateService);
+  protected router = inject(Router);
+  public authService = inject(AuthService);
+  private appConfig = inject(AppConfigService);
 
 //  faCircleNotch = faCircleNotch;
 
@@ -36,16 +42,6 @@ export class HeaderComponent implements OnInit {
 
   // server_info: ServerInfo;
   developerMode: boolean;
-
-
-  constructor(private appComponent: AppComponent,
-              private dataServiceServer: ServerApiService,
-              private translate: TranslateService,
-              protected router: Router,
-              public authService: AuthService,
-              private appConfig: AppConfigService) {
-
-  }
 
 
 

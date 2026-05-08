@@ -1,5 +1,5 @@
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { map, catchError } from 'rxjs/operators';
@@ -13,14 +13,13 @@ import {AppConfigService} from './app-config.service';
 })
 export class LogicsApiService {
 
+  private http = inject(HttpClient);
+  private appConfig = inject(AppConfigService);
+
   // Das Array groupExpanded dient dazu, den Auf-/Zuklapp Zustand des Accordeon-Tabs zu speichern,
   // während im Browser auf andere Komponenten gewechselt wird.
   groupExpanded: number[] = [];
 
-
-  constructor(private http: HttpClient,
-              private appConfig: AppConfigService) {
-  }
 
 
   getGroupsInfo() {

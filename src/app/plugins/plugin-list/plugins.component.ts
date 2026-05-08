@@ -29,6 +29,13 @@ export class PluginsComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  private http = inject(HttpClient);
+  private dataServiceServer = inject(ServerApiService);
+  private pluginsDataService = inject(PluginsApiService);
+  private modalService = inject(BsModalService);
+  private translate = inject(TranslateService);
+  private titleService = inject(Title);
+  private appConfig = inject(AppConfigService);
 
   faPlayCircle = faPlayCircle;
   faPauseCircle = faPauseCircle;
@@ -39,14 +46,6 @@ export class PluginsComponent implements OnInit {
   developerMode: boolean;
 
   modalRef: BsModalRef;
-  constructor(private http: HttpClient,
-              private dataServiceServer: ServerApiService,
-              private pluginsDataService: PluginsApiService,
-              private modalService: BsModalService,
-              private translate: TranslateService,
-              private titleService: Title,
-              private appConfig: AppConfigService) {
-  }
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);

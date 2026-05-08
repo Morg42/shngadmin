@@ -1,5 +1,5 @@
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { LoggersType } from '../models/loggers-info';
@@ -13,10 +13,9 @@ import {AppConfigService} from './app-config.service';
 })
 export class LoggersApiService {
 
+  private http = inject(HttpClient);
+  private appConfig = inject(AppConfigService);
 
-  constructor(private http: HttpClient,
-              private appConfig: AppConfigService) {
-  }
 
 
   getLoggers() {

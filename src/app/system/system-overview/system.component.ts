@@ -34,6 +34,15 @@ export class SystemComponent implements OnDestroy, OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  private http = inject(HttpClient);
+  private dataService = inject(OlddataService);
+  private dataServiceServer = inject(ServerApiService);
+  private translate = inject(TranslateService);
+  private websocketPluginService = inject(WebsocketPluginService);
+  public app = inject(AppComponent);
+  public shared = inject(SharedService);
+  private titleService = inject(Title);
+  private appConfig = inject(AppConfigService);
 
   faCheckCircle = faCheckCircle;
 
@@ -75,17 +84,6 @@ export class SystemComponent implements OnDestroy, OnInit {
   changed_chartdataLoad: any;
   loadData: any;
   varChartSystemload: any;
-
-  constructor(private http: HttpClient,
-              private dataService: OlddataService,
-              private dataServiceServer: ServerApiService,
-              private translate: TranslateService,
-              private websocketPluginService: WebsocketPluginService,
-              public app: AppComponent,
-              public shared: SharedService,
-              private titleService: Title,
-              private appConfig: AppConfigService) {
-  }
 
   appName = this.app.APP_NAME;
   appVersion = 'v' + this.app.APP_VERSION;

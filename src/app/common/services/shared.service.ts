@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AppConfigService } from './app-config.service';
 
@@ -8,10 +8,10 @@ import { AppConfigService } from './app-config.service';
 
 export class SharedService {
 
-  constructor(
-    private translate: TranslateService,
-    private appConfig: AppConfigService,
-  ) {
+  private translate = inject(TranslateService);
+  private appConfig = inject(AppConfigService);
+
+  constructor() {
     console.log('SharedService constructor called');
   }
 

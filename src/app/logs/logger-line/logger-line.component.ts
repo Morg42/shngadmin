@@ -45,9 +45,6 @@ export class LoggerLineComponent implements OnInit {
 
   private readonly cdr = inject(ChangeDetectorRef);
 
-  constructor() {
-  }
-
   ngOnInit() {
   }
 

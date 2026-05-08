@@ -20,10 +20,9 @@ export class ItemConfiguration2Component implements AfterViewChecked, OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
-
-  constructor(private translate: TranslateService,
-              private fileService: FilesApiService,
-              private dataService: ServicesApiService) { }
+  private translate = inject(TranslateService);
+  private fileService = inject(FilesApiService);
+  private dataService = inject(ServicesApiService);
 
   // -----------------------------------------------------------------
   //  Vars for the codemirror components

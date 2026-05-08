@@ -28,6 +28,11 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  private route = inject(ActivatedRoute);
+  private dataServiceServer = inject(ServerApiService);
+  private dataService = inject(LogsApiService);
+  private translate = inject(TranslateService);
+  private titleService = inject(Title);
 
   @ViewChild('codeeditor', { static: true }) private codeEditor;
 
@@ -89,13 +94,6 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
   editorHelp_display = false;
   spinner_display: boolean = false;
 
-
-  constructor(private route: ActivatedRoute,
-              private dataServiceServer: ServerApiService,
-              private dataService: LogsApiService,
-              private translate: TranslateService,
-              private titleService: Title) {
-  }
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);

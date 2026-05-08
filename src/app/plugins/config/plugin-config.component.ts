@@ -40,6 +40,15 @@ export class PluginConfigComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  private cdRef = inject(ChangeDetectorRef);
+  private serverdataService = inject(ServerApiService);
+  private pluginsdataService = inject(PluginsApiService);
+  private dataService = inject(OlddataService);
+  private translate = inject(TranslateService);
+  private shared = inject(SharedService);
+  private router = inject(Router);
+  private titleService = inject(Title);
+  private appConfig = inject(AppConfigService);
 
   faPlus = faPlus;
   faPlusCircle = faPlusCircle;
@@ -95,18 +104,6 @@ export class PluginConfigComponent implements OnInit {
   // confirm delete dialog
   confirmdelete_display = false;
   delete_param: {};
-
-
-  constructor(private cdRef: ChangeDetectorRef,
-//              private deleteConfigComponent: DeleteConfigComponent,
-              private serverdataService: ServerApiService,
-              private pluginsdataService: PluginsApiService,
-              private dataService: OlddataService,
-              private translate: TranslateService,
-              private shared: SharedService,
-              private router: Router,
-              private titleService: Title,
-              private appConfig: AppConfigService) { }
 
 
   public setTitle(newTitle: string) {

@@ -25,17 +25,15 @@ export class SchedulersComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  private http = inject(HttpClient);
+  private dataServiceServer = inject(ServerApiService);
+  private dataService = inject(SchedulersApiService);
+  private translate = inject(TranslateService);
+  private titleService = inject(Title);
+  private appConfig = inject(AppConfigService);
 
   schedulerinfo: SchedulerInfo[];
   developerMode: boolean;
-
-  constructor(private http: HttpClient,
-              private dataServiceServer: ServerApiService,
-              private dataService: SchedulersApiService,
-              private translate: TranslateService,
-              private titleService: Title,
-              private appConfig: AppConfigService) {
-  }
 
   public setTitle(newTitle: string) {
       this.titleService.setTitle(newTitle);

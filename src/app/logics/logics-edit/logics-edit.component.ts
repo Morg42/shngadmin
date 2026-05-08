@@ -26,6 +26,15 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  private route = inject(ActivatedRoute);
+  private dataServiceServer = inject(ServerApiService);
+  private dataService = inject(LogicsApiService);
+  private fileService = inject(FilesApiService);
+  private pluginsapiService = inject(PluginsApiService);
+  private shared = inject(SharedService);
+  private itemsapiService = inject(ItemsApiService);
+  private translate = inject(TranslateService);
+  private titleService = inject(Title);
 
   logics: LogicsinfoType[];
   newlogics: LogicsinfoType[];
@@ -41,18 +50,6 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   parameters: any[] = [];
   parameter_cols: any[];
   pluginParameters: {} = {};
-
-  constructor(private route: ActivatedRoute,
-              private dataServiceServer: ServerApiService,
-              private dataService: LogicsApiService,
-              private fileService: FilesApiService,
-              private pluginsapiService: PluginsApiService,
-              private shared: SharedService,
-              private itemsapiService: ItemsApiService,
-              private translate: TranslateService,
-              private titleService: Title) { }
-
-
 
   // -----------------------------------------------------------------
   //  Vars for the codemirror components

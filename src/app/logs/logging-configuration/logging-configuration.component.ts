@@ -19,12 +19,11 @@ export class LoggingConfigurationComponent implements AfterViewChecked, OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
-
-  constructor(private fileService: FilesApiService,
-              private dataService: ServicesApiService,
-              private dataServiceServer: ServerApiService,
-              private translate: TranslateService,
-              private titleService: Title) { }
+  private fileService = inject(FilesApiService);
+  private dataService = inject(ServicesApiService);
+  private dataServiceServer = inject(ServerApiService);
+  private translate = inject(TranslateService);
+  private titleService = inject(Title);
 
   // -----------------------------------------------------------------
   //  Vars for the codemirror components

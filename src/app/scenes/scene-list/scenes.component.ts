@@ -35,13 +35,12 @@ export class ScenesComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
-
-  constructor(private http: HttpClient,
-              private dataServiceServer: ServerApiService,
-              private translate: TranslateService,
-              private messageService: MessageService,
-              private dataService: ScenesApiService,
-              private titleService: Title) { }
+  private http = inject(HttpClient);
+  private dataServiceServer = inject(ServerApiService);
+  private translate = inject(TranslateService);
+  private messageService = inject(MessageService);
+  private dataService = inject(ScenesApiService);
+  private titleService = inject(Title);
 
     public setTitle(newTitle: string) {
         this.titleService.setTitle(newTitle);

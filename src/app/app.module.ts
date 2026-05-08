@@ -3,6 +3,8 @@ import { NgModule } from '@angular/core';
 import { Injector } from '@angular/core';
 //newly integrated
 import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { providePrimeNG } from 'primeng/config';
+import Aura from '@primeng/themes/aura';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { TranslateService } from '@ngx-translate/core';
@@ -172,7 +174,8 @@ export function translateHttpLoaderFactory(http: HttpClient) {
         WebsocketPluginService,
         TranslateService,
         JwtModule,
-        provideHttpClient(withInterceptorsFromDi())
+        provideHttpClient(withInterceptorsFromDi()),
+        providePrimeNG({ theme: { preset: Aura } })
     ] })
 
 

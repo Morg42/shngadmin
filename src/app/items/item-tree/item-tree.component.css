@@ -9,26 +9,19 @@
     Styling for PrimeNG <p-tee>
 */
 
-:host ::ng-deep .ui-tree {
+:host ::ng-deep .p-tree {
   border: none;
   width: auto;
 }
 
-:host ::ng-deep .ui-treenode-content-selected {
-  background-color: #709cc2;
-}
-
-
-:host ::ng-deep .ui-tree-container {
-  background: #ffffff;
-  overflow: visible;
-}
-
-
-:host ::ng-deep .ui-state-highlight {
-  border-color: #709cc2;
+:host ::ng-deep .p-treenode-content.p-highlight {
   background-color: #709cc2;
   color: #ffffff;
+}
+
+:host ::ng-deep .p-tree-root {
+  background: #ffffff;
+  overflow: visible;
 }
 
 

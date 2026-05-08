@@ -1,62 +1,67 @@
 
 import { Injectable } from '@angular/core';
-import {Observable, Observer, Subject} from 'rxjs';
+import { Subject } from 'rxjs';
 
-
-// @Injectable({
-//   providedIn: 'root'
-// })
 
 @Injectable()
 export class WebsocketService {
-  private subject: Subject<any>;
-  public ws: any;
+  private ws: WebSocket;
+  private messageStream = new Subject<any>();
+  private openSubject = new Subject<void>();
+  private messageQueue: any[] = [];
+  private reconnectUrl: string | null = null;
+  private reconnectTimer: any = null;
+
+  public messages$ = this.messageStream.asObservable();
+  public open$ = this.openSubject.asObservable();
 
   constructor() { }
 
 
-  public connect(url: string): Subject<any> {
-    if (!this.subject) {
-      this.subject = this.create(url);
-    }
-    return this.subject;
+  public connect(url: string): void {
+    this.reconnectUrl = url;
+    this.openConnection(url);
   }
 
 
-  private create(url: string): Subject<any> {
+  private openConnection(url: string): void {
     this.ws = new WebSocket(url);
-    const observable = Observable.create(
-      (obs: Observer<any>) => {
-        console.warn('Websocket connection to ' + url + ' created.');
-        this.ws.onmessage = obs.next.bind(obs);
-        this.ws.onerror = obs.error.bind(obs);
-        this.ws.onclose = obs.complete.bind(obs);
-        return this.ws.close.bind(this.ws);
-      });
 
-    const observer = {
-      next: (data: Object) => {
-        if (this.ws.readyState === WebSocket.OPEN) {
-          this.ws.send(JSON.stringify(data));
-        }
+    this.ws.onopen = () => {
+      console.log('WebSocket connected: ' + url);
+      this.messageQueue.forEach(msg => this.ws.send(JSON.stringify(msg)));
+      this.messageQueue = [];
+      this.openSubject.next();
+    };
+
+    this.ws.onmessage = (event) => this.messageStream.next(event);
+    this.ws.onerror = (error) => console.warn('WebSocket error:', error);
+    this.ws.onclose = () => {
+      if (this.reconnectUrl) {
+        console.log('WebSocket closed, reconnecting in 3s...');
+        this.reconnectTimer = setTimeout(() => this.openConnection(this.reconnectUrl), 3000);
       }
     };
-    return Subject.create(observer, observable);
   }
 
 
-  public sendMessage(message: any) {
-    this.subject.next(message);
-  }
-
-
-  public close() {
-    if (this.ws) {
-      this.ws.close();
-      this.subject = null;
-      console.warn('Websocket connection closed.');
+  public sendMessage(message: any): void {
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify(message));
+    } else {
+      this.messageQueue.push(message);
     }
   }
+
+
+  public close(): void {
+    this.reconnectUrl = null;
+    clearTimeout(this.reconnectTimer);
+    if (this.ws) {
+      this.ws.close();
+      this.ws = null;
+    }
+    this.messageQueue = [];
+    console.log('WebSocket disconnected.');
+  }
 }
-
-

@@ -1,7 +1,7 @@
 
 import {Component, OnInit, AfterViewChecked, ViewChild, DestroyRef, inject} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import { BrowserModule, Title } from '@angular/platform-browser';
+import { Title } from '@angular/platform-browser';
 
 import { TranslateService } from '@ngx-translate/core';
 import {SelectItem} from 'primeng/api';

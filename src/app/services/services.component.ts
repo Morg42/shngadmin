@@ -2,7 +2,7 @@
 import { Component, AfterViewChecked, OnInit, ViewEncapsulation, ViewChild, DestroyRef, inject } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AppConfigService} from '../common/services/app-config.service';
-import { BrowserModule, Title } from '@angular/platform-browser';
+import { Title } from '@angular/platform-browser';
 // import { Title } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
 

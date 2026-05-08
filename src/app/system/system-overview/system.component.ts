@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChildren, EventEmitter, DestroyRef, inject } from '@angular/core';
 import {AppConfigService} from '../../common/services/app-config.service';
-import { BrowserModule, Title } from '@angular/platform-browser';
+import { Title } from '@angular/platform-browser';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 

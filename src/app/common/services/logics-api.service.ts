@@ -4,6 +4,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { map, catchError } from 'rxjs/operators';
 import {of} from 'rxjs';
+import {AppConfigService} from './app-config.service';
 
 
 
@@ -17,12 +18,13 @@ export class LogicsApiService {
   groupExpanded: number[] = [];
 
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+              private appConfig: AppConfigService) {
   }
 
 
   getGroupsInfo() {
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'logics/' + '?infotype=groups';
     return this.http.get(url)
       .pipe(
@@ -40,7 +42,7 @@ export class LogicsApiService {
 
 
   getLogics() {
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'logics/';
     return this.http.get(url)
       .pipe(
@@ -57,7 +59,7 @@ export class LogicsApiService {
 
 
   getLogic(logicname) {
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'logics/' + logicname;
     return this.http.get(url)
       .pipe(
@@ -74,7 +76,7 @@ export class LogicsApiService {
 
 
   getLogicState(logicname) {
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'logics/' + logicname + '?infotype=status';
     return this.http.get(url)
       .pipe(
@@ -96,7 +98,7 @@ export class LogicsApiService {
     action = action.toLowerCase();
     // console.warn('LogicsApiService.setLogicState', {logicName}, {action});
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'logics/' + logicName + '?action=' + action;
     if (filename !== '') {
       url += '&filename=' + filename;
@@ -135,7 +137,7 @@ export class LogicsApiService {
     // parameters to be deleted must be included with an empty string as value!
     // console.warn('LogicsApiService.saveLogicParameters', {logicName}, {paramObj});
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     const url = apiUrl + 'logics/' + logicName + '?action=' + 'saveparameters';
     return this.http.put(url, JSON.stringify(paramObj))
       .pipe(
@@ -168,7 +170,7 @@ export class LogicsApiService {
 
   saveLogicGroup(groupName, group) {
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     const url = apiUrl + 'logics/' + groupName + '?action=' + 'savegroup';
     return this.http.put(url, JSON.stringify(group))
       .pipe(
@@ -201,7 +203,7 @@ export class LogicsApiService {
 
   deleteLogicGroup(groupName) {
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     const url = apiUrl + 'logics/' + groupName + '?action=' + 'deletegroup';
     return this.http.put(url, JSON.stringify(''))
       .pipe(

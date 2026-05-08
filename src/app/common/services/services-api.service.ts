@@ -4,6 +4,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { map, catchError } from 'rxjs/operators';
 import {of} from 'rxjs';
+import {AppConfigService} from './app-config.service';
 
 
 @Injectable({
@@ -11,14 +12,15 @@ import {of} from 'rxjs';
 })
 export class ServicesApiService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+              private appConfig: AppConfigService) { }
 
 
   // -----------------------------------------------------------
   //  Send eval data to check if it is conform to Python specification
   //
   CheckEvalData(evalData) {
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'services/evalcheck/';
     return this.http.put(url, evalData)
       .pipe(
@@ -47,7 +49,7 @@ export class ServicesApiService {
   CheckYamlText(yamlText) {
     // console.log('ServicesApiService.CheckYamlText');
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'services/yamlcheck/';
     return this.http.put(url, yamlText, { responseType: 'text' })
       .pipe(
@@ -78,7 +80,7 @@ export class ServicesApiService {
   ConvertToYamlText(confText) {
     // console.log('ServicesApiService.CheckYamlText');
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'services/yamlconvert/';
     return this.http.put(url, confText, {responseType: 'text'})
       .pipe(
@@ -101,7 +103,7 @@ export class ServicesApiService {
 
 
   getCacheOrphans() {
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'services/cachecheck/';
     return this.http.get(url)
       .pipe(
@@ -120,7 +122,7 @@ export class ServicesApiService {
   deleteCacheFile(filename) {
     // console.log('ServicesApiService.deleteCacheFile');
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'services/cachefile_delete?filename=' + filename;
     return this.http.put(url, 'xxx')
       .pipe(

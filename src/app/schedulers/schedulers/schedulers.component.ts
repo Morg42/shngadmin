@@ -1,5 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
+import {AppConfigService} from '../../common/services/app-config.service';
 import { HttpClient } from '@angular/common/http';
 
 import { SchedulerInfo } from '../../common/models/scheduler-info';
@@ -27,7 +28,8 @@ export class SchedulersComponent implements OnInit {
               private dataServiceServer: ServerApiService,
               private dataService: SchedulersApiService,
               private translate: TranslateService,
-              private titleService: Title) {
+              private titleService: Title,
+              private appConfig: AppConfigService) {
   }
 
   public setTitle(newTitle: string) {
@@ -48,7 +50,7 @@ export class SchedulersComponent implements OnInit {
                           (response2) => {
                               this.schedulerinfo = <SchedulerInfo[]>response2;
 //          this.schedulerinfo.sort(function (a, b) {return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)});
-                              this.developerMode = (sessionStorage.getItem('developer_mode') === 'true');
+                              this.developerMode = (this.appConfig.developerMode);
 
                               console.log('getSchedulers', {response2});
                           }

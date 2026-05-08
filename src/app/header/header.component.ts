@@ -1,5 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
+import {AppConfigService} from '../common/services/app-config.service';
 // import { isSuccess } from '@angular/http/src/http_utils';
 
 import { TranslateService } from '@ngx-translate/core';
@@ -36,7 +37,8 @@ export class HeaderComponent implements OnInit {
               private dataServiceServer: ServerApiService,
               private translate: TranslateService,
               protected router: Router,
-              public authService: AuthService) {
+              public authService: AuthService,
+              private appConfig: AppConfigService) {
 
   }
 
@@ -48,7 +50,7 @@ export class HeaderComponent implements OnInit {
     this.dataServiceServer.getServerinfo()
       .subscribe(
         (response) => {
-          this.developerMode = (sessionStorage.getItem('developer_mode') === 'true');
+          this.developerMode = (this.appConfig.developerMode);
           this.buildMenu();
 
           const credentials = {'username': '', 'password': ''};
@@ -212,7 +214,7 @@ export class HeaderComponent implements OnInit {
       this.buildMenu();
     }
 
-    this.translate.use(sessionStorage.getItem('default_language'));
+    this.translate.use(this.appConfig.defaultLanguage);
 
     const isLoggedIn = this.authService.isLoggedIn();
     if (this.items) {

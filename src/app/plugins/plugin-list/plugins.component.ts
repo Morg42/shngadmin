@@ -1,5 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
+import {AppConfigService} from '../../common/services/app-config.service';
 import { TemplateRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
@@ -38,7 +39,8 @@ export class PluginsComponent implements OnInit {
               private pluginsDataService: PluginsApiService,
               private modalService: BsModalService,
               private translate: TranslateService,
-              private titleService: Title) {
+              private titleService: Title,
+              private appConfig: AppConfigService) {
   }
 
   public setTitle(newTitle: string) {
@@ -53,7 +55,7 @@ export class PluginsComponent implements OnInit {
         (response) => {
           this.setTitle(this.translate.instant('MENU.PLUGINS_LIST'));
 
-          this.developerMode = (sessionStorage.getItem('developer_mode') === 'true');
+          this.developerMode = (this.appConfig.developerMode);
           this.getPlugins();
         }
       );
@@ -61,7 +63,7 @@ export class PluginsComponent implements OnInit {
     this.dataServiceServer.getServerinfo()
       .subscribe(
         (response) => {
-          this.developerMode = (sessionStorage.getItem('developer_mode') === 'true');
+          this.developerMode = (this.appConfig.developerMode);
 
           this.pluginsDataService.getPluginsInfo()
             .subscribe(

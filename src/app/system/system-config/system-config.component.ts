@@ -1,6 +1,7 @@
 
 
 import { Component, OnInit } from '@angular/core';
+import {AppConfigService} from '../../common/services/app-config.service';
 
 import { TranslateService } from '@ngx-translate/core';
 
@@ -77,7 +78,8 @@ export class SystemConfigComponent implements OnInit {
               private dataServiceServer: ServerApiService,
               private shared: SharedService,
               private translate: TranslateService,
-              private titleService: Title) { }
+              private titleService: Title,
+              private appConfig: AppConfigService) { }
 
 
   public setTitle(newTitle: string) {
@@ -213,7 +215,7 @@ export class SystemConfigComponent implements OnInit {
   // Fill the mask with core parameter data
   //
   fillCommonDialogData() {
-    this.lang = sessionStorage.getItem('default_language');
+    this.lang = this.appConfig.defaultLanguage;
 
     this.common_parameter_cols = this.columnDefinitions();
     this.common_parameters = [];
@@ -239,7 +241,7 @@ export class SystemConfigComponent implements OnInit {
   // Fill the mask with http parameter data
   //
   fillHttpDialogData() {
-    this.lang = sessionStorage.getItem('default_language');
+    this.lang = this.appConfig.defaultLanguage;
 
     this.http_parameter_cols = this.columnDefinitions();
     this.http_parameters = [];
@@ -289,7 +291,7 @@ export class SystemConfigComponent implements OnInit {
   // Fill the mask with webocket parameter data
   //
   fillWebsocketDialogData() {
-    this.lang = sessionStorage.getItem('default_language');
+    this.lang = this.appConfig.defaultLanguage;
 
     this.websocket_parameter_cols = this.columnDefinitions();
     this.websocket_parameters = [];
@@ -339,7 +341,7 @@ export class SystemConfigComponent implements OnInit {
   // Fill the mask with admin parameter data
   //
   fillAdminDialogData() {
-    this.lang = sessionStorage.getItem('default_language');
+    this.lang = this.appConfig.defaultLanguage;
 
     this.admin_parameter_cols = this.columnDefinitions();
     this.admin_parameters = [];
@@ -365,7 +367,7 @@ export class SystemConfigComponent implements OnInit {
   // Fill the mask with mqtt parameter data
   //
   fillMqttDialogData() {
-    this.lang = sessionStorage.getItem('default_language');
+    this.lang = this.appConfig.defaultLanguage;
 
     this.mqtt_parameter_cols = this.columnDefinitions();
     this.mqtt_parameters = [];

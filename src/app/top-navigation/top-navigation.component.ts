@@ -1,5 +1,6 @@
 
 import {Component, OnInit, DoCheck, SimpleChanges, HostListener} from '@angular/core';
+import {AppConfigService} from '../common/services/app-config.service';
 import {TranslateService} from '@ngx-translate/core';
 import {AppComponent} from '../app.component';
 import {ServerApiService} from '../common/services/server-api.service';
@@ -43,16 +44,17 @@ export class TopNavigationComponent implements OnInit {
               private dataServiceServer: ServerApiService,
               protected router: Router,
               public authService: AuthService,
-              private titleService: Title) {
+              private titleService: Title,
+              private appConfig: AppConfigService) {
 
     console.log('TopNavigationComponent - constructor()');
   }
 
 
   ngDoCheck() {
-    if (!(this.lastLanguage === sessionStorage.getItem('default_language'))) {
+    if (!(this.lastLanguage === this.appConfig.defaultLanguage)) {
       this.buildMenu();
-      this.lastLanguage = sessionStorage.getItem('default_language');
+      this.lastLanguage = this.appConfig.defaultLanguage;
     }
     this.loggedIn = this.authService.isLoggedIn();
     console.log('TopNavigationComponent.ngDoCheck() this.loggedIn=', this.loggedIn );
@@ -67,13 +69,13 @@ export class TopNavigationComponent implements OnInit {
     this.dataServiceServer!.getServerinfo()
       .subscribe(
         (response) => {
-          this.developerMode = (sessionStorage.getItem('developer_mode') === 'true');
-          this.isTouchDevice = (sessionStorage.getItem('click_dropdown_header') === 'false');
+          this.developerMode = (this.appConfig.developerMode);
+          this.isTouchDevice = (!this.appConfig.clickDropdownHeader);
           console.log('TopNavigationComponent.ngOnInit: getLangs()', this.translate.getLangs());
           console.log('TopNavigationComponent.ngOnInit: getDefaultLang()', this.translate.getDefaultLang());
-          this.translate.use(sessionStorage.getItem('default_language'));
-          this.translate.setDefaultLang(sessionStorage.getItem('default_language'));
-          // this.lastLanguage = sessionStorage.getItem('default_language');
+          this.translate.use(this.appConfig.defaultLanguage);
+          this.translate.setDefaultLang(this.appConfig.defaultLanguage);
+          // this.lastLanguage = this.appConfig.defaultLanguage;
 
           this.translate.use('de');
           this.translate.setDefaultLang('de');
@@ -152,7 +154,7 @@ export class TopNavigationComponent implements OnInit {
 
   buildMenu() {
     console.log('TopNavigationComponent.buildMenu entering');
-    console.log('TopNavigationComponent.buildMenu: default_language=', sessionStorage.getItem('default_language'));
+    console.log('TopNavigationComponent.buildMenu: default_language=', this.appConfig.defaultLanguage);
 
     this.setMenuEntry(0, this.translate.instant('MENU.SYSTEM'), ['/system/systemproperties']);
     this.setSubmenuEntry(0, 0, this.translate.instant('MENU.SYSTEM_PROPERTIES'), ['/system/systemproperties']);

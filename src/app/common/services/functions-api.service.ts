@@ -4,6 +4,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { map, catchError } from 'rxjs/operators';
 import {of} from 'rxjs';
+import {AppConfigService} from './app-config.service';
 
 
 
@@ -12,11 +13,12 @@ import {of} from 'rxjs';
 })
 export class FunctionsApiService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+              private appConfig: AppConfigService) { }
 
 
   getFunctions() {
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'functions/';
     return this.http.get(url)
         .pipe(
@@ -34,7 +36,7 @@ export class FunctionsApiService {
 
   reloadFunction(name) {
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     const url = apiUrl + 'functions/reload/' + name;
 
     return this.http.put(url, '', { responseType: 'text' })
@@ -61,7 +63,7 @@ export class FunctionsApiService {
 
   reloadFunctions() {
 
-    const apiUrl = sessionStorage.getItem('apiUrl');
+    const apiUrl = this.appConfig.apiUrl;
     const url = apiUrl + 'functions/reload/all';
 
     return this.http.put(url, '', { responseType: 'text' })

@@ -1,5 +1,6 @@
 
 import {Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectorRef, ViewChild, ViewRef, TemplateRef, ViewContainerRef} from '@angular/core';
+import {AppConfigService} from '../../common/services/app-config.service';
 import { HttpClient } from '@angular/common/http';
 
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -88,7 +89,8 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
               private websocketPluginService: WebsocketPluginService,
               private modalService: BsModalService,
               public shared: SharedService,
-              private titleService: Title) {
+              private titleService: Title,
+              private appConfig: AppConfigService) {
   }
 
 
@@ -186,8 +188,8 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
           this.filesTree0 = <any> response[1];
           this.filterNodes('');
           // this.plugininfo.sort(function (a, b) {return (a.pluginname > b.pluginname) ? 1 : ((b.pluginname > a.pluginname) ? -1 : 0)});
-//          this.searchStart_param = {'number': sessionStorage.getItem('itemtree_searchstart')};
-          this.searchStart_param = {'number': sessionStorage.getItem('itemtree_searchstart')};
+//          this.searchStart_param = {'number': String(this.appConfig.itemtreeSearchstart)};
+          this.searchStart_param = {'number': String(this.appConfig.itemtreeSearchstart)};
         },
         (error) => {
           console.log('ERROR: ItemsComponent: dataService.getItemtree():');
@@ -420,7 +422,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
 */
 
   filterTree(treeModel, value) {
-    if (value.length >= sessionStorage.getItem('itemtree_searchstart')) {
+    if (value.length >= String(this.appConfig.itemtreeSearchstart)) {
       this.filterNodes(value);
     } else {
       this.filterNodes('');

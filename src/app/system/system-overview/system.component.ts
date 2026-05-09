@@ -67,13 +67,23 @@ export class SystemComponent implements OnDestroy, OnInit {
   chartoptionsScheduler: Record<string, unknown>;
   chartoptionsDisc: Record<string, unknown>;
 
-  chartdataLoad: ChartData;
-  chartdataSystemMemory: ChartData;
-  chartdataSwap: ChartData;
-  chartdataMemory: ChartData;
-  chartdataThreads: ChartData;
-  chartdataWorkerThreads: ChartData;
-  chartdataDisk: ChartData;
+  private static emptyDataset(label: string): ChartData {
+    return { labels: [], datasets: [{ label, data: [], fill: false, backgroundColor: '#709cc2', borderColor: '#709cc2', pointRadius: 0 }] };
+  }
+  private static emptyDataset2(label1: string, label2: string): ChartData {
+    return { labels: [], datasets: [
+      { label: label1, data: [], fill: false, backgroundColor: '#ff8000', borderColor: '#ff8000', pointRadius: 0 },
+      { label: label2, data: [], fill: false, backgroundColor: '#709cc2', borderColor: '#709cc2', pointRadius: 0 },
+    ]};
+  }
+
+  chartdataLoad: ChartData = SystemComponent.emptyDataset('Load');
+  chartdataSystemMemory: ChartData = SystemComponent.emptyDataset('Memory (MByte)');
+  chartdataSwap: ChartData = SystemComponent.emptyDataset('Swap used (MByte)');
+  chartdataMemory: ChartData = SystemComponent.emptyDataset('Memory (MByte)');
+  chartdataThreads: ChartData = SystemComponent.emptyDataset('Threads');
+  chartdataWorkerThreads: ChartData = SystemComponent.emptyDataset2('Started Workers', 'Active Workers');
+  chartdataDisk: ChartData = SystemComponent.emptyDataset('% disc usage');
 
   appName = this.app.APP_NAME;
   appVersion = 'v' + this.app.APP_VERSION;
@@ -254,89 +264,27 @@ export class SystemComponent implements OnDestroy, OnInit {
 
 
     this.chartoptions1 = {
-      scales: {
-        xAxes: [{
-//          type: 'time',
-          distribution: 'linear',
-          time: {
-            unit: 'minute'
-          },
-        }]
-      }
+      scales: { x: {}, y: {} }
     };
 
     this.chartoptionsSystem = {
-      title: {
-        display: true,
-        text: 'System',
-      },
-      scales: {
-        xAxes: [{
-//          type: 'time',
-          distribution: 'linear',
-          time: {
-            unit: 'minute'
-          },
-        }]
-      }
+      plugins: { title: { display: true, text: 'System' } },
+      scales: { x: {}, y: {} }
     };
 
     this.chartoptionsShng = {
-      title: {
-        display: true,
-        text: 'SmartHomeNG',
-      },
-      scales: {
-        xAxes: [{
-//          type: 'time',
-          distribution: 'linear',
-          time: {
-            unit: 'minute'
-          },
-        }],
-        yAxes: [{
-          ticks: {
-            min: 0
-          }
-        }]
-      }
+      plugins: { title: { display: true, text: 'SmartHomeNG' } },
+      scales: { x: {}, y: { min: 0 } }
     };
 
     this.chartoptionsScheduler = {
-      title: {
-        display: true,
-        text: 'SmartHomeNG Scheduler',
-      },
-      scales: {
-        xAxes: [{
-//          type: 'time',
-          distribution: 'linear',
-          time: {
-            unit: 'minute'
-          },
-        }],
-        yAxes: [{
-          ticks: {
-            min: 0
-          }
-        }]
-      }
+      plugins: { title: { display: true, text: 'SmartHomeNG Scheduler' } },
+      scales: { x: {}, y: { min: 0 } }
     };
 
     this.chartoptionsDisc = {
-      title: {
-        display: true,
-        text: 'System',
-      },
-      scales: {
-        xAxes: [{
-//          type: 'time',
-          distribution: 'linear',
-          time: {
-            unit: 'minute'
-          },
-        }]
-      }
+      plugins: { title: { display: true, text: 'Disc' } },
+      scales: { x: {}, y: {} }
     };
 
     this.chartdataLoad = {

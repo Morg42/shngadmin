@@ -152,7 +152,12 @@ export class StructsComponent implements OnInit {
           }
         }
         if (typeof subtree[key] === 'object') {
-          displayNode['children'] = this.buildDisplayTree(subtree[key]);
+          const children = this.buildDisplayTree(subtree[key]);
+          if (children.length > 0) {
+            displayNode['children'] = children;
+          } else {
+            displayNode['leaf'] = true;
+          }
         }
         displayTreeList.push(displayNode);
       }

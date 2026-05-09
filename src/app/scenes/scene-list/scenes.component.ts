@@ -29,7 +29,7 @@ import {Title} from '@angular/platform-browser';
 export class ScenesComponent implements OnInit {
 
 
-  sceneList: SceneInfo[];
+  sceneList: SceneInfo[] = [];
 
   systeminfo: SystemInfo = <SystemInfo>{};
 

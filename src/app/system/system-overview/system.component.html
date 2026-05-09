@@ -118,13 +118,13 @@
           <div class="charts-header">
           </div>
           <div class="charts-content">
-            <p-chart type="line" width="360px" height="280px" (click)="drawCharts()" #chartWorkerThreads [data]="chartdataWorkerThreads" [options]="chartoptionsScheduler"></p-chart>
-            <p-chart type="line" width="360px" height="280px" (click)="drawCharts()" #chartThreads [data]="chartdataThreads" [options]="chartoptionsShng"></p-chart>
-            <p-chart type="line" width="360px" height="280px" (click)="drawCharts()" #chartMemory [data]="chartdataMemory" [options]="chartoptionsShng"></p-chart>
-            <p-chart type="line" width="360px" height="280px" (click)="drawCharts()" #chartSystemload [data]="chartdataLoad" [options]="chartoptionsSystem"></p-chart>
-            <p-chart type="line" width="360px" height="280px" (click)="drawCharts()" #chartSystemMemory [data]="chartdataSystemMemory" [options]="chartoptionsSystem"></p-chart>
-            <p-chart type="line" width="360px" height="280px" (click)="drawCharts()" #chartSystemSwap [data]="chartdataSwap" [options]="chartoptionsSystem"></p-chart>
-            <p-chart type="line" width="360px" height="280px" (click)="drawCharts()" #chartDisk [data]="chartdataDisk" [options]="chartoptionsDisc"></p-chart>
+            <p-chart type="line" width="360px" height="280px" #chartWorkerThreads [data]="chartdataWorkerThreads" [options]="chartoptionsScheduler"></p-chart>
+            <p-chart type="line" width="360px" height="280px" #chartThreads [data]="chartdataThreads" [options]="chartoptionsShng"></p-chart>
+            <p-chart type="line" width="360px" height="280px" #chartMemory [data]="chartdataMemory" [options]="chartoptionsShng"></p-chart>
+            <p-chart type="line" width="360px" height="280px" #chartSystemload [data]="chartdataLoad" [options]="chartoptionsSystem"></p-chart>
+            <p-chart type="line" width="360px" height="280px" #chartSystemMemory [data]="chartdataSystemMemory" [options]="chartoptionsSystem"></p-chart>
+            <p-chart type="line" width="360px" height="280px" #chartSystemSwap [data]="chartdataSwap" [options]="chartoptionsSystem"></p-chart>
+            <p-chart type="line" width="360px" height="280px" #chartDisk [data]="chartdataDisk" [options]="chartoptionsDisc"></p-chart>
           </div>
           <div class="charts-footer">
           </div>

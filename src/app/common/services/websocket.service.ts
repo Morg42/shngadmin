@@ -1,10 +1,11 @@
 
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone, inject } from '@angular/core';
 import { Subject } from 'rxjs';
 
 
 @Injectable()
 export class WebsocketService {
+  private ngZone = inject(NgZone);
   private ws: WebSocket;
   private messageStream = new Subject<MessageEvent>();
   private openSubject = new Subject<void>();
@@ -27,19 +28,23 @@ export class WebsocketService {
     this.ws = new WebSocket(url);
 
     this.ws.onopen = () => {
-      console.log('WebSocket connected: ' + url);
-      this.messageQueue.forEach(msg => this.ws.send(JSON.stringify(msg)));
-      this.messageQueue = [];
-      this.openSubject.next();
+      this.ngZone.run(() => {
+        console.log('WebSocket connected: ' + url);
+        this.openSubject.next();  // identity sent first via openSubscription handler
+        this.messageQueue.forEach(msg => this.ws.send(JSON.stringify(msg)));
+        this.messageQueue = [];
+      });
     };
 
-    this.ws.onmessage = (event) => this.messageStream.next(event);
+    this.ws.onmessage = (event) => this.ngZone.run(() => this.messageStream.next(event));
     this.ws.onerror = (error) => console.warn('WebSocket error:', error);
     this.ws.onclose = () => {
-      if (this.reconnectUrl) {
-        console.log('WebSocket closed, reconnecting in 3s...');
-        this.reconnectTimer = setTimeout(() => this.openConnection(this.reconnectUrl), 3000);
-      }
+      this.ngZone.run(() => {
+        if (this.reconnectUrl) {
+          console.log('WebSocket closed, reconnecting in 3s...');
+          this.reconnectTimer = setTimeout(() => this.openConnection(this.reconnectUrl), 3000);
+        }
+      });
     };
   }
 

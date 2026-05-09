@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, EventEmitter, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {AppConfigService} from '../../common/services/app-config.service';
 import { Title } from '@angular/platform-browser';
 import { Injectable } from '@angular/core';
@@ -10,6 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { ChartData } from 'chart.js';
+import { combineLatest } from 'rxjs';
 
 //import * as $ from 'jquery';
 
@@ -61,11 +62,23 @@ export class SystemComponent implements OnDestroy, OnInit {
   os_uptime = '';
   sh_uptime = '';
 
-  chartoptions1: Record<string, unknown>;
-  chartoptionsSystem: Record<string, unknown>;
-  chartoptionsShng: Record<string, unknown>;
-  chartoptionsScheduler: Record<string, unknown>;
-  chartoptionsDisc: Record<string, unknown>;
+  chartoptions1: Record<string, unknown> = { scales: { x: {}, y: {} } };
+  chartoptionsSystem: Record<string, unknown> = {
+    plugins: { title: { display: true, text: 'System' } },
+    scales: { x: {}, y: {} }
+  };
+  chartoptionsShng: Record<string, unknown> = {
+    plugins: { title: { display: true, text: 'SmartHomeNG' } },
+    scales: { x: {}, y: { min: 0 } }
+  };
+  chartoptionsScheduler: Record<string, unknown> = {
+    plugins: { title: { display: true, text: 'SmartHomeNG Scheduler' } },
+    scales: { x: {}, y: { min: 0 } }
+  };
+  chartoptionsDisc: Record<string, unknown> = {
+    plugins: { title: { display: true, text: 'Disc' } },
+    scales: { x: {}, y: {} }
+  };
 
   private static emptyDataset(label: string): ChartData {
     return { labels: [], datasets: [{ label, data: [], fill: false, backgroundColor: '#709cc2', borderColor: '#709cc2', pointRadius: 0 }] };
@@ -261,32 +274,6 @@ export class SystemComponent implements OnDestroy, OnInit {
   initCharts() {
     console.log('initCharts()');
 
-
-
-    this.chartoptions1 = {
-      scales: { x: {}, y: {} }
-    };
-
-    this.chartoptionsSystem = {
-      plugins: { title: { display: true, text: 'System' } },
-      scales: { x: {}, y: {} }
-    };
-
-    this.chartoptionsShng = {
-      plugins: { title: { display: true, text: 'SmartHomeNG' } },
-      scales: { x: {}, y: { min: 0 } }
-    };
-
-    this.chartoptionsScheduler = {
-      plugins: { title: { display: true, text: 'SmartHomeNG Scheduler' } },
-      scales: { x: {}, y: { min: 0 } }
-    };
-
-    this.chartoptionsDisc = {
-      plugins: { title: { display: true, text: 'Disc' } },
-      scales: { x: {}, y: {} }
-    };
-
     this.chartdataLoad = {
       labels: [],
       datasets: [
@@ -443,17 +430,21 @@ export class SystemComponent implements OnDestroy, OnInit {
       this.chartdataThreads = this.updateChartData(this.chartdataThreads, this.websocketPluginService.threads.series);
       this.cdr.markForCheck();
     });
-    this.websocketPluginService.workerThreadsUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-        this.websocketPluginService.idleWorkerThreadsUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-          this.websocketPluginService.activeWorkerThreads.series = [];
-          this.websocketPluginService.activeWorkerThreads.tsdiff = this.websocketPluginService.idleWorkerThreads.tsdiff;
-          for (let i = 0; i < this.websocketPluginService.workerThreads.series.length; i++) {
-            this.websocketPluginService.activeWorkerThreads.series.push(this.websocketPluginService.idleWorkerThreads.series[i]);
-            this.websocketPluginService.activeWorkerThreads.series[i][1] = this.websocketPluginService.workerThreads.series[i][1] - this.websocketPluginService.idleWorkerThreads.series[i][1];
-          }
-          this.chartdataWorkerThreads = this.updateChartData(this.chartdataWorkerThreads, this.websocketPluginService.workerThreads.series, this.websocketPluginService.activeWorkerThreads.series);
-          this.cdr.markForCheck();
-        });
+    combineLatest([
+      this.websocketPluginService.workerThreadsUpdate$,
+      this.websocketPluginService.idleWorkerThreadsUpdate$
+    ]).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      const workerSeries = this.websocketPluginService.workerThreads.series;
+      const idleSeries = this.websocketPluginService.idleWorkerThreads.series;
+      const len = Math.min(workerSeries.length, idleSeries.length);
+      const activeSeries = [];
+      for (let i = 0; i < len; i++) {
+        activeSeries.push([workerSeries[i][0], workerSeries[i][1] - idleSeries[i][1], workerSeries[i][2]]);
+      }
+      this.chartdataWorkerThreads = this.updateChartData(
+        this.chartdataWorkerThreads, workerSeries.slice(0, len), activeSeries
+      );
+      this.cdr.markForCheck();
     });
     this.websocketPluginService.diskUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.chartdataDisk = this.updateChartData(this.chartdataDisk, this.websocketPluginService.disk.series);

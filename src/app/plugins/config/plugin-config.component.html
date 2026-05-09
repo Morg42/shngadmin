@@ -270,10 +270,11 @@
 
   <p-accordion [multiple]="true">
     @for (plugintype of plugintypes; track i; let i = $index) {
-      <p-accordionTab [(selected)]="plugintypes_expanded[i]" (click)="pluginadd.maximize()">
-        <ng-template pTemplate="header">
+      <p-accordion-panel [value]="i">
+        <p-accordion-header (click)="pluginadd.maximize()">
           <span style="font-size: larger;"><img ngSrc="assets/img/plugin_{{ plugintype }}.svg" style="width: 30px; cursor: pointer;"/> {{plugintype.charAt(0).toUpperCase() + plugintype.substring(1)}} Plugins</span>
-        </ng-template>
+        </p-accordion-header>
+        <p-accordion-content>
         <!--
           <table class="table table-striped table-hover" [columns]="cols" [value]="configuredplugins" selectionMode="single">
         -->
@@ -311,7 +312,8 @@
               }
             }
           </table>
-      </p-accordionTab>
+      </p-accordion-content>
+      </p-accordion-panel>
     }
   </p-accordion>
 

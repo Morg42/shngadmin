@@ -3,13 +3,14 @@
 <div class="body-content">
   <p-accordion [multiple]="true">
     @for (scene of sceneList; track $index) {
-      <p-accordionTab>
-        <ng-template pTemplate="header">
+      <p-accordion-panel [value]="$index">
+        <p-accordion-header>
           <span style="font-size: large; font-weight: bold; ">{{scene['path']}}</span>
           @if (scene['name'] && scene['name'] !== '') {
             &nbsp;  &nbsp; ({{scene['name']}})
           }
-        </ng-template>
+        </p-accordion-header>
+        <p-accordion-content>
         <div style="margin-left: 17px;">
           <table class="table table-striped table-hover" style="border: 1px solid #ddd; ">
           <colgroup>
@@ -81,7 +82,8 @@
           </tbody>
         </table>
         </div>
-      </p-accordionTab>
+        </p-accordion-content>
+      </p-accordion-panel>
     }
   </p-accordion>
 </div>

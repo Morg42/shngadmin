@@ -16,10 +16,10 @@
 
       @if (nogroups === false) {
         <div style="max-width: 1425px">
-        <p-accordion [activeIndex]="groupExpandedOnStart" [multiple]="true" (onOpen)="groupOpened($event)" (onClose)="groupClosed($event)">
+        <p-accordion [value]="groupExpandedOnStart" [multiple]="true" (onOpen)="groupOpened($event)" (onClose)="groupClosed($event)">
           @for (group of groupList; track $index) {
-            <p-accordionTab>
-              <ng-template pTemplate="header">
+            <p-accordion-panel [value]="$index">
+              <p-accordion-header>
                 @if (group.name === '') {
                   <span style="font-size: large; font-weight: bold; ">{{ 'LOGICS.NOGROUP_TITLE'|translate }}</span>
                 }
@@ -29,7 +29,8 @@
                 @if (group.name !== '' && group.title === '') {
                   <span style="font-size: large; font-weight: bold; ">{{ group.name }}</span>
                 }
-              </ng-template>
+              </p-accordion-header>
+              <p-accordion-content>
 
               @if (group.description !== undefined && group.description !== '') {
                 <span style="margin-left: 20px">{{ group.description }}</span>
@@ -133,7 +134,8 @@
 
               </table>
 
-            </p-accordionTab>
+            </p-accordion-content>
+            </p-accordion-panel>
           }
         </p-accordion>
         </div>

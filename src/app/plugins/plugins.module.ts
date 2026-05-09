@@ -3,7 +3,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { AccordionModule } from 'primeng/accordion';
 import { Dialog } from 'primeng/dialog';
-import { InputSwitch } from 'primeng/inputswitch';
+import { ToggleSwitch } from 'primeng/toggleswitch';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { Select } from 'primeng/select';
 import { TableModule } from 'primeng/table';
@@ -28,7 +28,7 @@ import { PluginConfigComponent } from './config/plugin-config.component';
     ModalModule,
     AccordionModule,
     Dialog,
-    InputSwitch,
+    ToggleSwitch,
     ProgressSpinnerModule,
     Select,
     TableModule,

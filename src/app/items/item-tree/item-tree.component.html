@@ -155,9 +155,9 @@
                                       }
                                     </select>
                                     -->
-                                    <p-inputSwitch [(ngModel)]="itemdetails.value"
+                                    <p-toggleSwitch [(ngModel)]="itemdetails.value"
                                                    (onChange)="updateValue(itemdetails.path, itemdetails.value, itemdetails.type, itemdetails.value, myalert)">
-                                    </p-inputSwitch>
+                                    </p-toggleSwitch>
                                   }
                                   @case (itemdetails.type === 'str' || itemdetails.type === 'list' || itemdetails.type === 'dict' ? itemdetails.type : '') {
                                     <textarea type="text" class="form-control" #item_value (blur)="updateValue(itemdetails.path, item_value, itemdetails.type, itemdetails.value, myalert)" id="item_value">{{itemdetails.value}}</textarea>

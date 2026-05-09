@@ -5,7 +5,7 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { TreeModule } from 'primeng/tree';
 import { AccordionModule } from 'primeng/accordion';
 import { Dialog } from 'primeng/dialog';
-import { InputSwitch } from 'primeng/inputswitch';
+import { ToggleSwitch } from 'primeng/toggleswitch';
 import { ListboxModule } from 'primeng/listbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
@@ -41,7 +41,7 @@ import { StructConfigurationComponent } from './struct-configuration/struct-conf
     TreeModule,
     AccordionModule,
     Dialog,
-    InputSwitch,
+    ToggleSwitch,
     ListboxModule,
     InputTextModule,
     TooltipModule,

@@ -33,7 +33,7 @@ export class StructsComponent implements OnInit {
 
   structsDict: Record<string, unknown>;
   structsList: string[];
-  structsGroups: string[];
+  structsGroups: string[] = [];
   selectedItem: TreeNode;
   displayTree: TreeNode[];
   displayTrees: {};

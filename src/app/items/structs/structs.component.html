@@ -1,7 +1,7 @@
 
-<div class="body-content">
+<div class="shngbody">
+  <div>
   <h4 style="margin-left: 15px; margin-top: 5px;">{{ 'ITEMS.STRUCT_TEMPLATES'|translate }}</h4>
-  <div style="margin-top: 50px;">
     <p-accordion [multiple]="true" (onOpen)="groupExpanded[structsGroups[$event.index]]=true"  (onClose)="groupExpanded[structsGroups[$event.index]]=false">
     @for (group of structsGroups; track $index) {
       <p-accordion-panel [value]="$index">

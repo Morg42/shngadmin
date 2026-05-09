@@ -691,3 +691,25 @@ a.text-shng:focus, a.text-shng:hover {
   content: '▼';
 }
 
+/* ================================================================
+   PrimeNG Accordion — replace SVG chevron with unicode triangle
+   p-accordionheader is the button host; data-p-active="true" marks
+   the expanded state. The SVG icon class is p-accordionheader-toggle-icon.
+   ================================================================ */
+.p-accordionheader-toggle-icon {
+  display: none;
+}
+.p-accordionheader::after {
+  content: '▶';
+  font-family: Arial, sans-serif;
+  font-size: 0.6em;
+  line-height: 1;
+  color: inherit;
+  margin-left: auto;
+  padding-left: 0.5rem;
+  flex-shrink: 0;
+}
+.p-accordionheader[data-p-active="true"]::after {
+  content: '▼';
+}
+

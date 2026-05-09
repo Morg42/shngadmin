@@ -17,10 +17,11 @@ import {Title} from '@angular/platform-browser';
 import {ServerApiService} from '../../common/services/server-api.service';
 
 @Component({
-  selector: 'app-logics-edit',
-  templateUrl: './logics-edit.component.html',
-  styleUrls: ['./logics-edit.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-logics-edit',
+    templateUrl: './logics-edit.component.html',
+    styleUrls: ['./logics-edit.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 
 export class LogicsEditComponent implements AfterViewChecked, OnInit {

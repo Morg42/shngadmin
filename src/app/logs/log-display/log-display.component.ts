@@ -17,12 +17,13 @@ interface DropDownEntry {
 }
 
 @Component({
-  selector: 'app-logs',
-  templateUrl: './log-display.component.html',
-  styleUrls: ['./log-display.component.css'],
-//  styles: ['.CodeMirror { width: 100%; height: 50vh; }' ],
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-logs',
+    templateUrl: './log-display.component.html',
+    styleUrls: ['./log-display.component.css'],
+    //  styles: ['.CodeMirror { width: 100%; height: 50vh; }' ],
+    encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class LogDisplayComponent implements AfterViewChecked, OnInit {
 

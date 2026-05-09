@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); proj=list\\(d['projects'].values\\(\\)\\)[0]; print\\(json.dumps\\(proj['architect']['build']['options'].get\\('assets',[]\\), indent=2\\)\\)\")",
+      "WebSearch"
     ]
   }
 }

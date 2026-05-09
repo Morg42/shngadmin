@@ -25,11 +25,12 @@ import {AppComponent} from '../../app.component';
 
 
 @Component({
-  selector: 'app-system',
-  templateUrl: './system.component.html',
-  styleUrls: ['./system.component.css'],
-  providers: [ WebsocketService, WebsocketPluginService ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-system',
+    templateUrl: './system.component.html',
+    styleUrls: ['./system.component.css'],
+    providers: [WebsocketService, WebsocketPluginService],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SystemComponent implements OnDestroy, OnInit {
 

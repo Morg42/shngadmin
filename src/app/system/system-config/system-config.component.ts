@@ -21,10 +21,11 @@ type SystemConfig = any;
 
 
 @Component({
-  selector: 'app-system-config',
-  templateUrl: './system-config.component.html',
-  styleUrls: ['./system-config.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-system-config',
+    templateUrl: './system-config.component.html',
+    styleUrls: ['./system-config.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 
 export class SystemConfigComponent implements OnInit {

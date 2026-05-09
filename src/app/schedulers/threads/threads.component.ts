@@ -11,10 +11,11 @@ import {Title} from '@angular/platform-browser';
 
 
 @Component({
-  selector: 'app-threads',
-  templateUrl: './threads.component.html',
-  styleUrls: ['./threads.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-threads',
+    templateUrl: './threads.component.html',
+    styleUrls: ['./threads.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 
 

@@ -8,10 +8,11 @@ import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from './../common/services/auth.service';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class LoginComponent {
   private readonly destroyRef = inject(DestroyRef);

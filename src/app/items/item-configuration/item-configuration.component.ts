@@ -13,10 +13,11 @@ import {ServerApiService} from '../../common/services/server-api.service';
 
 
 @Component({
-  selector: 'app-item-configuration',
-  templateUrl: './item-configuration.component.html',
-  styleUrls: ['./item-configuration.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-item-configuration',
+    templateUrl: './item-configuration.component.html',
+    styleUrls: ['./item-configuration.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
 

@@ -2,10 +2,11 @@ import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectionStrategy
 import { LoggersType } from '../../common/models/loggers-info';
 
 @Component({
-  selector: 'logger-line',
-  templateUrl: './logger-line.component.html',
-  styleUrls: ['./logger-line.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'logger-line',
+    templateUrl: './logger-line.component.html',
+    styleUrls: ['./logger-line.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class LoggerLineComponent implements OnInit {
 

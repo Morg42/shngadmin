@@ -15,11 +15,12 @@ import { Router } from '@angular/router';
 
 
 @Component({
-  selector: 'app-header',
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css'],
-  providers: [],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-header',
+    templateUrl: './header.component.html',
+    styleUrls: ['./header.component.css'],
+    providers: [],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 
 

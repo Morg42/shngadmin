@@ -18,11 +18,12 @@ import {TranslateService} from '@ngx-translate/core';
 import {ServerApiService} from '../../common/services/server-api.service';
 
 @Component({
-  selector: 'app-logics',
-  templateUrl: './logics-list.component.html',
-  styleUrls: ['./logics-list.component.css'],
-  providers: [OlddataService],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-logics',
+    templateUrl: './logics-list.component.html',
+    styleUrls: ['./logics-list.component.css'],
+    providers: [OlddataService],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class LogicsListComponent implements OnInit {
 

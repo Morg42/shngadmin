@@ -21,10 +21,11 @@ import {Title} from '@angular/platform-browser';
 
 
 @Component({
-  selector: 'app-structs',
-  templateUrl: './structs.component.html',
-  styleUrls: ['./structs.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-structs',
+    templateUrl: './structs.component.html',
+    styleUrls: ['./structs.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class StructsComponent implements OnInit {
 

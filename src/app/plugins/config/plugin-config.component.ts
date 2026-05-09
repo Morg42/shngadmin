@@ -31,11 +31,12 @@ export interface ConfiguredPlugin { confname: string; instance: string; plugin: 
 
 
 @Component({
-  selector: 'app-config',
-  templateUrl: './plugin-config.component.html',
-  styleUrls: ['./plugin-config.component.css'],
-  providers: [AppComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-config',
+    templateUrl: './plugin-config.component.html',
+    styleUrls: ['./plugin-config.component.css'],
+    providers: [AppComponent],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PluginConfigComponent implements OnInit {
 

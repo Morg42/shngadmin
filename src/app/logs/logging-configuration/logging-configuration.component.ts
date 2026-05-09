@@ -10,10 +10,11 @@ import {TranslateService} from '@ngx-translate/core';
 import {Title} from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-logging-configuration',
-  templateUrl: './logging-configuration.component.html',
-  styleUrls: ['./logging-configuration.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-logging-configuration',
+    templateUrl: './logging-configuration.component.html',
+    styleUrls: ['./logging-configuration.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class LoggingConfigurationComponent implements AfterViewChecked, OnInit {
 

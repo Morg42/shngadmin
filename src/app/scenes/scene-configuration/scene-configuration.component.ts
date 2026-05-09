@@ -15,10 +15,11 @@ import {ServerApiService} from '../../common/services/server-api.service';
 
 
 @Component({
-  selector: 'app-scene-configuration',
-  templateUrl: './scene-configuration.component.html',
-  styleUrls: ['./scene-configuration.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-scene-configuration',
+    templateUrl: './scene-configuration.component.html',
+    styleUrls: ['./scene-configuration.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
 

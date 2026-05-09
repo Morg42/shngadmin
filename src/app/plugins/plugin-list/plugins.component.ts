@@ -19,11 +19,12 @@ import {TranslateService} from '@ngx-translate/core';
 import {Title} from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-plugins',
-  templateUrl: './plugins.component.html',
-  styleUrls: ['./plugins.component.css'],
-  providers: [OlddataService],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-plugins',
+    templateUrl: './plugins.component.html',
+    styleUrls: ['./plugins.component.css'],
+    providers: [OlddataService],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PluginsComponent implements OnInit {
 

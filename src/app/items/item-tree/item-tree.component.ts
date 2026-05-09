@@ -33,11 +33,12 @@ type MonitoredItem = [string, Record<string, unknown>];
 
 
 @Component({
-  selector: 'app-items',
-  templateUrl: 'item-tree.component.html',
-  styleUrls: ['item-tree.component.css'],
-  providers:  [AppComponent, WebsocketService, WebsocketPluginService ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-items',
+    templateUrl: 'item-tree.component.html',
+    styleUrls: ['item-tree.component.css'],
+    providers: [AppComponent, WebsocketService, WebsocketPluginService],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   @ViewChild('vc', { read: ViewContainerRef, static: true }) vc: ViewContainerRef;

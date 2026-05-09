@@ -376,7 +376,8 @@
     "SCENE": "Scene",
     "LEARN": "Learn",
     "ITEM": "Item",
-    "VALUE": "Value"
+    "VALUE": "Value",
+    "NO_SCENES": "No scenes configured."
   },
   "SCENE_CONFIG": {
     "DEFINITION_FILES": "Scene-Definition Files",

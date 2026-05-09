@@ -373,7 +373,8 @@
     "SCENE": "Scène",
     "LEARN": "Apprendre",
     "ITEM": "Objet",
-    "VALUE": "Valeur"
+    "VALUE": "Valeur",
+    "NO_SCENES": "Aucune scène configurée."
   },
   "SCENE_CONFIG": {
     "DEFINITION_FILES": "Fichiers de définition de scènes",

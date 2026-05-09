@@ -6,7 +6,7 @@ import { TemplateRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { BsModalService } from 'ngx-bootstrap/modal';
-import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
+import { BsModalRef } from 'ngx-bootstrap/modal';
 import {faPlayCircle, faPauseCircle, faExclamationTriangle, faCode, faLaptopCode} from '@fortawesome/free-solid-svg-icons';
 
 import { PluginsApiService } from '../../common/services/plugins-api.service';

@@ -11,7 +11,6 @@ import {LogicsApiService} from '../../common/services/logics-api.service';
 import {LogicsWatchItem} from '../../common/models/logics-watch-item';
 import {SharedService} from '../../common/services/shared.service';
 import { TableColumn, ConfigParameter } from '../../common/models/interfaces';
-import {RegExpTokenFn} from 'ngx-bootstrap/chronos/parse/regex';
 import {TranslateService} from '@ngx-translate/core';
 import {Title} from '@angular/platform-browser';
 import {ServerApiService} from '../../common/services/server-api.service';

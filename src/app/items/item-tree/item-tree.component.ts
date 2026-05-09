@@ -4,7 +4,7 @@ import {AppConfigService} from '../../common/services/app-config.service';
 import { HttpClient } from '@angular/common/http';
 
 import { BsModalService } from 'ngx-bootstrap/modal';
-import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
+import { BsModalRef } from 'ngx-bootstrap/modal';
 import { TranslateService } from '@ngx-translate/core';
 
 import { faSearch, faCircleNotch, faFolder, faFolderOpen } from '@fortawesome/free-solid-svg-icons';

@@ -6,7 +6,7 @@ describe('ThreadsApiService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: ThreadsApiService = TestBed.get(ThreadsApiService);
+    const service: ThreadsApiService = TestBed.inject(ThreadsApiService);
     expect(service).toBeTruthy();
   });
 });

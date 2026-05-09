@@ -5,12 +5,12 @@
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
-    "strict": false,                              // set temporaily to true for precise 
+    "strict": false,
     "noImplicitOverride": false,
     "strictNullChecks": false,
     "noPropertyAccessFromIndexSignature": false,
     "strictPropertyInitialization": false,
-    "noImplicitReturns": false,                   // TS7030
+    "noImplicitReturns": false,
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
     "isolatedModules": true,
@@ -18,7 +18,7 @@
     "sourceMap": true,
     "declaration": false,
     "experimentalDecorators": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
     "module": "es2022",

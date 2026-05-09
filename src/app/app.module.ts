@@ -17,7 +17,30 @@ import { MessageModule } from 'primeng/message';
 import { JwtModule, JWT_OPTIONS } from '@auth0/angular-jwt';
 
 import { providePrimeNG } from 'primeng/config';
+import { definePreset } from '@primeng/themes';
 import Aura from '@primeng/themes/aura';
+
+// Remap Aura's primary palette to the shng blue family (#709cc2 at 500).
+// This propagates through every PrimeNG component token that references
+// {primary.*} — tabs active-bar, buttons, focus rings, etc. — replacing
+// the default Aura green without touching individual component CSS.
+const ShngPreset = definePreset(Aura, {
+  semantic: {
+    primary: {
+      50:  '#f0f5fa',
+      100: '#dce8f3',
+      200: '#bad4e8',
+      300: '#93bfdc',
+      400: '#7daecf',
+      500: '#709cc2',
+      600: '#538cb0',
+      700: '#3e6e8c',
+      800: '#2e5168',
+      900: '#213c4d',
+      950: '#162836',
+    }
+  }
+});
 
 import { AppComponent } from './app.component';
 import { HttpLoaderFactory } from './app.component';
@@ -93,7 +116,7 @@ export function jwtOptionsFactory(injector: Injector) {
     JwtModule,
     provideAnimationsAsync(),
     provideHttpClient(withInterceptorsFromDi()),
-    providePrimeNG({ theme: { preset: Aura, options: { darkModeSelector: false } } }),
+    providePrimeNG({ theme: { preset: ShngPreset, options: { darkModeSelector: false } } }),
   ],
 })
 export class AppModule {}

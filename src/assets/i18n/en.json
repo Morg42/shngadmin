@@ -50,13 +50,11 @@
     "UPTIME_HOST": "Uptime Host",
     "PROPERTY": "Property",
     "STATE": "State",
-
     "VERS_OK_RECENT": "Version ok and recent",
     "VERS_OK_NOT_RECENT": "Version ok, newer version available",
     "VERS_OK_MAX_NOT_RECENT": "Maximum version that is ok, newest version not ok",
     "VERS_MISSING": "Installed package missing",
     "VERS_NOT_OK": "Version not ok",
-
     "PACKAGE": "Package",
     "PYTHON_PACKAGE": "Python Package",
     "INSTALLED VERSION": "Inst. Version",
@@ -70,7 +68,6 @@
     "PACKAGES_WO_REQ": "Packages without requirements",
     "MISSING": "missing",
     "UNKNOWN": "unknown",
-
     "CONFIGURATION": "Configuration",
     "COMMON_SETTINGS": "Common",
     "HTTP_SETTINGS": "Http Module",
@@ -78,7 +75,6 @@
     "ADMIN_SETTINGS": "Admin Module",
     "MQTT_SETTINGS": "MQTT Module",
     "ADVANCED_SETTINGS": "Advanced",
-
     "SET_PASSWORD": "Set Password",
     "CHANGE_PASSWORD": "Change Password",
     "OLDPWD_EMPTY": "Old password may not be empty",
@@ -113,7 +109,6 @@
     "PASSWORD_HASH": "Create password-hash",
     "SHOW_PASSWORD": "Show Password",
     "INACTIVE": "Not active",
-
     "EVAL CHECKER": "eval Syntax Checker",
     "YAML CHECKER": "YAML Syntax Checker",
     "CONF TO YAML": "CONF-YAML Converter",
@@ -121,7 +116,6 @@
     "SERVICE": "Service",
     "STATUS": "State",
     "ACTION": "Action",
-
     "EVAL_CHECK_SOURCE": "Expression (Input in Python eval-format",
     "EVAL_RELATIVE_TO": "Relative to item (Input path of item)",
     "EVAL_CHECK_EXPANDED": "Expanded expression",
@@ -131,7 +125,6 @@
     "YAML_CHECK_RESULT": "The checked YAML expression",
     "YAML_CONVERTER_SOURCE": "Enter code in .CONF to be checked",
     "YAML_CONVERTER_RESULT": "The converted expression in YAML format",
-
     "FILES_WITHOUT_ITEM": "Files without corresponding item in directory",
     "FILENAME": "Filename",
     "LAST_MODIFICATION": "Last Modification",
@@ -156,7 +149,6 @@
     "Stopping: Stopping threads": "Stopping: Stopping threads",
     "Stopped": "Stopped",
     "waiting": "waiting",
-
     "Restart clicked": "Restart clicked",
     "not active": "not active",
     "Running (dummy)": "Running (dummy)"
@@ -178,7 +170,6 @@
     "Stopping": "31",
     "Stopping: Stopping threads": "32",
     "Stopped": "33",
-
     "Restart clicked": "<none>",
     "not active": "<none>",
     "Running (dummy)": "<none>"
@@ -189,7 +180,6 @@
     "ITEMS": "Items",
     "TOTAL": "Total",
     "MONITORED ITEMS": "Monitored Items",
-
     "SEARCH ITEMPATH": "Search itempath",
     "RESET": "Reset",
     "EXPAND ALL": "Expand All",
@@ -198,11 +188,9 @@
     "RELOAD": "Reload",
     "ITEM DETAILS": "Item Details",
     "CHOOSE ITEM IN TREE": "Choose item in tree to see details!",
-
     "ATTRIBUTE": "Attribute",
     "VALUE": "Value",
     "ACTIONS": "Actions",
-
     "PATH": "Item Path",
     "NAME": "Item Name",
     "DESCRIPTION": "Description",
@@ -223,19 +211,15 @@
     "PREVIOUS CHANGE AGE": "Time since previous change",
     "PREVIOUS UPDATE BY": "Previous update by",
     "PREVIOUS CHANGE BY": "Previous change by",
-
-
     "EVALUATION AND TRIGGER": "Evaluation and triggers",
     "PLUGIN SPECIFIC CONFIGURATION": "Plugin specific configuration",
     "CONNECTED LOGICS": "Connected logics",
     "CONNECTED TRIGGERS": "Connected triggers",
-
     "DEFINED IN": "Defined in file",
     "ALERT": {
       "NOT NUMERIC": "ERROR: The entered value is not numeric!",
       "INVALID SCENE NUMBER": "ERROR: Scene numbers have to be between 0 and 63!"
     },
-
     "STRUCT_TEMPLATES": "Item-Structure Templates",
     "STRUCT_CONFIGFILE": "Item-Structure Configuration"
   },
@@ -333,7 +317,6 @@
     "PROTOCOL": "Protocol Plugin",
     "GATEWAY": "Gateway Plugin",
     "CLASSIC": "Classic Plugin",
-
     "ADD": "Add Plugin",
     "ENABLED": "Enabled",
     "DISABLED": "Disabled",
@@ -352,7 +335,6 @@
     "DEVELOP": "Plugin is still in the development state",
     "DEPRECATED": "Plugin is deprecated",
     "DEPRECATED_TEXT": "The plugin is deprecated and will most likely be removed from the next version of SmartHomeNG. If you still need this functionallity, look for a substitute!",
-
     "DETAILS OF CONFIGURATION": "Details of plugin configuration section '{{configname}}' --- (for plugin '{{pluginname}}')",
     "PARAMETERS": "Parameters",
     "PARAMETER": "Parameter",
@@ -375,7 +357,6 @@
     "UNIQUE_NAME": "Unique name",
     "DELETE_CONFIG": "Confirm delete configuration",
     "DELETE_CONFIG_TEXT": "Please confirm, that you want to delete the plugin configuration '{{config}}'",
-
     "CONFIGURATION_ERRORS": "Configuration error(s)",
     "DEFINED_MIN": "Defined minimum is",
     "DEFINED_MAX": "Defined maximum is",
@@ -409,6 +390,18 @@
     "DELETE_CONFIG": "Confirm delete scene",
     "DELETE_CONFIG_FILE": "Please confirm, that you want to delete the scene configuration file '{{config}}'"
   },
+  "FUNCTION_CONFIG": {
+    "DEFINITION_FILES": "Function Libraries",
+    "CONFIG_FILE": "Function library file",
+    "FILE_NOT_FOUND": "File not found!",
+    "FILETYPE_UNSUPPORTED": "File type not supported!",
+    "CONFIG_ERROR": "Configuration error - Configuration not saved!",
+    "CONFIG_ERROR_TEXT": "Error found in function library.\nInvalid file format.\n",
+    "NAME_CONFIGURATION": "Choose filename for the new function library",
+    "UNIQUE_NAME": "Unique filename (without extension)",
+    "DELETE_CONFIG": "Confirm deletion of function library",
+    "DELETE_CONFIG_FILE": "Do you really want to delete the function library '{{config}}'?"
+  },
   "THREADS": {
     "THREAD": "Thread",
     "TOTAL": "total",
@@ -433,7 +426,6 @@
     "ADVANCED": "Advanced Logger",
     "CUSTOM": "Custom Logger",
     "ACTION": "Action",
-
     "LOGGER_NAME": "Logger Name",
     "DISABLED": "Disabled",
     "LEVEL": "Level",
@@ -444,17 +436,14 @@
     "HANDLERS": "Handlers",
     "HANDLER_TYPES": "Handler-Types",
     "LOGFILES": "Logfiles",
-
     "CREATE_LOGGER": "Create Logger",
     "CREATE_LOGGER_TEXT": "Select a logger to create a definition for",
     "NO_LOGGER_TO_ADD": "No more logger available to add",
     "DELETE_LOGGER": "Confirm delete logger",
     "DELETE_LOGGER_TEXT": "Please confirm, that you want to delete the logger '{{logger}}'",
-
     "CHOOSE_HANDLERS": "Edit handler for logger '{{logger}}'",
     "CHOOSE_HANDLERS_TEXT": "Select one or more handlers through which the logging should take place.",
     "CHOOSE_HANDLERS_PROPAGATION_TEXT": "In addition, the logging is carried out by the handlers of higher-level loggers.",
-
     "DELETE": "Delete logger",
     "HANDLER": "Edit handlers"
   },
@@ -547,14 +536,11 @@
   "MINUTES": "minutes",
   "SECOND": "second",
   "SECONDS": "seconds",
-
   "True": "True",
   "False": "False",
-
   "CONFIGURATION": "Configuration",
   "RESTART FOR CHANGES": "Restart SmartHomeNG for changes to take effect - Reload Admin GUI after restart",
   "RELOAD FOR CHANGES": "Reload file(s) or restart SmartHomeNG for changes to take effect.",
   "RESTART LOGIC FOR CHANGES": "Restart the logic for changes to take effect",
-
   "LINEBREAK": "Line Break"
 }

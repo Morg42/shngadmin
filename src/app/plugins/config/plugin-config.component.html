@@ -11,6 +11,12 @@
   <div class="shng_headline" style="margin-top: 5px; margin-left: 8px;">
     <h3>
       {{'PLUGIN.PLUGIN_CONFIGURATION'|translate}}
+      @if (spinner_display) {
+        <span style="margin-left: 1rem; font-size: 0.75rem; font-weight: normal; color: #666; vertical-align: middle;">
+          <p-progressSpinner [style]="{'width': '18px', 'height': '18px'}" styleClass="plugin-loading-spinner"></p-progressSpinner>
+          &nbsp;{{ spinner_header }}
+        </span>
+      }
       <button pButton type="button" style="margin-left: 0; margin-top: 5px; font-size: medium;" id="btn-monitor" [disabled]="false" (click)="addPluginDialog();" icon="fa fa-plus" label="{{ 'BUTTON.ADD_PLUGIN'|translate }}" class="ui-button-success float-sm-right"></button>
     </h3>
   </div>
@@ -337,23 +343,7 @@
   -- Progress spinner
   -->
 
-<p-dialog
-  #pluginspinner
-  [(header)]="spinner_header"
-  [ngStyle]="{'align': 'center'}"
-  [(visible)]="spinner_display"
-  [modal]="true" blockScroll="true"
-  [closable]="false"
-  [resizable]="false"
-  [maximizable]="false"
-  [minY]="100"
-  [style]="{'minWidth':'200px', 'minHeight':'100px'}"
->
-
-  <div align="center">
-    <p-progressSpinner [style]="{'width': '50px', 'height': '50px'}"></p-progressSpinner>
-  </div>
-</p-dialog>
+<!-- loading state is shown inline in the headline, no modal needed -->
 
 
 

@@ -77,3 +77,8 @@
     width: 100%;
 }
 
+/* Inline loading indicator inside the page heading */
+::ng-deep .plugin-loading-spinner svg {
+    vertical-align: middle;
+}
+

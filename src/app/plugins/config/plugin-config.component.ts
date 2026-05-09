@@ -1,6 +1,7 @@
 
 import { Component, OnInit, TemplateRef, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {finalize} from 'rxjs/operators';
 import {AppConfigService} from '../../common/services/app-config.service';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -125,15 +126,23 @@ ngOnInit() {
 
           this.spinner_header = this.translate.instant('PLUGIN.LOADCONFIG');
           this.spinner_display = true;
+          this.cdr.markForCheck();  // show spinner immediately (OnPush)
           this.pluginsdataService.getPluginsConfig()
-            .pipe(takeUntilDestroyed(this.destroyRef))
+            .pipe(
+              takeUntilDestroyed(this.destroyRef),
+              finalize(() => {
+                // always close spinner — whether the request succeeds, fails, or throws
+                this.spinner_display = false;
+                this.cdr.markForCheck();
+              })
+            )
             .subscribe(
               (response) => {
                 this.pluginconflist = response as PluginsConfig;
                 // console.log(this.pluginconflist);
 
                 const newPlugins: ConfiguredPlugin[] = [];
-                for (const plg in this.pluginconflist.plugin_config) {
+                for (const plg in this.pluginconflist?.plugin_config) {
                   if (this.pluginconflist.plugin_config.hasOwnProperty(plg) ) {
                     const confname = plg;
                     let plgname = this.pluginconflist.plugin_config[plg]['plugin_name'];
@@ -146,7 +155,7 @@ ngOnInit() {
                     const meta = this.pluginconflist.plugin_config[confname]['_meta'];
 
                     let deprecated = '-';
-                    if (meta != null) {
+                    if (meta?.plugin) {
                       if (meta.plugin.state && meta.plugin.state.toLowerCase() === 'deprecated') {
                         deprecated = '+';
                       } else if (meta.plugin.state && meta.plugin.state.toLowerCase() === 'develop') {
@@ -164,7 +173,7 @@ ngOnInit() {
                     // is plugin enabled?
                     conf['enabled'] = enabled;
 
-                    if (meta == null) {
+                    if (meta == null || !meta.plugin) {
                       conf['type'] = 'classic';
                     } else {
                       conf['type'] = meta.plugin.type;
@@ -192,7 +201,6 @@ ngOnInit() {
                 }
                 // assign new reference so PrimeNG p-table detects the change via ngOnChanges
                 this.configuredplugins = newPlugins;
-                this.spinner_display = false;
                 this.cdr.markForCheck();
               }
             );

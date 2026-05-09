@@ -25,13 +25,11 @@
                   @if (structsDict[struct]['name'] !== undefined) {
                     <span style="font-size: large; font-weight: bold; ">{{struct}}</span> &nbsp; &nbsp; ({{structsDict[struct]['name']}})
                   }
-                  @if (structExpanded2[1000*structsGroups.indexOf(group)+getStructListByGroup(group).indexOf(struct)] === true) {
-                    <button pButton label="{{ 'ITEMS.REDUCE ALL'|translate }}" type="button" style="margin-right: 5px" icon="fa fa-folder" (click)="$event.stopPropagation(); collapseAll(displayTrees[struct])" class="float-sm-right ui-button-success"></button>
-                    <button pButton label="{{ 'ITEMS.EXPAND ALL'|translate }}" type="button" style="margin-right: 5px" icon="fa fa-folder-open" (click)="$event.stopPropagation(); expandAll(displayTrees[struct])" class="float-sm-right ui-button-success"></button>
-                  }
                 </p-accordion-header>
                 <p-accordion-content>
                 <div style="margin-left: 17px;">
+                  <button pButton label="{{ 'ITEMS.REDUCE ALL'|translate }}" type="button" style="margin-right: 5px; margin-bottom: 4px;" icon="fa fa-folder" (click)="collapseAll(displayTrees[struct], struct)" class="ui-button-success"></button>
+                  <button pButton label="{{ 'ITEMS.EXPAND ALL'|translate }}" type="button" style="margin-right: 5px; margin-bottom: 4px;" icon="fa fa-folder-open" (click)="expandAll(displayTrees[struct], struct)" class="ui-button-success"></button>
 
                   <p-tree [value]="displayTrees[struct]"
                           selectionMode="single"

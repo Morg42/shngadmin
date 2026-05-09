@@ -166,16 +166,16 @@ export class StructsComponent implements OnInit {
   }
 
 
-  expandAll(tree) {
-    tree.forEach( node => {
-      this.expandRecursive(node, true);
-    } );
+  expandAll(tree: TreeNode[], structKey: string) {
+    tree.forEach(node => this.expandRecursive(node, true));
+    this.displayTrees = { ...this.displayTrees, [structKey]: [...tree] };
+    this.cdr.markForCheck();
   }
 
-  collapseAll(tree) {
-    tree.forEach( node => {
-      this.expandRecursive(node, false);
-    } );
+  collapseAll(tree: TreeNode[], structKey: string) {
+    tree.forEach(node => this.expandRecursive(node, false));
+    this.displayTrees = { ...this.displayTrees, [structKey]: [...tree] };
+    this.cdr.markForCheck();
   }
 
   getStructListByGroup(group) {

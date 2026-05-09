@@ -694,22 +694,34 @@ a.text-shng:focus, a.text-shng:hover {
 /* ================================================================
    PrimeNG Accordion — replace SVG chevron with unicode triangle
    p-accordionheader is the button host; data-p-active="true" marks
-   the expanded state. The SVG icon class is p-accordionheader-toggle-icon.
+   the expanded state.
+   The collapsed-state SVG (chevron-down) has no CSS class, so it must
+   be targeted by data-p-icon attribute. Place triangle via ::before so
+   it appears before the projected text content, matching tree-view style.
    ================================================================ */
-.p-accordionheader-toggle-icon {
+.p-accordionheader-toggle-icon,
+.p-accordionheader svg[data-p-icon="chevron-down"],
+.p-accordionheader svg[data-p-icon="chevron-up"] {
   display: none;
 }
-.p-accordionheader::after {
+.p-accordionheader::before {
   content: '▶';
   font-family: Arial, sans-serif;
   font-size: 0.6em;
   line-height: 1;
   color: inherit;
-  margin-left: auto;
-  padding-left: 0.5rem;
+  margin-right: 0.4rem;
   flex-shrink: 0;
 }
-.p-accordionheader[data-p-active="true"]::after {
+.p-accordionheader[data-p-active="true"]::before {
   content: '▼';
+}
+
+/* Tighten p-tree node row spacing */
+.p-tree .p-tree-node-content {
+  padding: 1px 4px !important;
+}
+.p-tree li.p-tree-node {
+  padding: 0 !important;
 }
 

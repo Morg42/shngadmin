@@ -1,5 +1,5 @@
 
-import { Component, OnInit, TemplateRef, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, DestroyRef, inject, ChangeDetectorRef } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {finalize} from 'rxjs/operators';
 import {AppConfigService} from '../../common/services/app-config.service';
@@ -36,14 +36,15 @@ export interface ConfiguredPlugin { confname: string; instance: string; plugin: 
     templateUrl: './plugin-config.component.html',
     styleUrls: ['./plugin-config.component.css'],
     providers: [AppComponent],
-    changeDetection: ChangeDetectionStrategy.OnPush,
+    // Default CD (not OnPush): this is a one-shot config page with no streaming
+    // updates. OnPush adds timing fragility with PrimeNG p-table without any
+    // measurable benefit here.
     standalone: false
 })
 export class PluginConfigComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
-  private cdRef = inject(ChangeDetectorRef);
   private serverdataService = inject(ServerApiService);
   private pluginsdataService = inject(PluginsApiService);
   private dataService = inject(OlddataService);

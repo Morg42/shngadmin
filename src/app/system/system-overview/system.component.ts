@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChildren, EventEmitter, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, EventEmitter, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {AppConfigService} from '../../common/services/app-config.service';
 import { Title } from '@angular/platform-browser';
 import { Injectable } from '@angular/core';
@@ -9,7 +9,6 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 
-import { UIChart } from 'primeng/chart';
 import { ChartData } from 'chart.js';
 
 //import * as $ from 'jquery';
@@ -50,13 +49,6 @@ export class SystemComponent implements OnDestroy, OnInit {
 
   loading: boolean = true;
 
-  @ViewChildren('chrtSystemload') chartSystemload: UIChart;
-  @ViewChildren('chrtSystemMemory') chartSystemMemory: UIChart;
-  @ViewChildren('chrtSwap') chartSwap: UIChart;
-  @ViewChildren('chrtMemory') chartMemory: UIChart;
-  @ViewChildren('chrtThreads') chartThreads: UIChart;
-  @ViewChildren('chrtWorkerThreads') chartWorkerThreads: UIChart;
-  @ViewChildren('chrtDisk') chartDisk: UIChart;
 
   systeminfo: SystemInfo = <SystemInfo>{};
   pypiinfo: PypiInfo[];
@@ -82,10 +74,6 @@ export class SystemComponent implements OnDestroy, OnInit {
   chartdataThreads: ChartData;
   chartdataWorkerThreads: ChartData;
   chartdataDisk: ChartData;
-
-  changed_chartdataLoad: unknown;
-  loadData: unknown;
-  varChartSystemload: unknown;
 
   appName = this.app.APP_NAME;
   appVersion = 'v' + this.app.APP_VERSION;
@@ -488,112 +476,68 @@ export class SystemComponent implements OnDestroy, OnInit {
   drawCharts() {
     console.log('DrawCharts()');
     this.websocketPluginService.systemloadUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      // console.error('systemloadUpdate$');
-      this.updateChartData(this.chartSystemload, this.chartdataLoad, this.websocketPluginService.systemload.series);
+      this.chartdataLoad = this.updateChartData(this.chartdataLoad, this.websocketPluginService.systemload.series);
       this.cdr.markForCheck();
     });
     this.websocketPluginService.systemmemoryUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-//      console.error('systemmemoryUpdate$');
-      this.updateChartData(this.chartSystemMemory, this.chartdataSystemMemory, this.websocketPluginService.systemmemory.series);
+      this.chartdataSystemMemory = this.updateChartData(this.chartdataSystemMemory, this.websocketPluginService.systemmemory.series);
       this.cdr.markForCheck();
     });
     this.websocketPluginService.systemswapUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-//      console.error('systemswapUpdate$');
-      this.updateChartData(this.chartSwap, this.chartdataSwap, this.websocketPluginService.systemswap.series);
+      this.chartdataSwap = this.updateChartData(this.chartdataSwap, this.websocketPluginService.systemswap.series);
       this.cdr.markForCheck();
     });
     this.websocketPluginService.memoryUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-//      console.error('memoryUpdate$');
-      this.updateChartData(this.chartMemory, this.chartdataMemory, this.websocketPluginService.memory.series);
+      this.chartdataMemory = this.updateChartData(this.chartdataMemory, this.websocketPluginService.memory.series);
       this.cdr.markForCheck();
     });
     this.websocketPluginService.threadsUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-//      console.error('threadsUpdate$');
-      this.updateChartData(this.chartThreads, this.chartdataThreads, this.websocketPluginService.threads.series);
+      this.chartdataThreads = this.updateChartData(this.chartdataThreads, this.websocketPluginService.threads.series);
       this.cdr.markForCheck();
     });
     this.websocketPluginService.workerThreadsUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-//      console.error('workerThreadsUpdate$');
         this.websocketPluginService.idleWorkerThreadsUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-    //      console.error('idleWorkerThreadsUpdate$');
           this.websocketPluginService.activeWorkerThreads.series = [];
-          this.websocketPluginService.activeWorkerThreads.tsdiff = this.websocketPluginService.idleWorkerThreads.tsdiff ;
+          this.websocketPluginService.activeWorkerThreads.tsdiff = this.websocketPluginService.idleWorkerThreads.tsdiff;
           for (let i = 0; i < this.websocketPluginService.workerThreads.series.length; i++) {
             this.websocketPluginService.activeWorkerThreads.series.push(this.websocketPluginService.idleWorkerThreads.series[i]);
             this.websocketPluginService.activeWorkerThreads.series[i][1] = this.websocketPluginService.workerThreads.series[i][1] - this.websocketPluginService.idleWorkerThreads.series[i][1];
           }
-          this.updateChartData(this.chartWorkerThreads, this.chartdataWorkerThreads, this.websocketPluginService.workerThreads.series, this.websocketPluginService.activeWorkerThreads.series);
+          this.chartdataWorkerThreads = this.updateChartData(this.chartdataWorkerThreads, this.websocketPluginService.workerThreads.series, this.websocketPluginService.activeWorkerThreads.series);
           this.cdr.markForCheck();
         });
     });
     this.websocketPluginService.diskUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-//      console.error('diskUpdate$');
-      this.updateChartData(this.chartDisk, this.chartdataDisk, this.websocketPluginService.disk.series);
+      this.chartdataDisk = this.updateChartData(this.chartdataDisk, this.websocketPluginService.disk.series);
       this.cdr.markForCheck();
     });
   }
 
 
-  updateChartData(chart: UIChart, chartdata, dataseries, dataseries2 = null) {
-    chartdata.labels = [];
-    chartdata.datasets[0].data = [];
-    if ((dataseries.length > 1) && (dataseries2 != null)) {
-      chartdata.datasets[1].data = [];
-    }
-    // console.warn('datasets', chartdata.datasets.length);
+  updateChartData(chartdata: ChartData, dataseries: any[], dataseries2: any[] = null): ChartData {
+    const labels: string[] = [];
+    const data0: number[] = [];
+    const data1: number[] = [];
 
     for (let i = 0; i < dataseries.length; i++) {
-      chartdata.labels.push(String(dataseries[i][2].time.substr(0, 5)));
-      chartdata.datasets[0].data.push(dataseries[i][1]);
-      if ((dataseries.length > 1) && (dataseries2 != null)) {
-        chartdata.datasets[1].data.push(dataseries2[i][1]);
+      labels.push(String(dataseries[i][2].time.substr(0, 5)));
+      data0.push(dataseries[i][1]);
+      if (dataseries2 != null) {
+        data1.push(dataseries2[i][1]);
       }
     }
+
+    const datasets = chartdata.datasets.map((ds, idx) => ({
+      ...ds,
+      data: idx === 0 ? data0 : data1,
+    }));
+
+    return { ...chartdata, labels, datasets };
   }
 
 
 
 
-
-  updateSystemloadChart(chart: UIChart) {
-    chart.refresh();
-  }
-
-
-  setSystemloadData(loadData) {
-
-    this.chartdataLoad = {
-      labels: [],
-      datasets: [
-        {
-          label: 'System Load',
-          data: [],
-          fill: false,
-          backgroundColor: '#709cc2',
-          borderColor: '#709cc2',
-          pointRadius: 0,
-
-        }
-      ]
-    };
-
-    if (loadData === undefined) {
-    } else {
-      console.log('setSystemloadData (callback)');
-      console.log(loadData);
-      this.loadData = loadData;
-
-      this.chartdataLoad.labels = [];
-      this.chartdataLoad.datasets[0].data = [];
-      console.log('Datapoints: ' + String(loadData.length));
-      for (let i = 0; i < loadData.length; i++) {
-        this.chartdataLoad.datasets[0].data.push(loadData[i][1]);
-      }
-
-      console.log(this.chartdataLoad.labels);
-      console.log(this.chartdataLoad.datasets[0].data);
-
-    }
-  }
 
 }
+

@@ -12,6 +12,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MenubarModule } from 'primeng/menubar';
 import { ButtonModule } from 'primeng/button';
+import { MessageModule } from 'primeng/message';
 
 import { JwtModule, JWT_OPTIONS } from '@auth0/angular-jwt';
 
@@ -74,6 +75,7 @@ export function jwtOptionsFactory(injector: Injector) {
     FontAwesomeModule,
     MenubarModule,
     ButtonModule,
+    MessageModule,
     NgOptimizedImage,
     TranslateModule.forRoot({
       loader: {

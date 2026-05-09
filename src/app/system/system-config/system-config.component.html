@@ -380,13 +380,13 @@
   </p-header>
 
   @if (pwd_old_is_empty) {
-    <div class="alert alert-warning">{{ 'SYSTEM.OLDPWD_EMPTY'|translate }}</div>
+    <p-message severity="warn" [text]="'SYSTEM.OLDPWD_EMPTY' | translate"></p-message>
   }
   @if (pwd_old_is_wrong) {
-    <div class="alert alert-danger">{{ 'SYSTEM.OLDPWD_WRONG'|translate }}</div>
+    <p-message severity="error" [text]="'SYSTEM.OLDPWD_WRONG' | translate"></p-message>
   }
   @if (pwd_new_not_identical) {
-    <div class="alert alert-danger">{{ 'SYSTEM.NEWPWDS_DIFFER'|translate }}</div>
+    <p-message severity="error" [text]="'SYSTEM.NEWPWDS_DIFFER' | translate"></p-message>
   }
 
   <table>

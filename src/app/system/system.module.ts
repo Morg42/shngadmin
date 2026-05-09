@@ -8,6 +8,7 @@ import { Select } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ButtonModule } from 'primeng/button';
+import { MessageModule } from 'primeng/message';
 
 import { AppComponent } from '../app.component';
 import { SharedModule } from '../common/shared.module';
@@ -33,6 +34,7 @@ import { SystemConfigComponent } from './system-config/system-config.component';
     InputTextModule,
     ToggleButtonModule,
     ButtonModule,
+    MessageModule,
   ],
 })
 export class SystemModule {}

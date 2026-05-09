@@ -7,10 +7,10 @@
     <h2 class="form-signin-heading">{{ 'LOGIN.PLEASE_SIGN_IN'|translate }}</h2>
 
     @if (invalidLogin) {
-      <div class="alert alert-danger">{{ 'LOGIN.INVALID_SIGNIN'|translate }}</div>
+      <p-message severity="error" [text]="'LOGIN.INVALID_SIGNIN' | translate"></p-message>
     }
     @if (authService.expiredLogin) {
-      <div class="alert alert-warning">{{ 'LOGIN.EXPIRED_SIGNIN'|translate }}</div>
+      <p-message severity="warn" [text]="'LOGIN.EXPIRED_SIGNIN' | translate"></p-message>
     }
 
     <label for="inputUsername" class="sr-only">{{ 'LOGIN.USERNAME'|translate }}</label>

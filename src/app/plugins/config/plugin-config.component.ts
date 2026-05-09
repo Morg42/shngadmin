@@ -132,6 +132,7 @@ ngOnInit() {
                 this.pluginconflist = response as PluginsConfig;
                 // console.log(this.pluginconflist);
 
+                const newPlugins: ConfiguredPlugin[] = [];
                 for (const plg in this.pluginconflist.plugin_config) {
                   if (this.pluginconflist.plugin_config.hasOwnProperty(plg) ) {
                     const confname = plg;
@@ -186,10 +187,11 @@ ngOnInit() {
                     plgdesc = plgdesc.replace(new RegExp('\\* ', 'g'), '</mark></i> ');
                     conf['desc'] = plgdesc;
 
-                    // add to the table of configured plugins
-                    this.configuredplugins.push(conf);
+                    newPlugins.push(conf);
                   }
                 }
+                // assign new reference so PrimeNG p-table detects the change via ngOnChanges
+                this.configuredplugins = newPlugins;
                 this.spinner_display = false;
                 this.cdr.markForCheck();
               }
@@ -211,7 +213,7 @@ ngOnInit() {
       { field: 'desc',     sfield: '',         header: 'PLUGIN.DESCRIPTION'}
       ];
 
-    this.configuredplugins = [];
+    this.configuredplugins = [];   // empty until HTTP response arrives
 
   }
 

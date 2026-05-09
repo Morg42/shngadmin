@@ -24,12 +24,16 @@ body {
   border-bottom: 1px solid #ddd;
 }
 .navbar img {
-  flex-direction: row;
   align-self: flex-start;
-  padding-top: 10px;
-  padding-left: 12px;
-  padding-right: 5px;
+  flex-shrink: 0;
+  object-fit: contain;
+  margin-top: 10px;
+  margin-left: 12px;
+  margin-right: 5px;
 }
+
+.navbar .logo       { width: 125px; height: 29px; }
+.navbar .logo-small { width: 32px;  height: 32px; }
 
 .topnav {
   overflow: hidden;

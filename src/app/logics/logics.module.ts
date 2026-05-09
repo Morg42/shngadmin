@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TabsModule } from 'ngx-bootstrap/tabs';
-import { ModalModule } from 'ngx-bootstrap/modal';
+import { TabsModule } from 'primeng/tabs';
+import { MessageModule } from 'primeng/message';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { AccordionModule } from 'primeng/accordion';
 import { Dialog } from 'primeng/dialog';
@@ -29,7 +29,7 @@ import { LogicsEditComponent } from './logics-edit/logics-edit.component';
     LogicsRoutingModule,
     FontAwesomeModule,
     TabsModule,
-    ModalModule,
+    MessageModule,
     CodemirrorModule,
     AccordionModule,
     Dialog,

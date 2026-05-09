@@ -2,11 +2,7 @@
 import { Component, OnInit, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AppConfigService} from '../../common/services/app-config.service';
-import { TemplateRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-
-import { BsModalService } from 'ngx-bootstrap/modal';
-import { BsModalRef } from 'ngx-bootstrap/modal';
 import {faPlayCircle, faPauseCircle, faExclamationTriangle, faCode, faLaptopCode} from '@fortawesome/free-solid-svg-icons';
 
 import { PluginsApiService } from '../../common/services/plugins-api.service';
@@ -33,7 +29,6 @@ export class PluginsComponent implements OnInit {
   private http = inject(HttpClient);
   private dataServiceServer = inject(ServerApiService);
   private pluginsDataService = inject(PluginsApiService);
-  private modalService = inject(BsModalService);
   private translate = inject(TranslateService);
   private titleService = inject(Title);
   private appConfig = inject(AppConfigService);
@@ -46,7 +41,7 @@ export class PluginsComponent implements OnInit {
   plugininfo: PlugininfoType[];
   developerMode: boolean;
 
-  modalRef: BsModalRef;
+  showPluginDetails = false;
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);
@@ -113,11 +108,6 @@ export class PluginsComponent implements OnInit {
       result = 2;
     }
     return result;
-  }
-
-  openModal(template: TemplateRef<any>, parm: string) {
-    this.modalRef = this.modalService.show(template, {animated: false});
-    console.log('openModal: ' + parm);
   }
 
   goToLink(url: string) {

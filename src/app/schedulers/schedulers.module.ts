@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { TabsModule } from 'ngx-bootstrap/tabs';
+import { TabsModule } from 'primeng/tabs';
 
 import { SharedModule } from '../common/shared.module';
 import { SchedulersRoutingModule } from './schedulers-routing.module';

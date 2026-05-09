@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TabsModule } from 'ngx-bootstrap/tabs';
+import { TabsModule } from 'primeng/tabs';
+import { MessageModule } from 'primeng/message';
 import { Checkbox } from 'primeng/checkbox';
 import { Dialog } from 'primeng/dialog';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -32,6 +33,7 @@ import { LoggerTabComponent } from './logger-tab/logger-tab.component';
     CodemirrorModule,
     FontAwesomeModule,
     TabsModule,
+    MessageModule,
     Checkbox,
     Dialog,
     ProgressSpinnerModule,

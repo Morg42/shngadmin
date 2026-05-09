@@ -2,9 +2,13 @@
 <div class="shngbody">
   <div>
 
-    <tabset #staticTabs>
-
-    <tab customClass="tab-content tab-shng" heading="{{ 'LOGICS.USERLOGICS'|translate }}">
+    <p-tabs value="0">
+    <p-tablist>
+      <p-tab value="0">{{ 'LOGICS.USERLOGICS'|translate }}</p-tab>
+      <p-tab value="1">{{ 'LOGICS.SYSTEMLOGICS'|translate }}</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+    <p-tabpanel value="0">
 
       <div style="height: 45px; width: 200px">
         <button pButton type="button" style="margin-left: 0; margin-left: 10px; margin-top: 10px; font-size: medium;" id="newLogicButton" [disabled]="false" (click)="newLogic();" icon="fa fa-plus" label="{{ 'BUTTON.NEW_LOGIC'|translate }}" class="ui-button-success float-sm-left"></button>
@@ -75,7 +79,7 @@
                             }
 
                             @if (logic.watch_item_list?.length > 0) {
-                              <td style="cursor: pointer;" (click)="details.show()">
+                              <td style="cursor: pointer;" (click)="selectedLogicWatchItems = logic.watch_item_list; showLogicDetails = true">
                                 @if (logic.enabled) {
                                   <span>
                                     {{ logic.watch_item_list?.length }}
@@ -116,31 +120,6 @@
                               <button name="delete" title="{{ 'LOGICS.DELETE'|translate }}" class="btn btn-outline-danger btn-sm" (click)="deleteLogic(logic.name, logic.filename);"><i class="far fa-trash-alt" aria-hidden="true" style="color: var(--shng-red);"></i></button>
                             </td>
                           </tr>
-                          <div bsModal #details="bs-modal" class="modal fade" tabindex="1" role="dialog" aria-labelledby="dialog-sizes-name2">
-                            <div class="vertical-alignment-helper">
-                              <div class="modal-dialog modal-lg vertical-align-center">
-                                <div class="modal-content">
-                                  <div class="modal-header">
-                                    <h5 id="dialog-sizes-name2" class="modal-title pull-left">
-                                      {{ 'LOGICS.WATCH_ITEMS'|translate }}
-                                    </h5>
-                                    <button type="button" class="close pull-right" aria-label="Close" (click)="details.hide()">
-                                      <span aria-hidden="true">&times;</span>
-                                    </button>
-                                  </div>
-                                  <div class="modal-body">
-                                    <div class="card" style="margin-bottom: 5px;">
-                                      <div class="card-body p-1">
-                                        @for (watch_item of logic.watch_item_list; track $index) {
-                                          <div class="item-box m-1 p-1">{{ watch_item }}</div>
-                                        }
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
                         }
                       }
                     }
@@ -277,7 +256,7 @@
                     }
 
                     @if (logic.watch_item_list?.length > 0) {
-                      <td style="cursor: pointer;" (click)="details.show()">
+                      <td style="cursor: pointer;" (click)="selectedLogicWatchItems = logic.watch_item_list; showLogicDetails = true">
                         @if (logic.enabled) {
                           <span>
                             {{ logic.watch_item_list?.length }}
@@ -318,31 +297,6 @@
                       <button name="delete" title="{{ 'LOGICS.DELETE'|translate }}" class="btn btn-outline-danger btn-sm" (click)="deleteLogic(logic.name, logic.filename);"><i class="far fa-trash-alt" aria-hidden="true" style="color: var(--shng-red);"></i></button>
                     </td>
                   </tr>
-                  <div bsModal #details="bs-modal" class="modal fade" tabindex="1" role="dialog" aria-labelledby="dialog-sizes-name2">
-                    <div class="vertical-alignment-helper">
-                      <div class="modal-dialog modal-lg vertical-align-center">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 id="dialog-sizes-name2" class="modal-title pull-left">
-                              {{ 'LOGICS.WATCH_ITEMS'|translate }}
-                            </h5>
-                            <button type="button" class="close pull-right" aria-label="Close" (click)="details.hide()">
-                              <span aria-hidden="true">&times;</span>
-                            </button>
-                          </div>
-                          <div class="modal-body">
-                            <div class="card" style="margin-bottom: 5px;">
-                              <div class="card-body p-1">
-                                @for (watch_item of logic.watch_item_list; track $index) {
-                                  <div class="item-box m-1 p-1">{{ watch_item }}</div>
-                                }
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 }
               }
             }
@@ -392,10 +346,10 @@
         </table>
       }
 
-    </tab>
+    </p-tabpanel>
 
 
-    <tab customClass="tab-shng" heading="{{ 'LOGICS.SYSTEMLOGICS'|translate }}">
+    <p-tabpanel value="1">
       <div class="tab-content">
 
         <table id="2" class="table table-striped table-hover">
@@ -444,10 +398,28 @@
       </table>
 
       </div>
-    </tab>
-  </tabset>
+    </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
   </div>
 </div>
+
+
+<!--
+  -- Dialog for watch items of a logic
+  -->
+<p-dialog header="{{ 'LOGICS.WATCH_ITEMS'|translate }}" [(visible)]="showLogicDetails" [modal]="true" [style]="{width: '900px', minWidth: '400px'}" [baseZIndex]="10000">
+  <div class="card" style="margin-bottom: 5px;">
+    <div class="card-body p-1">
+      @for (watch_item of selectedLogicWatchItems; track $index) {
+        <div class="item-box m-1 p-1">{{ watch_item }}</div>
+      }
+    </div>
+  </div>
+  <ng-template #footer>
+    <button type="button" class="btn btn-primary btn-sm btn-shng" (click)="showLogicDetails = false">{{'BUTTON.CLOSE'|translate}}</button>
+  </ng-template>
+</p-dialog>
 
 
 <!--
@@ -505,9 +477,7 @@
   </label>
   <br>
   @if (this.wrongNewLogicName) {
-    <alert type="danger" [dismissible]="true" (onClosed)="this.wrongNewLogicName=''" class="mt-2" id="newLogicsAlert">
-      {{ this.wrongNewLogicName|translate }}
-    </alert>
+    <p-message severity="error" [text]="wrongNewLogicName | translate" [closable]="true" (onClose)="this.wrongNewLogicName=''" styleClass="mt-2"></p-message>
   }
   <p-footer>
     <button pButton type="button" id="createLogicsButton" icon="pi pi-check" (click)="this.wrongNewLogicName=''; this.createLogic()" [disabled]="!newlogic_add_enabled" (disabledChange)="newlogic_add_enabled = $event" label="{{'BUTTON.CREATE'|translate}}" class="ui-button-success"></button>

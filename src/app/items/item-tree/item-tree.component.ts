@@ -3,8 +3,6 @@ import {Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectorRef, ChangeDe
 import {AppConfigService} from '../../common/services/app-config.service';
 import { HttpClient } from '@angular/common/http';
 
-import { BsModalService } from 'ngx-bootstrap/modal';
-import { BsModalRef } from 'ngx-bootstrap/modal';
 import { TranslateService } from '@ngx-translate/core';
 
 import { faSearch, faCircleNotch, faFolder, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
@@ -91,14 +89,13 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   private appComponent = inject(AppComponent);
   private translate = inject(TranslateService);
   private websocketPluginService = inject(WebsocketPluginService);
-  private modalService = inject(BsModalService);
   public shared = inject(SharedService);
   private titleService = inject(Title);
   private appConfig = inject(AppConfigService);
 
   monitoredItemsUpdateSubscription: Subscription = null;
 
-  modalRef: BsModalRef;
+  showItemAlert = false;
 
 
 
@@ -175,9 +172,9 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
 
 
 
-  closeAlert(myalert, item_oldvalue) {
+  closeAlert(item_oldvalue) {
     this.item_val.value = item_oldvalue;
-    myalert.hide();
+    this.showItemAlert = false;
   }
 
 
@@ -211,7 +208,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   }
 
 
-  updateValue(item_path, item_value, item_type, item_oldvalue, dialog) {
+  updateValue(item_path, item_value, item_type, item_oldvalue) {
 
     console.log('ItemTreeComponent.updateValue:');
     console.log({item_path}, {item_value});
@@ -227,13 +224,13 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
       if (isNaN(item_value.value as any)) {
         this.item_val = item_value;
         this.alertText = this.translate.instant('ITEMS.ALERT.NOT NUMERIC');
-        dialog.show();
+        this.showItemAlert = true;
         return;
       }
       if (item_type === 'scene' && (item_value.value < 0 || item_value.value > 63)) {
         this.item_val = item_value;
         this.alertText = this.translate.instant('ITEMS.ALERT.INVALID SCENE NUMBER');
-        dialog.show();
+        this.showItemAlert = true;
         return;
       }
     }

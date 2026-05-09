@@ -1,8 +1,15 @@
 
 <div class="shngbody">
 
-  <tabset #staticTabs>
-    <tab customClass="tab-shng" heading="{{ 'SYSTEM.SYSTEMINFO'|translate }}">
+  <p-tabs value="0">
+    <p-tablist>
+      <p-tab value="0">{{ 'SYSTEM.SYSTEMINFO'|translate }}</p-tab>
+      <p-tab value="1">{{ 'SYSTEM.CHARTS'|translate }}</p-tab>
+      <p-tab value="2">{{ 'SYSTEM.PYPI CHECK'|translate }}</p-tab>
+      <p-tab value="3">{{ 'SYSTEM.DISCLOSURES'|translate }}</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+    <p-tabpanel value="0">
         <div class="shngsysinfo">
           <div class="info-header">
             <span></span>
@@ -104,9 +111,9 @@
           <div class="info-footer">
           </div>
         </div>
-    </tab>
+    </p-tabpanel>
 
-    <tab customClass="tab-shng" heading="{{ 'SYSTEM.CHARTS'|translate }}">
+    <p-tabpanel value="1">
         <div class="shngcharts">
           <div class="charts-header">
           </div>
@@ -122,9 +129,9 @@
           <div class="charts-footer">
           </div>
         </div>
-    </tab>
+    </p-tabpanel>
 
-    <tab customClass="tab-shng" heading="{{ 'SYSTEM.PYPI CHECK'|translate }}">
+    <p-tabpanel value="2">
         <div class="shngpypi">
           <div class="pypi-header">
             <table id="package_checkh" class="table">
@@ -448,19 +455,20 @@
             <tr class=\"shng_heading\"><td class=\"py-1\" style=\"background:#eee;\" colspan=\"5\">{{ _('Pakete ohne Requirements') }}</td></tr>");
             }
       -->
-    </tab>
+    </p-tabpanel>
 
-    <tab customClass="tab-shng" heading="{{ 'SYSTEM.DISCLOSURES'|translate }}">
+    <p-tabpanel value="3">
         <div class=" shngdisclosure">
           <div id="disclosuretext" class="shngdisclosure-text"></div>
         </div>
-    </tab>
+    </p-tabpanel>
 
     <!-- ====================================================================================================== -->
 
 
 
-  </tabset>
+    </p-tabpanels>
+  </p-tabs>
 
 </div>
 

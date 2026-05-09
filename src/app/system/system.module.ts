@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TabsModule } from 'ngx-bootstrap/tabs';
+import { TabsModule } from 'primeng/tabs';
 import { ChartModule } from 'primeng/chart';
 import { TableModule } from 'primeng/table';
 import { Dialog } from 'primeng/dialog';

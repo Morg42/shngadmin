@@ -1,7 +1,12 @@
 
 <div style="margin-left: 10px; margin-right: 10px;">
-  <tabset #staticTabs>
-    <tab customClass="tab-shng" heading="{{ 'ITEMS.ITEMS'|translate }} ({{ 'ITEMS.TOTAL'|translate }}: {{itemcount}})">
+  <p-tabs value="0">
+    <p-tablist>
+      <p-tab value="0">{{ 'ITEMS.ITEMS'|translate }} ({{ 'ITEMS.TOTAL'|translate }}: {{itemcount}})</p-tab>
+      <p-tab value="1">{{ 'ITEMS.MONITORED ITEMS'|translate }}</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+    <p-tabpanel value="0">
 
 
       <!--
@@ -14,33 +19,16 @@
       <!--   Modal dialog with details   -->
       <!------------------------------------------>
 
-      <div bsModal #myalert="bs-modal" class="modal fade" tabindex="1" role="dialog" aria-labelledby="dialog-sizes-name2">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 id="dialog-sizes-name2" class="modal-title pull-left">
-                <a [translate]="'Ungültiger Wert'"></a>
-              </h5>
-              <button type="button" class="close pull-right" aria-label="Close" (click)="closeAlert(myalert, itemdetails.value)">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-
-            <div class="modal-body">
-              @if (item_val) {
-                <p>{{alertText}}</p>
-                <p></p>
-                <a [translate]="'Eingegebener Wert'"></a>: '{{item_val.value}}'
-              }
-            </div>
-
-            <div class="modal-footer">
-              <button type="button" tabindex="1" autofocus="autofocus" class="btn btn-primary btn-sm btn-shng" (click)="closeAlert(myalert, itemdetails.value)">{{'CLOSE'|translate}}</button>
-            </div>
-
-          </div>
-        </div>
-      </div>
+      <p-dialog header="{{ 'Ungültiger Wert'|translate }}" [(visible)]="showItemAlert" [modal]="true" [style]="{width: '900px', minWidth: '400px'}" [baseZIndex]="10000">
+        @if (item_val) {
+          <p>{{alertText}}</p>
+          <p></p>
+          <a [translate]="'Eingegebener Wert'"></a>: '{{item_val.value}}'
+        }
+        <ng-template #footer>
+          <button type="button" tabindex="1" autofocus="autofocus" class="btn btn-primary btn-sm btn-shng" (click)="closeAlert(itemdetails.value)">{{'CLOSE'|translate}}</button>
+        </ng-template>
+      </p-dialog>
 
 
         <div class="container-fluid navBorder" style="overflow: hidden; border-top: 0;">
@@ -156,14 +144,14 @@
                                     </select>
                                     -->
                                     <p-toggleSwitch [(ngModel)]="itemdetails.value"
-                                                   (onChange)="updateValue(itemdetails.path, itemdetails.value, itemdetails.type, itemdetails.value, myalert)">
+                                                   (onChange)="updateValue(itemdetails.path, itemdetails.value, itemdetails.type, itemdetails.value)">
                                     </p-toggleSwitch>
                                   }
                                   @case (itemdetails.type === 'str' || itemdetails.type === 'list' || itemdetails.type === 'dict' ? itemdetails.type : '') {
-                                    <textarea type="text" class="form-control" #item_value (blur)="updateValue(itemdetails.path, item_value, itemdetails.type, itemdetails.value, myalert)" id="item_value">{{itemdetails.value}}</textarea>
+                                    <textarea type="text" class="form-control" #item_value (blur)="updateValue(itemdetails.path, item_value, itemdetails.type, itemdetails.value)" id="item_value">{{itemdetails.value}}</textarea>
                                   }
                                   @case (itemdetails.type === 'num' || itemdetails.type === 'scene' ? itemdetails.type : '') {
-                                    <input type="text" class="form-control" #item_value (blur)="updateValue(itemdetails.path, item_value, itemdetails.type, itemdetails.value, myalert)" id="item_value" value="{{itemdetails.value}}"/>
+                                    <input type="text" class="form-control" #item_value (blur)="updateValue(itemdetails.path, item_value, itemdetails.type, itemdetails.value)" id="item_value" value="{{itemdetails.value}}"/>
                                   }
 <!--
                                   @case (itemdetails.type === 'num' || itemdetails.type === 'scene' ? itemdetails.type : '') {
@@ -276,27 +264,21 @@
             </div>
           </div>
         </div>
-    </tab>
+    </p-tabpanel>
 
 
     <!-------------------------------------------------->
     <!--   List with monitored items and their data   -->
     <!-------------------------------------------------->
 
-    <tab customClass="tab-shng" heading="{{ 'ITEMS.MONITORED ITEMS'|translate }}">
+    <p-tabpanel value="1">
       <!-- the following container is/needs to be rerenderable -->
       <ng-container #vc [ngTemplateOutlet]="tpl">
       </ng-container>
-    </tab>
+    </p-tabpanel>
 
-    <!--
-        <tab customClass="tab-shng" heading="{{ 'ITEMS.TO COME'|translate }}">
-        </tab>
-
-        <tab customClass="tab-shng" heading="{{ 'ITEMS.TO COME'|translate }}">
-        </tab>
-    -->
-  </tabset>
+    </p-tabpanels>
+  </p-tabs>
 </div>
 
 

@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { ModalModule } from 'ngx-bootstrap/modal';
 import { AccordionModule } from 'primeng/accordion';
 import { Dialog } from 'primeng/dialog';
 import { ToggleSwitch } from 'primeng/toggleswitch';
@@ -25,7 +24,6 @@ import { PluginConfigComponent } from './config/plugin-config.component';
     SharedModule,
     PluginsRoutingModule,
     FontAwesomeModule,
-    ModalModule,
     AccordionModule,
     Dialog,
     ToggleSwitch,

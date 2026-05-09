@@ -34,7 +34,7 @@
             }
           </td>
 
-          <td class="py-1" (click)="details.show()">
+          <td class="py-1" (click)="showPluginDetails = true">
             @if (['web','protocol','interface','gateway','system'].includes(plugin.metadata.type)) {
               <img ngSrc="assets/img/plugin_{{ plugin.metadata.type }}.svg" style="width: 25px; cursor: pointer;" title="{{ 'PLUGIN.'+plugin.metadata.type | uppercase | translate}}"/>
             }
@@ -47,7 +47,7 @@
             }
           </td>
 
-          <td class="py-1" (click)="details.show()">
+          <td class="py-1" (click)="showPluginDetails = true">
             @if ((plugin.smartplugin === true) && (plugin.multiinstance === true)) {
               MI
             }
@@ -56,10 +56,10 @@
             }
           </td>
 
-          <td class="py-1" (click)="details.show()">
+          <td class="py-1" (click)="showPluginDetails = true">
             {{ plugin.configname }}
           </td>
-          <td class="py-1" (click)="details.show()">
+          <td class="py-1" (click)="showPluginDetails = true">
             {{ plugin.pluginname }} &nbsp;
             @if (plugin.metadata.state && plugin.metadata.state.toLowerCase() === 'deprecated') {
             &nbsp; <fa-icon style="color: var(--shng-warning);" title="{{'PLUGIN.DEPRECATED'|translate}}" [icon]="faExclamationTriangle"></fa-icon>
@@ -68,8 +68,8 @@
             &nbsp; <fa-icon style="color: var(--shng-orange);" title="{{'PLUGIN.DEVELOP'|translate}}" [icon]="faCode"></fa-icon>
             }
           </td>
-          <td class="py-1" (click)="details.show()">{{ plugin.instancename }}</td>
-          <td class="py-1" (click)="details.show()">{{ plugin.version }}</td>
+          <td class="py-1" (click)="showPluginDetails = true">{{ plugin.instancename }}</td>
+          <td class="py-1" (click)="showPluginDetails = true">{{ plugin.version }}</td>
           <td class="py-1">
             @if (plugin.webif_url !== '') {
               <button name="webif" class="btn btn-outline-primary btn-sm" (click)="goToLink(plugin.webif_url);"><i class="fas fa-link" aria-hidden="true" title="{{'PLUGIN.OPEN_WEBIF'|translate}}" style="color: var(--shng-blue);"></i></button>
@@ -141,204 +141,186 @@
         </tr>
 
         <!------------------------------------------>
-        <!--   Modal dialog with plugin details   -->
+        <!--   p-dialog with plugin details       -->
         <!------------------------------------------>
 
-        <div bsModal #details="bs-modal" class="modal fade" tabindex="1" role="dialog" aria-labelledby="dialog-sizes-name2">
-          <div class="vertical-alignment-helper">
-          <div class="modal-dialog modal-lg vertical-align-center">
-            <div class="modal-content" style="min-width: 900px;">
-              <div class="modal-header">
-<!--
-                <h5 id="dialog-sizes-name2" class="modal-title pull-left">{{'PLUGIN.DETAILS OF CONFIGURATION'|translate}} '<strong>{{ plugin.configname }}</strong>' ({{'PLUGIN.PLUGIN'|translate}} '<strong>{{ plugin.pluginname }}</strong>')</h5>
--->
-                <h5 id="dialog-sizes-name2" class="modal-title pull-left">
-                  <p [translate]="'PLUGIN.DETAILS OF CONFIGURATION'" [translateParams]="{configname: plugin.configname, pluginname: plugin.pluginname }"></p>
-                </h5>
-<!--
-                <p style="padding-top: 0px; padding-left: 2px;" [translate]="'PLUGIN.UPDATES TRIGGERED BY'" [translateParams]="{count: 42}"></p>
--->
-                <button type="button" class="close pull-right" aria-label="Close" (click)="details.hide()">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body" style="min-width: 900px;">
-                @if (plugin.metadata.state && plugin.metadata.state.toLowerCase() === 'deprecated') {
-                  <fa-icon style="color: var(--shng-warning);" [icon]="faExclamationTriangle"></fa-icon>
-                  <a style="width: 50%; padding:0; background-color: #ffffff; border:0;"><strong>&nbsp; {{'PLUGIN.DEPRECATED'|translate}}:</strong></a>
-                  <br>
-                  <p style="padding:0; background-color: #f2f2f2; border:0;">{{'PLUGIN.DEPRECATED_TEXT'|translate}}</p>
-                }
+        <p-dialog [header]="'' | translate" [(visible)]="showPluginDetails" [modal]="true" [style]="{width: '900px', minWidth: '400px'}" [baseZIndex]="10000">
+          <ng-template #header>
+            <p [translate]="'PLUGIN.DETAILS OF CONFIGURATION'" [translateParams]="{configname: plugin.configname, pluginname: plugin.pluginname }"></p>
+          </ng-template>
 
-                @if (plugin.parameters && plugin.parameters.length !== 0) {
-                  <table class="table" style="padding: 0;">
-                  <tr>
-                    <td style="width: 50%; padding:0; background-color: #ffffff; border:0;"><strong>{{'PLUGIN.PARAMETERS'|translate}}:</strong></td>
-                    <td style="width: 50%; padding:0; background-color: #ffffff; border:0;"></td>
-                  </tr>
-                  <tr>
-                    <!-- Parameters: left column -->
-                    <td style="padding-left:5px; padding-right:5px; padding-bottom:0;">
-                      <table class="table">
-                        <tbody>
-                        @for (param of plugin.parameters; track i; let i = $index) {
-                          @if (i+1 <= parameterLines(plugin.parameters.length)) {
-                            <tr>
-                              <td style="padding:0;">{{param.name}} ( {{param.type}} ):&nbsp;</td>
-                              <td style="padding:0;">
-                                <strong>{{param.value}}</strong>
-                                @if (param.value === param.default) {&nbsp;[default]}
-                              </td>
-                            </tr>
-                          }
-                        }
-                        </tbody>
-                      </table>
-                    </td>
-                    <!-- Parameters: right column -->
-                    <td style="padding-left:5px; padding-right:5px; padding-bottom:0;">
-                      <table class="table">
-                        <tbody>
-                        @for (param of plugin.parameters; track i; let i = $index) {
-                          @if (i+1 > parameterLines(plugin.parameters.length)) {
-                            <tr>
-                              <td style="padding:0;">{{param.name}} ( {{param.type}} ):&nbsp;</td>
-                              <td style="padding:0;">
-                                <strong>{{param.value}}</strong>
-                                @if (param.value === param.default) {&nbsp;[default]}
-                              </td>
-                            </tr>
-                          }
-                        }
-                        </tbody>
-                      </table>
-                    </td>
-                  </tr>
-                  </table>
-                }
+          @if (plugin.metadata.state && plugin.metadata.state.toLowerCase() === 'deprecated') {
+            <fa-icon style="color: var(--shng-warning);" [icon]="faExclamationTriangle"></fa-icon>
+            <a style="width: 50%; padding:0; background-color: #ffffff; border:0;"><strong>&nbsp; {{'PLUGIN.DEPRECATED'|translate}}:</strong></a>
+            <br>
+            <p style="padding:0; background-color: #f2f2f2; border:0;">{{'PLUGIN.DEPRECATED_TEXT'|translate}}</p>
+          }
 
-                @if (plugin.attributes && plugin.attributes.length !== 0) {
-                  <table class="table">
-                    <tr>
-                      <td style="width: 33%; padding:0; background-color: #ffffff; border:0;"><strong>{{'PLUGIN.ITEM ATTRIBUTES'|translate}}:</strong></td>
-                      <td style="width: 33%; padding:0; background-color: #ffffff; border:0;"></td>
-                      <td style="width: 33%; padding:0; background-color: #ffffff; border:0;"></td>
-                    </tr>
-                    <tr>
-                      <!-- Item Attributes: left column -->
-                      <td style="padding-left:5px; padding-right:5px; padding-bottom:0;">
-                      <table class="table">
-                        <tbody>
-                        @for (attr of plugin.attributes; track i; let i = $index) {
-                          @if (i+1 <= attributeLines(plugin.attributes.length)) {
-                            <tr>
-                              <td style="padding:0;">{{attr.name}}:&nbsp;</td>
-                              <td style="padding:0;"><strong>{{attr.type}}</strong></td>
-                            </tr>
-                          }
-                        }
-                        </tbody>
-                      </table>
-                      </td>
-                      <!-- Item Attributes: middle column -->
-                      <td style="padding-left:5px; padding-right:5px; padding-bottom:0;">
-                        <table class="table">
-                          <tbody>
-                          @for (attr of plugin.attributes; track i; let i = $index) {
-                            @if (i+1 > attributeLines(plugin.attributes.length) && i+1 <= 2*attributeLines(plugin.attributes.length)) {
-                              <tr>
-                                <td style="padding:0;">{{attr.name}}:&nbsp;</td>
-                                <td style="padding:0;"><strong>{{attr.type}}</strong></td>
-                              </tr>
-                            }
-                          }
-                          </tbody>
-                        </table>
-                      </td>
-                      <!-- Item Attributes: right column -->
-                      <td style="padding-left:5px; padding-right:5px; padding-bottom:0;">
-                        <table class="table">
-                          <tbody>
-                          @for (attr of plugin.attributes; track i; let i = $index) {
-                            @if (i+1 > 2*attributeLines(plugin.attributes.length)) {
-                              <tr>
-                                <td style="padding:0;">{{attr.name}}:&nbsp;</td>
-                                <td style="padding:0;"><strong>{{attr.type}}</strong></td>
-                              </tr>
-                            }
-                          }
-                          </tbody>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                }
-
-                @if (plugin.triggers && plugin.triggers.length !== 0) {
-                  <p style="padding-top: 0; padding-left: 2px;" [translate]="'PLUGIN.UPDATES TRIGGERED BY'" [translateParams]="{count: plugin.triggers.length}"></p>
-                }
-
-                <strong>{{'PLUGIN.PLUGIN METADATA'|translate}}:</strong>
+          @if (plugin.parameters && plugin.parameters.length !== 0) {
+            <table class="table" style="padding: 0;">
+            <tr>
+              <td style="width: 50%; padding:0; background-color: #ffffff; border:0;"><strong>{{'PLUGIN.PARAMETERS'|translate}}:</strong></td>
+              <td style="width: 50%; padding:0; background-color: #ffffff; border:0;"></td>
+            </tr>
+            <tr>
+              <!-- Parameters: left column -->
+              <td style="padding-left:5px; padding-right:5px; padding-bottom:0;">
                 <table class="table">
-                  <tr>
-                    <td style="padding:0; width:25%;">{{'PLUGIN.DESCRIPTION'|translate}}:&nbsp;</td>
-                    @if (plugin.metadata.description_long !=='') {
-                      <td style="padding:0; width:75%;">
-                        @for (s of plugin.metadata.description_long.split('\n'); track $index) {
-                          <div>
-                            {{s}} <br/>
-                          </div>
-                        }
-                      </td>
+                  <tbody>
+                  @for (param of plugin.parameters; track i; let i = $index) {
+                    @if (i+1 <= parameterLines(plugin.parameters.length)) {
+                      <tr>
+                        <td style="padding:0;">{{param.name}} ( {{param.type}} ):&nbsp;</td>
+                        <td style="padding:0;">
+                          <strong>{{param.value}}</strong>
+                          @if (param.value === param.default) {&nbsp;[default]}
+                        </td>
+                      </tr>
                     }
-                    @if (plugin.metadata.description_long ==='') {
-                      <td style="padding:0; width:75%;">{{plugin.metadata.description}}</td>
-                    }
-                  </tr>
-                  <tr>
-                    <td style="padding:0;">{{'PLUGIN.KEYWORDS'|translate}}:&nbsp;</td>
-                    <td style="padding:0;">{{plugin.metadata.keywords}}</td>
-                  </tr>
-                  <tr>
-                    <td style="padding:0;">{{'PLUGIN.MAINTAINER'|translate}}:&nbsp;</td>
-                    <td style="padding:0;">{{plugin.metadata.maintainer}}</td>
-                  </tr>
-                  <tr>
-                    <td style="padding:0;">{{'PLUGIN.TESTER'|translate}}:&nbsp;</td>
-                    <td style="padding:0;">{{plugin.metadata.tester}}</td>
-                  </tr>
-                  <tr>
-                    <td style="padding:0;">{{'PLUGIN.SUPPORT'|translate}}:&nbsp;</td>
-                    <td style="padding:0;">
-                      @if (plugin.metadata.support && plugin.metadata.support.startsWith('http')) {
-                        <a href="{{plugin.metadata.support}}" target="_blank">{{plugin.metadata.support}}</a>
-                      }
-                      @if (plugin.metadata.support && !plugin.metadata.support.startsWith('http')) {
-                        {{plugin.metadata.support}}
-                      }
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="padding:0;">{{'PLUGIN.DOCUMENTATION'|translate}}:&nbsp;</td>
-                    <td style="padding:0;">
-                      @if (plugin.metadata.documentation && plugin.metadata.documentation.startsWith('http')) {
-                        <a href="{{plugin.metadata.documentation}}" target="_blank">{{plugin.metadata.documentation}}</a>
-                      }
-                      @if (plugin.metadata.documentation && !plugin.metadata.documentation.startsWith('http')) {
-                        {{plugin.metadata.documentation}}
-                      }
-                    </td>
-                  </tr>
+                  }
+                  </tbody>
                 </table>
+              </td>
+              <!-- Parameters: right column -->
+              <td style="padding-left:5px; padding-right:5px; padding-bottom:0;">
+                <table class="table">
+                  <tbody>
+                  @for (param of plugin.parameters; track i; let i = $index) {
+                    @if (i+1 > parameterLines(plugin.parameters.length)) {
+                      <tr>
+                        <td style="padding:0;">{{param.name}} ( {{param.type}} ):&nbsp;</td>
+                        <td style="padding:0;">
+                          <strong>{{param.value}}</strong>
+                          @if (param.value === param.default) {&nbsp;[default]}
+                        </td>
+                      </tr>
+                    }
+                  }
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+            </table>
+          }
 
-              </div>
-              <div class="modal-footer">
-                <button type="button" tabindex="1" autofocus="autofocus" class="btn btn-primary btn-sm btn-shng" (click)="details.hide()">{{'BUTTON.CLOSE'|translate}}</button>
-              </div>
-            </div>
-          </div>
-          </div>
-        </div>
+          @if (plugin.attributes && plugin.attributes.length !== 0) {
+            <table class="table">
+              <tr>
+                <td style="width: 33%; padding:0; background-color: #ffffff; border:0;"><strong>{{'PLUGIN.ITEM ATTRIBUTES'|translate}}:</strong></td>
+                <td style="width: 33%; padding:0; background-color: #ffffff; border:0;"></td>
+                <td style="width: 33%; padding:0; background-color: #ffffff; border:0;"></td>
+              </tr>
+              <tr>
+                <!-- Item Attributes: left column -->
+                <td style="padding-left:5px; padding-right:5px; padding-bottom:0;">
+                <table class="table">
+                  <tbody>
+                  @for (attr of plugin.attributes; track i; let i = $index) {
+                    @if (i+1 <= attributeLines(plugin.attributes.length)) {
+                      <tr>
+                        <td style="padding:0;">{{attr.name}}:&nbsp;</td>
+                        <td style="padding:0;"><strong>{{attr.type}}</strong></td>
+                      </tr>
+                    }
+                  }
+                  </tbody>
+                </table>
+                </td>
+                <!-- Item Attributes: middle column -->
+                <td style="padding-left:5px; padding-right:5px; padding-bottom:0;">
+                  <table class="table">
+                    <tbody>
+                    @for (attr of plugin.attributes; track i; let i = $index) {
+                      @if (i+1 > attributeLines(plugin.attributes.length) && i+1 <= 2*attributeLines(plugin.attributes.length)) {
+                        <tr>
+                          <td style="padding:0;">{{attr.name}}:&nbsp;</td>
+                          <td style="padding:0;"><strong>{{attr.type}}</strong></td>
+                        </tr>
+                      }
+                    }
+                    </tbody>
+                  </table>
+                </td>
+                <!-- Item Attributes: right column -->
+                <td style="padding-left:5px; padding-right:5px; padding-bottom:0;">
+                  <table class="table">
+                    <tbody>
+                    @for (attr of plugin.attributes; track i; let i = $index) {
+                      @if (i+1 > 2*attributeLines(plugin.attributes.length)) {
+                        <tr>
+                          <td style="padding:0;">{{attr.name}}:&nbsp;</td>
+                          <td style="padding:0;"><strong>{{attr.type}}</strong></td>
+                        </tr>
+                      }
+                    }
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          }
+
+          @if (plugin.triggers && plugin.triggers.length !== 0) {
+            <p style="padding-top: 0; padding-left: 2px;" [translate]="'PLUGIN.UPDATES TRIGGERED BY'" [translateParams]="{count: plugin.triggers.length}"></p>
+          }
+
+          <strong>{{'PLUGIN.PLUGIN METADATA'|translate}}:</strong>
+          <table class="table">
+            <tr>
+              <td style="padding:0; width:25%;">{{'PLUGIN.DESCRIPTION'|translate}}:&nbsp;</td>
+              @if (plugin.metadata.description_long !=='') {
+                <td style="padding:0; width:75%;">
+                  @for (s of plugin.metadata.description_long.split('\n'); track $index) {
+                    <div>
+                      {{s}} <br/>
+                    </div>
+                  }
+                </td>
+              }
+              @if (plugin.metadata.description_long ==='') {
+                <td style="padding:0; width:75%;">{{plugin.metadata.description}}</td>
+              }
+            </tr>
+            <tr>
+              <td style="padding:0;">{{'PLUGIN.KEYWORDS'|translate}}:&nbsp;</td>
+              <td style="padding:0;">{{plugin.metadata.keywords}}</td>
+            </tr>
+            <tr>
+              <td style="padding:0;">{{'PLUGIN.MAINTAINER'|translate}}:&nbsp;</td>
+              <td style="padding:0;">{{plugin.metadata.maintainer}}</td>
+            </tr>
+            <tr>
+              <td style="padding:0;">{{'PLUGIN.TESTER'|translate}}:&nbsp;</td>
+              <td style="padding:0;">{{plugin.metadata.tester}}</td>
+            </tr>
+            <tr>
+              <td style="padding:0;">{{'PLUGIN.SUPPORT'|translate}}:&nbsp;</td>
+              <td style="padding:0;">
+                @if (plugin.metadata.support && plugin.metadata.support.startsWith('http')) {
+                  <a href="{{plugin.metadata.support}}" target="_blank">{{plugin.metadata.support}}</a>
+                }
+                @if (plugin.metadata.support && !plugin.metadata.support.startsWith('http')) {
+                  {{plugin.metadata.support}}
+                }
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0;">{{'PLUGIN.DOCUMENTATION'|translate}}:&nbsp;</td>
+              <td style="padding:0;">
+                @if (plugin.metadata.documentation && plugin.metadata.documentation.startsWith('http')) {
+                  <a href="{{plugin.metadata.documentation}}" target="_blank">{{plugin.metadata.documentation}}</a>
+                }
+                @if (plugin.metadata.documentation && !plugin.metadata.documentation.startsWith('http')) {
+                  {{plugin.metadata.documentation}}
+                }
+              </td>
+            </tr>
+          </table>
+
+          <ng-template #footer>
+            <button type="button" tabindex="1" autofocus="autofocus" class="btn btn-primary btn-sm btn-shng" (click)="showPluginDetails = false">{{'BUTTON.CLOSE'|translate}}</button>
+          </ng-template>
+        </p-dialog>
 
       }
 

@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TabsModule } from 'ngx-bootstrap/tabs';
-import { ModalModule } from 'ngx-bootstrap/modal';
+import { TabsModule } from 'primeng/tabs';
 import { TreeModule } from 'primeng/tree';
 import { AccordionModule } from 'primeng/accordion';
 import { Dialog } from 'primeng/dialog';
@@ -37,7 +36,6 @@ import { StructConfigurationComponent } from './struct-configuration/struct-conf
     CodemirrorModule,
     FontAwesomeModule,
     TabsModule,
-    ModalModule,
     TreeModule,
     AccordionModule,
     Dialog,

@@ -10,8 +10,16 @@
   </div>
 
   <div class="body-content">
-    <tabset #staticTabs>
-      <tab customClass="tab-shng" heading="{{ 'SYSTEM.COMMON_SETTINGS'|translate }}">
+    <p-tabs value="0">
+      <p-tablist>
+        <p-tab value="0">{{ 'SYSTEM.COMMON_SETTINGS'|translate }}</p-tab>
+        <p-tab value="1">{{ 'SYSTEM.HTTP_SETTINGS'|translate }}</p-tab>
+        <p-tab value="2">{{ 'SYSTEM.WEBSOCKET_SETTINGS'|translate }}</p-tab>
+        <p-tab value="3">{{ 'SYSTEM.ADMIN_SETTINGS'|translate }}</p-tab>
+        <p-tab value="4">{{ 'SYSTEM.MQTT_SETTINGS'|translate }}</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+      <p-tabpanel value="0">
         <div class="tab-content">
           <p-table [columns]="common_parameter_cols" [value]="common_parameters" selectionMode="single">
           <ng-template pTemplate="header" let-columns>
@@ -65,11 +73,11 @@
           </ng-template>
         </p-table>
         </div>
-      </tab>
+      </p-tabpanel>
 
 
 
-      <tab customClass="tab-shng" heading="{{ 'SYSTEM.HTTP_SETTINGS'|translate }}">
+      <p-tabpanel value="1">
         <div class="tab-content">
           <p-table [columns]="http_parameter_cols" [value]="http_parameters" selectionMode="single">
           <ng-template pTemplate="header" let-columns>
@@ -130,11 +138,11 @@
           </ng-template>
         </p-table>
         </div>
-      </tab>
+      </p-tabpanel>
 
 
 
-      <tab customClass="tab-shng" heading="{{ 'SYSTEM.WEBSOCKET_SETTINGS'|translate }}">
+      <p-tabpanel value="2">
         <div class="tab-content">
           <p-table [columns]="websocket_parameter_cols" [value]="websocket_parameters" selectionMode="single">
             <ng-template pTemplate="header" let-columns>
@@ -195,11 +203,11 @@
             </ng-template>
           </p-table>
         </div>
-      </tab>
+      </p-tabpanel>
 
 
 
-      <tab customClass="tab-shng" heading="{{ 'SYSTEM.ADMIN_SETTINGS'|translate }}">
+      <p-tabpanel value="3">
         <div class="tab-content">
           <p-table [columns]="admin_parameter_cols" [value]="admin_parameters" selectionMode="single">
           <ng-template pTemplate="header" let-columns>
@@ -253,10 +261,10 @@
           </ng-template>
         </p-table>
         </div>
-      </tab>
+      </p-tabpanel>
 
 
-      <tab customClass="tab-shng" heading="{{ 'SYSTEM.MQTT_SETTINGS'|translate }}">
+      <p-tabpanel value="4">
         <div class="tab-content">
           <p-table [columns]="mqtt_parameter_cols" [value]="mqtt_parameters" selectionMode="single">
           <ng-template pTemplate="header" let-columns>
@@ -310,9 +318,10 @@
           </ng-template>
         </p-table>
         </div>
-      </tab>
+      </p-tabpanel>
 
-    </tabset>
+      </p-tabpanels>
+    </p-tabs>
   </div>
     <div class="body-footer">
       @if (dialog_readonly === false && restart_core_button) {

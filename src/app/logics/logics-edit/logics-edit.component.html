@@ -1,8 +1,13 @@
 
 <div class="shngbody">
   <div class="body-content">
-    <tabset #staticTabs>
-      <tab customClass="tab-shng" heading="{{ 'LOGIC_EDIT.CODE'|translate }}">
+    <p-tabs value="0">
+      <p-tablist>
+        <p-tab value="0">{{ 'LOGIC_EDIT.CODE'|translate }}</p-tab>
+        <p-tab value="1">{{ 'LOGIC_EDIT.PARAMETERS'|translate }}</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+      <p-tabpanel value="0">
 
         <div  class="tab-header">
         </div>
@@ -64,11 +69,11 @@
           </table>
         </div>
 
-      </tab>
+      </p-tabpanel>
 
 
 
-      <tab customClass="tab-shng" heading="{{ 'LOGIC_EDIT.PARAMETERS'|translate }}">
+      <p-tabpanel value="1">
 
         <div  class="tab-header-parameter">
           @if (logic) {
@@ -170,9 +175,7 @@
                   }
                 }
                 @if (this.wrongWatchItem) {
-                  <alert type="danger" [dismissible]="true" (onClosed)="this.wrongWatchItem = false">
-                    {{ 'LOGIC_EDIT.ITEM_INVALID'|translate }}
-                  </alert>
+                  <p-message severity="error" [text]="'LOGIC_EDIT.ITEM_INVALID' | translate" [closable]="true" (onClose)="this.wrongWatchItem = false"></p-message>
                 }
                 <div>
                   <div style="float:left;">
@@ -259,9 +262,10 @@
           </p-table>
 
         </div>
-      </tab>
+      </p-tabpanel>
 
-    </tabset>
+      </p-tabpanels>
+    </p-tabs>
   </div>
 </div>
 

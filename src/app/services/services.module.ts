@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
-import { TabsModule } from 'ngx-bootstrap/tabs';
-import { ModalModule } from 'ngx-bootstrap/modal';
+import { TabsModule } from 'primeng/tabs';
 import { Dialog } from 'primeng/dialog';
 import { FileUploadModule } from 'primeng/fileupload';
 import { ListboxModule } from 'primeng/listbox';
@@ -24,7 +23,6 @@ import { FunctionConfigurationComponent } from './function-configuration/functio
     ServicesRoutingModule,
     CodemirrorModule,
     TabsModule,
-    ModalModule,
     Dialog,
     FileUploadModule,
     ListboxModule,

@@ -1,8 +1,16 @@
 
 <div class="shngbody2">
 
-  <tabset #staticTabs>
-    <tab customClass="tab-shng" heading="{{ 'SERVICES.SERVICES'|translate }}">
+  <p-tabs value="0">
+    <p-tablist>
+      <p-tab value="0">{{ 'SERVICES.SERVICES'|translate }}</p-tab>
+      <p-tab value="1">{{ 'SERVICES.EVAL CHECKER'|translate }}</p-tab>
+      <p-tab value="2">{{ 'SERVICES.YAML CHECKER'|translate }}</p-tab>
+      <p-tab value="3">{{ 'SERVICES.CONF TO YAML'|translate }}</p-tab>
+      <p-tab value="4">{{ 'SERVICES.CACHE_CHECKER'|translate }}</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+    <p-tabpanel value="0">
       <div class="tab-content-services">
         <table class="table table-striped">
               <thead border="0">
@@ -88,14 +96,14 @@
 
             </table>
       </div>
-    </tab>
+    </p-tabpanel>
 
 
     <!-- ------------------------------------------------------------------------------------
           Eval checker
     ------------------------------------------------------------------------------------- -->
 
-    <tab customClass="tab-shng" heading="{{ 'SERVICES.EVAL CHECKER'|translate }}">
+    <p-tabpanel value="1">
       <div class="tab-content-services">
         <div class="container-fluid" style="margin-top: 10px; margin-left: 10px; margin-right: 10px;">
         </div>
@@ -142,14 +150,14 @@
           </table>
         </div>
       </div>
-    </tab>
+    </p-tabpanel>
 
 
     <!-- ------------------------------------------------------------------------------------
           YAML Syntax checker
     ------------------------------------------------------------------------------------- -->
 
-    <tab customClass="tab-shng" heading="{{ 'SERVICES.YAML CHECKER'|translate }}">
+    <p-tabpanel value="2">
 
       <div class="tab-content-services">
 
@@ -184,14 +192,14 @@
         </table>
 
       </div>
-    </tab>
+    </p-tabpanel>
 
 
     <!-- ------------------------------------------------------------------------------------
            CONF to YAML converter
     ------------------------------------------------------------------------------------- -->
 
-    <tab customClass="tab-shng" heading="{{ 'SERVICES.CONF TO YAML'|translate }}">
+    <p-tabpanel value="3">
       <div class="tab-content-services">
 
         <div style="width: 50%; float: left; font-weight: normal; padding: 10px; padding-right: 5px;">
@@ -224,14 +232,14 @@
           </tbody>
         </table>
       </div>
-    </tab>
+    </p-tabpanel>
 
 
     <!-- ------------------------------------------------------------------------------------
           Cache Checker
     ------------------------------------------------------------------------------------- -->
 
-    <tab customClass="tab-shng" heading="{{ 'SERVICES.CACHE_CHECKER'|translate }}">
+    <p-tabpanel value="4">
       <div class="tab-content-services-cache">
         <div class="tab-content-services-cache-header">
           <div class="tab-header" style="padding: 15px;margin-left: 5px;">
@@ -278,9 +286,10 @@
           }
           </div>
       </div>
-    </tab>
+    </p-tabpanel>
 
-  </tabset>
+    </p-tabpanels>
+  </p-tabs>
 </div>
 
 

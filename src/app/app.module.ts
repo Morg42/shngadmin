@@ -9,10 +9,6 @@ import { NgOptimizedImage } from '@angular/common';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
-import { TabsModule } from 'ngx-bootstrap/tabs';
-import { AlertModule } from 'ngx-bootstrap/alert';
-import { ModalModule } from 'ngx-bootstrap/modal';
-
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MenubarModule } from 'primeng/menubar';
 import { ButtonModule } from 'primeng/button';
@@ -75,9 +71,6 @@ export function jwtOptionsFactory(injector: Injector) {
         deps: [Injector],
       },
     }),
-    TabsModule.forRoot(),
-    AlertModule.forRoot(),
-    ModalModule.forRoot(),
     FontAwesomeModule,
     MenubarModule,
     ButtonModule,

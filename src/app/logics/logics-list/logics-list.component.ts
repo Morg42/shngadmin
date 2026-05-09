@@ -3,10 +3,7 @@
 import { Component, ElementRef, ViewChild, OnInit, Renderer2, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
-import { TemplateRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-
-import { BsModalService} from 'ngx-bootstrap/modal';
 
 import {LogicsApiService} from '../../common/services/logics-api.service';
 import {LogicsGroupType, LogicsinfoType} from '../../common/models/logics-info';
@@ -32,7 +29,6 @@ export class LogicsListComponent implements OnInit {
   private http = inject(HttpClient);
   private dataServiceServer = inject(ServerApiService);
   private dataService = inject(LogicsApiService);
-  private modalService = inject(BsModalService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private translate = inject(TranslateService);
@@ -48,6 +44,9 @@ export class LogicsListComponent implements OnInit {
   userlogics: LogicsinfoType[];
   systemlogics: LogicsinfoType[];
   newlogics: LogicsinfoType[];
+
+  showLogicDetails = false;
+  selectedLogicWatchItems: string[] = [];
 
   newlogic_display: boolean = false;
   newlogic_name: string = '';

@@ -174,9 +174,7 @@
     <br><br>
     <br>
     @if (this.choosableHandlers.length === 0) {
-      <alert type="danger" [dismissible]="true" class="mt-2" id="newLogicsAlert">
-          {{ 'LOGGERS.NO_HANDLER_DEFINED'|translate }}
-      </alert>
+      <p-message severity="error" [text]="'LOGGERS.NO_HANDLER_DEFINED' | translate" styleClass="mt-2"></p-message>
     }
 
     <p-footer>

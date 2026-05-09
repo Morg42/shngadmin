@@ -707,6 +707,18 @@ a.text-shng:focus, a.text-shng:hover {
 .p-accordionheader {
   justify-content: flex-start !important;
   gap: 0.4rem;
+  background-color: rgba(0, 0, 0, 0.04) !important;
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
+}
+.p-accordionheader:hover {
+  background-color: rgba(0, 0, 0, 0.09) !important;
+}
+.p-accordionheader[data-p-active="true"] {
+  background-color: transparent !important;
+}
+.p-accordionheader[data-p-active="true"]:hover {
+  background-color: rgba(0, 0, 0, 0.04) !important;
 }
 .p-accordionheader::before {
   content: '▶';

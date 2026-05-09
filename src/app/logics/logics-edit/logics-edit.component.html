@@ -217,24 +217,7 @@
                 <td>
 
                   @if (col.field === 'value') {
-                    @if (rowData.valid_list.length > 0) {
-                      <p-select [options]="rowData.valid_list" (onChange)="this.logicChanged = hasLogicChanged()" [showClear]="true" placeholder="{{rowData.default}}" [(ngModel)]="rowData[col.field]" (ngModelChange)="rowData[col.field] = $event"></p-select>
-                    }
-
-                    @if ((['int','num','float','scene'].indexOf(rowData.type) > -1) && rowData.valid_list.length === 0) {
-                      <input [(ngModel)]="rowData[col.field]" (keyup)="this.logicChanged = hasLogicChanged()" type="number" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                    }
-
-                    @if (rowData.type === 'hide-int' && rowData.valid_list.length === 0) {
-                      <input [(ngModel)]="rowData[col.field]" (keyup)="this.logicChanged = hasLogicChanged()" type="number" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                    }
-                    @if (rowData.type === 'hide-str' && rowData.valid_list.length === 0) {
-                      <input [(ngModel)]="rowData[col.field]" (keyup)="this.logicChanged = hasLogicChanged()" type="password" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                    }
-
-                    @if (rowData.type !== 'bool' && ['int','num','float','scene','hide-str', 'hide-int'].indexOf(rowData.type) === -1 && rowData.valid_list.length === 0) {
-                      <input [(ngModel)]="rowData[col.field]" (keyup)="this.logicChanged = hasLogicChanged()" type="text" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                    }
+                    <app-dynamic-field [row]="rowData" [col]="col" (changed)="this.logicChanged = hasLogicChanged()"></app-dynamic-field>
                   }
 
                   @if (col.field !== 'value') {

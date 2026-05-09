@@ -39,22 +39,7 @@
               @for (col of columns; track $index) {
                 <td>
                   @if (dialog_readonly === false && col.field === 'value') {
-                    @if (rowData.valid_list.length > 0) {
-                      <p-select [options]="rowData.valid_list" [showClear]="true" placeholder="{{rowData.default}}" [(ngModel)]="rowData[col.field]" (ngModelChange)="rowData[col.field] = $event; check_values()"></p-select>
-                    }
-
-                    @if ((['int','num','float','scene'].indexOf(rowData.type) > -1) && rowData.valid_list.length === 0) {
-                      <input [(ngModel)]="rowData[col.field]" type="number" (ngModelChange)="check_values()" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                    }
-
-                    @if (rowData.type !== 'bool' && ['int','num','float','scene'].indexOf(rowData.type) === -1 && rowData.valid_list.length === 0) {
-                      @if (rowData.gui_type !== 'wide_str') {
-                        <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                      }
-                      @if (rowData.gui_type == 'wide_str') {
-                        <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidthwide}"/>
-                      }
-                    }
+                    <app-dynamic-field [row]="rowData" [col]="col" (changed)="check_values()"></app-dynamic-field>
                   }
 
                   @if (dialog_readonly === true || col.field !== 'value') {
@@ -97,23 +82,7 @@
               @for (col of columns; track $index) {
                 <td>
                   @if (dialog_readonly === false && col.field === 'value') {
-                    @if (rowData.valid_list.length > 0) {
-                      <p-select [options]="rowData.valid_list" [showClear]="true" placeholder="{{rowData.default}}" [(ngModel)]="rowData[col.field]" (ngModelChange)="rowData[col.field] = $event; check_values()"></p-select>
-                    }
-
-                    @if ((['int','num','float','scene'].indexOf(rowData.type) > -1) && rowData.valid_list.length === 0) {
-                      <input [(ngModel)]="rowData[col.field]" (ngModelChange)="check_values()" type="number" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                    }
-
-                    @if (rowData.type !== 'bool' && ['int','num','float','scene', 'password'].indexOf(rowData.type) === -1 && rowData.valid_list.length === 0) {
-                      @if (rowData.gui_type !== 'wide_str') {
-                        <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                      }
-                      @if (rowData.gui_type == 'wide_str') {
-                        <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidthwide}"/>
-                      }
-                    }
-
+                    <app-dynamic-field [row]="rowData" [col]="col" (changed)="check_values()"></app-dynamic-field>
                     @if (rowData.type === 'password' && rowData[col.field] === null) {
                       <button pButton type="button" class="float-sm-left btn-shng btn btn-sm ui-button-secondary" (click)="change_password_dialog($event, rowData, col.field)" style="margin-left: 5px;" label="{{ 'SYSTEM.SET_PASSWORD'|translate }}"></button>
                     }
@@ -162,23 +131,7 @@
                 @for (col of columns; track $index) {
                   <td>
                     @if (dialog_readonly === false && col.field === 'value') {
-                      @if (rowData.valid_list.length > 0) {
-                        <p-select [options]="rowData.valid_list" [showClear]="true" placeholder="{{rowData.default}}" [(ngModel)]="rowData[col.field]" (ngModelChange)="rowData[col.field] = $event; check_values()"></p-select>
-                      }
-
-                      @if ((['int','num','float','scene'].indexOf(rowData.type) > -1) && rowData.valid_list.length === 0) {
-                        <input [(ngModel)]="rowData[col.field]" (ngModelChange)="check_values()" type="number" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                      }
-
-                      @if (rowData.type !== 'bool' && ['int','num','float','scene', 'password'].indexOf(rowData.type) === -1 && rowData.valid_list.length === 0) {
-                        @if (rowData.gui_type !== 'wide_str') {
-                          <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values('str')" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                        }
-                        @if (rowData.gui_type == 'wide_str') {
-                          <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values('str')" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidthwide}"/>
-                        }
-                      }
-
+                      <app-dynamic-field [row]="rowData" [col]="col" (changed)="check_values('str')"></app-dynamic-field>
                       @if (rowData.type === 'password' && rowData[col.field] === null) {
                         <button pButton type="button" class="float-sm-left btn-shng btn btn-sm ui-button-secondary" (click)="change_password_dialog($event, rowData, col.field)" style="margin-left: 5px;" label="{{ 'SYSTEM.SET_PASSWORD'|translate }}"></button>
                       }
@@ -227,22 +180,7 @@
               @for (col of columns; track $index) {
                 <td>
                   @if (dialog_readonly === false && col.field === 'value') {
-                    @if (rowData.valid_list.length > 0) {
-                      <p-select [options]="rowData.valid_list" [showClear]="true" placeholder="{{rowData.default}}" [(ngModel)]="rowData[col.field]" (ngModelChange)="rowData[col.field] = $event; check_values()"></p-select>
-                    }
-
-                    @if ((['int','num','float','scene'].indexOf(rowData.type) > -1) && rowData.valid_list.length === 0) {
-                      <input [(ngModel)]="rowData[col.field]" (ngModelChange)="check_values()" type="number" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                    }
-
-                    @if (rowData.type !== 'bool' && ['int','num','float','scene'].indexOf(rowData.type) === -1 && rowData.valid_list.length === 0) {
-                      @if (rowData.gui_type !== 'wide_str') {
-                        <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                      }
-                      @if (rowData.gui_type == 'wide_str') {
-                        <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidthwide}"/>
-                      }
-                    }
+                    <app-dynamic-field [row]="rowData" [col]="col" (changed)="check_values()"></app-dynamic-field>
                   }
 
                   @if (dialog_readonly === true || col.field !== 'value') {
@@ -284,22 +222,7 @@
               @for (col of columns; track $index) {
                 <td>
                   @if (dialog_readonly === false && col.field === 'value') {
-                    @if (rowData.valid_list.length > 0) {
-                      <p-select [options]="rowData.valid_list" [showClear]="true" placeholder="{{rowData.default}}" [(ngModel)]="rowData[col.field]" (ngModelChange)="rowData[col.field] = $event; check_values()"></p-select>
-                    }
-
-                    @if ((['int','num','float','scene'].indexOf(rowData.type) > -1) && rowData.valid_list.length === 0) {
-                      <input [(ngModel)]="rowData[col.field]" (ngModelChange)="check_values()" type="number" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                    }
-
-                    @if (rowData.type !== 'bool' && ['int','num','float','scene'].indexOf(rowData.type) === -1 && rowData.valid_list.length === 0) {
-                      @if (rowData.gui_type !== 'wide_str') {
-                        <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                      }
-                      @if (rowData.gui_type == 'wide_str') {
-                        <input [(ngModel)]="rowData[col.field]" type="text" (ngModelChange)="check_values()" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidthwide}"/>
-                      }
-                    }
+                    <app-dynamic-field [row]="rowData" [col]="col" (changed)="check_values()"></app-dynamic-field>
                   }
 
                   @if (dialog_readonly === true || col.field !== 'value') {

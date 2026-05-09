@@ -165,32 +165,7 @@
           <td>
 
             @if (dialog_readonly === false && col.field === 'value') {
-              @if (rowData.valid_list.length > 0) {
-                <p-select [options]="rowData.valid_list" [showClear]="true" placeholder="{{rowData.default}}" [(ngModel)]="rowData[col.field]" (ngModelChange)="rowData[col.field] = $event"></p-select>
-              }
-
-              @if ((['int','num','float','scene'].indexOf(rowData.type) > -1) && rowData.valid_list.length === 0) {
-                <input [(ngModel)]="rowData[col.field]" type="number" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-              }
-
-              @if (rowData.type === 'hide-int' && rowData.valid_list.length === 0) {
-                <input [(ngModel)]="rowData[col.field]" type="number" min="{{rowData.valid_min}}" max="{{rowData.valid_max}}" pInputText placeholder="{{rowData.default}}" pInputText name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-              }
-              @if (rowData.type === 'hide-str' && rowData.valid_list.length === 0) {
-                <input [(ngModel)]="rowData[col.field]" type="password" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-              }
-
-              @if (rowData.type !== 'bool' && ['int','num','float','scene','hide-str', 'hide-int'].indexOf(rowData.type) === -1 && rowData.valid_list.length === 0) {
-                @if ((rowData.gui_type !== 'wide_str') && (rowData.gui_type !== 'readonly')) {
-                  <input [(ngModel)]="rowData[col.field]" type="text" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidth}"/>
-                }
-                @if (rowData.gui_type == 'readonly') {
-                  <input [(ngModel)]="rowData[col.field]" type="text" pInputText placeholder="{{rowData.default}}" readonly name="{{col.field}}" [ngStyle]="{'width': col.iwidth, 'color': '#000077'}"/>
-                }
-                @if (rowData.gui_type == 'wide_str') {
-                  <input [(ngModel)]="rowData[col.field]" type="text" pInputText placeholder="{{rowData.default}}" name="{{col.field}}" [ngStyle]="{'width': col.iwidthwide}"/>
-                }
-              }
+              <app-dynamic-field [row]="rowData" [col]="col"></app-dynamic-field>
             }
             @if (dialog_readonly === true || col.field !== 'value') {
               @if (dialog_readonly === true || col.field !== 'desc') {

@@ -116,6 +116,11 @@ export class PluginConfigComponent implements OnInit {
 ngOnInit() {
     // console.log('PluginConfigComponent.ngOnInit');
 
+    // show loading indicator synchronously so it is visible on the very first render,
+    // before any HTTP response arrives (setting it inside a callback is too late with OnPush)
+    this.spinner_display = true;
+    this.spinner_header = this.translate.instant('PLUGIN.LOADCONFIG');
+
     this.serverdataService.getServerinfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
@@ -123,10 +128,7 @@ ngOnInit() {
 
           this.shared.setGuiLanguage();
           this.setTitle(this.translate.instant('PLUGIN.PLUGIN_CONFIGURATION'));
-
-          this.spinner_header = this.translate.instant('PLUGIN.LOADCONFIG');
-          this.spinner_display = true;
-          this.cdr.markForCheck();  // show spinner immediately (OnPush)
+          this.spinner_header = this.translate.instant('PLUGIN.LOADCONFIG'); // re-translate after language is set
           this.pluginsdataService.getPluginsConfig()
             .pipe(
               takeUntilDestroyed(this.destroyRef),

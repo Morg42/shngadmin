@@ -23,6 +23,9 @@ export class FilesApiService {
 
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'files/' + filetype + '/';
+    if (filename !== '') {
+      url += '?filename=' + filename;
+    }
     return this.http.get(url, { responseType: 'text' })
       .pipe(
         map(response => {
@@ -77,6 +80,9 @@ export class FilesApiService {
 
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'files/' + filetype + '/';
+    if (filename !== '') {
+      url += '?filename=' + filename;
+    }
     console.log('FilesApiService.deleteFile()', {url});
 
     return this.http.delete(url, { responseType: 'text' })

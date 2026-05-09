@@ -44,9 +44,9 @@
   -- Confirm dialog vor configuration deletion
   -->
 <p-dialog header="" [(visible)]="error_display" [closable]="false" [modal]="true" blockScroll="true">
-  <p-header>
+  <ng-template pTemplate="header">
     {{'LOGGING.CONFIG_ERROR'|translate}}
-  </p-header>
+  </ng-template>
   <br>
   <pre>
 {{'LOGGING.CONFIG_ERROR_TEXT'|translate}}
@@ -54,9 +54,9 @@
 {{ myTextOutput }}
   </pre>
   <br>
-  <p-footer>
+  <ng-template pTemplate="footer">
     <button pButton type="button" (click)="error_display = false;" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
-  </p-footer>
+  </ng-template>
 </p-dialog>
 
 
@@ -64,9 +64,9 @@
     -- Display help dialog
   -->
 <p-dialog header="" [(visible)]="editorHelp_display" [closable]="true" [modal]="true" dynamic="true" blockScroll="true">
-  <p-header>
+  <ng-template pTemplate="header">
     {{'HELP.EDITOR-KEYS'|translate}}
-  </p-header>
+  </ng-template>
   <br>
   <table>
     <thead>
@@ -84,9 +84,9 @@
     </tbody>
   </table>
   <br>
-  <p-footer>
+  <ng-template pTemplate="footer">
     <button pButton type="button" (click)="editorHelp_display = false;" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
-  </p-footer>
+  </ng-template>
 </p-dialog>
 
 

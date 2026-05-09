@@ -257,9 +257,9 @@
     -- Display help dialog
   -->
 <p-dialog header="" [(visible)]="editorHelp_display" [closable]="true" [modal]="true" dynamic="true" blockScroll="true">
-  <p-header>
+  <ng-template pTemplate="header">
     {{'HELP.EDITOR-KEYS'|translate}}
-  </p-header>
+  </ng-template>
   <br>
   <table>
     <thead>
@@ -281,9 +281,9 @@
     </tbody>
   </table>
   <br>
-  <p-footer>
+  <ng-template pTemplate="footer">
     <button pButton type="button" (click)="editorHelp_display = false;" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
-  </p-footer>
+  </ng-template>
 </p-dialog>
 
 
@@ -291,9 +291,9 @@
     -- Display help dialog
   -->
 <p-dialog header="" [(visible)]="parameterHelp_display" [closable]="true" [modal]="true" [style]="{'max-width':'600px'}" dynamic="true" blockScroll="true">
-  <p-header>
+  <ng-template pTemplate="header">
     {{ 'BUTTON.HELP'|translate }} {{ 'LOGIC_EDIT.PARAMETERS'|translate }}
-  </p-header>
+  </ng-template>
   <br>
   <strong>Crontab(s)</strong>: {{ 'HELP.CRONTAB'|translate }}
   <br><br>
@@ -313,7 +313,7 @@
     </tbody>
   </table>
   <br>
-  <p-footer>
+  <ng-template pTemplate="footer">
     <button pButton type="button" (click)="parameterHelp_display = false;" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
-  </p-footer>
+  </ng-template>
 </p-dialog>

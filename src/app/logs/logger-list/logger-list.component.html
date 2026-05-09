@@ -248,9 +248,9 @@
         [style]="{'width':'600px', 'minWidth':'600px', 'minHeight':'450px'}"
 >
 
-  <p-header>
+  <ng-template pTemplate="header">
     {{'LOGGERS.CREATE_LOGGER'|translate}}
-  </p-header>
+  </ng-template>
 
   {{'LOGGERS.CREATE_LOGGER_TEXT'|translate}}
   <br>
@@ -271,8 +271,8 @@
   @if (this.noLoggerToAdd) {
     <p-message severity="error" [text]="'LOGGERS.NO_LOGGER_TO_ADD' | translate" [closable]="true" (onClose)="this.noLoggerToAdd = false" styleClass="mt-2"></p-message>
   }
-  <p-footer>
+  <ng-template pTemplate="footer">
     <button pButton type="button" id="createLoggerButton" icon="pi pi-check" (click)="this.createLogger()" [disabled]="!newlogger_add_enabled" (disabledChange)="newlogger_add_enabled = $event" label="{{'BUTTON.CREATE'|translate}}" class="ui-button-success" autofocus></button>
     <button pButton type="button" id="cancleCreateLoggerButton" icon="pi pi-times" (click)="newlogger_display=false" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
-  </p-footer>
+  </ng-template>
 </p-dialog>

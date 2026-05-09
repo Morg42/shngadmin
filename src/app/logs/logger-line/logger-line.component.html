@@ -91,17 +91,17 @@
 -- Confirm dialog vor configuration deletion
 -->
 <p-dialog header="" [(visible)]="confirmdelete_display" [modal]="true" blockScroll="true">
-    <p-header>
+    <ng-template pTemplate="header">
         {{'LOGGERS.DELETE_LOGGER'|translate}}
-    </p-header>
+    </ng-template>
     <br>
     {{'LOGGERS.DELETE_LOGGER_TEXT'|translate:delete_param}}
     <br>
     <br>
-    <p-footer>
+    <ng-template pTemplate="footer">
         <button pButton type="button" icon="fa fa-trash-alt" (click)="deleteLoggerConfirm()" label="{{'BUTTON.DELETE'|translate}}" class="ui-button-danger"></button>
         <button pButton type="button" icon="fa fa-times" (click)="deleteLoggerAbort()" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
-    </p-footer>
+    </ng-template>
 </p-dialog>
 
 
@@ -120,9 +120,9 @@
         [style]="{'width':'720px', 'minWidth':'600px', 'minHeight':'450px'}"
 >
 
-    <p-header>
+    <ng-template pTemplate="header">
         {{'LOGGERS.CHOOSE_HANDLERS'|translate:header_param}}
-    </p-header>
+    </ng-template>
 
 
     @if (this.choosableHandlers.length > 0) {
@@ -177,10 +177,10 @@
       <p-message severity="error" [text]="'LOGGERS.NO_HANDLER_DEFINED' | translate" styleClass="mt-2"></p-message>
     }
 
-    <p-footer>
+    <ng-template pTemplate="footer">
 
         <button pButton type="button" id="modifyHandlersButton" icon="pi pi-check" (click)="this.doModifyHandlers()" [disabled]="!handlersChangeEnabled" (disabledChange)="handlersChangeEnabled = $event" label="{{'BUTTON.CHANGE'|translate}}" class="ui-button-success" autofocus></button>
 
         <button pButton type="button" id="cancelChooseHandlersButton" icon="pi pi-times" (click)="chooseHandlers_display=false;" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
-    </p-footer>
+    </ng-template>
 </p-dialog>

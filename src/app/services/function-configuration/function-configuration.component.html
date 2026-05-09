@@ -60,9 +60,9 @@
   [style]="{'minWidth':'600px', 'minHeight':'200px'}"
 >
 
-  <p-header>
+  <ng-template pTemplate="header">
     {{'FUNCTION_CONFIG.NAME_CONFIGURATION'|translate}}
-  </p-header>
+  </ng-template>
 
   <br>
   {{ 'FUNCTION_CONFIG.UNIQUE_NAME'|translate }}&nbsp;
@@ -70,10 +70,10 @@
 
   <br>
   <br>
-  <p-footer>
+  <ng-template pTemplate="footer">
     <button pButton type="button" icon="pi pi-check" (click)="this.addFile()" [disabled]="!this.add_enabled" (disabledChange)="this.add_enabled = $event" label="{{'BUTTON.ADD'|translate}}" class="ui-button-success" autofocus></button>
     <button pButton type="button" icon="pi pi-times" (click)="newconfig_display=false" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
-  </p-footer>
+  </ng-template>
 </p-dialog>
 
 
@@ -83,9 +83,9 @@
   -- Confirm dialog vor configuration deletion
   -->
 <p-dialog header="" [(visible)]="error_display" [closable]="false" [modal]="true" blockScroll="true">
-  <p-header>
+  <ng-template pTemplate="header">
     {{'FUNCTION_CONFIG.CONFIG_ERROR'|translate}}
-  </p-header>
+  </ng-template>
   <br>
   <pre>
 {{'FUNCTION_CONFIG.CONFIG_ERROR_TEXT'|translate}}
@@ -93,9 +93,9 @@
     {{ myTextOutput }}
   </pre>
   <br>
-  <p-footer>
+  <ng-template pTemplate="footer">
     <button pButton type="button" (click)="error_display = false;" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
-  </p-footer>
+  </ng-template>
 </p-dialog>
 
 
@@ -103,17 +103,17 @@
   -- Confirm dialog vor configuration deletion
   -->
 <p-dialog header="" [(visible)]="confirmdelete_display" [modal]="true" blockScroll="true">
-  <p-header>
+  <ng-template pTemplate="header">
     {{'FUNCTION_CONFIG.DELETE_CONFIG'|translate}}
-  </p-header>
+  </ng-template>
   <br>
   {{'FUNCTION_CONFIG.DELETE_CONFIG_FILE'|translate:delete_param}}
   <br>
   <br>
-  <p-footer>
+  <ng-template pTemplate="footer">
     <button pButton type="button" icon="fa fa-trash-alt" (click)="DeleteConfigConfirm()" label="{{'BUTTON.DELETE'|translate}}" class="ui-button-danger"></button>
     <button pButton type="button" icon="fa fa-times" (click)="confirmdelete_display = false" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
-  </p-footer>
+  </ng-template>
 </p-dialog>
 
 
@@ -122,9 +122,9 @@
     -- Display help dialog
   -->
 <p-dialog header="" [(visible)]="editorHelp_display" [closable]="true" [modal]="true" dynamic="true" blockScroll="true">
-  <p-header>
+  <ng-template pTemplate="header">
     {{'HELP.EDITOR-KEYS'|translate}}
-  </p-header>
+  </ng-template>
   <br>
   <table>
     <thead>
@@ -142,8 +142,8 @@
     </tbody>
   </table>
   <br>
-  <p-footer>
+  <ng-template pTemplate="footer">
     <button pButton type="button" (click)="editorHelp_display = false;" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
-  </p-footer>
+  </ng-template>
 </p-dialog>
 

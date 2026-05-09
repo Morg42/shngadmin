@@ -296,9 +296,9 @@
 <p-dialog header="{{'SERVICES.BACKUP_DONE_TITLE'|translate}}" [(visible)]="show_backup_confirm" [modal]="true" [style]="{width: '600px', minWidth: '400px'}" [minY]="70"
           [baseZIndex]="10000">
     <span>{{'SERVICES.BACKUP_DONE'|translate}}</span>
-  <p-footer>
+  <ng-template pTemplate="footer">
     <button type="button" pButton icon="pi pi-check" (click)="show_backup_confirm = false" label="{{'BUTTON.OK'|translate}}" class="ui-button-success"></button>
-  </p-footer>
+  </ng-template>
 </p-dialog>
 
 
@@ -328,7 +328,7 @@
                 maxFileSize="1000000">
   </p-fileUpload>
 
-  <p-footer>
+  <ng-template pTemplate="footer">
     <button type="button" pButton icon="fa fa-times" (click)="show_restore_chooser = false" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
-  </p-footer>
+  </ng-template>
 </p-dialog>

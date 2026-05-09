@@ -271,9 +271,9 @@
   -->
 
 <p-dialog header="" [(visible)]="validation_dialog_display" [modal]="true" blockScroll="true">
-  <p-header>
+  <ng-template pTemplate="header">
     {{'PLUGIN.CONFIGURATION_ERRORS'|translate}}
-  </p-header>
+  </ng-template>
 
   @for (l of this.validation_dialog_text; track $index) {
     <li>
@@ -281,9 +281,9 @@
     </li>
   }
 
-  <p-footer>
+  <ng-template pTemplate="footer">
     <button pButton type="button" icon="pi pi-times" (click)="validation_dialog_display=false" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
-  </p-footer>
+  </ng-template>
 </p-dialog>
 
 
@@ -293,14 +293,14 @@
   -->
 
 <p-dialog header="" [(visible)]="pwd_change_dialog_display" [modal]="true" blockScroll="true">
-  <p-header>
+  <ng-template pTemplate="header">
     @if (pwd_hash_old === null) {
       {{'SYSTEM.SET_PASSWORD'|translate}}
     }
     @if (pwd_hash_old !== null) {
       {{'SYSTEM.CHANGE_PASSWORD'|translate}}
     }
-  </p-header>
+  </ng-template>
 
   @if (pwd_old_is_empty) {
     <p-message severity="warn" [text]="'SYSTEM.OLDPWD_EMPTY' | translate"></p-message>
@@ -335,9 +335,9 @@
   </table>
 
 
-  <p-footer>
+  <ng-template pTemplate="footer">
     <p style="text-align: left; font-size: small">{{ 'SYSTEM.REMEMBER TO SAVE CHANGES'|translate }}</p>
     <button pButton type="button" icon="pi pi-times" (click)="pwd_change_dialog_display=false" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
     <button pButton type="button" tabindex="4" icon="pi pi-check" (click)="change_password($event)" label="{{'BUTTON.CHANGE'|translate}}" class="ui-button-success"></button>
-  </p-footer>
+  </ng-template>
 </p-dialog>

@@ -107,12 +107,12 @@
   [style]="{'minWidth':'600px', 'minHeight':'300px', 'maxHeight':'98%'}"
 >
 
-  <p-header>
+  <ng-template pTemplate="header">
     {{'CONFIGURATION'|translate}} <strong>{{ this.dialog_configname }}</strong> &nbsp; (Plugin <strong>{{ this.dialog_pluginname }}</strong>)
     @if (plugin_enabled === false) {
       &nbsp; - &nbsp;<strong>{{'PLUGIN.PLUGIN_DISABLED'|translate}}</strong>
     }
-  </p-header>
+  </ng-template>
 
   <table>
     <tr>
@@ -201,7 +201,7 @@
     </h4><br>
   }
 
-  <p-footer>
+  <ng-template pTemplate="footer">
     @if (dialog_readonly === false) {
       <a style="font-size: small">{{ 'RESTART FOR CHANGES'|translate }}&nbsp; &nbsp; &nbsp;</a>
 <!--
@@ -214,7 +214,7 @@
     @if (dialog_readonly === true) {
       <button pButton type="button" icon="fa fa-times" (click)="dialog_display=false" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
     }
-  </p-footer>
+  </ng-template>
 </p-dialog>
 
 
@@ -223,9 +223,9 @@
   -->
 
 <p-dialog header="" [(visible)]="validation_dialog_display" [modal]="true" blockScroll="true">
-  <p-header>
+  <ng-template pTemplate="header">
     {{'PLUGIN.CONFIGURATION_ERRORS'|translate}}
-  </p-header>
+  </ng-template>
 
   @for (l of this.validation_dialog_text; track $index) {
     <li>
@@ -233,9 +233,9 @@
     </li>
   }
 
-  <p-footer>
+  <ng-template pTemplate="footer">
     <button pButton type="button" icon="pi pi-times" (click)="validation_dialog_display=false" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
-  </p-footer>
+  </ng-template>
 </p-dialog>
 
 
@@ -261,19 +261,19 @@
   [style]="{'minWidth':'600px', 'minHeight':'300px'}"
 >
 
-  <p-header>
+  <ng-template pTemplate="header">
     {{'PLUGIN.ADD'|translate}}
     @if (plugin_enabled === false) {
       &nbsp; - &nbsp;<strong>{{'PLUGIN.PLUGIN_DISABLED'|translate}}</strong>
     }
-  </p-header>
+  </ng-template>
 
   <p-accordion [multiple]="true">
     @for (plugintype of plugintypes; track i; let i = $index) {
       <p-accordionTab [(selected)]="plugintypes_expanded[i]" (click)="pluginadd.maximize()">
-        <p-header style="font-size: larger;">
-          <img ngSrc="assets/img/plugin_{{ plugintype }}.svg" style="width: 30px; cursor: pointer;"/> {{plugintype.charAt(0).toUpperCase() + plugintype.substring(1)}} Plugins
-        </p-header>
+        <ng-template pTemplate="header">
+          <span style="font-size: larger;"><img ngSrc="assets/img/plugin_{{ plugintype }}.svg" style="width: 30px; cursor: pointer;"/> {{plugintype.charAt(0).toUpperCase() + plugintype.substring(1)}} Plugins</span>
+        </ng-template>
         <!--
           <table class="table table-striped table-hover" [columns]="cols" [value]="configuredplugins" selectionMode="single">
         -->
@@ -319,14 +319,14 @@
     <a style="font-size: small">{{ 'RESTART FOR CHANGES'|translate }}</a>
   }
 
-  <p-footer>
+  <ng-template pTemplate="footer">
     @if (dialog_readonly === false) {
 <!--
       <button pButton type="button" icon="pi pi-check" (click)="this.saveConfig()" label="{{'BUTTON.SAVE'|translate}}" class="ui-button-success"></button>
 -->
       <button pButton type="button" icon="pi pi-times" (click)="add_display=false" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-secondary"></button>
     }
-  </p-footer>
+  </ng-template>
 </p-dialog>
 
 
@@ -370,12 +370,12 @@
   [style]="{'minWidth':'600px', 'minHeight':'200px'}"
 >
 
-  <p-header>
+  <ng-template pTemplate="header">
     {{'PLUGIN.NAME_CONFIGURATION'|translate:translate_params}}
     @if (plugin_enabled === false) {
       &nbsp; - &nbsp;<strong>{{'PLUGIN.PLUGIN_DISABLED'|translate}}</strong>
     }
-  </p-header>
+  </ng-template>
 
   <br>
   {{ 'PLUGIN.UNIQUE_NAME'|translate }}&nbsp;
@@ -386,12 +386,12 @@
   @if (dialog_readonly === false) {
     <a style="font-size: small">{{ 'RESTART FOR CHANGES'|translate }}</a>
   }
-  <p-footer>
+  <ng-template pTemplate="footer">
     @if (dialog_readonly === false) {
       <button pButton type="button" icon="pi pi-check" (click)="this.addPlugin()" [disabled]="!this.add_enabled" (disabledChange)="this.add_enabled = $event" label="{{'BUTTON.ADD'|translate}}" class="ui-button-success" autofocus></button>
       <button pButton type="button" icon="pi pi-times" (click)="setconfig_display=false" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
     }
-  </p-footer>
+  </ng-template>
 </p-dialog>
 
 
@@ -400,17 +400,17 @@
   -- Confirm dialog vor configuration deletion
   -->
 <p-dialog header="" [(visible)]="confirmdelete_display" [modal]="true" blockScroll="true">
-  <p-header>
+  <ng-template pTemplate="header">
     {{'PLUGIN.DELETE_CONFIG'|translate}}
-  </p-header>
+  </ng-template>
   <br>
   {{'PLUGIN.DELETE_CONFIG_TEXT'|translate:delete_param}}
   <br>
   <br>
-  <p-footer>
+  <ng-template pTemplate="footer">
     <button pButton type="button" icon="fa fa-trash-alt" (click)="DeleteConfigConfirm()" label="{{'BUTTON.DELETE'|translate}}" class="ui-button-danger"></button>
     <button pButton type="button" icon="fa fa-times" (click)="DeleteConfigAbort()" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
-  </p-footer>
+  </ng-template>
 </p-dialog>
 
 

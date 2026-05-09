@@ -19,7 +19,7 @@
         <p-accordion [activeIndex]="groupExpandedOnStart" [multiple]="true" (onOpen)="groupOpened($event)" (onClose)="groupClosed($event)">
           @for (group of groupList; track $index) {
             <p-accordionTab>
-              <p-header>
+              <ng-template pTemplate="header">
                 @if (group.name === '') {
                   <span style="font-size: large; font-weight: bold; ">{{ 'LOGICS.NOGROUP_TITLE'|translate }}</span>
                 }
@@ -29,7 +29,7 @@
                 @if (group.name !== '' && group.title === '') {
                   <span style="font-size: large; font-weight: bold; ">{{ group.name }}</span>
                 }
-              </p-header>
+              </ng-template>
 
               @if (group.description !== undefined && group.description !== '') {
                 <span style="margin-left: 20px">{{ group.description }}</span>
@@ -426,18 +426,18 @@
   -- Confirm dialog vor configuration deletion
   -->
 <p-dialog header="" [(visible)]="confirmdelete_display" [modal]="true" blockScroll="true">
-  <p-header>
+  <ng-template pTemplate="header">
     {{'LOGICS.DELETE_LOGIC'|translate}}
-  </p-header>
+  </ng-template>
   <br>
   {{'LOGICS.DELETE_LOGIC_TEXT'|translate:delete_param}}
   <br>
   <br>
-  <p-footer>
+  <ng-template pTemplate="footer">
     <button pButton type="button" icon="fa fa-trash-alt" (click)="deleteLogicConfirm(true)" label="{{'BUTTON.DELETE_WITH_CODE'|translate}}" class="ui-button-danger"></button>
     <button pButton type="button" icon="fa fa-trash-alt" (click)="deleteLogicConfirm(false)" label="{{'BUTTON.DELETE_CONFIG'|translate}}" class="ui-button-success"></button>
     <button pButton type="button" icon="fa fa-times" (click)="deleteLogicAbort()" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
-  </p-footer>
+  </ng-template>
 </p-dialog>
 
 
@@ -458,9 +458,9 @@
   [style]="{'width':'600px', 'minWidth':'600px', 'minHeight':'200px'}"
 >
 
-  <p-header>
+  <ng-template pTemplate="header">
     {{'LOGICS.CREATE_LOGIC'|translate}}
-  </p-header>
+  </ng-template>
 
   {{'LOGICS.CREATE_LOGIC_TEXT'|translate}}
     <br>
@@ -479,10 +479,10 @@
   @if (this.wrongNewLogicName) {
     <p-message severity="error" [text]="wrongNewLogicName | translate" [closable]="true" (onClose)="this.wrongNewLogicName=''" styleClass="mt-2"></p-message>
   }
-  <p-footer>
+  <ng-template pTemplate="footer">
     <button pButton type="button" id="createLogicsButton" icon="pi pi-check" (click)="this.wrongNewLogicName=''; this.createLogic()" [disabled]="!newlogic_add_enabled" (disabledChange)="newlogic_add_enabled = $event" label="{{'BUTTON.CREATE'|translate}}" class="ui-button-success"></button>
     <button pButton type="button" id="cancleCreateLogicsButton" icon="pi pi-times" (click)="this.wrongNewLogicName=''; newlogic_display=false" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
-  </p-footer>
+  </ng-template>
 </p-dialog>
 
 

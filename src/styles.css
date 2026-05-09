@@ -704,13 +704,16 @@ a.text-shng:focus, a.text-shng:hover {
 .p-accordionheader svg[data-p-icon="chevron-up"] {
   display: none;
 }
+.p-accordionheader {
+  justify-content: flex-start !important;
+  gap: 0.4rem;
+}
 .p-accordionheader::before {
   content: '▶';
   font-family: Arial, sans-serif;
   font-size: 0.6em;
   line-height: 1;
   color: inherit;
-  margin-right: 0.4rem;
   flex-shrink: 0;
 }
 .p-accordionheader[data-p-active="true"]::before {

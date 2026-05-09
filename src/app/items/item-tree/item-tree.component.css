@@ -12,6 +12,8 @@
 :host ::ng-deep .p-tree {
   border: none !important;
   width: auto;
+  font-size: 16px;
+  font-weight: 400;
 }
 
 :host ::ng-deep .p-treenode-content.p-highlight {
@@ -32,9 +34,28 @@
   padding-left: 1rem;
 }
 
+/* Toggle button: hide the SVG chevron, replace with a filled unicode triangle.
+   :has([data-p-icon="chevron-down"]) detects the expanded state because
+   PrimeNG swaps the icon component based on node.expanded. */
 :host ::ng-deep .p-tree-node-toggle-button {
   width: 1.25rem;
   height: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+:host ::ng-deep .p-tree-node-toggle-button svg {
+  display: none;
+}
+:host ::ng-deep .p-tree-node-toggle-button::before {
+  content: '▶';
+  font-family: Arial, sans-serif;
+  font-size: 0.6em;
+  line-height: 1;
+  color: inherit;
+}
+:host ::ng-deep .p-tree-node-toggle-button:has([data-p-icon="chevron-down"])::before {
+  content: '▼';
 }
 
 

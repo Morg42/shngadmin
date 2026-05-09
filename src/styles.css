@@ -1,10 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import "~codemirror/lib/codemirror.css";
-@import "~codemirror/addon/hint/show-hint.css";
-@import "~codemirror/addon/dialog/dialog.css";
-@import "~codemirror/addon/search/matchesonscrollbar.css";
-@import "~codemirror/addon/fold/foldgutter.css";
+@import "codemirror/lib/codemirror.css";
+@import "codemirror/addon/hint/show-hint.css";
+@import "codemirror/addon/dialog/dialog.css";
+@import "codemirror/addon/search/matchesonscrollbar.css";
+@import "codemirror/addon/fold/foldgutter.css";
 
 
 /* Hide spinners for number fields */
@@ -20,7 +20,7 @@ input::-webkit-inner-spin-button {
 }
 
 
-/* @import "~codemirror/addon/display/fullscreen.css"; */
+/* @import "codemirror/addon/display/fullscreen.css"; */
 .CodeMirror-fullscreen {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;

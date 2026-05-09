@@ -26,7 +26,7 @@
     "@angular/router": "^19.2.21",
     "@auth0/angular-jwt": "5.1.0",
     "@ctrl/ngx-codemirror": "^7.0.0",
-    "@fortawesome/angular-fontawesome": "^0.15.0",
+    "@fortawesome/angular-fontawesome": "^1.0.0",
     "@fortawesome/fontawesome-free": "^5.15.4",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",

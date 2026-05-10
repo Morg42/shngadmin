@@ -148,7 +148,7 @@
                                     </p-toggleSwitch>
                                   }
                                   @case (itemdetails.type === 'str' || itemdetails.type === 'list' || itemdetails.type === 'dict' ? itemdetails.type : '') {
-                                    <textarea type="text" class="form-control" #item_value (blur)="updateValue(itemdetails.path, item_value, itemdetails.type, itemdetails.value)" id="item_value">{{itemdetails.value}}</textarea>
+                                    <textarea type="text" class="form-control" style="resize: none;" #item_value (blur)="updateValue(itemdetails.path, item_value, itemdetails.type, itemdetails.value)" id="item_value">{{itemdetails.value}}</textarea>
                                   }
                                   @case (itemdetails.type === 'num' || itemdetails.type === 'scene' ? itemdetails.type : '') {
                                     <input type="text" class="form-control" #item_value (blur)="updateValue(itemdetails.path, item_value, itemdetails.type, itemdetails.value)" id="item_value" value="{{itemdetails.value}}"/>

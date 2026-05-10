@@ -1,80 +1,30 @@
 
-::ng-deep .tab-shng > a{
+::ng-deep .tab-shng > a {
     border-bottom: none !important;
     outline: 0 !important;
-    color:rgb(160, 160, 160);
+    color: rgb(160, 160, 160);
 }
 
-
-.body {
-    margin: 0;
-}
-.shngbody {
+/* The host element (<app-plugins>) is display:inline by default for custom
+   elements. Make it a block of known height so that height-based flex
+   calculations inside it work correctly. */
+:host {
+    display: block;
     height: calc(100vh - 60px);
-    width: 100%;
-    margin: 0;
-    padding: 0;
-
-    padding-left: 10px;       /* padding around tab border */
-    padding-right: 10px;
-
-    display: grid;
-/*  grid-template-rows: 50px auto 65px;  */
-    grid-template-rows: 0 auto 65px;
-    grid-template-columns: 1fr;
-
-    grid-template-areas: "body-header"
-                      "body-content"
-                      "body-footer";
-
-    grid-gap: 0;
-    grid-auto-flow: row;
+    overflow: hidden;
 }
 
-.body-header {
-    grid-area: body-header;
-    width: 100%;
-
-    display: grid;
-    overflow: auto;
-
-    grid-template-columns: 110px minmax(140px, 280px) 1fr;
-    grid-auto-rows: minmax(50px, max-content);
+.shngbody {
+    height: 100%;
+    padding: 0 10px;
+    display: flex;
+    flex-direction: column;
 }
 
+/* flex:1 1 0 fills remaining space; min-height:0 is required for
+   overflow:auto to activate inside a flex item. */
 .body-content {
-    grid-area: body-content;
-    width: 100%;
-
-    overflow: auto;
-
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-auto-rows: minmax(50px, max-content);
-}
-
-
-.body-footer {
-    grid-area: body-footer;
-    width: 100%;
-}
-
-.tab-header {
-    grid-area: tab-header;
-    width: 100%;
-}
-
-.tab-content {
-    grid-area: tab-content;
-    width: 100%;
-    height: calc(100vh - 60px - 50px - 65px - 41px);
-    border: 1px solid #dee2e6;
-    border-top: 0;
+    flex: 1 1 0;
+    min-height: 0;
     overflow: auto;
 }
-
-.tab-footer {
-    grid-area: tab-footer;
-    width: 100%;
-}
-

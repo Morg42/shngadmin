@@ -3,7 +3,7 @@
   <h6>SmartHomeNG {{ 'LOGS.LOGFILE'|translate }}:
     <p-select [style]="{'width':'300px'}" [options]="logs" [(ngModel)]="selectedLog" placeholder="{{ 'LOGS.SELECT_LOG'|translate }}" (onChange)="fillTimeframe()"></p-select>
     &nbsp; {{ 'LOGS.TIMEFRAME'|translate }}:
-    <p-select [style]="{'width':'210px'}" (options)="files" [(ngModel)]="selectedFile" placeholder="{{ 'LOGS.SELECT_FILE'|translate }}" (onChange)="changedTimeframe()"></p-select>
+    <p-select [style]="{'width':'210px'}" [options]="files" [(ngModel)]="selectedFile" placeholder="{{ 'LOGS.SELECT_FILE'|translate }}" (onChange)="changedTimeframe()"></p-select>
     &nbsp; &nbsp; <button pButton id="reloadLogButton" type="button" (click)="this.readLogfile()" [disabled]="(selectedLog === null) || (selectedFile === null)" label="{{'BUTTON.RELOAD_LOG'|translate}}" class="ui-button-success"></button>
   </h6>
 

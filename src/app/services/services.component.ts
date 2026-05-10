@@ -13,10 +13,22 @@ import {ServerApiService} from '../common/services/server-api.service';
 import {FilesApiService} from '../common/services/files-api.service';
 
 import { ServerInfo } from '../common/models/server-info';
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import {SharedService} from '../common/services/shared.service';
 
 import {sha512} from 'js-sha512';
+import { Bind } from 'primeng/bind';
+import { Tabs, TabList, Tab as Tab_1, TabPanels, TabPanel } from 'primeng/tabs';
+import { Ripple } from 'primeng/ripple';
+import { NgOptimizedImage } from '@angular/common';
+import { Select } from 'primeng/select';
+import { FormsModule } from '@angular/forms';
+import { ButtonDirective } from 'primeng/button';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+import { InputText } from 'primeng/inputtext';
+import { Dialog } from 'primeng/dialog';
+import { PrimeTemplate } from 'primeng/api';
+import { FileUpload } from 'primeng/fileupload';
 // import {LogicsWatchItem} from '../common/models/logics-watch-item';
 // import {SelectItem} from 'primeng/api';
 
@@ -36,7 +48,7 @@ export interface CacheEntryType {
     encapsulation: ViewEncapsulation.None,
     providers: [],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [Bind, Tabs, TabList, Ripple, Tab_1, TabPanels, TabPanel, NgOptimizedImage, Select, FormsModule, ButtonDirective, CodemirrorModule, InputText, Dialog, PrimeTemplate, FileUpload, TranslatePipe]
 })
 
 

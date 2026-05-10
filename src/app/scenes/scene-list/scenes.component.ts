@@ -3,7 +3,7 @@ import { Component, OnInit, DestroyRef, inject, ChangeDetectionStrategy, ChangeD
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 
 
@@ -14,6 +14,9 @@ import {SystemInfo} from '../../common/models/system-info';
 import {SceneInfo} from '../../common/models/scene-info';
 import {ServerApiService} from '../../common/services/server-api.service';
 import {Title} from '@angular/platform-browser';
+import { Bind } from 'primeng/bind';
+import { Accordion, AccordionPanel, AccordionHeader, AccordionContent } from 'primeng/accordion';
+import { Ripple } from 'primeng/ripple';
 
 
 
@@ -24,7 +27,7 @@ import {Title} from '@angular/platform-browser';
     styleUrls: ['./scenes.component.css'],
     providers: [MessageService],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [Bind, Accordion, AccordionPanel, Ripple, AccordionHeader, AccordionContent, TranslatePipe]
 })
 export class ScenesComponent implements OnInit {
 

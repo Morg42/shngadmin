@@ -3,12 +3,12 @@ import {Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectorRef, ChangeDe
 import {AppConfigService} from '../../common/services/app-config.service';
 import { HttpClient } from '@angular/common/http';
 
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateDirective, TranslatePipe } from '@ngx-translate/core';
 
 import { faSearch, faCircleNotch, faFolder, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 import { faSync, faList, faStop, faTrashAlt, faThumbtack } from '@fortawesome/free-solid-svg-icons';
 
-import { TreeNode } from 'primeng/api';
+import { TreeNode, PrimeTemplate } from 'primeng/api';
 
 import { cloneDeep } from 'lodash';
 
@@ -23,6 +23,17 @@ import {ServerApiService} from '../../common/services/server-api.service';
 import {Title} from '@angular/platform-browser';
 import {Subscription} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import { Bind } from 'primeng/bind';
+import { Tabs, TabList, Tab, TabPanels, TabPanel } from 'primeng/tabs';
+import { Ripple } from 'primeng/ripple';
+import { Dialog } from 'primeng/dialog';
+import { Tooltip } from 'primeng/tooltip';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { Tree } from 'primeng/tree';
+import { ToggleSwitch } from 'primeng/toggleswitch';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { NgTemplateOutlet } from '@angular/common';
 
 type MonitoredItem = [string, Record<string, unknown>];
 
@@ -33,7 +44,7 @@ type MonitoredItem = [string, Record<string, unknown>];
     styleUrls: ['item-tree.component.css'],
     providers: [WebsocketService, WebsocketPluginService],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [Bind, Tabs, TabList, Ripple, Tab, TabPanels, TabPanel, Dialog, TranslateDirective, Tooltip, FaIconComponent, Tree, PrimeTemplate, ToggleSwitch, FormsModule, RouterLink, NgTemplateOutlet, TranslatePipe]
 })
 export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   @ViewChild('vc', { read: ViewContainerRef, static: true }) vc: ViewContainerRef;

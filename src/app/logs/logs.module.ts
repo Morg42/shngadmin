@@ -20,27 +20,25 @@ import { LoggerLineComponent } from './logger-line/logger-line.component';
 import { LoggerTabComponent } from './logger-tab/logger-tab.component';
 
 @NgModule({
-  declarations: [
-    LogDisplayComponent,
-    LoggerListComponent,
-    LoggingConfigurationComponent,
-    LoggerLineComponent,
-    LoggerTabComponent,
-  ],
-  imports: [
-    SharedModule,
-    LogsRoutingModule,
-    CodemirrorModule,
-    FontAwesomeModule,
-    TabsModule,
-    MessageModule,
-    Checkbox,
-    Dialog,
-    ProgressSpinnerModule,
-    Select,
-    InputTextModule,
-    ButtonModule,
-    TooltipModule,
-  ],
+    imports: [
+        SharedModule,
+        LogsRoutingModule,
+        CodemirrorModule,
+        FontAwesomeModule,
+        TabsModule,
+        MessageModule,
+        Checkbox,
+        Dialog,
+        ProgressSpinnerModule,
+        Select,
+        InputTextModule,
+        ButtonModule,
+        TooltipModule,
+        LogDisplayComponent,
+        LoggerListComponent,
+        LoggingConfigurationComponent,
+        LoggerLineComponent,
+        LoggerTabComponent,
+    ],
 })
 export class LogsModule {}

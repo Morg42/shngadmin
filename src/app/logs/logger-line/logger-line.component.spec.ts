@@ -8,8 +8,8 @@ describe('LoggerLineComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoggerLineComponent ]
-    })
+    imports: [LoggerLineComponent]
+})
     .compileComponents();
   }));
 

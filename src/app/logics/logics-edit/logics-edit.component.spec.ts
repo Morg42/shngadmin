@@ -8,8 +8,8 @@ describe('LogicsEditComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LogicsEditComponent ]
-    })
+    imports: [LogicsEditComponent]
+})
     .compileComponents();
   }));
 

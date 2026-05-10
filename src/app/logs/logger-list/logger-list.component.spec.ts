@@ -8,8 +8,8 @@ describe('LoggerListComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoggerListComponent ]
-    })
+    imports: [LoggerListComponent]
+})
     .compileComponents();
   }));
 

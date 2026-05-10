@@ -8,8 +8,8 @@ describe('LoggerTabComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoggerTabComponent ]
-    })
+    imports: [LoggerTabComponent]
+})
     .compileComponents();
   }));
 

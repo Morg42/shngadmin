@@ -6,15 +6,21 @@ import {ServerInfo} from '../../common/models/server-info';
 import {ServicesApiService} from '../../common/services/services-api.service';
 import {ServerApiService} from '../../common/services/server-api.service';
 import {SharedService} from '../../common/services/shared.service';
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import {Title} from '@angular/platform-browser';
+import { Bind } from 'primeng/bind';
+import { ButtonDirective } from 'primeng/button';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+import { FormsModule } from '@angular/forms';
+import { Dialog } from 'primeng/dialog';
+import { PrimeTemplate } from 'primeng/api';
 
 @Component({
     selector: 'app-logging-configuration',
     templateUrl: './logging-configuration.component.html',
     styleUrls: ['./logging-configuration.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [Bind, ButtonDirective, CodemirrorModule, FormsModule, Dialog, PrimeTemplate, TranslatePipe]
 })
 export class LoggingConfigurationComponent implements AfterViewChecked, OnInit {
 

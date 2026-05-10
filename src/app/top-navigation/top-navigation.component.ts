@@ -2,13 +2,14 @@
 import {Component, OnInit, DoCheck, SimpleChanges, HostListener, DestroyRef, inject} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AppConfigService} from '../common/services/app-config.service';
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import {ServerApiService} from '../common/services/server-api.service';
-import {Router} from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {AuthService} from '../common/services/auth.service';
 //import { HttpClient } from '@angular/common/http';
 import {SharedService} from '../common/services/shared.service';
 import {Title} from '@angular/platform-browser';
+import { NgOptimizedImage } from '@angular/common';
 
 interface MenuEntry {
   label: string;
@@ -24,7 +25,7 @@ interface MenuItem {
     selector: 'app-top-navigation',
     templateUrl: './top-navigation.component.html',
     styleUrls: ['./top-navigation.component.css'],
-    standalone: false
+    imports: [NgOptimizedImage, RouterLink, TranslatePipe]
 })
 
 

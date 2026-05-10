@@ -14,21 +14,19 @@ import { ServicesComponent } from './services.component';
 import { FunctionConfigurationComponent } from './function-configuration/function-configuration.component';
 
 @NgModule({
-  declarations: [
-    ServicesComponent,
-    FunctionConfigurationComponent,
-  ],
-  imports: [
-    SharedModule,
-    ServicesRoutingModule,
-    CodemirrorModule,
-    TabsModule,
-    Dialog,
-    FileUploadModule,
-    ListboxModule,
-    Select,
-    InputTextModule,
-    ButtonModule,
-  ],
+    imports: [
+        SharedModule,
+        ServicesRoutingModule,
+        CodemirrorModule,
+        TabsModule,
+        Dialog,
+        FileUploadModule,
+        ListboxModule,
+        Select,
+        InputTextModule,
+        ButtonModule,
+        ServicesComponent,
+        FunctionConfigurationComponent,
+    ],
 })
 export class ServicesModule {}

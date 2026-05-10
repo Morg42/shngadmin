@@ -4,7 +4,7 @@ import { Component, OnInit, DestroyRef, inject, ChangeDetectionStrategy, ChangeD
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AppConfigService} from '../../common/services/app-config.service';
 
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 
 import {ConfigApiService} from '../../common/services/config-api.service';
 import {SchedulersApiService} from '../../common/services/schedulers-api.service';
@@ -15,6 +15,18 @@ import { TableColumn, ConfigParameter } from '../../common/models/interfaces';
 
 import {sha512} from 'js-sha512';
 import {Title} from '@angular/platform-browser';
+import { Bind } from 'primeng/bind';
+import { Tabs, TabList, Tab, TabPanels, TabPanel } from 'primeng/tabs';
+import { Ripple } from 'primeng/ripple';
+import { TableModule } from 'primeng/table';
+import { PrimeTemplate } from 'primeng/api';
+import { NgStyle } from '@angular/common';
+import { DynamicFieldComponent } from '../../common/components/dynamic-field/dynamic-field.component';
+import { ButtonDirective } from 'primeng/button';
+import { Dialog } from 'primeng/dialog';
+import { Message } from 'primeng/message';
+import { FormsModule } from '@angular/forms';
+import { InputText } from 'primeng/inputtext';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SystemConfig = any;
@@ -25,7 +37,7 @@ type SystemConfig = any;
     templateUrl: './system-config.component.html',
     styleUrls: ['./system-config.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [Bind, Tabs, TabList, Ripple, Tab, TabPanels, TabPanel, TableModule, PrimeTemplate, NgStyle, DynamicFieldComponent, ButtonDirective, Dialog, Message, FormsModule, InputText, TranslatePipe]
 })
 
 export class SystemConfigComponent implements OnInit {

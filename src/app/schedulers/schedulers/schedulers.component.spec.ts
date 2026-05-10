@@ -8,8 +8,8 @@ describe('SchedulersComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SchedulersComponent ]
-    })
+    imports: [SchedulersComponent]
+})
     .compileComponents();
   }));
 

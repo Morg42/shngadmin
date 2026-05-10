@@ -19,27 +19,25 @@ import { StructsComponent } from './structs/structs.component';
 import { StructConfigurationComponent } from './struct-configuration/struct-configuration.component';
 
 @NgModule({
-  declarations: [
-    ItemTreeComponent,
-    ItemConfigurationComponent,
-    ItemConfiguration2Component,
-    StructsComponent,
-    StructConfigurationComponent,
-  ],
-  imports: [
-    SharedModule,
-    ItemsRoutingModule,
-    CodemirrorModule,
-    FontAwesomeModule,
-    TabsModule,
-    TreeModule,
-    AccordionModule,
-    Dialog,
-    ToggleSwitch,
-    ListboxModule,
-    InputTextModule,
-    TooltipModule,
-    ButtonModule,
-  ],
+    imports: [
+        SharedModule,
+        ItemsRoutingModule,
+        CodemirrorModule,
+        FontAwesomeModule,
+        TabsModule,
+        TreeModule,
+        AccordionModule,
+        Dialog,
+        ToggleSwitch,
+        ListboxModule,
+        InputTextModule,
+        TooltipModule,
+        ButtonModule,
+        ItemTreeComponent,
+        ItemConfigurationComponent,
+        ItemConfiguration2Component,
+        StructsComponent,
+        StructConfigurationComponent,
+    ],
 })
 export class ItemsModule {}

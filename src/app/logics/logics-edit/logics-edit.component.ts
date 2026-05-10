@@ -11,16 +11,29 @@ import {LogicsApiService} from '../../common/services/logics-api.service';
 import {LogicsWatchItem} from '../../common/models/logics-watch-item';
 import {SharedService} from '../../common/services/shared.service';
 import { TableColumn, ConfigParameter } from '../../common/models/interfaces';
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import {Title} from '@angular/platform-browser';
 import {ServerApiService} from '../../common/services/server-api.service';
+import { Bind } from 'primeng/bind';
+import { Tabs, TabList, Tab as Tab_1, TabPanels, TabPanel } from 'primeng/tabs';
+import { Ripple } from 'primeng/ripple';
+import { ButtonDirective } from 'primeng/button';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+import { FormsModule } from '@angular/forms';
+import { InputText } from 'primeng/inputtext';
+import { NgStyle } from '@angular/common';
+import { Message } from 'primeng/message';
+import { TableModule } from 'primeng/table';
+import { PrimeTemplate } from 'primeng/api';
+import { DynamicFieldComponent } from '../../common/components/dynamic-field/dynamic-field.component';
+import { Dialog } from 'primeng/dialog';
 
 @Component({
     selector: 'app-logics-edit',
     templateUrl: './logics-edit.component.html',
     styleUrls: ['./logics-edit.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [Bind, Tabs, TabList, Ripple, Tab_1, TabPanels, TabPanel, ButtonDirective, CodemirrorModule, FormsModule, InputText, NgStyle, Message, TableModule, PrimeTemplate, DynamicFieldComponent, Dialog, TranslatePipe]
 })
 
 export class LogicsEditComponent implements AfterViewChecked, OnInit {

@@ -12,19 +12,17 @@ import { ScenesComponent } from './scene-list/scenes.component';
 import { SceneConfigurationComponent } from './scene-configuration/scene-configuration.component';
 
 @NgModule({
-  declarations: [
-    ScenesComponent,
-    SceneConfigurationComponent,
-  ],
-  imports: [
-    SharedModule,
-    ScenesRoutingModule,
-    CodemirrorModule,
-    AccordionModule,
-    Dialog,
-    ListboxModule,
-    InputTextModule,
-    ButtonModule,
-  ],
+    imports: [
+        SharedModule,
+        ScenesRoutingModule,
+        CodemirrorModule,
+        AccordionModule,
+        Dialog,
+        ListboxModule,
+        InputTextModule,
+        ButtonModule,
+        ScenesComponent,
+        SceneConfigurationComponent,
+    ],
 })
 export class ScenesModule {}

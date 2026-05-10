@@ -3,16 +3,19 @@ import { Component, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorR
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {ActivatedRoute, Router} from '@angular/router';
 
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 
 import { AuthService } from './../common/services/auth.service';
+import { FormsModule } from '@angular/forms';
+import { Bind } from 'primeng/bind';
+import { Message } from 'primeng/message';
 
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [FormsModule, Bind, Message, TranslatePipe]
 })
 export class LoginComponent {
   private readonly destroyRef = inject(DestroyRef);

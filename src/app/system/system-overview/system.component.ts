@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { ChartData } from 'chart.js';
@@ -20,6 +20,11 @@ import { WebsocketPluginService } from '../../common/services/websocket-plugin.s
 import { SharedService } from '../../common/services/shared.service';
 import { ServerApiService } from '../../common/services/server-api.service';
 import {APP_NAME, APP_VERSION} from '../../app.component';
+import { Bind } from 'primeng/bind';
+import { Tabs, TabList, Tab, TabPanels, TabPanel } from 'primeng/tabs';
+import { Ripple } from 'primeng/ripple';
+import { NgOptimizedImage, DecimalPipe } from '@angular/common';
+import { UIChart } from 'primeng/chart';
 
 
 @Component({
@@ -28,7 +33,7 @@ import {APP_NAME, APP_VERSION} from '../../app.component';
     styleUrls: ['./system.component.css'],
     providers: [WebsocketService, WebsocketPluginService],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [Bind, Tabs, TabList, Ripple, Tab, TabPanels, TabPanel, NgOptimizedImage, UIChart, DecimalPipe, TranslatePipe]
 })
 export class SystemComponent implements OnDestroy, OnInit {
 

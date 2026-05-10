@@ -4,8 +4,7 @@ import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject }
     selector: 'app-no-access',
     templateUrl: './no-access.component.html',
     styleUrls: ['./no-access.component.css'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NoAccessComponent implements OnInit {
 

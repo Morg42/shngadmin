@@ -8,8 +8,8 @@ describe('SystemConfigComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SystemConfigComponent ]
-    })
+    imports: [SystemConfigComponent]
+})
     .compileComponents();
   }));
 

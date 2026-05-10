@@ -1,20 +1,27 @@
 import {Component, OnInit, ViewChild, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import {ServerApiService} from '../../common/services/server-api.service';
 import {FilesApiService} from '../../common/services/files-api.service';
 import {ServicesApiService} from '../../common/services/services-api.service';
 import {Title} from '@angular/platform-browser';
-import {SelectItem} from 'primeng/api';
+import { SelectItem, PrimeTemplate } from 'primeng/api';
 import {LogicsApiService} from '../../common/services/logics-api.service';
 import {LogicsGroupType} from '../../common/models/logics-info';
+import { Bind } from 'primeng/bind';
+import { ButtonDirective } from 'primeng/button';
+import { Listbox } from 'primeng/listbox';
+import { FormsModule } from '@angular/forms';
+import { InputText } from 'primeng/inputtext';
+import { NgStyle } from '@angular/common';
+import { Dialog } from 'primeng/dialog';
 
 @Component({
     selector: 'app-logics-groups',
     templateUrl: './logics-groups.component.html',
     styleUrls: ['./logics-groups.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [Bind, ButtonDirective, Listbox, FormsModule, InputText, NgStyle, Dialog, PrimeTemplate, TranslatePipe]
 })
 export class LogicsGroupsComponent implements OnInit {
 

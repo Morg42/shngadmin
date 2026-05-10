@@ -7,8 +7,12 @@ import {faPlayCircle, faPauseCircle, faExclamationTriangle, faCode, faLaptopCode
 import { PluginsApiService } from '../../common/services/plugins-api.service';
 import { PlugininfoType } from '../../common/models/plugin-info';
 import {ServerApiService} from '../../common/services/server-api.service';
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService, TranslateDirective, TranslatePipe } from '@ngx-translate/core';
 import {Title} from '@angular/platform-browser';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { NgOptimizedImage, UpperCasePipe } from '@angular/common';
+import { Bind } from 'primeng/bind';
+import { Dialog } from 'primeng/dialog';
 
 @Component({
     selector: 'app-plugins',
@@ -16,7 +20,7 @@ import {Title} from '@angular/platform-browser';
     styleUrls: ['./plugins.component.css'],
     providers: [],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [FaIconComponent, NgOptimizedImage, Bind, Dialog, TranslateDirective, UpperCasePipe, TranslatePipe]
 })
 export class PluginsComponent implements OnInit {
 

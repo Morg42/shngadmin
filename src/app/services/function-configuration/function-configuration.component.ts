@@ -3,13 +3,21 @@ import {Component, OnInit, AfterViewChecked, ViewChild, DestroyRef, inject, Chan
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 
-import { TranslateService } from '@ngx-translate/core';
-import {SelectItem} from 'primeng/api';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
+import { SelectItem, PrimeTemplate } from 'primeng/api';
 
 import {FilesApiService} from '../../common/services/files-api.service';
 import {ServerInfo} from '../../common/models/server-info';
 import {ServicesApiService} from '../../common/services/services-api.service';
 import {FunctionsApiService} from '../../common/services/functions-api.service';
+import { Bind } from 'primeng/bind';
+import { ButtonDirective } from 'primeng/button';
+import { Listbox } from 'primeng/listbox';
+import { FormsModule } from '@angular/forms';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+import { Dialog } from 'primeng/dialog';
+import { InputText } from 'primeng/inputtext';
+import { NgStyle } from '@angular/common';
 
 
 @Component({
@@ -17,7 +25,7 @@ import {FunctionsApiService} from '../../common/services/functions-api.service';
     templateUrl: './function-configuration.component.html',
     styleUrls: ['./function-configuration.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [Bind, ButtonDirective, Listbox, FormsModule, CodemirrorModule, Dialog, PrimeTemplate, InputText, NgStyle, TranslatePipe]
 })
 export class FunctionConfigurationComponent implements AfterViewChecked, OnInit {
 

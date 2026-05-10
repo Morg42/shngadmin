@@ -9,25 +9,23 @@ import { InputTextModule } from 'primeng/inputtext';
 import { DynamicFieldComponent } from './components/dynamic-field/dynamic-field.component';
 
 @NgModule({
-  declarations: [
-    DynamicFieldComponent,
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    RouterModule,
-    NgOptimizedImage,
-    TranslateModule.forChild(),
-    Select,
-    InputTextModule,
-  ],
-  exports: [
-    CommonModule,
-    FormsModule,
-    RouterModule,
-    NgOptimizedImage,
-    TranslateModule,
-    DynamicFieldComponent,
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        RouterModule,
+        NgOptimizedImage,
+        TranslateModule.forChild(),
+        Select,
+        InputTextModule,
+        DynamicFieldComponent,
+    ],
+    exports: [
+        CommonModule,
+        FormsModule,
+        RouterModule,
+        NgOptimizedImage,
+        TranslateModule,
+        DynamicFieldComponent,
+    ],
 })
 export class SharedModule {}

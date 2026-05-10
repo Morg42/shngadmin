@@ -8,7 +8,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import {faPlus, faPlusCircle, faPlusSquare, faExclamationTriangle, faCode, faLaptopCode} from '@fortawesome/free-solid-svg-icons';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 
 // import { DeleteConfigComponent } from './delete-config/delete-config.component';
 
@@ -26,6 +26,20 @@ import { PluginsInstalled } from '../../common/models/plugins-installed';
 import {SceneInfo} from '../../common/models/scene-info';
 import {Title} from '@angular/platform-browser';
 import { TableColumn, ConfigParameter } from '../../common/models/interfaces';
+import { Bind } from 'primeng/bind';
+import { ProgressSpinner } from 'primeng/progressspinner';
+import { ButtonDirective } from 'primeng/button';
+import { NgOptimizedImage, NgStyle } from '@angular/common';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { Dialog } from 'primeng/dialog';
+import { PrimeTemplate } from 'primeng/api';
+import { ToggleSwitch } from 'primeng/toggleswitch';
+import { FormsModule } from '@angular/forms';
+import { TableModule } from 'primeng/table';
+import { DynamicFieldComponent } from '../../common/components/dynamic-field/dynamic-field.component';
+import { Accordion, AccordionPanel, AccordionHeader, AccordionContent } from 'primeng/accordion';
+import { Ripple } from 'primeng/ripple';
+import { InputText } from 'primeng/inputtext';
 
 
 export interface ConfiguredPlugin { confname: string; instance: string; plugin: string; desc: string; }
@@ -36,10 +50,7 @@ export interface ConfiguredPlugin { confname: string; instance: string; plugin: 
     templateUrl: './plugin-config.component.html',
     styleUrls: ['./plugin-config.component.css'],
     providers: [AppComponent],
-    // Default CD (not OnPush): this is a one-shot config page with no streaming
-    // updates. OnPush adds timing fragility with PrimeNG p-table without any
-    // measurable benefit here.
-    standalone: false
+    imports: [Bind, ProgressSpinner, ButtonDirective, NgOptimizedImage, FaIconComponent, Dialog, PrimeTemplate, ToggleSwitch, FormsModule, TableModule, NgStyle, DynamicFieldComponent, Accordion, AccordionPanel, Ripple, AccordionHeader, AccordionContent, InputText, TranslatePipe]
 })
 export class PluginConfigComponent implements OnInit {
 

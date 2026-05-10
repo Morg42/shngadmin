@@ -7,11 +7,14 @@ import { HttpClient } from '@angular/common/http';
 import { SchedulerInfo } from '../../common/models/scheduler-info';
 import {SceneInfo} from '../../common/models/scene-info';
 import {SystemInfo} from '../../common/models/system-info';
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import {MessageService} from 'primeng/api';
 import {SchedulersApiService} from '../../common/services/schedulers-api.service';
 import {ServerApiService} from '../../common/services/server-api.service';
 import {Title} from '@angular/platform-browser';
+import { Bind } from 'primeng/bind';
+import { Tabs, TabList, Tab, TabPanels, TabPanel } from 'primeng/tabs';
+import { Ripple } from 'primeng/ripple';
 
 
 @Component({
@@ -19,7 +22,7 @@ import {Title} from '@angular/platform-browser';
     templateUrl: './schedulers.component.html',
     styleUrls: ['./schedulers.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [Bind, Tabs, TabList, Ripple, Tab, TabPanels, TabPanel, TranslatePipe]
 })
 
 export class SchedulersComponent implements OnInit {

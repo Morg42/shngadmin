@@ -5,9 +5,19 @@ import {Router} from '@angular/router';
 
 import { LoggersType } from '../../common/models/loggers-info';
 import { LoggersApiService } from '../../common/services/loggers-api.service';
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import {Title} from '@angular/platform-browser';
 import {ServerApiService} from '../../common/services/server-api.service';
+import { Bind } from 'primeng/bind';
+import { Tabs, TabList, Tab, TabPanels, TabPanel } from 'primeng/tabs';
+import { Ripple } from 'primeng/ripple';
+import { ButtonDirective } from 'primeng/button';
+import { LoggerLineComponent } from '../logger-line/logger-line.component';
+import { Dialog } from 'primeng/dialog';
+import { PrimeTemplate } from 'primeng/api';
+import { Select } from 'primeng/select';
+import { FormsModule } from '@angular/forms';
+import { Message } from 'primeng/message';
 
 @Component({
     selector: 'app-logger-list',
@@ -15,7 +25,7 @@ import {ServerApiService} from '../../common/services/server-api.service';
     styleUrls: ['./logger-list.component.css'],
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [Bind, Tabs, TabList, Ripple, Tab, TabPanels, TabPanel, ButtonDirective, LoggerLineComponent, Dialog, PrimeTemplate, Select, FormsModule, Message, TranslatePipe]
 })
 export class LoggerListComponent implements OnInit {
 

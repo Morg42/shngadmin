@@ -6,7 +6,7 @@ import { ThreadInfo } from '../../common/models/thread-info';
 import {ThreadsApiService} from '../../common/services/threads-api.service';
 import {ServerApiService} from '../../common/services/server-api.service';
 import {SharedService} from '../../common/services/shared.service';
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import {Title} from '@angular/platform-browser';
 
 
@@ -15,7 +15,7 @@ import {Title} from '@angular/platform-browser';
     templateUrl: './threads.component.html',
     styleUrls: ['./threads.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [TranslatePipe]
 })
 
 

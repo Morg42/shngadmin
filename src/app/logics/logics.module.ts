@@ -19,26 +19,24 @@ import { LogicsGroupsComponent } from './logics-groups/logics-groups.component';
 import { LogicsEditComponent } from './logics-edit/logics-edit.component';
 
 @NgModule({
-  declarations: [
-    LogicsListComponent,
-    LogicsGroupsComponent,
-    LogicsEditComponent,
-  ],
-  imports: [
-    SharedModule,
-    LogicsRoutingModule,
-    FontAwesomeModule,
-    TabsModule,
-    MessageModule,
-    CodemirrorModule,
-    AccordionModule,
-    Dialog,
-    ListboxModule,
-    Select,
-    TableModule,
-    InputTextModule,
-    ButtonModule,
-    TooltipModule,
-  ],
+    imports: [
+        SharedModule,
+        LogicsRoutingModule,
+        FontAwesomeModule,
+        TabsModule,
+        MessageModule,
+        CodemirrorModule,
+        AccordionModule,
+        Dialog,
+        ListboxModule,
+        Select,
+        TableModule,
+        InputTextModule,
+        ButtonModule,
+        TooltipModule,
+        LogicsListComponent,
+        LogicsGroupsComponent,
+        LogicsEditComponent,
+    ],
 })
 export class LogicsModule {}

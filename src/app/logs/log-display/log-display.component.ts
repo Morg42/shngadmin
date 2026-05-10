@@ -5,10 +5,20 @@ import {ActivatedRoute, convertToParamMap} from '@angular/router';
 
 import { LogsType, LogsInfoDict } from '../../common/models/logfiles-info';
 import { LogsApiService } from '../../common/services/logs-api.service';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 
 import {Title} from '@angular/platform-browser';
 import {ServerApiService} from '../../common/services/server-api.service';
+import { Bind } from 'primeng/bind';
+import { Select } from 'primeng/select';
+import { FormsModule } from '@angular/forms';
+import { ButtonDirective } from 'primeng/button';
+import { InputText } from 'primeng/inputtext';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+import { Dialog } from 'primeng/dialog';
+import { NgStyle } from '@angular/common';
+import { ProgressSpinner } from 'primeng/progressspinner';
+import { PrimeTemplate } from 'primeng/api';
 
 interface DropDownEntry {
   label: string;
@@ -21,7 +31,7 @@ interface DropDownEntry {
     styleUrls: ['./log-display.component.css'],
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [Bind, Select, FormsModule, ButtonDirective, InputText, CodemirrorModule, Dialog, NgStyle, ProgressSpinner, PrimeTemplate, TranslatePipe]
 })
 export class LogDisplayComponent implements AfterViewChecked, OnInit {
 

@@ -16,23 +16,21 @@ import { SystemComponent } from './system-overview/system.component';
 import { SystemConfigComponent } from './system-config/system-config.component';
 
 @NgModule({
-  declarations: [
-    SystemComponent,
-    SystemConfigComponent,
-  ],
-  imports: [
-    SharedModule,
-    SystemRoutingModule,
-    FontAwesomeModule,
-    TabsModule,
-    ChartModule,
-    TableModule,
-    Dialog,
-    Select,
-    InputTextModule,
-    ToggleButtonModule,
-    ButtonModule,
-    MessageModule,
-  ],
+    imports: [
+        SharedModule,
+        SystemRoutingModule,
+        FontAwesomeModule,
+        TabsModule,
+        ChartModule,
+        TableModule,
+        Dialog,
+        Select,
+        InputTextModule,
+        ToggleButtonModule,
+        ButtonModule,
+        MessageModule,
+        SystemComponent,
+        SystemConfigComponent,
+    ],
 })
 export class SystemModule {}

@@ -16,23 +16,21 @@ import { PluginsComponent } from './plugin-list/plugins.component';
 import { PluginConfigComponent } from './config/plugin-config.component';
 
 @NgModule({
-  declarations: [
-    PluginsComponent,
-    PluginConfigComponent,
-  ],
-  imports: [
-    SharedModule,
-    PluginsRoutingModule,
-    FontAwesomeModule,
-    AccordionModule,
-    Dialog,
-    ToggleSwitch,
-    ProgressSpinnerModule,
-    Select,
-    TableModule,
-    InputTextModule,
-    ButtonModule,
-    TooltipModule,
-  ],
+    imports: [
+        SharedModule,
+        PluginsRoutingModule,
+        FontAwesomeModule,
+        AccordionModule,
+        Dialog,
+        ToggleSwitch,
+        ProgressSpinnerModule,
+        Select,
+        TableModule,
+        InputTextModule,
+        ButtonModule,
+        TooltipModule,
+        PluginsComponent,
+        PluginConfigComponent,
+    ],
 })
 export class PluginsModule {}

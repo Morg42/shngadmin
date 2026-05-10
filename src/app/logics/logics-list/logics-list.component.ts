@@ -9,10 +9,21 @@ import {LogicsApiService} from '../../common/services/logics-api.service';
 import {LogicsGroupType, LogicsinfoType} from '../../common/models/logics-info';
 import {OlddataService} from '../../common/services/olddata.service';
 // //// import {Log} from '@angular/core/testing/src/logger';
-import {ActivatedRoute, Router} from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {Title} from '@angular/platform-browser';
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import {ServerApiService} from '../../common/services/server-api.service';
+import { Bind } from 'primeng/bind';
+import { Tabs, TabList, Tab, TabPanels, TabPanel } from 'primeng/tabs';
+import { Ripple } from 'primeng/ripple';
+import { ButtonDirective } from 'primeng/button';
+import { Accordion, AccordionPanel, AccordionHeader, AccordionContent } from 'primeng/accordion';
+import { Dialog } from 'primeng/dialog';
+import { PrimeTemplate } from 'primeng/api';
+import { FormsModule } from '@angular/forms';
+import { InputText } from 'primeng/inputtext';
+import { NgStyle } from '@angular/common';
+import { Message } from 'primeng/message';
 
 @Component({
     selector: 'app-logics',
@@ -20,7 +31,7 @@ import {ServerApiService} from '../../common/services/server-api.service';
     styleUrls: ['./logics-list.component.css'],
     providers: [OlddataService],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [Bind, Tabs, TabList, Ripple, Tab, TabPanels, TabPanel, ButtonDirective, Accordion, AccordionPanel, AccordionHeader, AccordionContent, RouterLink, Dialog, PrimeTemplate, FormsModule, InputText, NgStyle, Message, TranslatePipe]
 })
 export class LogicsListComponent implements OnInit {
 

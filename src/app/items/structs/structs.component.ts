@@ -4,8 +4,8 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 
 import { ServerInfo } from '../../common/models/server-info';
-import { TranslateService } from '@ngx-translate/core';
-import { TreeNode } from 'primeng/api';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
+import { TreeNode, PrimeTemplate } from 'primeng/api';
 
 
 import { StructsApiService } from '../../common/services/structs-api.service';
@@ -16,6 +16,11 @@ import { SceneInfo } from '../../common/models/scene-info';
 import { SharedService } from '../../common/services/shared.service';
 import {ServerApiService} from '../../common/services/server-api.service';
 import {Title} from '@angular/platform-browser';
+import { Bind } from 'primeng/bind';
+import { Accordion, AccordionPanel, AccordionHeader, AccordionContent } from 'primeng/accordion';
+import { Ripple } from 'primeng/ripple';
+import { ButtonDirective } from 'primeng/button';
+import { Tree } from 'primeng/tree';
 
 
 
@@ -25,7 +30,7 @@ import {Title} from '@angular/platform-browser';
     templateUrl: './structs.component.html',
     styleUrls: ['./structs.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [Bind, Accordion, AccordionPanel, Ripple, AccordionHeader, AccordionContent, ButtonDirective, Tree, PrimeTemplate, TranslatePipe]
 })
 export class StructsComponent implements OnInit {
 

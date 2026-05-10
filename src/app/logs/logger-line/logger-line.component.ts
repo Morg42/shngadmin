@@ -1,12 +1,22 @@
 import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { LoggersType } from '../../common/models/loggers-info';
+import { Bind } from 'primeng/bind';
+import { Select } from 'primeng/select';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { Dialog } from 'primeng/dialog';
+import { PrimeTemplate } from 'primeng/api';
+import { ButtonDirective } from 'primeng/button';
+import { Checkbox } from 'primeng/checkbox';
+import { Message } from 'primeng/message';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
     selector: 'logger-line',
     templateUrl: './logger-line.component.html',
     styleUrls: ['./logger-line.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [Bind, Select, FormsModule, RouterLink, Dialog, PrimeTemplate, ButtonDirective, Checkbox, Message, TranslatePipe]
 })
 export class LoggerLineComponent implements OnInit {
 

@@ -4,13 +4,17 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AppConfigService} from '../common/services/app-config.service';
 // import { isSuccess } from '@angular/http/src/http_utils';
 
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { MenuItem } from 'primeng/api';
 
 import { ServerInfo } from '../common/models/server-info';
 import { ServerApiService } from '../common/services/server-api.service';
 import { AuthService } from '../common/services/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { Bind } from 'primeng/bind';
+import { Menubar } from 'primeng/menubar';
+import { NgOptimizedImage } from '@angular/common';
+import { ButtonDirective } from 'primeng/button';
 
 
 @Component({
@@ -19,7 +23,7 @@ import { Router } from '@angular/router';
     styleUrls: ['./header.component.css'],
     providers: [],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [Bind, Menubar, NgOptimizedImage, RouterLink, ButtonDirective, TranslatePipe]
 })
 
 

@@ -4,8 +4,7 @@ import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject }
     selector: 'app-logger-tab',
     templateUrl: './logger-tab.component.html',
     styleUrls: ['./logger-tab.component.css'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoggerTabComponent implements OnInit {
 

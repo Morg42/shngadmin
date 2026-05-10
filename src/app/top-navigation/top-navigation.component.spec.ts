@@ -8,8 +8,8 @@ describe('TopNavigationComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ TopNavigationComponent ]
-    })
+    imports: [TopNavigationComponent]
+})
     .compileComponents();
   }));
 

@@ -7,14 +7,12 @@ import { SchedulersComponent } from './schedulers/schedulers.component';
 import { ThreadsComponent } from './threads/threads.component';
 
 @NgModule({
-  declarations: [
-    SchedulersComponent,
-    ThreadsComponent,
-  ],
-  imports: [
-    SharedModule,
-    SchedulersRoutingModule,
-    TabsModule,
-  ],
+    imports: [
+        SharedModule,
+        SchedulersRoutingModule,
+        TabsModule,
+        SchedulersComponent,
+        ThreadsComponent,
+    ],
 })
 export class SchedulersModule {}

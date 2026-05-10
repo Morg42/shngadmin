@@ -8,8 +8,8 @@ describe('LoggingConfigurationComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoggingConfigurationComponent ]
-    })
+    imports: [LoggingConfigurationComponent]
+})
     .compileComponents();
   }));
 

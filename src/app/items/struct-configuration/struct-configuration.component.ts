@@ -5,14 +5,20 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {FilesApiService} from '../../common/services/files-api.service';
 import {ServicesApiService} from '../../common/services/services-api.service';
 import {Title} from '@angular/platform-browser';
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
+import { Bind } from 'primeng/bind';
+import { ButtonDirective } from 'primeng/button';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+import { FormsModule } from '@angular/forms';
+import { Dialog } from 'primeng/dialog';
+import { PrimeTemplate } from 'primeng/api';
 
 @Component({
     selector: 'app-struct-configuration',
     templateUrl: './struct-configuration.component.html',
     styleUrls: ['./struct-configuration.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [Bind, ButtonDirective, CodemirrorModule, FormsModule, Dialog, PrimeTemplate, TranslatePipe]
 })
 export class StructConfigurationComponent implements AfterViewChecked, OnInit {
 

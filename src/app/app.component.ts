@@ -9,6 +9,7 @@ import {ServerApiService} from './common/services/server-api.service';
 import {AuthService} from './common/services/auth.service';
 import {ServerInfo} from './common/models/server-info';
 import {SharedService} from './common/services/shared.service';
+import {UserPreferencesService} from './common/services/user-preferences.service';
 import { TopNavigationComponent } from './top-navigation/top-navigation.component';
 import { RouterOutlet } from '@angular/router';
 
@@ -41,6 +42,7 @@ export class AppComponent implements OnInit {
   private shared = inject(SharedService);
   public authService = inject(AuthService);
   private titleService = inject(Title);
+  private userPrefs = inject(UserPreferencesService);
 
   public APP_NAME = APP_NAME;
   public APP_VERSION = APP_VERSION;
@@ -50,12 +52,13 @@ export class AppComponent implements OnInit {
   constructor() {
     console.log('AppComponent.constructor:');
 
-    this.translate.addLangs(['en']);
-    this.translate.addLangs(['de']);
-    this.translate.addLangs(['fr']);
+    this.translate.addLangs(['en', 'de', 'fr']);
 
-    this.translate.setDefaultLang('de');
-    this.translate.use('de');
+    // Use saved user preference immediately; server may refine it later via
+    // ServerApiService if no preference has been saved yet.
+    const initialLang = this.userPrefs.language ?? 'en';
+    this.translate.setDefaultLang(initialLang);
+    this.translate.use(initialLang);
 
     console.log('AppComponent.constructor getServerBasicInfo:');
     //    this.dataService.getServerBasicinfo()

@@ -68,9 +68,6 @@ export class TopNavigationComponent implements OnInit {
         console.log('TopNavigationComponent.ngOnInit: getDefaultLang()', this.translate.getDefaultLang());
         this.translate.use(this.appConfig.defaultLanguage);
         this.translate.setDefaultLang(this.appConfig.defaultLanguage);
-
-        this.translate.use('de');
-        this.translate.setDefaultLang('de');
         this.shared.setGuiLanguage();
         console.log('TopNavigationComponent.ngOnInit: getDefaultLang() =', this.translate.getDefaultLang());
 

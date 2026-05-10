@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
+import { UserPreferencesService } from './user-preferences.service';
 
 /**
  * Typed configuration that was previously scattered across sessionStorage.
@@ -58,7 +59,16 @@ const DEFAULT_CONFIG: AppConfig = {
 })
 export class AppConfigService {
 
-  private _config$ = new BehaviorSubject<AppConfig>({ ...DEFAULT_CONFIG });
+  private readonly userPrefs = inject(UserPreferencesService);
+
+  /**
+   * Seed defaultLanguage from the saved user preference so the correct
+   * language is active before the first server response arrives.
+   */
+  private _config$ = new BehaviorSubject<AppConfig>({
+    ...DEFAULT_CONFIG,
+    defaultLanguage: this.userPrefs.language ?? DEFAULT_CONFIG.defaultLanguage,
+  });
 
   // ----------------------------------------------------------------
   // Snapshot access — use when you just need a current value

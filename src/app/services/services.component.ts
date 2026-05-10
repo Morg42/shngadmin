@@ -2,6 +2,7 @@
 import { Component, AfterViewChecked, OnInit, ViewEncapsulation, ViewChild, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AppConfigService} from '../common/services/app-config.service';
+import {UserPreferencesService} from '../common/services/user-preferences.service';
 import { Title } from '@angular/platform-browser';
 // import { Title } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
@@ -64,6 +65,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
   private dataServiceServer = inject(ServerApiService);
   private titleService = inject(Title);
   private appConfig = inject(AppConfigService);
+  private userPrefs = inject(UserPreferencesService);
 
 //  schedulerinfo: SchedulerInfo[];
 
@@ -419,6 +421,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
   setLanguage() {
     console.log('setLanguage', this.selected_language);
     this.appConfig.setDefaultLanguage(this.selected_language);
+    this.userPrefs.setLanguage(this.selected_language);   // persist across reloads
     this.shared.setGuiLanguage();
     this.default_language = this.appConfig.defaultLanguage;
   }

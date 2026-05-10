@@ -8,6 +8,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {ServerInfo} from '../models/server-info';
 import {SharedService} from './shared.service';
 import {AppConfigService} from './app-config.service';
+import {UserPreferencesService} from './user-preferences.service';
 
 
 @Injectable({
@@ -20,6 +21,7 @@ export class ServerApiService {
   private translate = inject(TranslateService);
   private shared = inject(SharedService);
   private appConfig = inject(AppConfigService);
+  private userPrefs = inject(UserPreferencesService);
 
   shng_serverinfo: ServerInfo = <ServerInfo>{'itemtree_fullpath': true};
 
@@ -54,7 +56,10 @@ export class ServerApiService {
           this.shng_serverinfo = response as ServerInfo;
           const result = response as ServerInfo;
 
-          if (!this.appConfig.defaultLanguage) {
+          // Only apply the server's language if the user has no saved preference.
+          // (The old guard checked appConfig.defaultLanguage which is never empty
+          //  because DEFAULT_CONFIG seeds it to 'en' — so it silently did nothing.)
+          if (!this.userPrefs.language) {
             this.appConfig.patch({ defaultLanguage: result.default_language });
             this.translate.setDefaultLang(this.shared.getFallbackLanguage());
             this.shared.setGuiLanguage();
@@ -107,7 +112,7 @@ export class ServerApiService {
             wsPort: this.shng_serverinfo.websocket_port,
           });
 
-          if (!this.appConfig.defaultLanguage) {
+          if (!this.userPrefs.language) {
             this.appConfig.patch({ defaultLanguage: this.shng_serverinfo.default_language });
           }
 

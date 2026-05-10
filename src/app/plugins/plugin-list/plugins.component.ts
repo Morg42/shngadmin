@@ -2,15 +2,11 @@
 import { Component, OnInit, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AppConfigService} from '../../common/services/app-config.service';
-import { HttpClient } from '@angular/common/http';
 import {faPlayCircle, faPauseCircle, faExclamationTriangle, faCode, faLaptopCode} from '@fortawesome/free-solid-svg-icons';
 
 import { PluginsApiService } from '../../common/services/plugins-api.service';
-import { OlddataService } from '../../common/services/olddata.service';
-import { SchedulerInfo } from '../../common/models/scheduler-info';
 import { PlugininfoType } from '../../common/models/plugin-info';
 import {ServerApiService} from '../../common/services/server-api.service';
-import {LogicsinfoType} from '../../common/models/logics-info';
 import {TranslateService} from '@ngx-translate/core';
 import {Title} from '@angular/platform-browser';
 
@@ -18,7 +14,7 @@ import {Title} from '@angular/platform-browser';
     selector: 'app-plugins',
     templateUrl: './plugins.component.html',
     styleUrls: ['./plugins.component.css'],
-    providers: [OlddataService],
+    providers: [],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })
@@ -26,7 +22,6 @@ export class PluginsComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
-  private http = inject(HttpClient);
   private dataServiceServer = inject(ServerApiService);
   private pluginsDataService = inject(PluginsApiService);
   private translate = inject(TranslateService);
@@ -42,6 +37,7 @@ export class PluginsComponent implements OnInit {
   developerMode: boolean;
 
   showPluginDetails = false;
+  selectedPlugin: PlugininfoType | null = null;
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);

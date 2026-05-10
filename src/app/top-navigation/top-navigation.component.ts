@@ -1,14 +1,14 @@
 
-import {Component, OnInit, DoCheck, SimpleChanges, HostListener, DestroyRef, inject} from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {AppConfigService} from '../common/services/app-config.service';
+import { Component, OnInit, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { distinctUntilChanged, map } from 'rxjs/operators';
+import { AppConfigService } from '../common/services/app-config.service';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
-import {ServerApiService} from '../common/services/server-api.service';
+import { ServerApiService } from '../common/services/server-api.service';
 import { Router, RouterLink } from '@angular/router';
-import {AuthService} from '../common/services/auth.service';
-//import { HttpClient } from '@angular/common/http';
-import {SharedService} from '../common/services/shared.service';
-import {Title} from '@angular/platform-browser';
+import { AuthService } from '../common/services/auth.service';
+import { SharedService } from '../common/services/shared.service';
+import { Title } from '@angular/platform-browser';
 import { NgOptimizedImage } from '@angular/common';
 
 interface MenuEntry {
@@ -21,17 +21,18 @@ interface MenuItem {
   visible: boolean;
   items: MenuEntry[];
 }
+
 @Component({
     selector: 'app-top-navigation',
     templateUrl: './top-navigation.component.html',
     styleUrls: ['./top-navigation.component.css'],
-    imports: [NgOptimizedImage, RouterLink, TranslatePipe]
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [NgOptimizedImage, RouterLink, TranslatePipe],
 })
-
-
 export class TopNavigationComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
   private translate = inject(TranslateService);
   public shared = inject(SharedService);
   private dataServiceServer = inject(ServerApiService);
@@ -43,68 +44,80 @@ export class TopNavigationComponent implements OnInit {
   labels: string[] = [];
   menu: MenuItem[] = [];
   loggedIn = false;
+  loginRequired = false;
 
   developerMode = false;
-  lastLanguage : string = '-';
   isTouchDevice = false;
 
   constructor() {
     console.log('TopNavigationComponent - constructor()');
   }
 
-
-  ngDoCheck() {
-    if (!(this.lastLanguage === this.appConfig.defaultLanguage)) {
-      this.buildMenu();
-      this.lastLanguage = this.appConfig.defaultLanguage;
-    }
-    this.loggedIn = this.authService.isLoggedIn();
-    console.log('TopNavigationComponent.ngDoCheck() this.loggedIn=', this.loggedIn );
-  }
-
-  public setTitle(newTitle: string) {
-    this.titleService.setTitle(newTitle);
-  }
   ngOnInit() {
     console.log('TopNavigationComponent.ngOnInit() entered');
 
-    this.dataServiceServer!.getServerinfo()
+    // One-shot initialisation: load server config, set up translate, attempt
+    // anonymous login.  After this the component reacts purely via observables.
+    this.dataServiceServer.getServerinfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response) => {
-          this.developerMode = (this.appConfig.developerMode);
-          this.isTouchDevice = (!this.appConfig.clickDropdownHeader);
-          console.log('TopNavigationComponent.ngOnInit: getLangs()', this.translate.getLangs());
-          console.log('TopNavigationComponent.ngOnInit: getDefaultLang()', this.translate.getDefaultLang());
-          this.translate.use(this.appConfig.defaultLanguage);
-          this.translate.setDefaultLang(this.appConfig.defaultLanguage);
-          // this.lastLanguage = this.appConfig.defaultLanguage;
+      .subscribe(() => {
+        this.developerMode = this.appConfig.developerMode;
+        this.isTouchDevice = !this.appConfig.clickDropdownHeader;
 
-          this.translate.use('de');
-          this.translate.setDefaultLang('de');
-          this.shared.setGuiLanguage();
-          console.log('TopNavigationComponent.ngOnInit: getDefaultLang() =', this.translate.getDefaultLang());
+        console.log('TopNavigationComponent.ngOnInit: getLangs()', this.translate.getLangs());
+        console.log('TopNavigationComponent.ngOnInit: getDefaultLang()', this.translate.getDefaultLang());
+        this.translate.use(this.appConfig.defaultLanguage);
+        this.translate.setDefaultLang(this.appConfig.defaultLanguage);
 
-          this.buildMenu();
+        this.translate.use('de');
+        this.translate.setDefaultLang('de');
+        this.shared.setGuiLanguage();
+        console.log('TopNavigationComponent.ngOnInit: getDefaultLang() =', this.translate.getDefaultLang());
 
-          this.setTitle(this.translate.instant('SmartHomeNG'));
+        this.setTitle(this.translate.instant('SmartHomeNG'));
 
-          const credentials = {'username': '', 'password': ''};
-          console.log('signIn', {credentials});
-          this.authService.login(credentials)
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe((result: boolean) => {
-              console.log('Anonymous login:', {result});
-              this.buildMenu();
-            });
+        const credentials = { username: '', password: '' };
+        console.log('signIn', { credentials });
+        this.authService.login(credentials)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe((result: boolean) => {
+            console.log('Anonymous login:', { result });
+            // loggedIn$ will fire from AuthService.login() on success,
+            // triggering buildMenu() + markForCheck() via the subscription below.
+          });
+      });
 
-        }
-      );
+    // Rebuild menu whenever the active language changes.
+    this.appConfig.config$
+      .pipe(
+        map(cfg => cfg.defaultLanguage),
+        distinctUntilChanged(),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        this.buildMenu();
+        this.cdr.markForCheck();
+      });
+
+    // Sync loggedIn / loginRequired whenever auth state changes.
+    this.authService.loggedIn$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(loggedIn => {
+        this.loggedIn = loggedIn;
+        this.loginRequired = this.authService.loginRequired();
+        this.buildMenu();
+        this.cdr.markForCheck();
+      });
+
     console.log('TopNavigationComponent.ngOnInit() leaving');
   }
 
   // Label of the section whose dropdown is currently forced open (touch mode).
   openMenuLabel: string | null = null;
+
+  public setTitle(newTitle: string) {
+    this.titleService.setTitle(newTitle);
+  }
 
   toggleResponsiveMenu() {
     console.log('TopNavigationComponent.toggleResponsiveMenu');
@@ -176,7 +189,7 @@ export class TopNavigationComponent implements OnInit {
 
   setMenuEntry(menu: number, label: string, routerLink: string[] = [], visible: boolean = true) {
     while (this.menu.length < menu + 1) {
-      this.menu.push({label: 'dummy', visible: visible, items: []});
+      this.menu.push({ label: 'dummy', visible: visible, items: [] });
     }
     this.menu[menu].label = label;
     this.menu[menu].routerLink = routerLink;
@@ -185,7 +198,7 @@ export class TopNavigationComponent implements OnInit {
 
   setSubmenuEntry(menu: number, submenu: number, label: string, routerLink: string[]) {
     while (this.menu[menu].items.length < submenu + 1) {
-      this.menu[menu].items.push({label: 'dummy'});
+      this.menu[menu].items.push({ label: 'dummy' });
     }
     this.menu[menu].items[submenu].label = label;
     this.menu[menu].items[submenu].routerLink = routerLink;
@@ -203,7 +216,6 @@ export class TopNavigationComponent implements OnInit {
     this.setSubmenuEntry(1, 0, this.translate.instant('MENU.SERVICES'), ['/services']);
     this.setSubmenuEntry(1, 1, this.translate.instant('MENU.FUNCTION_CONFIGURATION'), ['/services/functions']);
 
-    // this.setMenuEntry(2, this.translate.instant('MENU.ITEMS'));
     this.setMenuEntry(2, this.translate.instant('MENU.ITEMS'), ['/item_tree']);
     this.setSubmenuEntry(2, 0, this.translate.instant('MENU.ITEM_TREE'), ['/item_tree']);
     this.setSubmenuEntry(2, 1, this.translate.instant('MENU.ITEM_CONFIGURATION'), ['/items/config']);
@@ -240,7 +252,7 @@ export class TopNavigationComponent implements OnInit {
   }
 
   logout() {
-    if (this.authService.isLoggedIn() && this.authService.loginRequired()) {
+    if (this.loggedIn && this.loginRequired) {
       this.router.navigate(['/login']);
       this.authService.logout();
     }

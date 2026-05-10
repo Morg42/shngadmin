@@ -49,11 +49,11 @@
       }
     }
 
-    @if (!(authService.isLoggedIn() && authService.loginRequired())) {
+    @if (!(loggedIn && loginRequired)) {
       <a class="logout" style="color: #aaa"><i class="fas fa-sign-out-alt"></i>{{'BUTTON.LOGOUT'|translate}}</a>
       <a class="logout-small" style="color: #aaa"><i class="fas fa-sign-out-alt"></i></a>
     }
-    @if (authService.isLoggedIn() && authService.loginRequired()) {
+    @if (loggedIn && loginRequired) {
       <a class="logout" (click)="logout()"><i class="fas fa-sign-out-alt"></i>{{'BUTTON.LOGOUT'|translate}}</a>
       <a class="logout-small" (click)="logout()"><i class="fas fa-sign-out-alt"></i></a>
     }

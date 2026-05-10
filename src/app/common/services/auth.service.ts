@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable, inject} from '@angular/core';
 import {JwtHelperService} from '@auth0/angular-jwt';
 import {map} from 'rxjs/operators';
-import {of} from 'rxjs';
+import {BehaviorSubject, of} from 'rxjs';
 
 import {sha512} from 'js-sha512';
 import {AppConfigService} from './app-config.service';
@@ -24,6 +24,9 @@ export class AuthService {
   private http = inject(HttpClient);
   public jwtHelper = inject(JwtHelperService);
   private appConfig = inject(AppConfigService);
+
+  /** Emits whenever the login state changes (login success / logout). */
+  readonly loggedIn$ = new BehaviorSubject<boolean>(!!localStorage.getItem('token'));
 
   currentUser: DecodedJwtToken;
   isLoginRequired: boolean;
@@ -150,6 +153,7 @@ export class AuthService {
 
           console.log(anon + 'login:', 'success');
           this.expiredLogin = false;
+          this.loggedIn$.next(true);
           return true;
         } else {
           console.log(anon + 'login:', 'fail');
@@ -162,6 +166,7 @@ export class AuthService {
   logout() {
     localStorage.removeItem('token');
     this.currentUser = null;
+    this.loggedIn$.next(false);
   }
 
 

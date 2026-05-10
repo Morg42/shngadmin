@@ -12,7 +12,6 @@ import { TreeNode } from 'primeng/api';
 
 import { cloneDeep } from 'lodash';
 
-import { AppComponent } from '../../app.component';
 import { OlddataService } from '../../common/services/olddata.service';
 import { ItemTree } from '../../common/models/item-tree';
 import { WebsocketService } from '../../common/services/websocket.service';
@@ -32,7 +31,7 @@ type MonitoredItem = [string, Record<string, unknown>];
     selector: 'app-items',
     templateUrl: 'item-tree.component.html',
     styleUrls: ['item-tree.component.css'],
-    providers: [AppComponent, WebsocketService, WebsocketPluginService],
+    providers: [WebsocketService, WebsocketPluginService],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })
@@ -84,7 +83,6 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   private readonly cdr = inject(ChangeDetectorRef);
   private dataService = inject(OlddataService);
   private dataServiceServer = inject(ServerApiService);
-  private appComponent = inject(AppComponent);
   private translate = inject(TranslateService);
   private websocketPluginService = inject(WebsocketPluginService);
   public shared = inject(SharedService);

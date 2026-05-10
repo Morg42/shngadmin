@@ -10,7 +10,6 @@ import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 
-import { AppComponent } from '../app.component';
 import { SharedModule } from '../common/shared.module';
 import { SystemRoutingModule } from './system-routing.module';
 import { SystemComponent } from './system-overview/system.component';
@@ -21,7 +20,6 @@ import { SystemConfigComponent } from './system-config/system-config.component';
     SystemComponent,
     SystemConfigComponent,
   ],
-  providers: [AppComponent],
   imports: [
     SharedModule,
     SystemRoutingModule,

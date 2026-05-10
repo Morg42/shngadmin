@@ -16,6 +16,11 @@ export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
+// Exported as module-level constants so other modules can import them
+// directly without injecting AppComponent.
+export const APP_NAME = 'shngAdmin';
+export const APP_VERSION = '0.9.18';
+
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
@@ -35,8 +40,8 @@ export class AppComponent implements OnInit {
   public authService = inject(AuthService);
   private titleService = inject(Title);
 
-  public APP_NAME = 'shngAdmin';
-  public APP_VERSION = '0.9.18';
+  public APP_NAME = APP_NAME;
+  public APP_VERSION = APP_VERSION;
 
   title = 'shngadmin';
 

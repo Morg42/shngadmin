@@ -10,10 +10,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
 import { ButtonModule } from 'primeng/button';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
-import { AppComponent } from '../app.component';
-import { WebsocketService } from '../common/services/websocket.service';
-import { WebsocketPluginService } from '../common/services/websocket-plugin.service';
-
 import { SharedModule } from '../common/shared.module';
 import { ItemsRoutingModule } from './items-routing.module';
 import { ItemTreeComponent } from './item-tree/item-tree.component';
@@ -45,6 +41,5 @@ import { StructConfigurationComponent } from './struct-configuration/struct-conf
     TooltipModule,
     ButtonModule,
   ],
-  providers: [AppComponent, WebsocketService, WebsocketPluginService],
 })
 export class ItemsModule {}

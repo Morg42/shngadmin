@@ -2,7 +2,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
 
-import { AppComponent } from '../../app.component';
+import { APP_NAME, APP_VERSION } from '../../app.component';
 import { WebsocketService } from './websocket.service';
 import { AppConfigService } from './app-config.service';
 import { SharedService } from './shared.service';
@@ -40,8 +40,6 @@ export class WebsocketPluginService {
   private appConfig = inject(AppConfigService);
   private websocketService = inject(WebsocketService);
   private shared = inject(SharedService);
-  private app = inject(AppComponent);
-
   monitorCallbackFunction = undefined;
 
   private msgMonitorItems = <Message> {
@@ -175,8 +173,8 @@ export class WebsocketPluginService {
 
   private msgIdentity = <Message> {
     cmd: 'identity',
-    sw: this.app.APP_NAME,
-    ver: 'v' + this.app.APP_VERSION,
+    sw: APP_NAME,
+    ver: 'v' + APP_VERSION,
     browser: '',
     bver: ''
   };

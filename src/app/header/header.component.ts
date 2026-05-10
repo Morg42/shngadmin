@@ -10,7 +10,6 @@ import { MenuItem } from 'primeng/api';
 import { ServerInfo } from '../common/models/server-info';
 import { ServerApiService } from '../common/services/server-api.service';
 import { AuthService } from '../common/services/auth.service';
-import { AppComponent } from '../app.component';
 import { Router } from '@angular/router';
 
 
@@ -28,7 +27,6 @@ export class HeaderComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
-  private appComponent = inject(AppComponent);
   private dataServiceServer = inject(ServerApiService);
   private translate = inject(TranslateService);
   protected router = inject(Router);

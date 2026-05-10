@@ -19,7 +19,7 @@ import { WebsocketService } from '../../common/services/websocket.service';
 import { WebsocketPluginService } from '../../common/services/websocket-plugin.service';
 import { SharedService } from '../../common/services/shared.service';
 import { ServerApiService } from '../../common/services/server-api.service';
-import {AppComponent} from '../../app.component';
+import {APP_NAME, APP_VERSION} from '../../app.component';
 
 
 @Component({
@@ -39,7 +39,6 @@ export class SystemComponent implements OnDestroy, OnInit {
   private dataServiceServer = inject(ServerApiService);
   private translate = inject(TranslateService);
   private websocketPluginService = inject(WebsocketPluginService);
-  public app = inject(AppComponent);
   public shared = inject(SharedService);
   private titleService = inject(Title);
   private appConfig = inject(AppConfigService);
@@ -96,8 +95,8 @@ export class SystemComponent implements OnDestroy, OnInit {
   chartdataWorkerThreads: ChartData = SystemComponent.emptyDataset2('Started Workers', 'Active Workers');
   chartdataDisk: ChartData = SystemComponent.emptyDataset('% disc usage');
 
-  appName = this.app.APP_NAME;
-  appVersion = 'v' + this.app.APP_VERSION;
+  appName = APP_NAME;
+  appVersion = 'v' + APP_VERSION;
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);

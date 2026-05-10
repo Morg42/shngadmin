@@ -3,7 +3,6 @@ import {Component, OnInit, DoCheck, SimpleChanges, HostListener, DestroyRef, inj
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AppConfigService} from '../common/services/app-config.service';
 import {TranslateService} from '@ngx-translate/core';
-import {AppComponent} from '../app.component';
 import {ServerApiService} from '../common/services/server-api.service';
 import {Router} from '@angular/router';
 import {AuthService} from '../common/services/auth.service';
@@ -32,7 +31,6 @@ interface MenuItem {
 export class TopNavigationComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
-  private appComponent = inject(AppComponent);
   private translate = inject(TranslateService);
   public shared = inject(SharedService);
   private dataServiceServer = inject(ServerApiService);

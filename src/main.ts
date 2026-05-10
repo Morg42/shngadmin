@@ -27,7 +27,7 @@ import 'codemirror/mode/markdown/markdown';
 import { enableProdMode, Injector, importProvidersFrom } from '@angular/core';
 // import { appConfig } from './app/app.config';
 
-import { getBaseUrl, jwtOptionsFactory } from './app/app.module';
+import { getBaseUrl, jwtOptionsFactory } from './app/bootstrap.utils';
 import { environment } from './environments/environment';
 import { OlddataService } from './app/common/services/olddata.service';
 import { WebsocketPluginService } from './app/common/services/websocket-plugin.service';

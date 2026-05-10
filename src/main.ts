@@ -25,7 +25,6 @@ import 'codemirror/mode/javascript/javascript';
 import 'codemirror/mode/markdown/markdown';
 
 import { enableProdMode, Injector, importProvidersFrom } from '@angular/core';
-// import { appConfig } from './app/app.config';
 
 import { getBaseUrl, jwtOptionsFactory } from './app/bootstrap.utils';
 import { environment } from './environments/environment';
@@ -35,18 +34,13 @@ import { TranslateService, TranslateModule, TranslateLoader } from '@ngx-transla
 import { JwtModule, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withInterceptorsFromDi, HttpClient } from '@angular/common/http';
+import { provideRouter, withRouterConfig } from '@angular/router';
 import { providePrimeNG } from 'primeng/config';
 import { definePreset } from '@primeng/themes';
 import Aura from '@primeng/themes/aura';
-import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
-import { AppRoutingModule } from './app/app-routing-module';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { MenubarModule } from 'primeng/menubar';
-import { ButtonModule } from 'primeng/button';
-import { MessageModule } from 'primeng/message';
-import { NgOptimizedImage } from '@angular/common';
+import { bootstrapApplication } from '@angular/platform-browser';
 import { HttpLoaderFactory, AppComponent } from './app/app.component';
+import { appRoutes } from './app/app.routes';
 
 const ShngPreset = definePreset(Aura, {
   semantic: {
@@ -65,36 +59,38 @@ const ShngPreset = definePreset(Aura, {
     }
   }
 });
+
 if (environment.production) {
   enableProdMode();
 }
 
 bootstrapApplication(AppComponent, {
     providers: [
-        importProvidersFrom(BrowserModule, FormsModule, AppRoutingModule, JwtModule.forRoot({
-            config: { throwNoTokenError: false },
-            jwtOptionsProvider: {
-                provide: JWT_OPTIONS,
-                useFactory: jwtOptionsFactory,
-                deps: [Injector],
-            },
-        }), FontAwesomeModule, MenubarModule, ButtonModule, MessageModule, NgOptimizedImage, TranslateModule.forRoot({
-            loader: {
-                provide: TranslateLoader,
-                useFactory: HttpLoaderFactory,
-                deps: [HttpClient],
-            },
-        })),
+        provideRouter(appRoutes, withRouterConfig({ onSameUrlNavigation: 'reload' })),
+        importProvidersFrom(
+            JwtModule.forRoot({
+                config: { throwNoTokenError: false },
+                jwtOptionsProvider: {
+                    provide: JWT_OPTIONS,
+                    useFactory: jwtOptionsFactory,
+                    deps: [Injector],
+                },
+            }),
+            TranslateModule.forRoot({
+                loader: {
+                    provide: TranslateLoader,
+                    useFactory: HttpLoaderFactory,
+                    deps: [HttpClient],
+                },
+            }),
+        ),
         { provide: 'BASE_URL', useFactory: getBaseUrl },
         OlddataService,
         WebsocketPluginService,
         TranslateService,
-        JwtModule,
         provideAnimationsAsync(),
         provideHttpClient(withInterceptorsFromDi()),
         providePrimeNG({ theme: { preset: ShngPreset, options: { darkModeSelector: false } } }),
     ]
 })
   .catch(err => console.log(err));
-
-

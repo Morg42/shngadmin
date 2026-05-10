@@ -12,7 +12,7 @@ import { Observable, of, BehaviorSubject } from 'rxjs';
 
 /** Drop-in stub TranslateLoader — returns an empty translation map. */
 export class FakeTranslateLoader implements TranslateLoader {
-  getTranslation(_lang: string): Observable<object> {
+  getTranslation(_lang: string): Observable<Record<string, string>> {
     return of({});
   }
 }

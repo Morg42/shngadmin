@@ -10,7 +10,6 @@ import { faSync, faList, faStop, faTrashAlt, faThumbtack } from '@fortawesome/fr
 
 import { TreeNode, PrimeTemplate } from 'primeng/api';
 
-import { cloneDeep } from 'lodash';
 
 import { OlddataService } from '../../common/services/olddata.service';
 import { ItemTree } from '../../common/models/item-tree';
@@ -417,7 +416,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
 
   filterNodes(value) {
     value = value.toLowerCase();
-    this.filteredTree = cloneDeep(this.filesTree0);
+    this.filteredTree = structuredClone(this.filesTree0);
     this.treeIsFiltered = false;
     if (value && value !== '') {
       this.treeIsFiltered = true;

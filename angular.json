@@ -58,7 +58,6 @@
               "codemirror/addon/scroll/annotatescrollbar",
               "codemirror/addon/search/matchesonscrollbar",
               "codemirror/addon/search/jump-to-line",
-              "lodash",
               "file-saver",
               "js-sha512"
             ],
@@ -72,8 +71,24 @@
             "production": {
               "budgets": [
                 {
+                  "type": "initial",
+                  "maximumWarning": "1.5mb",
+                  "maximumError": "2mb"
+                },
+                {
+                  "type": "anyScript",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "any",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "6kb"
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
                 }
               ],
               "fileReplacements": [

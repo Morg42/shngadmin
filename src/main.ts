@@ -25,11 +25,9 @@ import 'codemirror/mode/javascript/javascript';
 import 'codemirror/mode/markdown/markdown';
 
 import { enableProdMode, Injector, importProvidersFrom } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-
 // import { appConfig } from './app/app.config';
 
-import { getBaseUrl, jwtOptionsFactory, translateHttpLoaderFactory } from './app/app.module';
+import { getBaseUrl, jwtOptionsFactory } from './app/app.module';
 import { environment } from './environments/environment';
 import { OlddataService } from './app/common/services/olddata.service';
 import { WebsocketPluginService } from './app/common/services/websocket-plugin.service';
@@ -39,17 +37,16 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideHttpClient, withInterceptorsFromDi, HttpClient } from '@angular/common/http';
 import { providePrimeNG } from 'primeng/config';
 import { definePreset } from '@primeng/themes';
+import Aura from '@primeng/themes/aura';
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app/app-routing-module';
-import { AuthService } from './app/common/services/auth.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MenubarModule } from 'primeng/menubar';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { NgOptimizedImage } from '@angular/common';
 import { HttpLoaderFactory, AppComponent } from './app/app.component';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 const ShngPreset = definePreset(Aura, {
   semantic: {
@@ -68,10 +65,6 @@ const ShngPreset = definePreset(Aura, {
     }
   }
 });
-const authService = injector.get(AuthService);
-
-
-
 if (environment.production) {
   enableProdMode();
 }

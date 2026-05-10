@@ -19,7 +19,7 @@
     padding-right: 10px;
 
     display: grid;
-    grid-template-rows: 50px auto 65px;
+    grid-template-rows: 50px 1fr 65px;
     grid-template-columns: 1fr;
 
     grid-template-areas: "body-header"

@@ -84,7 +84,11 @@ export class PluginsComponent implements OnInit {
           this.plugininfo = response as PlugininfoType[];
           this.plugininfo.sort(function (a, b) {return (a.pluginname + a.configname.toLowerCase() > b.pluginname + b.configname.
           toLowerCase()) ? 1 : ((b.pluginname + b.configname.toLowerCase() > a.pluginname + a.configname.toLowerCase()) ? -1 : 0); });
-          this.cdr.markForCheck();
+          // detectChanges() rather than markForCheck(): the nested HTTP call
+          // (getServerinfo → getPlugins) means the zone has already quiesced
+          // by the time this response arrives, so no automatic tick is scheduled.
+          // detectChanges() forces a synchronous CD run on this subtree.
+          this.cdr.detectChanges();
         }
       );
   }

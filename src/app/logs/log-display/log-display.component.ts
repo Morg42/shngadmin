@@ -7,7 +7,6 @@ import { LogsType, LogsInfoDict } from '../../common/models/logfiles-info';
 import { LogsApiService } from '../../common/services/logs-api.service';
 import { TranslateService } from '@ngx-translate/core';
 
-//import {$NBSP} from 'codelyzer/angular/styles/chars';
 import {Title} from '@angular/platform-browser';
 import {ServerApiService} from '../../common/services/server-api.service';
 
@@ -20,7 +19,6 @@ interface DropDownEntry {
     selector: 'app-logs',
     templateUrl: './log-display.component.html',
     styleUrls: ['./log-display.component.css'],
-    //  styles: ['.CodeMirror { width: 100%; height: 50vh; }' ],
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
@@ -67,7 +65,6 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
     extraKeys: {
       'F11': function(cm) {
         cm.setOption('fullScreen', !cm.getOption('fullScreen'));
-        // cm.getScrollerElement().style.maxHeight = 'none';
       },
       'Ctrl-L': function(cm) {
         cm.setOption('lineWrapping', !cm.getOption('lineWrapping'));
@@ -82,7 +79,6 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
     lineNumbers: true,
     readOnly: true,
     lineSeparator: '\n',
-    // rulers: this.rulers,
     mode: 'ttcn',
     lineWrapping: false,
     firstLineNumber: 1,
@@ -101,8 +97,6 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
   }
 
   ngOnInit() {
-    // console.log('LogDisplayComponent.ngOnInit');
-
     // test if component is called with a parameter and remove '.log' from the parameter
     let logParam = this.route.snapshot.paramMap['params']['logname'];
     if (logParam !== undefined) {
@@ -148,8 +142,6 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
                           this.selectedLog = this.default_log;
                           this.fillTimeframe(true);
                         }
-                        // this.selectedFile = this.translate.instant('LOGS.ACTUAL');
-                        // console.log('getLogs', {response2});
                         this.cdr.markForCheck();
                       }
                   );
@@ -225,13 +217,10 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
         this.selectedFile = this.files[0].value;
         this.readLogfile();
       } else {
-        // use other preset?
         this.selectedFile = this.files[0].value;
         this.readLogfile();
       }
     }
-    // console.log('files: ', this.files);
-    // console.log('selectedFile: ', this.selectedFile);
   }
 
 
@@ -245,11 +234,9 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
 
 
   filterLogChunk() {
-    this.logfile_content = this.logfile_chunk['loglines'].join('');
     this.logfile_content = '';
     this.cmOptions.lineNumbers = ((this.level_filter === 'ALL') && (this.text_filter === ''));
 
-    // const filter = this.text_filter.replace(/ /g, this.nbsp);
     const filter = this.text_filter;
     for (let i = 0; i < this.logfile_chunk['loglines'].length; i++) {
       if (this.level_filter === 'ALL' || this.logfile_chunk['loglines'][i].indexOf(this.level_filter) > -1) {
@@ -265,7 +252,6 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
   }
 
   readLogfile(chunk = 1) {
-    // console.log('selectedFile:', this.selectedFile);
     if (this.selectedLog === null || this.selectedFile === null) {
       this.displayLogfile = '';
       this.logfile_content = '';
@@ -304,24 +290,7 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
           }
         );
     }
-    // console.log('displayLogfile: ', this.displayLogfile);
   }
-
-  // -------------------------------------------------------------
-
-
-
-/*
-    window.addEventListener("resize", function(){resizeCodeMirror(logCodeMirror, 75)}, false);
-    resizeCodeMirror(logCodeMirror, 75);
-
-    $('#linewrapping').click(function(e) {
-      switchLineWrapping(logCodeMirror)
-    });
-
-    {% if current_page <= 1 %}$('#fast-backward').prop('disabled', true);$('#step-backward').prop('disabled', true);{% endif %}
-    {% if current_page >= pages %}$('#fast-forward').prop('disabled', true);$('#step-forward').prop('disabled', true);{% endif %}
-*/
 
 }
 

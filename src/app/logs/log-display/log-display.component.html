@@ -7,13 +7,9 @@
     &nbsp; &nbsp; <button pButton id="reloadLogButton" type="button" (click)="this.readLogfile()" [disabled]="(selectedLog === null) || (selectedFile === null)" label="{{'BUTTON.RELOAD_LOG'|translate}}" class="ui-button-success"></button>
   </h6>
 
-
   <div class="form-group" style="display:inline; width: 98%">
     <div style="margin-top: 2px; float:left; font-size: 20px;">{{ 'LOGS.FILTER'|translate }}:</div>
     <input type="text" class="form-control form-control-sm" id="text_filter" pInputText [(ngModel)]="text_filter" style= "margin-top: 2px; margin-left: 10px; width: 395px; float:left;" (ngModelChange)="filterLogChunk()">
-    <!--
-    <button pButton label="{{ 'BUTTON.APPLY_FILTER'|translate }}" type="button" style="margin-top: 2px; margin-left: 12px; margin-right: 10px" icon="fa fa-filter" (click)="filterLogChunk()" class="float-sm-left ui-button-success"></button>
-    -->
     <p-select [style]="{'margin-left': '10px', 'width':'120px'}" [options]="loglevels" [(ngModel)]="level_filter" (onChange)="filterLogChunk()"></p-select>
     <button pButton label="{{ 'BUTTON.CLEAR_FILTER'|translate }}" type="button" style="margin-top: 2px; margin-left: 12px; margin-right: 10px" icon="fa fa-filter" (click)="text_filter = ''; level_filter = 'ALL'; filterLogChunk()" class="ui-button-success"></button>
 
@@ -24,14 +20,6 @@
     <button pButton type="button" style="margin-top: 2px; margin-left: 2px; width: 25px;" [disabled]="last_chunk" icon="fa fa-fast-forward" (click)="readLogfile(0)" class="ui-button-success"></button>
     <button pButton type="button" style="margin-top: 2px; margin-left: 10px; width: 25px;" title="{{ 'LOGS.SCROLL_DOWN'|translate }}" icon="fa fa-arrow-circle-down" (click)="scrollDown()" class="ui-button-success"></button>
 
-<!--
-    <ng-container *ngIf="cmOptions.lineWrapping === true">
-      <button pButton label="{{ 'LINEBREAK'|translate }}" type="button" style="margin-right: 0px" icon="fa fa-check-square" (click)="cmOptions.lineWrapping = !cmOptions.lineWrapping" class="float-sm-right ui-button-success"></button>
-    </ng-container>
-    <ng-container *ngIf="cmOptions.lineWrapping === false">
-      <button pButton label="{{ 'LINEBREAK'|translate }}" type="button" style="margin-right: 0px" icon="fa fa-square" (click)="cmOptions.lineWrapping = !cmOptions.lineWrapping" class="float-sm-right ui-button-success"></button>
-    </ng-container>
--->
     <button pButton type="button" [disabled]="false" icon="fa fa-info" style="margin-right: 10px; width: 25px;" (click)="this.editorHelp_display = true;" class="float-sm-right ui-button-success"></button>
 
   </div>
@@ -44,13 +32,8 @@
     ></ngx-codemirror>
   </div>
 
-
 </div>
 
-
-<!--
-  -- Progress spinner
-  -->
 
 <p-dialog
   #logspinner
@@ -64,73 +47,12 @@
   [minY]="100"
   [style]="{'minWidth':'200px', 'minHeight':'100px'}"
 >
-
   <div align="center">
     <p-progressSpinner></p-progressSpinner>
   </div>
 </p-dialog>
 
 
-
-
-
-
-<!--
-<div class="container-fluid" style="overflow: none;">
-  <div style="margin-bottom: 10px;">
-    {% if log_lines %}
-      <textarea autocomplete="off" id="log_file" name="log_file">
-        {% for line in log_lines %}{% if not loop.last %}{{ line }}{% else %}{{ line  | replace('\n', '') }}{% endif %}{% endfor %}
-      </textarea>
-    {% else %}
-      {{ _('no data available') }}
-    {% endif %}
-  </div>
-</div>
--->
-
-
-
-<!--
-<div class="container-fluid">
-  <table>
-    <tr>
-      <td style="width: 300px; text-align: right;">
-        <button type="button" class="btn btn-shng btn-sm" onclick="window.open('log_dump.html?logfile={{ logfile }}')">{{ _('Logfile speichern','button') }}</button>
-      </td>
-    </tr>
-  </table>
-</div>
-
-<script type="text/javascript" language="javascript">
-  var logCodeMirror = CodeMirror.fromTextArea(document.getElementById("log_file"), {
-    lineNumbers: true,
-    mode: "{{ mode }}",
-    readOnly: true,
-    indentUnit: 4,
-    lineSeparator: '\n',
-    mode: 'ttcn',
-    lineWrapping: false,
-    firstLineNumber: {% if current_page > 1 %}{{ (current_page-1) * 1000 +1}}{% else %}1{% endif %},
-  indentWithTabs: false
-  });
-
-  window.addEventListener("resize", function(){resizeCodeMirror(logCodeMirror, 75)}, false);
-  resizeCodeMirror(logCodeMirror, 75);
-
-  $('#linewrapping').click(function(e) {
-    switchLineWrapping(logCodeMirror)
-  });
-
-  {% if current_page <= 1 %}$('#fast-backward').prop('disabled', true);$('#step-backward').prop('disabled', true);{% endif %}
-  {% if current_page >= pages %}$('#fast-forward').prop('disabled', true);$('#step-forward').prop('disabled', true);{% endif %}
-</script>
--->
-
-
-<!--
-    -- Display help dialog
-  -->
 <p-dialog header="" [(visible)]="editorHelp_display" [closable]="true" [modal]="true" dynamic="true" blockScroll="true">
   <ng-template pTemplate="header">
     {{'HELP.EDITOR-KEYS'|translate}}
@@ -143,17 +65,9 @@
     <th><u>{{'HELP.DESCRIPTION'|translate}}</u></th>
     </thead>
     <tbody>
-    <!--
-    <tr><td>Tab</td>          <td></td> <td>{{'HELP.TAB'|translate}}</td></tr>
-    <tr><td>Shift-Tab</td>    <td></td> <td>{{'HELP.SHIFT-TAB'|translate}}</td></tr>
-    -->
     <tr><td>F11</td>          <td></td> <td>{{'HELP.F11'|translate}}</td></tr>
     <tr><td>Esc</td>          <td></td> <td>{{'HELP.ESC'|translate}}</td></tr>
     <tr><td>Ctrl-L</td>       <td></td> <td>{{'HELP.CTRL-L'|translate}}</td></tr>
-    <!--
-    <tr><td>Ctrl-Q</td>       <td></td> <td>{{'HELP.CTRL-Q'|translate}}</td></tr>
-    <tr><td>Shift-Ctrl-Q</td> <td></td> <td>{{'HELP.SHIFT-CTRL-Q'|translate}}</td></tr>
-    -->
     </tbody>
   </table>
   <br>
@@ -161,4 +75,3 @@
     <button pButton type="button" (click)="editorHelp_display = false;" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
   </ng-template>
 </p-dialog>
-

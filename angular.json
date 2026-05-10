@@ -32,7 +32,6 @@
               "node_modules/primeicons/primeicons.css"
             ],
             "scripts": [
-              "node_modules/jquery/dist/jquery.min.js",
               "node_modules/chart.js/dist/chart.umd.js"
             ],
             "allowedCommonJsDependencies": [
@@ -60,7 +59,6 @@
               "codemirror/addon/search/matchesonscrollbar",
               "codemirror/addon/search/jump-to-line",
               "lodash",
-              "jquery",
               "file-saver",
               "js-sha512"
             ],

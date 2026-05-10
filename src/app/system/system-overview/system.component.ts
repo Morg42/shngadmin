@@ -12,8 +12,6 @@ import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { ChartData } from 'chart.js';
 import { combineLatest } from 'rxjs';
 
-//import * as $ from 'jquery';
-
 import { OlddataService } from '../../common/services/olddata.service';
 import { SystemInfo } from '../../common/models/system-info';
 import { PypiInfo } from '../../common/models/pypi-info';
@@ -108,8 +106,6 @@ export class SystemComponent implements OnDestroy, OnInit {
   ngOnInit() {
     console.log('SystemComponent.ngOnInit:');
 
-    // this.setTitle(this.translate.instant('System Eigenschaften'));
-
     this.dataServiceServer!.getServerinfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
@@ -162,9 +158,6 @@ export class SystemComponent implements OnDestroy, OnInit {
           // count if plugin requirements exist
           this.plugincount = 0;
           for (let i = 0; i < this.pypiinfo.length; ++i) {
-            // if (this.pypiinfo[i].name === 'ruamel.yaml') {
-            //   console.log(this.pypiinfo[i]);
-            // }
             if (this.pypiinfo[i].is_required_for_plugins === true) {
               this.plugincount++;
             }
@@ -249,7 +242,6 @@ export class SystemComponent implements OnDestroy, OnInit {
         // ELSE: MIN and MAX filled, MIN == MAX
         reqString += ' == ' + element['vers_req_min'];
       } else {
-        // ELSE: MIN or MAX filled * /
         if (element['vers_req_min'] !== '') {
           reqString += ' >= ' + element['vers_req_min'];
         } else if (element['vers_req_max'] !== '') {
@@ -258,7 +250,7 @@ export class SystemComponent implements OnDestroy, OnInit {
       }
 
       if (reqString === '') {
-        // Element required due to Doku, Testsuite or SmartHomeNG in general, but no MIN and MAX version -> all versions valid * /
+        // No MIN/MAX version constraint → all versions are valid
         reqString = ' == *';
       }
     }
@@ -325,15 +317,6 @@ export class SystemComponent implements OnDestroy, OnInit {
           pointRadius: 0,
 
         }
-        // {
-        //   label: 'Idle Workers',
-        //   data: [],
-        //   fill: false,
-        //   backgroundColor: '008000',
-        //   borderColor: '#008000',
-        //   pointRadius: 0,
-        //
-        // }
       ]
     };
 

@@ -7,7 +7,6 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { faSearch, faCircleNotch, faFolder, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 import { faSync, faList, faStop, faTrashAlt, faThumbtack } from '@fortawesome/free-solid-svg-icons';
-// import { faCoffee } from '@fortawesome/free-solid-svg-icons';
 
 import { TreeNode } from 'primeng/api';
 
@@ -20,7 +19,6 @@ import { WebsocketService } from '../../common/services/websocket.service';
 import { WebsocketPluginService } from '../../common/services/websocket-plugin.service';
 import { SharedService } from '../../common/services/shared.service';
 import {ItemDetails} from '../../common/models/item-details';
-// import {ServerInfo} from '../../common/models/server-info';
 import {ServerApiService} from '../../common/services/server-api.service';
 
 import {Title} from '@angular/platform-browser';
@@ -101,12 +99,10 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
 
   static resizeItemTree() {
     const browserHeight = window.innerHeight;
-//    console.log({browserHeight});
     const tree = document.getElementById('tree');
     const treeDetail = document.getElementById('tree_detail');
 
-    // const offsetTopDetail = treeDetail.offset().top;
-    // initially offsetTop is off by a number of pixels. Correction: a fixed offset
+    // initially offsetTop is off by a number of pixels — correction via fixed offset
     const offsetTop = 167;
     const offsetTopDetail = 200;
     const height = String(Math.round((-1) * (offsetTop) - 35 + browserHeight) + 'px');
@@ -190,13 +186,9 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response: [number, ItemTree]) => {
-//          console.log('ItemsComponent: dataService.getItemtree()');
-//          console.log(response);
           this.itemcount = response[0];
           this.filesTree0 = response[1] as unknown as {}[];
           this.filterNodes('');
-          // this.plugininfo.sort(function (a, b) {return (a.pluginname > b.pluginname) ? 1 : ((b.pluginname > a.pluginname) ? -1 : 0)});
-//          this.searchStart_param = {'number': String(this.appConfig.itemtreeSearchstart)};
           this.searchStart_param = {'number': String(this.appConfig.itemtreeSearchstart)};
           this.cdr.markForCheck();
         },
@@ -237,27 +229,6 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     console.log('--> updateValue: ' + item_value.value);
     this.dataService.changeItemValue(item_path, item_value.value);
   }
-
-
-/*
-
-      $("#item_value" ).on('blur change', function() {
-        $.ajax({
-          url: 'item_change_value.html',
-          type: 'POST',
-          data: {
-            'item_path': element.path,
-            'value': $("#item_value").val()
-          },
-          success: function (response) {
-            $( ".fa-sync" ).trigger( "click" );
-          },
-          error: function () {
-            //your error code
-          }
-        });
-      });
-  */
 
 
   sortMonitoredItems() {
@@ -330,13 +301,10 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
       for (let i = this.monitoredItems.length - 1; i >= 0; i--) {
         if (this.monitoredItems[i][0] === path) {
           this.monitoredItems.splice(i, 1);
-          // break;       //<-- Uncomment  if only the first term has to be removed
+          // NOTE: no break — all entries with this path are removed, not just the first
         }
       }
     }
-
-    // console.log(this.monitoredItems);
-
   }
 
 
@@ -355,7 +323,6 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     this.monitoredItemsUpdateSubscription?.unsubscribe();
     this.monitoredItemsUpdateSubscription = this.websocketPluginService.monitoredItemsUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       console.error('monitoredItemsUpdate$');
-      // this.updateChartData(this.chartSystemload, this.chartdataLoad, this.websocketPluginService.monitor.items);
       console.log(this.websocketPluginService.monitor.items);
     });
   }
@@ -410,8 +377,6 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     if (response === undefined) {
       this.itemdetails = <ItemDetails>{};
       this.itemdetails.config = {};
-      // this.itemdetails.value = item_value.value;
-
       this.update_age = this.shared.ageToString(0);
       this.change_age = this.shared.ageToString(0);
       this.previous_update_age = this.shared.ageToString(0);
@@ -442,7 +407,6 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   }
 
   filterNodes(value) {
-//    console.log('ItemsComponent.filterTree: >' + value + '<')
     value = value.toLowerCase();
     this.filteredTree = cloneDeep(this.filesTree0);
     this.treeIsFiltered = false;

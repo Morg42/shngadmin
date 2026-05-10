@@ -1,51 +1,50 @@
-
 import 'codemirror/mode/python/python';
-import 'codemirror/mode/yaml/yaml';
 import 'codemirror/mode/xml/xml';
+import 'codemirror/mode/yaml/yaml';
 
-import 'codemirror/addon/fold/foldcode';
-import 'codemirror/addon/fold/foldgutter';
-import 'codemirror/addon/fold/comment-fold';
-import 'codemirror/addon/fold/brace-fold';
-import 'codemirror/addon/fold/xml-fold';
-import 'codemirror/addon/fold/indent-fold';
+import 'codemirror/addon/dialog/dialog';
+import 'codemirror/addon/display/autorefresh';
 import 'codemirror/addon/display/fullscreen';
 import 'codemirror/addon/display/rulers';
-import 'codemirror/addon/display/autorefresh';
-import 'codemirror/addon/hint/show-hint';
+import 'codemirror/addon/fold/brace-fold';
+import 'codemirror/addon/fold/comment-fold';
+import 'codemirror/addon/fold/foldcode';
+import 'codemirror/addon/fold/foldgutter';
+import 'codemirror/addon/fold/indent-fold';
+import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/addon/hint/anyword-hint';
-import 'codemirror/addon/dialog/dialog';
-import 'codemirror/addon/search/searchcursor';
-import 'codemirror/addon/search/search';
+import 'codemirror/addon/hint/show-hint';
 import 'codemirror/addon/scroll/annotatescrollbar';
-import 'codemirror/addon/search/matchesonscrollbar';
 import 'codemirror/addon/search/jump-to-line';
+import 'codemirror/addon/search/matchesonscrollbar';
+import 'codemirror/addon/search/search';
+import 'codemirror/addon/search/searchcursor';
 
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/mode/markdown/markdown';
 
-import { enableProdMode, Injector, importProvidersFrom } from '@angular/core';
+import { enableProdMode, importProvidersFrom, Injector } from '@angular/core';
 
-import { getBaseUrl, jwtOptionsFactory } from './app/bootstrap.utils';
-import { environment } from './environments/environment';
-import { OlddataService } from './app/common/services/olddata.service';
-import { WebsocketPluginService } from './app/common/services/websocket-plugin.service';
-import { TranslateService, TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { JwtModule, JWT_OPTIONS } from '@auth0/angular-jwt';
+import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideHttpClient, withInterceptorsFromDi, HttpClient } from '@angular/common/http';
 import { provideRouter, withRouterConfig } from '@angular/router';
-import { providePrimeNG } from 'primeng/config';
+import { JWT_OPTIONS, JwtModule } from '@auth0/angular-jwt';
+import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { definePreset } from '@primeng/themes';
 import Aura from '@primeng/themes/aura';
-import { bootstrapApplication } from '@angular/platform-browser';
-import { HttpLoaderFactory, AppComponent } from './app/app.component';
+import { providePrimeNG } from 'primeng/config';
+import { AppComponent, HttpLoaderFactory } from './app/app.component';
 import { appRoutes } from './app/app.routes';
+import { getBaseUrl, jwtOptionsFactory } from './app/bootstrap.utils';
+import { OlddataService } from './app/common/services/olddata.service';
+import { WebsocketPluginService } from './app/common/services/websocket-plugin.service';
+import { environment } from './environments/environment';
 
 const ShngPreset = definePreset(Aura, {
   semantic: {
     primary: {
-      50:  '#f0f5fa',
+      50: '#f0f5fa',
       100: '#dce8f3',
       200: '#bad4e8',
       300: '#93bfdc',
@@ -56,8 +55,8 @@ const ShngPreset = definePreset(Aura, {
       800: '#2e5168',
       900: '#213c4d',
       950: '#162836',
-    }
-  }
+    },
+  },
 });
 
 if (environment.production) {
@@ -65,32 +64,31 @@ if (environment.production) {
 }
 
 bootstrapApplication(AppComponent, {
-    providers: [
-        provideRouter(appRoutes, withRouterConfig({ onSameUrlNavigation: 'reload' })),
-        importProvidersFrom(
-            JwtModule.forRoot({
-                config: { throwNoTokenError: false },
-                jwtOptionsProvider: {
-                    provide: JWT_OPTIONS,
-                    useFactory: jwtOptionsFactory,
-                    deps: [Injector],
-                },
-            }),
-            TranslateModule.forRoot({
-                loader: {
-                    provide: TranslateLoader,
-                    useFactory: HttpLoaderFactory,
-                    deps: [HttpClient],
-                },
-            }),
-        ),
-        { provide: 'BASE_URL', useFactory: getBaseUrl },
-        OlddataService,
-        WebsocketPluginService,
-        TranslateService,
-        provideAnimationsAsync(),
-        provideHttpClient(withInterceptorsFromDi()),
-        providePrimeNG({ theme: { preset: ShngPreset, options: { darkModeSelector: false } } }),
-    ]
-})
-  .catch(err => console.log(err));
+  providers: [
+    provideRouter(appRoutes, withRouterConfig({ onSameUrlNavigation: 'reload' })),
+    importProvidersFrom(
+      JwtModule.forRoot({
+        config: { throwNoTokenError: false },
+        jwtOptionsProvider: {
+          provide: JWT_OPTIONS,
+          useFactory: jwtOptionsFactory,
+          deps: [Injector],
+        },
+      }),
+      TranslateModule.forRoot({
+        loader: {
+          provide: TranslateLoader,
+          useFactory: HttpLoaderFactory,
+          deps: [HttpClient],
+        },
+      }),
+    ),
+    { provide: 'BASE_URL', useFactory: getBaseUrl },
+    OlddataService,
+    WebsocketPluginService,
+    TranslateService,
+    provideAnimationsAsync(),
+    provideHttpClient(withInterceptorsFromDi()),
+    providePrimeNG({ theme: { preset: ShngPreset, options: { darkModeSelector: false } } }),
+  ],
+}).catch((err) => console.log(err));

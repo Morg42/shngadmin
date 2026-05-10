@@ -1,10 +1,10 @@
-::ng-deep .tab-shng > a{
+::ng-deep .tab-shng > a {
   border-bottom: none !important;
   outline: 0 !important;
-  color:rgb(160, 160, 160);
+  color: rgb(160, 160, 160);
 }
 
-:host ::ng-deep .ui-accordion .ui-accordion-header:hover a{
+:host ::ng-deep .ui-accordion .ui-accordion-header:hover a {
   text-decoration: none;
 }
 
@@ -14,16 +14,17 @@
   margin: 0;
   padding: 0;
 
-  padding-left: 10px;       /* padding around tab border */
+  padding-left: 10px; /* padding around tab border */
   padding-right: 10px;
 
   display: grid;
   grid-template-rows: 0 auto 10px;
   grid-template-columns: 1fr;
 
-  grid-template-areas: "body-header"
-                      "body-content"
-                      "body-footer";
+  grid-template-areas:
+    'body-header'
+    'body-content'
+    'body-footer';
 
   grid-gap: 0;
   grid-auto-flow: row;
@@ -50,14 +51,14 @@
   overflow: auto;
 
   display: grid;
-  grid-template-areas: "tab-header"
-                       "tab-content"
-                       "tab-footer";
+  grid-template-areas:
+    'tab-header'
+    'tab-content'
+    'tab-footer';
   grid-template-columns: 1fr;
-/*grid-auto-rows: minmax(50px, max-content);*/
+  /*grid-auto-rows: minmax(50px, max-content);*/
   grid-template-rows: 00px auto 0;
 }
-
 
 .body-footer {
   grid-area: body-footer;

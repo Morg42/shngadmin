@@ -2,91 +2,148 @@
 <div style="margin-left: 10px; margin-right: 10px;">
 -->
 <div class="shngbody">
-
-<div class="container-fluid" style="margin-top: 5px; margin-left: 10px; margin-right: 10px;">
-
-  <table>
-    <tbody>
-      <tr>
-        <td>
-          <div style="font-weight: normal; padding-top: 10px; padding-left: 10px; padding-right: 5px">
-            {{ 'LOGGING.CONFIG_FILE'|translate }}: <strong>../etc/{{ myEditFilename }}.yaml</strong>
-            <button pButton label="{{ 'BUTTON.SAVE'|translate }}" type="button" [disabled]="myTextarea === myTextareaOrig" icon="fa fa-check" style="margin-right: 0;" (click)="saveConfig()" class="float-sm-right ui-button-success"></button>
-            <button pButton label="{{ 'BUTTON.DISCARD'|translate }}" type="button" [disabled]="(myEditFilename === '') || (myTextarea === myTextareaOrig)" icon="fa fa-times" style="margin-right: 10px;" (click)="this.myTextarea = this.myTextareaOrig;" class="float-sm-right ui-button-secondary"></button>
-            <button pButton label="{{ 'BUTTON.HELP'|translate }}" type="button" [disabled]="false" icon="fa fa-info" style="margin-right: 10px;" (click)="this.editorHelp_display = true;" class="float-sm-right ui-button-success"></button>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <div style="height: 100px; margin-top: 10px; padding-left: 10px; padding-right: 5px; width: 95%">
-            <ngx-codemirror #codeeditor
-
-                            [options]="cmOptions"
-                            [(ngModel)]="myTextarea"
-                            [autoFocus]="true"
-            ></ngx-codemirror>
-            <a style="font-size: small">{{ 'RESTART FOR CHANGES'|translate }}</a>
-          </div>
-        </td>
-
-      </tr>
-    </tbody>
-  </table>
+  <div class="container-fluid" style="margin-top: 5px; margin-left: 10px; margin-right: 10px">
+    <table>
+      <tbody>
+        <tr>
+          <td>
+            <div style="font-weight: normal; padding-top: 10px; padding-left: 10px; padding-right: 5px">
+              {{ 'LOGGING.CONFIG_FILE' | translate }}: <strong>../etc/{{ myEditFilename }}.yaml</strong>
+              <button
+                pButton
+                label="{{ 'BUTTON.SAVE' | translate }}"
+                type="button"
+                [disabled]="myTextarea === myTextareaOrig"
+                icon="fa fa-check"
+                style="margin-right: 0"
+                (click)="saveConfig()"
+                class="float-sm-right ui-button-success"
+              ></button>
+              <button
+                pButton
+                label="{{ 'BUTTON.DISCARD' | translate }}"
+                type="button"
+                [disabled]="myEditFilename === '' || myTextarea === myTextareaOrig"
+                icon="fa fa-times"
+                style="margin-right: 10px"
+                (click)="this.myTextarea = this.myTextareaOrig"
+                class="float-sm-right ui-button-secondary"
+              ></button>
+              <button
+                pButton
+                label="{{ 'BUTTON.HELP' | translate }}"
+                type="button"
+                [disabled]="false"
+                icon="fa fa-info"
+                style="margin-right: 10px"
+                (click)="this.editorHelp_display = true"
+                class="float-sm-right ui-button-success"
+              ></button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div style="height: 100px; margin-top: 10px; padding-left: 10px; padding-right: 5px; width: 95%">
+              <ngx-codemirror
+                #codeeditor
+                [options]="cmOptions"
+                [(ngModel)]="myTextarea"
+                [autoFocus]="true"
+              ></ngx-codemirror>
+              <a style="font-size: small">{{ 'RESTART FOR CHANGES' | translate }}</a>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
-
-
 </div>
-
-
 
 <!--
   -- Confirm dialog vor configuration deletion
   -->
 <p-dialog header="" [(visible)]="error_display" [closable]="false" [modal]="true" blockScroll="true">
   <ng-template pTemplate="header">
-    {{'LOGGING.CONFIG_ERROR'|translate}}
+    {{ 'LOGGING.CONFIG_ERROR' | translate }}
   </ng-template>
-  <br>
-  <pre>
-{{'LOGGING.CONFIG_ERROR_TEXT'|translate}}
+  <br />
+  <pre
+    >{{ 'LOGGING.CONFIG_ERROR_TEXT' | translate }}
 
 {{ myTextOutput }}
   </pre>
-  <br>
+  <br />
   <ng-template pTemplate="footer">
-    <button pButton type="button" (click)="error_display = false;" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
+    <button
+      pButton
+      type="button"
+      (click)="error_display = false"
+      label="{{ 'BUTTON.CLOSE' | translate }}"
+      class="ui-button-success"
+    ></button>
   </ng-template>
 </p-dialog>
-
 
 <!--
     -- Display help dialog
   -->
 <p-dialog header="" [(visible)]="editorHelp_display" [closable]="true" [modal]="true" dynamic="true" blockScroll="true">
   <ng-template pTemplate="header">
-    {{'HELP.EDITOR-KEYS'|translate}}
+    {{ 'HELP.EDITOR-KEYS' | translate }}
   </ng-template>
-  <br>
+  <br />
   <table>
     <thead>
-    <th><u>{{'HELP.KEY'|translate}}</u></th>
-    <th style="width: 20px;"></th>
-    <th><u>{{'HELP.DESCRIPTION'|translate}}</u></th>
+      <th>
+        <u>{{ 'HELP.KEY' | translate }}</u>
+      </th>
+      <th style="width: 20px"></th>
+      <th>
+        <u>{{ 'HELP.DESCRIPTION' | translate }}</u>
+      </th>
     </thead>
     <tbody>
-    <tr><td>Tab</td>          <td></td> <td>{{'HELP.TAB'|translate}}</td></tr>
-    <tr><td>Shift-Tab</td>    <td></td> <td>{{'HELP.SHIFT-TAB'|translate}}</td></tr>
-    <tr><td>F11</td>          <td></td> <td>{{'HELP.F11'|translate}}</td></tr>
-    <tr><td>Esc</td>          <td></td> <td>{{'HELP.ESC'|translate}}</td></tr>
-    <tr><td>Ctrl-Q</td>       <td></td> <td>{{'HELP.CTRL-Q'|translate}}</td></tr>
-    <tr><td>Shift-Ctrl-Q</td> <td></td> <td>{{'HELP.SHIFT-CTRL-Q'|translate}}</td></tr>
+      <tr>
+        <td>Tab</td>
+        <td></td>
+        <td>{{ 'HELP.TAB' | translate }}</td>
+      </tr>
+      <tr>
+        <td>Shift-Tab</td>
+        <td></td>
+        <td>{{ 'HELP.SHIFT-TAB' | translate }}</td>
+      </tr>
+      <tr>
+        <td>F11</td>
+        <td></td>
+        <td>{{ 'HELP.F11' | translate }}</td>
+      </tr>
+      <tr>
+        <td>Esc</td>
+        <td></td>
+        <td>{{ 'HELP.ESC' | translate }}</td>
+      </tr>
+      <tr>
+        <td>Ctrl-Q</td>
+        <td></td>
+        <td>{{ 'HELP.CTRL-Q' | translate }}</td>
+      </tr>
+      <tr>
+        <td>Shift-Ctrl-Q</td>
+        <td></td>
+        <td>{{ 'HELP.SHIFT-CTRL-Q' | translate }}</td>
+      </tr>
     </tbody>
   </table>
-  <br>
+  <br />
   <ng-template pTemplate="footer">
-    <button pButton type="button" (click)="editorHelp_display = false;" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
+    <button
+      pButton
+      type="button"
+      (click)="editorHelp_display = false"
+      label="{{ 'BUTTON.CLOSE' | translate }}"
+      class="ui-button-success"
+    ></button>
   </ng-template>
 </p-dialog>
-
-

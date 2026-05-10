@@ -7,7 +7,7 @@
   <button type="button" pButton (click)="showWarn()" label="Warn" class="ui-button-warning"></button>
   <button type="button" pButton (click)="showError()" label="Error" class="ui-button-danger"></button>
   <button type="button" pButton (click)="showMultiple()" label="Multiple"></button>
-  <button type="button" pButton (click)="clear()" icon="pi pi-times" style="float:right" label="Clear"></button>
+  <button type="button" pButton (click)="clear()" icon="pi pi-times" style="float: right" label="Clear"></button>
 </div>
 
 <h3>Message Service</h3>
@@ -20,12 +20,12 @@
 <p-message severity="warn" text="Are you sure?"></p-message>
 <p-message severity="error" text="Field is required"></p-message>
 
-<div style="margin-top:30px">
-  <input type="text" pInputText placeholder="Username" class="ng-dirty ng-invalid">
+<div style="margin-top: 30px">
+  <input type="text" pInputText placeholder="Username" class="ng-dirty ng-invalid" />
   <p-message severity="error" text="Field is required"></p-message>
 </div>
 
-<div style="margin-top:30px">
-  <input type="text" pInputText placeholder="Email" class="ng-dirty ng-invalid">
+<div style="margin-top: 30px">
+  <input type="text" pInputText placeholder="Email" class="ng-dirty ng-invalid" />
   <p-message severity="error"></p-message>
 </div>

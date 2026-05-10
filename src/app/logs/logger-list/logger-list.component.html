@@ -4,273 +4,361 @@
 -->
 <div class="shngbody2">
   <div>
-  <p-tabs value="0">
-    <p-tablist>
-      <p-tab value="0">{{ 'LOGGERS.LOGICS'|translate }}</p-tab>
-      <p-tab value="1">{{ 'LOGGERS.PLUGINS'|translate }}</p-tab>
-      <p-tab value="2">{{ 'LOGGERS.ITEMS'|translate }}</p-tab>
-      <p-tab value="3">{{ 'LOGGERS.ADVANCED'|translate }}</p-tab>
-      <p-tab value="4">{{ 'LOGGERS.CUSTOM'|translate }}</p-tab>
-    </p-tablist>
-    <p-tabpanels>
-    <p-tabpanel value="0">
-      <div class="tab-content-services">
-        <button pButton type="button" style="margin-left: 0; margin-top: 5px; font-size: medium;" id="newLoggerButtonL" [disabled]="false" (click)="newLogicLogger();" icon="fa fa-plus" label="{{ 'BUTTON.NEW_LOGGER'|translate }}" class="ui-button-success float-sm-left"></button>
-        <table class="table table-striped table-hover loggerList">
-          <thead>
-            <tr class="shng_heading">
-              <th class="py-1" style="border: 0;">{{ 'LOGGERS.LOGGER_NAME'|translate }}</th>
-              <th class="py-1" style="border: 0;">{{ 'LOGGERS.LEVEL'|translate }}</th>
-              <th class="py-1" style="border: 0;">{{ 'LOGGERS.HANDLERS'|translate }}</th>
-              <th class="py-1" style="border: 0;">{{ 'LOGGERS.HANDLER_TYPES'|translate }}</th>
-              <th class="py-1" style="border: 0;">{{ 'LOGGERS.LOGFILES'|translate }}</th>
-              <th class="py-1" style="width: 100px; border: 0;">{{ 'LOGGERS.ACTION'|translate }}</th>
-            </tr>
-            </thead>
-          <tbody>
-            @for (l of loggersList; track $index) {
-              @if (l.startsWith('logics.') || l === 'logics') {
-                @if (loggers[l].level !== undefined) {
-                  <tr>
-                    <logger-line
-                            [loggerName]=l
-                            [logger]="loggers[l]"
-                            [loggerActive]=logic_loaded(l)
-                            [definedHandlers]="definedHandlers"
-                            (levelChange)="levelChanged(l, $event)"
-                            (loggerDelete)="loggerDelete(l)"
-                            (modifyHandlers)="modifyHandlers(l, $event)"
-                    ></logger-line>
-                  </tr>
-                }
-              }
-            }
-
-          </tbody>
-          <tfoot>
-            <br><br><br><br><br>
-          </tfoot>
-        </table>
-      </div>
-    </p-tabpanel>
-
-    <p-tabpanel value="1">
-      <div class="tab-content-services">
-        <button pButton type="button" style="margin-left: 0; margin-top: 5px; font-size: medium;" id="newLoggerButtonP" [disabled]="false" (click)="newPluginLogger();" icon="fa fa-plus" label="{{ 'BUTTON.NEW_LOGGER'|translate }}" class="ui-button-success float-sm-left"></button>
-        <table class="table table-striped table-hover loggerList">
-        <thead>
-          <tr class="shng_heading">
-            <th class="py-1" style="border-top: 0;">{{ 'LOGGERS.LOGGER_NAME'|translate }}</th>
-            <th class="py-1" style="border: 0;">{{ 'LOGGERS.LEVEL'|translate }}</th>
-            <th class="py-1" style="border: 0;">{{ 'LOGGERS.HANDLERS'|translate }}</th>
-            <th class="py-1" style="border: 0;">{{ 'LOGGERS.HANDLER_TYPES'|translate }}</th>
-            <th class="py-1" style="border: 0;">{{ 'LOGGERS.LOGFILES'|translate }}</th>
-            <th class="py-1" style="border: 0;">{{ 'LOGGERS.ACTION'|translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (l of loggersList; track $index) {
-            @if (l.startsWith('plugins.') || l === 'plugins') {
-              @if (loggers[l].level !== undefined) {
-                <tr>
-                  <logger-line
-                      [loggerName]=l
-                      [logger]="loggers[l]"
-                      [loggerActive]=plugin_loaded(l)
-                      [definedHandlers]="definedHandlers"
-                      (levelChange)="levelChanged(l, $event)"
-                      (loggerDelete)="loggerDelete(l)"
-                  ></logger-line>
+    <p-tabs value="0">
+      <p-tablist>
+        <p-tab value="0">{{ 'LOGGERS.LOGICS' | translate }}</p-tab>
+        <p-tab value="1">{{ 'LOGGERS.PLUGINS' | translate }}</p-tab>
+        <p-tab value="2">{{ 'LOGGERS.ITEMS' | translate }}</p-tab>
+        <p-tab value="3">{{ 'LOGGERS.ADVANCED' | translate }}</p-tab>
+        <p-tab value="4">{{ 'LOGGERS.CUSTOM' | translate }}</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel value="0">
+          <div class="tab-content-services">
+            <button
+              pButton
+              type="button"
+              style="margin-left: 0; margin-top: 5px; font-size: medium"
+              id="newLoggerButtonL"
+              [disabled]="false"
+              (click)="newLogicLogger()"
+              icon="fa fa-plus"
+              label="{{ 'BUTTON.NEW_LOGGER' | translate }}"
+              class="ui-button-success float-sm-left"
+            ></button>
+            <table class="table table-striped table-hover loggerList">
+              <thead>
+                <tr class="shng_heading">
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.LOGGER_NAME' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.LEVEL' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.HANDLERS' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.HANDLER_TYPES' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.LOGFILES' | translate }}</th>
+                  <th class="py-1" style="width: 100px; border: 0">{{ 'LOGGERS.ACTION' | translate }}</th>
                 </tr>
-              }
-            }
-          }
-
-        </tbody>
-        <tfoot>
-          <br><br><br><br><br>
-        </tfoot>
-      </table>
-      </div>
-    </p-tabpanel>
-
-    <p-tabpanel value="2">
-      <div class="tab-content-services">
-        <button pButton type="button" style="margin-left: 0; margin-top: 5px; font-size: medium;" id="newLoggerButtonI" [disabled]="false" (click)="newItemLogger();" icon="fa fa-plus" label="{{ 'BUTTON.NEW_LOGGER'|translate }}" class="ui-button-success float-sm-left"></button>
-        <table class="table table-striped table-hover loggerList">
-          <thead border="0">
-          <tr class="shng_heading">
-            <th class="py-1" style="border: 0;">{{ 'LOGGERS.LOGGER_NAME'|translate }}</th>
-            <th class="py-1" style="border: 0;">{{ 'LOGGERS.LEVEL'|translate }}</th>
-            <th class="py-1" style="border: 0;">{{ 'LOGGERS.HANDLERS'|translate }}</th>
-            <th class="py-1" style="border: 0;">{{ 'LOGGERS.HANDLER_TYPES'|translate }}</th>
-            <th class="py-1" style="border: 0;">{{ 'LOGGERS.LOGFILES'|translate }}</th>
-            <th class="py-1" style="border: 0;">{{ 'LOGGERS.ACTION'|translate }}</th>
-          </tr>
-          </thead>
-          <tbody>
-          @for (l of loggersList; track $index) {
-            @if (l.startsWith('items.') || l === 'items') {
-              @if (loggers[l].level !== undefined) {
-                <tr>
-                  <logger-line
-                          [loggerName]=l
+              </thead>
+              <tbody>
+                @for (l of loggersList; track $index) {
+                  @if (l.startsWith('logics.') || l === 'logics') {
+                    @if (loggers[l].level !== undefined) {
+                      <tr>
+                        <logger-line
+                          [loggerName]="l"
                           [logger]="loggers[l]"
-                          [loggerActive]=true
+                          [loggerActive]="logic_loaded(l)"
                           [definedHandlers]="definedHandlers"
                           (levelChange)="levelChanged(l, $event)"
                           (loggerDelete)="loggerDelete(l)"
-                  ></logger-line>
+                          (modifyHandlers)="modifyHandlers(l, $event)"
+                        ></logger-line>
+                      </tr>
+                    }
+                  }
+                }
+              </tbody>
+              <tfoot>
+                <br /><br /><br /><br /><br />
+              </tfoot>
+            </table>
+          </div>
+        </p-tabpanel>
+
+        <p-tabpanel value="1">
+          <div class="tab-content-services">
+            <button
+              pButton
+              type="button"
+              style="margin-left: 0; margin-top: 5px; font-size: medium"
+              id="newLoggerButtonP"
+              [disabled]="false"
+              (click)="newPluginLogger()"
+              icon="fa fa-plus"
+              label="{{ 'BUTTON.NEW_LOGGER' | translate }}"
+              class="ui-button-success float-sm-left"
+            ></button>
+            <table class="table table-striped table-hover loggerList">
+              <thead>
+                <tr class="shng_heading">
+                  <th class="py-1" style="border-top: 0">{{ 'LOGGERS.LOGGER_NAME' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.LEVEL' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.HANDLERS' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.HANDLER_TYPES' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.LOGFILES' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.ACTION' | translate }}</th>
                 </tr>
-              }
-            }
-          }
+              </thead>
+              <tbody>
+                @for (l of loggersList; track $index) {
+                  @if (l.startsWith('plugins.') || l === 'plugins') {
+                    @if (loggers[l].level !== undefined) {
+                      <tr>
+                        <logger-line
+                          [loggerName]="l"
+                          [logger]="loggers[l]"
+                          [loggerActive]="plugin_loaded(l)"
+                          [definedHandlers]="definedHandlers"
+                          (levelChange)="levelChanged(l, $event)"
+                          (loggerDelete)="loggerDelete(l)"
+                        ></logger-line>
+                      </tr>
+                    }
+                  }
+                }
+              </tbody>
+              <tfoot>
+                <br /><br /><br /><br /><br />
+              </tfoot>
+            </table>
+          </div>
+        </p-tabpanel>
 
-          </tbody>
-          <tfoot>
-          <br><br><br><br><br>
-          </tfoot>
-        </table>
-      </div>
-    </p-tabpanel>
+        <p-tabpanel value="2">
+          <div class="tab-content-services">
+            <button
+              pButton
+              type="button"
+              style="margin-left: 0; margin-top: 5px; font-size: medium"
+              id="newLoggerButtonI"
+              [disabled]="false"
+              (click)="newItemLogger()"
+              icon="fa fa-plus"
+              label="{{ 'BUTTON.NEW_LOGGER' | translate }}"
+              class="ui-button-success float-sm-left"
+            ></button>
+            <table class="table table-striped table-hover loggerList">
+              <thead border="0">
+                <tr class="shng_heading">
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.LOGGER_NAME' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.LEVEL' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.HANDLERS' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.HANDLER_TYPES' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.LOGFILES' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.ACTION' | translate }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (l of loggersList; track $index) {
+                  @if (l.startsWith('items.') || l === 'items') {
+                    @if (loggers[l].level !== undefined) {
+                      <tr>
+                        <logger-line
+                          [loggerName]="l"
+                          [logger]="loggers[l]"
+                          [loggerActive]="true"
+                          [definedHandlers]="definedHandlers"
+                          (levelChange)="levelChanged(l, $event)"
+                          (loggerDelete)="loggerDelete(l)"
+                        ></logger-line>
+                      </tr>
+                    }
+                  }
+                }
+              </tbody>
+              <tfoot>
+                <br /><br /><br /><br /><br />
+              </tfoot>
+            </table>
+          </div>
+        </p-tabpanel>
 
-    <p-tabpanel value="3">
-      <div class="tab-content-services">
-        <button pButton type="button" style="margin-left: 0; margin-top: 5px; font-size: medium;" id="newLoggerButtonA" [disabled]="false" (click)="newAdvancedLogger();" icon="fa fa-plus" label="{{ 'BUTTON.NEW_LOGGER'|translate }}" class="ui-button-success float-sm-left"></button>
-        <table class="table table-striped table-hover loggerList">
-        <thead>
-          <tr class="shng_heading">
-            <th class="py-1" style="border: 0;">{{ 'LOGGERS.LOGGER_NAME'|translate }}</th>
-            <th class="py-1" style="border: 0;">{{ 'LOGGERS.LEVEL'|translate }}</th>
-            <th class="py-1" style="border: 0;">{{ 'LOGGERS.HANDLERS'|translate }}</th>
-            <th class="py-1" style="border: 0;">{{ 'LOGGERS.HANDLER_TYPES'|translate }}</th>
-            <th class="py-1" style="border: 0;">{{ 'LOGGERS.LOGFILES'|translate }}</th>
-            <th class="py-1" style="border: 0;">{{ 'LOGGERS.ACTION'|translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-           @if (loggers !== undefined) {
-             <tr>
-               <logger-line
-                       [loggerName]="'root'"
-                       [logger]="loggers['root']"
-                       [loggerActive]=true
-                       [definedHandlers]="definedHandlers"
-                       (levelChange)="levelChanged('root', $event)"
-                       (loggerDelete)="loggerDelete('root')"
-               ></logger-line>
-             </tr>
-            }
-
-            @for (l of loggersList; track $index) {
-              @if (l.startsWith('functions.') || l.startsWith('lib.') || l.startsWith('modules.') || l === 'functions' || l === 'lib' || l === 'modules' || l === '__main__') {
-                @if (loggers[l].level !== undefined) {
+        <p-tabpanel value="3">
+          <div class="tab-content-services">
+            <button
+              pButton
+              type="button"
+              style="margin-left: 0; margin-top: 5px; font-size: medium"
+              id="newLoggerButtonA"
+              [disabled]="false"
+              (click)="newAdvancedLogger()"
+              icon="fa fa-plus"
+              label="{{ 'BUTTON.NEW_LOGGER' | translate }}"
+              class="ui-button-success float-sm-left"
+            ></button>
+            <table class="table table-striped table-hover loggerList">
+              <thead>
+                <tr class="shng_heading">
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.LOGGER_NAME' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.LEVEL' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.HANDLERS' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.HANDLER_TYPES' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.LOGFILES' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.ACTION' | translate }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @if (loggers !== undefined) {
                   <tr>
                     <logger-line
-                            [loggerName]=l
-                            [logger]="loggers[l]"
-                            [loggerActive]=true
-                            [definedHandlers]="definedHandlers"
-                            (levelChange)="levelChanged(l, $event)"
-                            (loggerDelete)="loggerDelete(l)"
+                      [loggerName]="'root'"
+                      [logger]="loggers['root']"
+                      [loggerActive]="true"
+                      [definedHandlers]="definedHandlers"
+                      (levelChange)="levelChanged('root', $event)"
+                      (loggerDelete)="loggerDelete('root')"
                     ></logger-line>
                   </tr>
                 }
-              }
-            }
 
-          </tbody>
-          <tfoot>
-            <br><br><br><br><br>
-          </tfoot>
-        </table>
-      </div>
-    </p-tabpanel>
+                @for (l of loggersList; track $index) {
+                  @if (
+                    l.startsWith('functions.') ||
+                    l.startsWith('lib.') ||
+                    l.startsWith('modules.') ||
+                    l === 'functions' ||
+                    l === 'lib' ||
+                    l === 'modules' ||
+                    l === '__main__'
+                  ) {
+                    @if (loggers[l].level !== undefined) {
+                      <tr>
+                        <logger-line
+                          [loggerName]="l"
+                          [logger]="loggers[l]"
+                          [loggerActive]="true"
+                          [definedHandlers]="definedHandlers"
+                          (levelChange)="levelChanged(l, $event)"
+                          (loggerDelete)="loggerDelete(l)"
+                        ></logger-line>
+                      </tr>
+                    }
+                  }
+                }
+              </tbody>
+              <tfoot>
+                <br /><br /><br /><br /><br />
+              </tfoot>
+            </table>
+          </div>
+        </p-tabpanel>
 
-    <p-tabpanel value="4">
-      <div class="tab-content-services">
-        <table class="table table-striped table-hover loggerList">
-        <thead>
-        <tr class="shng_heading">
-          <th class="py-1" style="border: 0;">{{ 'LOGGERS.LOGGER_NAME'|translate }}</th>
-          <th class="py-1" style="border: 0;">{{ 'LOGGERS.LEVEL'|translate }}</th>
-          <th class="py-1" style="border: 0;">{{ 'LOGGERS.HANDLERS'|translate }}</th>
-          <th class="py-1" style="border: 0;">{{ 'LOGGERS.HANDLER_TYPES'|translate }}</th>
-          <th class="py-1" style="border: 0;">{{ 'LOGGERS.LOGFILES'|translate }}</th>
-        </tr>
-        </thead>
-        <tbody>
-        @for (l of loggersList; track $index) {
-          @if (!(l === 'functions' || l.startsWith('functions.') || l.startsWith('items.') || l.startsWith('logics.') || l === 'items' || l === 'logics' || l.startsWith('plugins.') || l === 'plugins' || l.startsWith('lib.') || l.startsWith('modules.') || l === 'lib' || l === 'modules' || l === 'root' || l === '__main__' )) {
-            @if (loggers[l].level !== undefined) {
-              <tr>
-                <logger-line
-                        [loggerName]=l
-                        [logger]="loggers[l]"
-                        [loggerActive]=true
-                        [definedHandlers]="definedHandlers"
-                        (levelChange)="levelChanged(l, $event)"
-                        (loggerDelete)="loggerDelete(l)"
-                ></logger-line>
-              </tr>
-            }
-          }
-        }
-
-        </tbody>
-        <tfoot>
-          <br><br><br><br><br>
-        </tfoot>
-      </table>
-      </div>
-    </p-tabpanel>
-
-    </p-tabpanels>
-  </p-tabs>
+        <p-tabpanel value="4">
+          <div class="tab-content-services">
+            <table class="table table-striped table-hover loggerList">
+              <thead>
+                <tr class="shng_heading">
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.LOGGER_NAME' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.LEVEL' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.HANDLERS' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.HANDLER_TYPES' | translate }}</th>
+                  <th class="py-1" style="border: 0">{{ 'LOGGERS.LOGFILES' | translate }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (l of loggersList; track $index) {
+                  @if (
+                    !(
+                      l === 'functions' ||
+                      l.startsWith('functions.') ||
+                      l.startsWith('items.') ||
+                      l.startsWith('logics.') ||
+                      l === 'items' ||
+                      l === 'logics' ||
+                      l.startsWith('plugins.') ||
+                      l === 'plugins' ||
+                      l.startsWith('lib.') ||
+                      l.startsWith('modules.') ||
+                      l === 'lib' ||
+                      l === 'modules' ||
+                      l === 'root' ||
+                      l === '__main__'
+                    )
+                  ) {
+                    @if (loggers[l].level !== undefined) {
+                      <tr>
+                        <logger-line
+                          [loggerName]="l"
+                          [logger]="loggers[l]"
+                          [loggerActive]="true"
+                          [definedHandlers]="definedHandlers"
+                          (levelChange)="levelChanged(l, $event)"
+                          (loggerDelete)="loggerDelete(l)"
+                        ></logger-line>
+                      </tr>
+                    }
+                  }
+                }
+              </tbody>
+              <tfoot>
+                <br /><br /><br /><br /><br />
+              </tfoot>
+            </table>
+          </div>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
   </div>
 </div>
-
 
 <!--
   -- Dialog for entering logic name and logic filename of a new logic
   -->
 
 <p-dialog
-        header=""
-        [(visible)]="newlogger_display"
-        [modal]="true"
-        blockScroll="true"
-        [closable]="false"
-        [maximizable]="false"
-        [minY]="100"
-        [style]="{'width':'600px', 'minWidth':'600px', 'minHeight':'450px'}"
+  header=""
+  [(visible)]="newlogger_display"
+  [modal]="true"
+  blockScroll="true"
+  [closable]="false"
+  [maximizable]="false"
+  [minY]="100"
+  [style]="{ width: '600px', minWidth: '600px', minHeight: '450px' }"
 >
-
   <ng-template pTemplate="header">
-    {{'LOGGERS.CREATE_LOGGER'|translate}}
+    {{ 'LOGGERS.CREATE_LOGGER' | translate }}
   </ng-template>
 
-  {{'LOGGERS.CREATE_LOGGER_TEXT'|translate}}
-  <br>
-  <br>
-  <label style="display: block;">
-    <span style="display: inline-block; width: 120px;">{{ 'LOGGERS.LOGGER_NAME'|translate }}:</span>
+  {{ 'LOGGERS.CREATE_LOGGER_TEXT' | translate }}
+  <br />
+  <br />
+  <label style="display: block">
+    <span style="display: inline-block; width: 120px">{{ 'LOGGERS.LOGGER_NAME' | translate }}:</span>
 
-    <p-select [options]="loggerOptions" [showClear]="false" placeholder="{{'none selected'}}" [(ngModel)]="this.newlogger_name" (ngModelChange)="newLoggerSelected($event)"></p-select>
-<!--
+    <p-select
+      [options]="loggerOptions"
+      [showClear]="false"
+      placeholder="{{ 'none selected' }}"
+      [(ngModel)]="this.newlogger_name"
+      (ngModelChange)="newLoggerSelected($event)"
+    ></p-select>
+    <!--
     <input [(ngModel)]="newlogger_name" id="nlog" type="text" (input)="checkNewLogicInput();" pInputText placeholder="" style="position: absolute; margin-left: 60px; width: 250px" [ngStyle]="{'width': 30}" autofocus/>
 -->
   </label>
-  <br><br>
-  <br><br>
-  <br><br>
-  <br><br>
-  <br>
+  <br /><br />
+  <br /><br />
+  <br /><br />
+  <br /><br />
+  <br />
   @if (this.noLoggerToAdd) {
-    <p-message severity="error" [text]="'LOGGERS.NO_LOGGER_TO_ADD' | translate" [closable]="true" (onClose)="this.noLoggerToAdd = false" styleClass="mt-2"></p-message>
+    <p-message
+      severity="error"
+      [text]="'LOGGERS.NO_LOGGER_TO_ADD' | translate"
+      [closable]="true"
+      (onClose)="this.noLoggerToAdd = false"
+      styleClass="mt-2"
+    ></p-message>
   }
   <ng-template pTemplate="footer">
-    <button pButton type="button" id="createLoggerButton" icon="pi pi-check" (click)="this.createLogger()" [disabled]="!newlogger_add_enabled" (disabledChange)="newlogger_add_enabled = $event" label="{{'BUTTON.CREATE'|translate}}" class="ui-button-success" autofocus></button>
-    <button pButton type="button" id="cancleCreateLoggerButton" icon="pi pi-times" (click)="newlogger_display=false" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
+    <button
+      pButton
+      type="button"
+      id="createLoggerButton"
+      icon="pi pi-check"
+      (click)="this.createLogger()"
+      [disabled]="!newlogger_add_enabled"
+      (disabledChange)="newlogger_add_enabled = $event"
+      label="{{ 'BUTTON.CREATE' | translate }}"
+      class="ui-button-success"
+      autofocus
+    ></button>
+    <button
+      pButton
+      type="button"
+      id="cancleCreateLoggerButton"
+      icon="pi pi-times"
+      (click)="newlogger_display = false"
+      label="{{ 'BUTTON.ABORT' | translate }}"
+      class="ui-button-secondary"
+    ></button>
   </ng-template>
 </p-dialog>

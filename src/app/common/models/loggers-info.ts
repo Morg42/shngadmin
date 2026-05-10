@@ -1,4 +1,3 @@
-
 //
 // Datatype for <shng-server>:<port>/api/logs
 //

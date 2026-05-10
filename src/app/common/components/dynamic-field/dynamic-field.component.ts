@@ -1,20 +1,14 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Bind } from 'primeng/bind';
-import { Select } from 'primeng/select';
-import { FormsModule } from '@angular/forms';
-import { InputText } from 'primeng/inputtext';
 import { NgStyle } from '@angular/common';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Bind } from 'primeng/bind';
+import { InputText } from 'primeng/inputtext';
+import { Select } from 'primeng/select';
 
 @Component({
-    selector: 'app-dynamic-field',
-    templateUrl: './dynamic-field.component.html',
-    imports: [
-        Bind,
-        Select,
-        FormsModule,
-        InputText,
-        NgStyle,
-    ],
+  selector: 'app-dynamic-field',
+  templateUrl: './dynamic-field.component.html',
+  imports: [Bind, Select, FormsModule, InputText, NgStyle],
 })
 export class DynamicFieldComponent {
   @Input() row: any;

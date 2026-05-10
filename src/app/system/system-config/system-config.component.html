@@ -1,270 +1,334 @@
-
 <!--
 <div style="margin-left: 10px; margin-right: 10px;">
 -->
 <div class="shngbody">
   <div class="body-header">
-  <h3 style="color: #707070; margin-left: 5px;">
-    {{'SYSTEM.CONFIGURATION'|translate}}
-  </h3>
+    <h3 style="color: #707070; margin-left: 5px">
+      {{ 'SYSTEM.CONFIGURATION' | translate }}
+    </h3>
   </div>
 
   <div class="body-content">
     <p-tabs value="0">
       <p-tablist>
-        <p-tab value="0">{{ 'SYSTEM.COMMON_SETTINGS'|translate }}</p-tab>
-        <p-tab value="1">{{ 'SYSTEM.HTTP_SETTINGS'|translate }}</p-tab>
-        <p-tab value="2">{{ 'SYSTEM.WEBSOCKET_SETTINGS'|translate }}</p-tab>
-        <p-tab value="3">{{ 'SYSTEM.ADMIN_SETTINGS'|translate }}</p-tab>
-        <p-tab value="4">{{ 'SYSTEM.MQTT_SETTINGS'|translate }}</p-tab>
+        <p-tab value="0">{{ 'SYSTEM.COMMON_SETTINGS' | translate }}</p-tab>
+        <p-tab value="1">{{ 'SYSTEM.HTTP_SETTINGS' | translate }}</p-tab>
+        <p-tab value="2">{{ 'SYSTEM.WEBSOCKET_SETTINGS' | translate }}</p-tab>
+        <p-tab value="3">{{ 'SYSTEM.ADMIN_SETTINGS' | translate }}</p-tab>
+        <p-tab value="4">{{ 'SYSTEM.MQTT_SETTINGS' | translate }}</p-tab>
       </p-tablist>
       <p-tabpanels>
-      <p-tabpanel value="0">
-        <div class="tab-content">
-          <p-table [columns]="common_parameter_cols" [value]="common_parameters" selectionMode="single">
-          <ng-template pTemplate="header" let-columns>
-            <tr>
-              @for (col of columns; track $index) {
-                <th [pSortableColumn]="col.field" [ngStyle]="{'width': col.width}">
-                  {{col.header|translate}}
-                  @if (col.field !== '') {
-                    <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
-                  }
-                </th>
-              }
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-rowData let-columns="columns">
-            <tr>
-              @for (col of columns; track $index) {
-                <td>
-                  @if (dialog_readonly === false && col.field === 'value') {
-                    <app-dynamic-field [row]="rowData" [col]="col" (changed)="check_values()"></app-dynamic-field>
-                  }
-
-                  @if (dialog_readonly === true || col.field !== 'value') {
-                    @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
-                      <div [innerHTML]="rowData[col.field]"></div>
-                    }
-                    @if (col.field == 'desc' && rowData.gui_type == 'wide_str') {
-                      <div [ngStyle]="{'padding-left': col.paddingleft}">
-                        <div [innerHTML]="rowData[col.field]"></div>
-                      </div>
-                    }
-                  }
-                </td>
-              }
-            </tr>
-          </ng-template>
-        </p-table>
-        </div>
-      </p-tabpanel>
-
-
-
-      <p-tabpanel value="1">
-        <div class="tab-content">
-          <p-table [columns]="http_parameter_cols" [value]="http_parameters" selectionMode="single">
-          <ng-template pTemplate="header" let-columns>
-            <tr>
-              @for (col of columns; track $index) {
-                <th [pSortableColumn]="col.field" [ngStyle]="{'width': col.width}">
-                  {{col.header|translate}}
-                  @if (col.field !== '') {
-                    <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
-                  }
-                </th>
-              }
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-rowData let-columns="columns">
-            <tr>
-              @for (col of columns; track $index) {
-                <td>
-                  @if (dialog_readonly === false && col.field === 'value') {
-                    <app-dynamic-field [row]="rowData" [col]="col" (changed)="check_values()"></app-dynamic-field>
-                    @if (rowData.type === 'password' && rowData[col.field] === null) {
-                      <button pButton type="button" class="float-sm-left btn-shng btn btn-sm ui-button-secondary" (click)="change_password_dialog($event, rowData, col.field)" style="margin-left: 5px;" label="{{ 'SYSTEM.SET_PASSWORD'|translate }}"></button>
-                    }
-                    @if (rowData.type === 'password' && rowData[col.field] !== null) {
-                      <button pButton type="button" class="float-sm-left btn-shng btn btn-sm ui-button-secondary" (click)="change_password_dialog($event, rowData, col.field)" style="margin-left: 5px;" label="{{ 'SYSTEM.CHANGE_PASSWORD'|translate }}"></button>
-                    }
-                  }
-
-                  @if (dialog_readonly === true || col.field !== 'value') {
-                    @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
-                      <div [innerHTML]="rowData[col.field]"></div>
-                    }
-                    @if (col.field == 'desc' && rowData.gui_type == 'wide_str') {
-                      <div [ngStyle]="{'padding-left': col.paddingleft}">
-                        <div [innerHTML]="rowData[col.field]"></div>
-                      </div>
-                    }
-                  }
-                </td>
-              }
-            </tr>
-          </ng-template>
-        </p-table>
-        </div>
-      </p-tabpanel>
-
-
-
-      <p-tabpanel value="2">
-        <div class="tab-content">
-          <p-table [columns]="websocket_parameter_cols" [value]="websocket_parameters" selectionMode="single">
-            <ng-template pTemplate="header" let-columns>
-              <tr>
-                @for (col of columns; track $index) {
-                  <th [pSortableColumn]="col.field" [ngStyle]="{'width': col.width}">
-                    {{col.header|translate}}
-                    @if (col.field !== '') {
-                      <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
-                    }
-                  </th>
-                }
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-rowData let-columns="columns">
-              <tr>
-                @for (col of columns; track $index) {
-                  <td>
-                    @if (dialog_readonly === false && col.field === 'value') {
-                      <app-dynamic-field [row]="rowData" [col]="col" (changed)="check_values('str')"></app-dynamic-field>
-                      @if (rowData.type === 'password' && rowData[col.field] === null) {
-                        <button pButton type="button" class="float-sm-left btn-shng btn btn-sm ui-button-secondary" (click)="change_password_dialog($event, rowData, col.field)" style="margin-left: 5px;" label="{{ 'SYSTEM.SET_PASSWORD'|translate }}"></button>
+        <p-tabpanel value="0">
+          <div class="tab-content">
+            <p-table [columns]="common_parameter_cols" [value]="common_parameters" selectionMode="single">
+              <ng-template pTemplate="header" let-columns>
+                <tr>
+                  @for (col of columns; track $index) {
+                    <th [pSortableColumn]="col.field" [ngStyle]="{ width: col.width }">
+                      {{ col.header | translate }}
+                      @if (col.field !== '') {
+                        <p-sortIcon
+                          [field]="col.field"
+                          ariaLabel="Activate to sort"
+                          ariaLabelDesc="Activate to sort in descending order"
+                          ariaLabelAsc="Activate to sort in ascending order"
+                        ></p-sortIcon>
                       }
-                      @if (rowData.type === 'password' && rowData[col.field] !== null) {
-                        <button pButton type="button" class="float-sm-left btn-shng btn btn-sm ui-button-secondary" (click)="change_password_dialog($event, rowData, col.field)" style="margin-left: 5px;" label="{{ 'SYSTEM.CHANGE_PASSWORD'|translate }}"></button>
+                    </th>
+                  }
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-rowData let-columns="columns">
+                <tr>
+                  @for (col of columns; track $index) {
+                    <td>
+                      @if (dialog_readonly === false && col.field === 'value') {
+                        <app-dynamic-field [row]="rowData" [col]="col" (changed)="check_values()"></app-dynamic-field>
                       }
-                    }
 
-                    @if (dialog_readonly === true || col.field !== 'value') {
-                      @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
-                        <div [innerHTML]="rowData[col.field]"></div>
-                      }
-                      @if (col.field == 'desc' && rowData.gui_type == 'wide_str') {
-                        <div [ngStyle]="{'padding-left': col.paddingleft}">
+                      @if (dialog_readonly === true || col.field !== 'value') {
+                        @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
                           <div [innerHTML]="rowData[col.field]"></div>
-                        </div>
+                        }
+                        @if (col.field == 'desc' && rowData.gui_type == 'wide_str') {
+                          <div [ngStyle]="{ 'padding-left': col.paddingleft }">
+                            <div [innerHTML]="rowData[col.field]"></div>
+                          </div>
+                        }
                       }
-                    }
-                  </td>
-                }
-              </tr>
-            </ng-template>
-          </p-table>
-        </div>
-      </p-tabpanel>
-
-
-
-      <p-tabpanel value="3">
-        <div class="tab-content">
-          <p-table [columns]="admin_parameter_cols" [value]="admin_parameters" selectionMode="single">
-          <ng-template pTemplate="header" let-columns>
-            <tr>
-              @for (col of columns; track $index) {
-                <th [pSortableColumn]="col.field" [ngStyle]="{'width': col.width}">
-                  {{col.header|translate}}
-                  @if (col.field !== '') {
-                    <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </td>
                   }
-                </th>
-              }
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-rowData let-columns="columns">
-            <tr>
-              @for (col of columns; track $index) {
-                <td>
-                  @if (dialog_readonly === false && col.field === 'value') {
-                    <app-dynamic-field [row]="rowData" [col]="col" (changed)="check_values()"></app-dynamic-field>
-                  }
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabpanel>
 
-                  @if (dialog_readonly === true || col.field !== 'value') {
-                    @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
-                      <div [innerHTML]="rowData[col.field]"></div>
-                    }
-                    @if (col.field == 'desc' && rowData.gui_type == 'wide_str') {
-                      <div [ngStyle]="{'padding-left': col.paddingleft}">
-                        <div [innerHTML]="rowData[col.field]"></div>
-                      </div>
-                    }
+        <p-tabpanel value="1">
+          <div class="tab-content">
+            <p-table [columns]="http_parameter_cols" [value]="http_parameters" selectionMode="single">
+              <ng-template pTemplate="header" let-columns>
+                <tr>
+                  @for (col of columns; track $index) {
+                    <th [pSortableColumn]="col.field" [ngStyle]="{ width: col.width }">
+                      {{ col.header | translate }}
+                      @if (col.field !== '') {
+                        <p-sortIcon
+                          [field]="col.field"
+                          ariaLabel="Activate to sort"
+                          ariaLabelDesc="Activate to sort in descending order"
+                          ariaLabelAsc="Activate to sort in ascending order"
+                        ></p-sortIcon>
+                      }
+                    </th>
                   }
-                </td>
-              }
-            </tr>
-          </ng-template>
-        </p-table>
-        </div>
-      </p-tabpanel>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-rowData let-columns="columns">
+                <tr>
+                  @for (col of columns; track $index) {
+                    <td>
+                      @if (dialog_readonly === false && col.field === 'value') {
+                        <app-dynamic-field [row]="rowData" [col]="col" (changed)="check_values()"></app-dynamic-field>
+                        @if (rowData.type === 'password' && rowData[col.field] === null) {
+                          <button
+                            pButton
+                            type="button"
+                            class="float-sm-left btn-shng btn btn-sm ui-button-secondary"
+                            (click)="change_password_dialog($event, rowData, col.field)"
+                            style="margin-left: 5px"
+                            label="{{ 'SYSTEM.SET_PASSWORD' | translate }}"
+                          ></button>
+                        }
+                        @if (rowData.type === 'password' && rowData[col.field] !== null) {
+                          <button
+                            pButton
+                            type="button"
+                            class="float-sm-left btn-shng btn btn-sm ui-button-secondary"
+                            (click)="change_password_dialog($event, rowData, col.field)"
+                            style="margin-left: 5px"
+                            label="{{ 'SYSTEM.CHANGE_PASSWORD' | translate }}"
+                          ></button>
+                        }
+                      }
 
-
-      <p-tabpanel value="4">
-        <div class="tab-content">
-          <p-table [columns]="mqtt_parameter_cols" [value]="mqtt_parameters" selectionMode="single">
-          <ng-template pTemplate="header" let-columns>
-            <tr>
-              @for (col of columns; track $index) {
-                <th [pSortableColumn]="col.field" [ngStyle]="{'width': col.width}">
-                  {{col.header|translate}}
-                  @if (col.field !== '') {
-                    <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                      @if (dialog_readonly === true || col.field !== 'value') {
+                        @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
+                          <div [innerHTML]="rowData[col.field]"></div>
+                        }
+                        @if (col.field == 'desc' && rowData.gui_type == 'wide_str') {
+                          <div [ngStyle]="{ 'padding-left': col.paddingleft }">
+                            <div [innerHTML]="rowData[col.field]"></div>
+                          </div>
+                        }
+                      }
+                    </td>
                   }
-                </th>
-              }
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-rowData let-columns="columns">
-            <tr>
-              @for (col of columns; track $index) {
-                <td>
-                  @if (dialog_readonly === false && col.field === 'value') {
-                    <app-dynamic-field [row]="rowData" [col]="col" (changed)="check_values()"></app-dynamic-field>
-                  }
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabpanel>
 
-                  @if (dialog_readonly === true || col.field !== 'value') {
-                    @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
-                      <div [innerHTML]="rowData[col.field]"></div>
-                    }
-                    @if (col.field == 'desc' && rowData.gui_type == 'wide_str') {
-                      <div [ngStyle]="{'padding-left': col.paddingleft}">
-                        <div [innerHTML]="rowData[col.field]"></div>
-                      </div>
-                    }
+        <p-tabpanel value="2">
+          <div class="tab-content">
+            <p-table [columns]="websocket_parameter_cols" [value]="websocket_parameters" selectionMode="single">
+              <ng-template pTemplate="header" let-columns>
+                <tr>
+                  @for (col of columns; track $index) {
+                    <th [pSortableColumn]="col.field" [ngStyle]="{ width: col.width }">
+                      {{ col.header | translate }}
+                      @if (col.field !== '') {
+                        <p-sortIcon
+                          [field]="col.field"
+                          ariaLabel="Activate to sort"
+                          ariaLabelDesc="Activate to sort in descending order"
+                          ariaLabelAsc="Activate to sort in ascending order"
+                        ></p-sortIcon>
+                      }
+                    </th>
                   }
-                </td>
-              }
-            </tr>
-          </ng-template>
-        </p-table>
-        </div>
-      </p-tabpanel>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-rowData let-columns="columns">
+                <tr>
+                  @for (col of columns; track $index) {
+                    <td>
+                      @if (dialog_readonly === false && col.field === 'value') {
+                        <app-dynamic-field
+                          [row]="rowData"
+                          [col]="col"
+                          (changed)="check_values('str')"
+                        ></app-dynamic-field>
+                        @if (rowData.type === 'password' && rowData[col.field] === null) {
+                          <button
+                            pButton
+                            type="button"
+                            class="float-sm-left btn-shng btn btn-sm ui-button-secondary"
+                            (click)="change_password_dialog($event, rowData, col.field)"
+                            style="margin-left: 5px"
+                            label="{{ 'SYSTEM.SET_PASSWORD' | translate }}"
+                          ></button>
+                        }
+                        @if (rowData.type === 'password' && rowData[col.field] !== null) {
+                          <button
+                            pButton
+                            type="button"
+                            class="float-sm-left btn-shng btn btn-sm ui-button-secondary"
+                            (click)="change_password_dialog($event, rowData, col.field)"
+                            style="margin-left: 5px"
+                            label="{{ 'SYSTEM.CHANGE_PASSWORD' | translate }}"
+                          ></button>
+                        }
+                      }
 
+                      @if (dialog_readonly === true || col.field !== 'value') {
+                        @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
+                          <div [innerHTML]="rowData[col.field]"></div>
+                        }
+                        @if (col.field == 'desc' && rowData.gui_type == 'wide_str') {
+                          <div [ngStyle]="{ 'padding-left': col.paddingleft }">
+                            <div [innerHTML]="rowData[col.field]"></div>
+                          </div>
+                        }
+                      }
+                    </td>
+                  }
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabpanel>
+
+        <p-tabpanel value="3">
+          <div class="tab-content">
+            <p-table [columns]="admin_parameter_cols" [value]="admin_parameters" selectionMode="single">
+              <ng-template pTemplate="header" let-columns>
+                <tr>
+                  @for (col of columns; track $index) {
+                    <th [pSortableColumn]="col.field" [ngStyle]="{ width: col.width }">
+                      {{ col.header | translate }}
+                      @if (col.field !== '') {
+                        <p-sortIcon
+                          [field]="col.field"
+                          ariaLabel="Activate to sort"
+                          ariaLabelDesc="Activate to sort in descending order"
+                          ariaLabelAsc="Activate to sort in ascending order"
+                        ></p-sortIcon>
+                      }
+                    </th>
+                  }
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-rowData let-columns="columns">
+                <tr>
+                  @for (col of columns; track $index) {
+                    <td>
+                      @if (dialog_readonly === false && col.field === 'value') {
+                        <app-dynamic-field [row]="rowData" [col]="col" (changed)="check_values()"></app-dynamic-field>
+                      }
+
+                      @if (dialog_readonly === true || col.field !== 'value') {
+                        @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
+                          <div [innerHTML]="rowData[col.field]"></div>
+                        }
+                        @if (col.field == 'desc' && rowData.gui_type == 'wide_str') {
+                          <div [ngStyle]="{ 'padding-left': col.paddingleft }">
+                            <div [innerHTML]="rowData[col.field]"></div>
+                          </div>
+                        }
+                      }
+                    </td>
+                  }
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabpanel>
+
+        <p-tabpanel value="4">
+          <div class="tab-content">
+            <p-table [columns]="mqtt_parameter_cols" [value]="mqtt_parameters" selectionMode="single">
+              <ng-template pTemplate="header" let-columns>
+                <tr>
+                  @for (col of columns; track $index) {
+                    <th [pSortableColumn]="col.field" [ngStyle]="{ width: col.width }">
+                      {{ col.header | translate }}
+                      @if (col.field !== '') {
+                        <p-sortIcon
+                          [field]="col.field"
+                          ariaLabel="Activate to sort"
+                          ariaLabelDesc="Activate to sort in descending order"
+                          ariaLabelAsc="Activate to sort in ascending order"
+                        ></p-sortIcon>
+                      }
+                    </th>
+                  }
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-rowData let-columns="columns">
+                <tr>
+                  @for (col of columns; track $index) {
+                    <td>
+                      @if (dialog_readonly === false && col.field === 'value') {
+                        <app-dynamic-field [row]="rowData" [col]="col" (changed)="check_values()"></app-dynamic-field>
+                      }
+
+                      @if (dialog_readonly === true || col.field !== 'value') {
+                        @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
+                          <div [innerHTML]="rowData[col.field]"></div>
+                        }
+                        @if (col.field == 'desc' && rowData.gui_type == 'wide_str') {
+                          <div [ngStyle]="{ 'padding-left': col.paddingleft }">
+                            <div [innerHTML]="rowData[col.field]"></div>
+                          </div>
+                        }
+                      }
+                    </td>
+                  }
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabpanel>
       </p-tabpanels>
     </p-tabs>
   </div>
-    <div class="body-footer">
-      @if (dialog_readonly === false && restart_core_button) {
-        <a style="font-size: small">{{ 'RESTART FOR CHANGES'|translate }}</a>
-      }
-      @if (dialog_readonly === false && !restart_core_button) {
-        <a style="font-size: small">&nbsp;</a>
-      }
-      <br>
-      <button pButton type="button" class="float-sm-left btn-shng btn btn-sm ui-button-success" style="float: left;" [disabled]="!restart_core_button" (click)="restartShng()" icon="fa fa-circle-notch" label="{{'BUTTON.RESTART_SHNG'|translate}}"></button>
-      <button pButton type="button" tabindex="1" autofocus="autofocus" class="btn btn-primary btn-sm btn-shng" style="float: right;" [disabled]="!this.data_changed" (click)="saveSettings()" icon="fas fa-check" label="{{'BUTTON.SAVE_SETTINGS'|translate}}"></button>
-<!--
+  <div class="body-footer">
+    @if (dialog_readonly === false && restart_core_button) {
+      <a style="font-size: small">{{ 'RESTART FOR CHANGES' | translate }}</a>
+    }
+    @if (dialog_readonly === false && !restart_core_button) {
+      <a style="font-size: small">&nbsp;</a>
+    }
+    <br />
+    <button
+      pButton
+      type="button"
+      class="float-sm-left btn-shng btn btn-sm ui-button-success"
+      style="float: left"
+      [disabled]="!restart_core_button"
+      (click)="restartShng()"
+      icon="fa fa-circle-notch"
+      label="{{ 'BUTTON.RESTART_SHNG' | translate }}"
+    ></button>
+    <button
+      pButton
+      type="button"
+      tabindex="1"
+      autofocus="autofocus"
+      class="btn btn-primary btn-sm btn-shng"
+      style="float: right"
+      [disabled]="!this.data_changed"
+      (click)="saveSettings()"
+      icon="fas fa-check"
+      label="{{ 'BUTTON.SAVE_SETTINGS' | translate }}"
+    ></button>
+    <!--
       <button pButton type="button" tabindex="1" autofocus="autofocus" class="btn btn-primary btn-sm btn-shng" style="float: right;" [disabled]="!this.data_changed" (click)="saveSettings()"><i class="fas fa-check"></i> {{'BUTTON.SAVE_SETTINGS'|translate}}</button>
 -->
-    </div>
-
   </div>
-
-
-
+</div>
 
 <!--
   -- Validation dialog, showing information about the error, if from validation fails
@@ -272,7 +336,7 @@
 
 <p-dialog header="" [(visible)]="validation_dialog_display" [modal]="true" blockScroll="true">
   <ng-template pTemplate="header">
-    {{'PLUGIN.CONFIGURATION_ERRORS'|translate}}
+    {{ 'PLUGIN.CONFIGURATION_ERRORS' | translate }}
   </ng-template>
 
   @for (l of this.validation_dialog_text; track $index) {
@@ -282,11 +346,16 @@
   }
 
   <ng-template pTemplate="footer">
-    <button pButton type="button" icon="pi pi-times" (click)="validation_dialog_display=false" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
+    <button
+      pButton
+      type="button"
+      icon="pi pi-times"
+      (click)="validation_dialog_display = false"
+      label="{{ 'BUTTON.CLOSE' | translate }}"
+      class="ui-button-success"
+    ></button>
   </ng-template>
 </p-dialog>
-
-
 
 <!--
   -- Password change dialog, showing information about the error, if from validation fails
@@ -295,10 +364,10 @@
 <p-dialog header="" [(visible)]="pwd_change_dialog_display" [modal]="true" blockScroll="true">
   <ng-template pTemplate="header">
     @if (pwd_hash_old === null) {
-      {{'SYSTEM.SET_PASSWORD'|translate}}
+      {{ 'SYSTEM.SET_PASSWORD' | translate }}
     }
     @if (pwd_hash_old !== null) {
-      {{'SYSTEM.CHANGE_PASSWORD'|translate}}
+      {{ 'SYSTEM.CHANGE_PASSWORD' | translate }}
     }
   </ng-template>
 
@@ -315,29 +384,77 @@
   <table>
     @if (pwd_hash_old !== null) {
       <tr>
-        <td style="padding-right: 10px">{{'SYSTEM.OLD_PASSWORD'|translate}}</td>
-        <td><input [(ngModel)]="pwd_old" tabindex="1" autofocus style="width: 250px" [type]="pwd_show ? 'text' : 'password'" pInputText name="pwd_old"/></td>
+        <td style="padding-right: 10px">{{ 'SYSTEM.OLD_PASSWORD' | translate }}</td>
+        <td>
+          <input
+            [(ngModel)]="pwd_old"
+            tabindex="1"
+            autofocus
+            style="width: 250px"
+            [type]="pwd_show ? 'text' : 'password'"
+            pInputText
+            name="pwd_old"
+          />
+        </td>
       </tr>
-      <tr><td>&nbsp;</td></tr>
+      <tr>
+        <td>&nbsp;</td>
+      </tr>
     }
     <tr>
-      <td style="padding-right: 10px">{{'SYSTEM.NEW_PASSWORD'|translate}}</td>
-      <td><input [(ngModel)]="pwd_new1" tabindex="2" style="width: 250px" [type]="pwd_show ? 'text' : 'password'" pInputText name="pwd_new1"/></td>
+      <td style="padding-right: 10px">{{ 'SYSTEM.NEW_PASSWORD' | translate }}</td>
+      <td>
+        <input
+          [(ngModel)]="pwd_new1"
+          tabindex="2"
+          style="width: 250px"
+          [type]="pwd_show ? 'text' : 'password'"
+          pInputText
+          name="pwd_new1"
+        />
+      </td>
     </tr>
     <tr>
-      <td style="padding-right: 10px">{{'SYSTEM.NEW_PASSWORD_REPEAT'|translate}}</td>
-      <td><input [(ngModel)]="pwd_new2" tabindex="3" style="width: 250px" [type]="pwd_show ? 'text' : 'password'" pInputText name="pwd_new2"/></td>
+      <td style="padding-right: 10px">{{ 'SYSTEM.NEW_PASSWORD_REPEAT' | translate }}</td>
+      <td>
+        <input
+          [(ngModel)]="pwd_new2"
+          tabindex="3"
+          style="width: 250px"
+          [type]="pwd_show ? 'text' : 'password'"
+          pInputText
+          name="pwd_new2"
+        />
+      </td>
     </tr>
     <tr>
       <td style="padding-right: 10px"></td>
-      <td><input [(ngModel)]="pwd_show" type="checkbox" style="font-size: small" id="showtext">{{'SYSTEM.SHOW_PASSWORDS'|translate}}</td>
+      <td>
+        <input [(ngModel)]="pwd_show" type="checkbox" style="font-size: small" id="showtext" />{{
+          'SYSTEM.SHOW_PASSWORDS' | translate
+        }}
+      </td>
     </tr>
   </table>
 
-
   <ng-template pTemplate="footer">
-    <p style="text-align: left; font-size: small">{{ 'SYSTEM.REMEMBER TO SAVE CHANGES'|translate }}</p>
-    <button pButton type="button" icon="pi pi-times" (click)="pwd_change_dialog_display=false" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
-    <button pButton type="button" tabindex="4" icon="pi pi-check" (click)="change_password($event)" label="{{'BUTTON.CHANGE'|translate}}" class="ui-button-success"></button>
+    <p style="text-align: left; font-size: small">{{ 'SYSTEM.REMEMBER TO SAVE CHANGES' | translate }}</p>
+    <button
+      pButton
+      type="button"
+      icon="pi pi-times"
+      (click)="pwd_change_dialog_display = false"
+      label="{{ 'BUTTON.ABORT' | translate }}"
+      class="ui-button-secondary"
+    ></button>
+    <button
+      pButton
+      type="button"
+      tabindex="4"
+      icon="pi pi-check"
+      (click)="change_password($event)"
+      label="{{ 'BUTTON.CHANGE' | translate }}"
+      class="ui-button-success"
+    ></button>
   </ng-template>
 </p-dialog>

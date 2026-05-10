@@ -1,34 +1,50 @@
-
-import {Component, OnInit, AfterViewChecked, ViewChild, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {
+  AfterViewChecked,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 
-import { TranslateService, TranslatePipe } from '@ngx-translate/core';
-import { SelectItem, PrimeTemplate } from 'primeng/api';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { PrimeTemplate, SelectItem } from 'primeng/api';
 
-import {FilesApiService} from '../../common/services/files-api.service';
-import {ServerInfo} from '../../common/models/server-info';
-import {ServicesApiService} from '../../common/services/services-api.service';
-import {FunctionsApiService} from '../../common/services/functions-api.service';
-import { Bind } from 'primeng/bind';
-import { ButtonDirective } from 'primeng/button';
-import { Listbox } from 'primeng/listbox';
+import { NgStyle } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+import { Bind } from 'primeng/bind';
+import { ButtonDirective } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
-import { NgStyle } from '@angular/common';
-
+import { Listbox } from 'primeng/listbox';
+import { FilesApiService } from '../../common/services/files-api.service';
+import { FunctionsApiService } from '../../common/services/functions-api.service';
+import { ServicesApiService } from '../../common/services/services-api.service';
 
 @Component({
-    selector: 'app-function-configuration',
-    templateUrl: './function-configuration.component.html',
-    styleUrls: ['./function-configuration.component.css'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [Bind, ButtonDirective, Listbox, FormsModule, CodemirrorModule, Dialog, PrimeTemplate, InputText, NgStyle, TranslatePipe]
+  selector: 'app-function-configuration',
+  templateUrl: './function-configuration.component.html',
+  styleUrls: ['./function-configuration.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    Bind,
+    ButtonDirective,
+    Listbox,
+    FormsModule,
+    CodemirrorModule,
+    Dialog,
+    PrimeTemplate,
+    InputText,
+    NgStyle,
+    TranslatePipe,
+  ],
 })
 export class FunctionConfigurationComponent implements AfterViewChecked, OnInit {
-
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private translate = inject(TranslateService);
@@ -63,25 +79,25 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
     indentUnit: 4,
     tabSize: 4,
     extraKeys: {
-      'Tab': 'insertSoftTab',
+      Tab: 'insertSoftTab',
       'Shift-Tab': 'indentLess',
-      'F11': function(cm) {
+      F11: function (cm) {
         cm.setOption('fullScreen', !cm.getOption('fullScreen'));
         // cm.getScrollerElement().style.maxHeight = 'none';
       },
-      'Esc': function(cm, fullScreen) {
+      Esc: function (cm, fullScreen) {
         if (cm.getOption('fullScreen')) {
           cm.setOption('fullScreen', false);
         }
       },
-      'Ctrl-Q': function(cm) {
+      'Ctrl-Q': function (cm) {
         cm.foldCode(cm.getCursor());
       },
-      'Shift-Ctrl-Q': function(cm) {
+      'Shift-Ctrl-Q': function (cm) {
         for (let l = cm.firstLine(); l <= cm.lastLine(); ++l) {
-          cm.foldCode({line: l, ch: 0}, null, 'unfold');
+          cm.foldCode({ line: l, ch: 0 }, null, 'unfold');
         }
-      }
+      },
     },
     fullScreen: false,
     lineNumbers: true,
@@ -94,7 +110,7 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
     autorefresh: true,
     fixedGutter: true,
     foldGutter: true,
-    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
+    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
   };
 
   editorHelp_display = false;
@@ -108,7 +124,7 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
   delete_param: {};
 
   public setTitle(newTitle: string) {
-      this.titleService.setTitle(newTitle);
+    this.titleService.setTitle(newTitle);
   }
 
   ngOnInit() {
@@ -117,38 +133,36 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
     this.setTitle(this.translate.instant('MENU.FUNCTION_CONFIGURATION'));
 
     for (let i = 1; i <= 100; i++) {
-      this.rulers.push({color: '#eee', column: i * 4, lineStyle: 'dashed'});
+      this.rulers.push({ color: '#eee', column: i * 4, lineStyle: 'dashed' });
     }
     this.getFunctionFile('');
 
     this.functionFiles = [];
-    this.fileService.getfileList('functions')
+    this.fileService
+      .getfileList('functions')
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response) => {
-          this.filelist = <string[]> response;
-          for (let i = 0; i < this.filelist.length; i++) {
-            //
-            // I get it. The sample code here and in the docs is wrong, it should read like this:
-            //
-            // fails
-            //   this.cities.push({name:'New York', code: 'NY'});
-            //
-            // correct
-            //   this.cities = [...this.cities, {name:'New York', code: 'NY'}];
-            //
-            this.functionFiles = [...this.functionFiles, <SelectItem> {'label': this.filelist[i], 'value': this.filelist[i]}];
-          }
-          this.cdr.markForCheck();
+      .subscribe((response) => {
+        this.filelist = <string[]>response;
+        for (let i = 0; i < this.filelist.length; i++) {
+          //
+          // I get it. The sample code here and in the docs is wrong, it should read like this:
+          //
+          // fails
+          //   this.cities.push({name:'New York', code: 'NY'});
+          //
+          // correct
+          //   this.cities = [...this.cities, {name:'New York', code: 'NY'}];
+          //
+          this.functionFiles = [
+            ...this.functionFiles,
+            <SelectItem>{ label: this.filelist[i], value: this.filelist[i] },
+          ];
         }
-      );
-
-
+        this.cdr.markForCheck();
+      });
   }
 
-
   ngAfterViewChecked() {
-
     const editor1 = this.codeEditor.codeMirror;
 
     if (editor1.getOption('fullScreen')) {
@@ -161,18 +175,15 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
     editor1.refresh();
   }
 
-
   newConfig() {
     this.newFilename = '';
     this.newconfig_display = true;
   }
 
-
   deleteConfig() {
-    this.delete_param = {'config': this.myEditFilename};
+    this.delete_param = { config: this.myEditFilename };
     this.confirmdelete_display = true;
   }
-
 
   DeleteConfigConfirm() {
     // console.log('FunctionConfigurationComponent.DeleteConfigConfirm:');
@@ -181,27 +192,23 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
     this.confirmdelete_display = false;
 
     // delete on backend server
-    this.fileService.deleteFile('functions', this.myEditFilename)
+    this.fileService
+      .deleteFile('functions', this.myEditFilename)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response: unknown) => {
-          if (response) {
-            // close configuration dialog
-            this.confirmdelete_display = false;
-            console.log('FunctionConfigurationComponent.DeleteConfigConfirm(): call ngOnInit()');
-            this.ngOnInit();
-//            this.restart_core_button = true;
-
-          }
+      .subscribe((response: unknown) => {
+        if (response) {
+          // close configuration dialog
+          this.confirmdelete_display = false;
+          console.log('FunctionConfigurationComponent.DeleteConfigConfirm(): call ngOnInit()');
+          this.ngOnInit();
+          //            this.restart_core_button = true;
         }
-      );
+      });
 
     // alert('code for removal of plugin "' + this.dialog_configname + '" configurations is not yet implemented');
 
-
     return true;
   }
-
 
   checkInput() {
     this.add_enabled = false;
@@ -213,61 +220,58 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
           this.add_enabled = false;
         }
       }
-
     }
   }
-
 
   addFile() {
     this.newconfig_display = false;
 
     // prefill file with template
-    this.fileService.readFile('functions', 'uf.tpl')
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(
-            (response) => {
-              this.myTextarea = response;
-              this.myTextareaOrig = response;
-              if ((this.myTextarea === '') || (this.myTextarea.startsWith('{"result": "error"'))) {
-                  this.myTextarea = '# Userfunctions - file: ' + this.newFilename + '.py   (template file \'uf.tpl\' not found)\n';
-              } else {
-                this.cmOptions.readOnly = false;
-              }
+    this.fileService
+      .readFile('functions', 'uf.tpl')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((response) => {
+        this.myTextarea = response;
+        this.myTextareaOrig = response;
+        if (this.myTextarea === '' || this.myTextarea.startsWith('{"result": "error"')) {
+          this.myTextarea =
+            '# Userfunctions - file: ' +
+            this.newFilename +
+            ".py   (template file 'uf.tpl' not found)\n";
+        } else {
+          this.cmOptions.readOnly = false;
+        }
 
-              this.myTextareaOrig = this.myTextarea;
-              this.myEditFilename = this.newFilename;
-              this.cmOptions.readOnly = false;
-              this.cdr.markForCheck();
+        this.myTextareaOrig = this.myTextarea;
+        this.myEditFilename = this.newFilename;
+        this.cmOptions.readOnly = false;
+        this.cdr.markForCheck();
 
-              // save new file before editing
-              this.fileService.saveFile('functions', this.myEditFilename, this.myTextarea)
-                  .pipe(takeUntilDestroyed(this.destroyRef))
-                  .subscribe(
-                      (response2) => {
-                        this.myTextareaOrig = this.myTextarea;
+        // save new file before editing
+        this.fileService
+          .saveFile('functions', this.myEditFilename, this.myTextarea)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe((response2) => {
+            this.myTextareaOrig = this.myTextarea;
 
-                        this.functionFiles = [];
-                        this.fileService.getfileList('functions')
-                            .pipe(takeUntilDestroyed(this.destroyRef))
-                            .subscribe(
-                                (response) => {
-                                  this.filelist = <string[]> response;
-                                  for (let i = 0; i < this.filelist.length; i++) {
-                                    this.functionFiles = [...this.functionFiles, <SelectItem> {'label': this.filelist[i], 'value': this.filelist[i]}];
-                                  }
-                                  this.cdr.markForCheck();
-                                }
-                            );
-                        this.cdr.markForCheck();
-                      }
-                  );
-
-            }
-        );
-
+            this.functionFiles = [];
+            this.fileService
+              .getfileList('functions')
+              .pipe(takeUntilDestroyed(this.destroyRef))
+              .subscribe((response) => {
+                this.filelist = <string[]>response;
+                for (let i = 0; i < this.filelist.length; i++) {
+                  this.functionFiles = [
+                    ...this.functionFiles,
+                    <SelectItem>{ label: this.filelist[i], value: this.filelist[i] },
+                  ];
+                }
+                this.cdr.markForCheck();
+              });
+            this.cdr.markForCheck();
+          });
+      });
   }
-
-
 
   functionFileSelected() {
     let filename = this.selectedFunctionfile.value;
@@ -283,7 +287,6 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
     }
   }
 
-
   getFunctionFile(filename) {
     this.myEditFilename = '';
     this.myTextarea = '';
@@ -292,25 +295,24 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
       return;
     }
 
-    this.fileService.readFile('functions', filename)
+    this.fileService
+      .readFile('functions', filename)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response) => {
-          this.myTextarea = response;
-          this.myTextareaOrig = response;
-          if (this.myTextarea === '') {
-            if (!filename.endsWith('.tpl')) {
-              this.myTextarea = filename + ': ' + this.translate.instant('FUNCTION_CONFIG.FILE_NOT_FOUND');
-            }
-          } else {
-            this.myEditFilename = filename;
-            this.cmOptions.readOnly = false;
+      .subscribe((response) => {
+        this.myTextarea = response;
+        this.myTextareaOrig = response;
+        if (this.myTextarea === '') {
+          if (!filename.endsWith('.tpl')) {
+            this.myTextarea =
+              filename + ': ' + this.translate.instant('FUNCTION_CONFIG.FILE_NOT_FOUND');
           }
-          this.cdr.markForCheck();
+        } else {
+          this.myEditFilename = filename;
+          this.cmOptions.readOnly = false;
         }
-      );
+        this.cdr.markForCheck();
+      });
   }
-
 
   saveConfig() {
     console.log('FunctionConfigurationComponent.saveConfig');
@@ -319,53 +321,49 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
     if (this.myTextOutput.startsWith('ERROR:')) {
       this.error_display = true;
     } else {
-      this.fileService.saveFile('functions', this.myEditFilename, this.myTextarea)
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe(
-              (response2) => {
-                this.myTextareaOrig = this.myTextarea;
-                this.cdr.markForCheck();
-              }
-          );
-
+      this.fileService
+        .saveFile('functions', this.myEditFilename, this.myTextarea)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((response2) => {
+          this.myTextareaOrig = this.myTextarea;
+          this.cdr.markForCheck();
+        });
     }
     if (this.codeEditor !== undefined) {
       const editor = this.codeEditor.codeMirror;
       editor.refresh();
     }
-
   }
-
 
   reloadFunction(name) {
     // console.log('reloadPlugin', {pluginConfigName});
 
     console.log('reloadFunctions:', name);
     this.reloadButtonDisabled = true;
-    this.functionApiService.reloadFunction(name)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(
-            (response) => {
-              console.log('reloadFunction', '\nresponse', {response});
-              setTimeout(() => { this.reloadButtonDisabled = false; }, 200);
-            }
-        );
+    this.functionApiService
+      .reloadFunction(name)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((response) => {
+        console.log('reloadFunction', '\nresponse', { response });
+        setTimeout(() => {
+          this.reloadButtonDisabled = false;
+        }, 200);
+      });
   }
-
 
   reloadFunctions() {
     // console.log('reloadPlugin', {pluginConfigName});
 
     console.log('reloadFunctions: all');
     this.reloadAllButtonDisabled = true;
-    this.functionApiService.reloadFunctions()
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(
-            (response) => {
-              console.log('reloadFunctions', '\nresponse', {response});
-              setTimeout(() => { this.reloadAllButtonDisabled = false; }, 200);
-            }
-        );
+    this.functionApiService
+      .reloadFunctions()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((response) => {
+        console.log('reloadFunctions', '\nresponse', { response });
+        setTimeout(() => {
+          this.reloadAllButtonDisabled = false;
+        }, 200);
+      });
   }
-
 }

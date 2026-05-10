@@ -1,8 +1,7 @@
-
-::ng-deep .tab-shng > a{
+::ng-deep .tab-shng > a {
   border-bottom: none !important;
   outline: 0 !important;
-  color:rgb(160, 160, 160);
+  color: rgb(160, 160, 160);
 }
 
 .body {
@@ -41,9 +40,10 @@
   grid-template-rows: 50px auto 10px;
   grid-template-columns: 1fr;
 
-  grid-template-areas: "header"
-                      "content"
-                      "footer";
+  grid-template-areas:
+    'header'
+    'content'
+    'footer';
 
   grid-gap: 0;
   grid-auto-flow: row;
@@ -64,7 +64,7 @@
   grid-area: content;
   width: 100%;
 
-  padding-left: 10px;       /* padding around striped table inside tab border */
+  padding-left: 10px; /* padding around striped table inside tab border */
   padding-right: 10px;
 
   overflow: auto;
@@ -74,29 +74,26 @@
   grid-auto-rows: minmax(50px, max-content);
 }
 
-
 .info-footer {
   grid-area: footer;
   width: 100%;
 }
 
-.info-content>span>img {
+.info-content > span > img {
   margin-left: 50px;
   width: 32px;
   height: 32px;
 }
 
-.info-header>span
-{
+.info-header > span {
   min-height: 50px;
   padding: 12px 0;
   align-self: stretch;
-/*border-bottom: 1px solid #ddd;*/
+  /*border-bottom: 1px solid #ddd;*/
   width: 100%;
 }
 
-.info-content>span
-{
+.info-content > span {
   min-height: 50px;
   padding: 12px 0;
   align-self: stretch;
@@ -105,29 +102,25 @@
 }
 
 /* Padding for Icons */
-.info-content>span:nth-child(6n+1),
-.info-content>span:nth-child(6n+4)
-{
+.info-content > span:nth-child(6n + 1),
+.info-content > span:nth-child(6n + 4) {
   padding: 8px;
 }
 
 /* Background color for every other line */
-.info-content>span:nth-child(6n+1),
-.info-content>span:nth-child(6n+2),
-.info-content>span:nth-child(6n+3)
-{
+.info-content > span:nth-child(6n + 1),
+.info-content > span:nth-child(6n + 2),
+.info-content > span:nth-child(6n + 3) {
   background: #f7f7f7;
 }
 
-
-.shngsysinfo>span>img {
+.shngsysinfo > span > img {
   margin-left: 50px;
   width: 32px;
   height: 32px;
 }
 
-.shngsysinfo>span
-{
+.shngsysinfo > span {
   min-height: 50px;
   padding: 12px 0;
   align-self: stretch;
@@ -135,22 +128,17 @@
 }
 
 /* Padding for Icons */
-.shngsysinfo>span:nth-child(6n+1),
-.shngsysinfo>span:nth-child(6n+4)
-{
+.shngsysinfo > span:nth-child(6n + 1),
+.shngsysinfo > span:nth-child(6n + 4) {
   padding: 8px;
 }
 
 /* Background color for every other line */
-.shngsysinfo>span:nth-child(6n+4),
-.shngsysinfo>span:nth-child(6n+5),
-.shngsysinfo>span:nth-child(6n+6)
-{
+.shngsysinfo > span:nth-child(6n + 4),
+.shngsysinfo > span:nth-child(6n + 5),
+.shngsysinfo > span:nth-child(6n + 6) {
   background: #f7f7f7;
 }
-
-
-
 
 /* css for SmartHomeNG Charts tab */
 .shngcharts {
@@ -164,9 +152,10 @@
   grid-template-rows: 0 auto 10px;
   grid-template-columns: 1fr;
 
-  grid-template-areas: "header"
-                      "content"
-                      "footer";
+  grid-template-areas:
+    'header'
+    'content'
+    'footer';
 
   grid-gap: 0;
   grid-auto-flow: row;
@@ -194,7 +183,6 @@
   width: 100%;
 }
 
-
 /* css for SmartHomeNG PyPI check tab */
 .shngpypi {
   height: calc(100vh - 60px - 41px - 10px);
@@ -207,9 +195,10 @@
   grid-template-rows: 50px auto 10px;
   grid-template-columns: 1fr;
 
-  grid-template-areas: "header"
-                      "content"
-                      "footer";
+  grid-template-areas:
+    'header'
+    'content'
+    'footer';
 
   grid-gap: 0;
   grid-auto-flow: row;
@@ -241,20 +230,17 @@
   width: 100%;
 }
 
-
 .shngpypitable {
   width: 100%;
-/*margin-bottom: 1rem;*/
+  /*margin-bottom: 1rem;*/
   color: #212529;
 
   border-color: grey;
-
 }
 .shngpypitable td {
   border-top: 1px solid #dee2e6;
   border-spacing: 2px;
 }
-
 
 .shngdisclosure {
   overflow: hidden;
@@ -271,4 +257,3 @@
   border: 1px solid #dee2e6;
   padding: 5px;
 }
-

@@ -1,4 +1,3 @@
-
 //
 // Datatype (subtype) for <shng-server>:<port>/api/plugins/info
 //

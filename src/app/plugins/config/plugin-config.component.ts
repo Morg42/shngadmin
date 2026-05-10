@@ -1,59 +1,82 @@
-
-import { Component, OnInit, TemplateRef, DestroyRef, inject, ChangeDetectorRef } from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {finalize} from 'rxjs/operators';
-import {AppConfigService} from '../../common/services/app-config.service';
+import { ChangeDetectorRef, Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { finalize } from 'rxjs/operators';
+import { AppConfigService } from '../../common/services/app-config.service';
 
-import {faPlus, faPlusCircle, faPlusSquare, faExclamationTriangle, faCode, faLaptopCode} from '@fortawesome/free-solid-svg-icons';
-import { TranslateService, TranslatePipe } from '@ngx-translate/core';
+import {
+  faExclamationTriangle,
+  faLaptopCode,
+  faPlus,
+  faPlusCircle,
+  faPlusSquare,
+} from '@fortawesome/free-solid-svg-icons';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 // import { DeleteConfigComponent } from './delete-config/delete-config.component';
 
-import { ServerApiService } from '../../common/services/server-api.service';
-import { PluginsApiService } from '../../common/services/plugins-api.service';
 import { OlddataService } from '../../common/services/olddata.service';
+import { PluginsApiService } from '../../common/services/plugins-api.service';
+import { ServerApiService } from '../../common/services/server-api.service';
 
 import { SharedService } from '../../common/services/shared.service';
 
-import {AppComponent} from '../../app.component';
-import {PlugininfoType} from '../../common/models/plugin-info';
-import {ServerInfo} from '../../common/models/server-info';
+import { NgOptimizedImage, NgStyle } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Title } from '@angular/platform-browser';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'primeng/accordion';
+import { PrimeTemplate } from 'primeng/api';
+import { Bind } from 'primeng/bind';
+import { ButtonDirective } from 'primeng/button';
+import { Dialog } from 'primeng/dialog';
+import { InputText } from 'primeng/inputtext';
+import { ProgressSpinner } from 'primeng/progressspinner';
+import { Ripple } from 'primeng/ripple';
+import { TableModule } from 'primeng/table';
+import { ToggleSwitch } from 'primeng/toggleswitch';
+import { AppComponent } from '../../app.component';
+import { DynamicFieldComponent } from '../../common/components/dynamic-field/dynamic-field.component';
+import { ConfigParameter, TableColumn } from '../../common/models/interfaces';
 import { PluginsConfig } from '../../common/models/plugins-config';
 import { PluginsInstalled } from '../../common/models/plugins-installed';
-import {SceneInfo} from '../../common/models/scene-info';
-import {Title} from '@angular/platform-browser';
-import { TableColumn, ConfigParameter } from '../../common/models/interfaces';
-import { Bind } from 'primeng/bind';
-import { ProgressSpinner } from 'primeng/progressspinner';
-import { ButtonDirective } from 'primeng/button';
-import { NgOptimizedImage, NgStyle } from '@angular/common';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { Dialog } from 'primeng/dialog';
-import { PrimeTemplate } from 'primeng/api';
-import { ToggleSwitch } from 'primeng/toggleswitch';
-import { FormsModule } from '@angular/forms';
-import { TableModule } from 'primeng/table';
-import { DynamicFieldComponent } from '../../common/components/dynamic-field/dynamic-field.component';
-import { Accordion, AccordionPanel, AccordionHeader, AccordionContent } from 'primeng/accordion';
-import { Ripple } from 'primeng/ripple';
-import { InputText } from 'primeng/inputtext';
+import { ServerInfo } from '../../common/models/server-info';
 
-
-export interface ConfiguredPlugin { confname: string; instance: string; plugin: string; desc: string; }
-
+export interface ConfiguredPlugin {
+  confname: string;
+  instance: string;
+  plugin: string;
+  desc: string;
+}
 
 @Component({
-    selector: 'app-config',
-    templateUrl: './plugin-config.component.html',
-    styleUrls: ['./plugin-config.component.css'],
-    providers: [AppComponent],
-    imports: [Bind, ProgressSpinner, ButtonDirective, NgOptimizedImage, FaIconComponent, Dialog, PrimeTemplate, ToggleSwitch, FormsModule, TableModule, NgStyle, DynamicFieldComponent, Accordion, AccordionPanel, Ripple, AccordionHeader, AccordionContent, InputText, TranslatePipe]
+  selector: 'app-config',
+  templateUrl: './plugin-config.component.html',
+  styleUrls: ['./plugin-config.component.css'],
+  providers: [AppComponent],
+  imports: [
+    Bind,
+    ProgressSpinner,
+    ButtonDirective,
+    NgOptimizedImage,
+    FaIconComponent,
+    Dialog,
+    PrimeTemplate,
+    ToggleSwitch,
+    FormsModule,
+    TableModule,
+    NgStyle,
+    DynamicFieldComponent,
+    Accordion,
+    AccordionPanel,
+    Ripple,
+    AccordionHeader,
+    AccordionContent,
+    InputText,
+    TranslatePipe,
+  ],
 })
 export class PluginConfigComponent implements OnInit {
-
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private serverdataService = inject(ServerApiService);
@@ -68,8 +91,8 @@ export class PluginConfigComponent implements OnInit {
   faPlus = faPlus;
   faPlusCircle = faPlusCircle;
   faPlusSquare = faPlusSquare;
-  faExclamationTriangle = faExclamationTriangle;  // signal deprecated plugin
-  faCode = faLaptopCode;                               // signal plugin in state "develop"
+  faExclamationTriangle = faExclamationTriangle; // signal deprecated plugin
+  faCode = faLaptopCode; // signal plugin in state "develop"
 
   configuredplugins: ConfiguredPlugin[];
   cols: TableColumn[];
@@ -94,13 +117,12 @@ export class PluginConfigComponent implements OnInit {
   dialog_pluginname: string;
   dialog_description: string;
 
-
   // for add dialog
   add_display = false;
   plugintypes: string[] = ['system', 'gateway', 'interface', 'protocol', 'web', 'unclassified'];
   plugintypes_expanded: boolean[] = [];
   spinner_display = false;
-  spinner_header = '{{\'PLUGIN.LOADLIST\'|translate}}...'
+  spinner_header = "{{'PLUGIN.LOADLIST'|translate}}...";
   add_firstrun = true;
   plugins_installed: PluginsInstalled;
   plugins_installed_list: string[];
@@ -120,12 +142,11 @@ export class PluginConfigComponent implements OnInit {
   confirmdelete_display = false;
   delete_param: {};
 
-
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);
   }
 
-ngOnInit() {
+  ngOnInit() {
     // console.log('PluginConfigComponent.ngOnInit');
 
     // show loading indicator synchronously so it is visible on the very first render,
@@ -133,113 +154,107 @@ ngOnInit() {
     this.spinner_display = true;
     this.spinner_header = this.translate.instant('PLUGIN.LOADCONFIG');
 
-    this.serverdataService.getServerinfo()
+    this.serverdataService
+      .getServerinfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (serverdataResponse) => {
+      .subscribe((serverdataResponse) => {
+        this.shared.setGuiLanguage();
+        this.setTitle(this.translate.instant('PLUGIN.PLUGIN_CONFIGURATION'));
+        this.spinner_header = this.translate.instant('PLUGIN.LOADCONFIG'); // re-translate after language is set
+        this.pluginsdataService
+          .getPluginsConfig()
+          .pipe(
+            takeUntilDestroyed(this.destroyRef),
+            finalize(() => {
+              // always close spinner — whether the request succeeds, fails, or throws
+              this.spinner_display = false;
+              this.cdr.markForCheck();
+            }),
+          )
+          .subscribe((response) => {
+            this.pluginconflist = response as PluginsConfig;
+            // console.log(this.pluginconflist);
 
-          this.shared.setGuiLanguage();
-          this.setTitle(this.translate.instant('PLUGIN.PLUGIN_CONFIGURATION'));
-          this.spinner_header = this.translate.instant('PLUGIN.LOADCONFIG'); // re-translate after language is set
-          this.pluginsdataService.getPluginsConfig()
-            .pipe(
-              takeUntilDestroyed(this.destroyRef),
-              finalize(() => {
-                // always close spinner — whether the request succeeds, fails, or throws
-                this.spinner_display = false;
-                this.cdr.markForCheck();
-              })
-            )
-            .subscribe(
-              (response) => {
-                this.pluginconflist = response as PluginsConfig;
-                // console.log(this.pluginconflist);
+            const newPlugins: ConfiguredPlugin[] = [];
+            for (const plg in this.pluginconflist?.plugin_config) {
+              if (this.pluginconflist.plugin_config.hasOwnProperty(plg)) {
+                const confname = plg;
+                let plgname = this.pluginconflist.plugin_config[plg]['plugin_name'];
+                if (plgname === undefined) {
+                  plgname = this.pluginconflist.plugin_config[plg]['class_path'];
+                }
+                const instance = this.pluginconflist.plugin_config[plg]['instance'];
 
-                const newPlugins: ConfiguredPlugin[] = [];
-                for (const plg in this.pluginconflist?.plugin_config) {
-                  if (this.pluginconflist.plugin_config.hasOwnProperty(plg) ) {
-                    const confname = plg;
-                    let plgname = this.pluginconflist.plugin_config[plg]['plugin_name'];
-                    if (plgname === undefined) {
-                      plgname = this.pluginconflist.plugin_config[plg]['class_path'];
-                    }
-                    const instance = this.pluginconflist.plugin_config[plg]['instance'];
+                // get logo for plugin type
+                const meta = this.pluginconflist.plugin_config[confname]['_meta'];
 
-                    // get logo for plugin type
-                    const meta = this.pluginconflist.plugin_config[confname]['_meta'];
-
-                    let deprecated = '-';
-                    if (meta?.plugin) {
-                      if (meta.plugin.state && meta.plugin.state.toLowerCase() === 'deprecated') {
-                        deprecated = '+';
-                      } else if (meta.plugin.state && meta.plugin.state.toLowerCase() === 'develop') {
-                          deprecated = 'd';
-                      } else {
-                        deprecated = '-';
-                      }
-                    }
-                    const conf = {'confname': confname, 'instance': instance, 'plugin': deprecated + plgname, 'desc': '' };
-
-                    let enabled = 'true';
-                    if (this.pluginconflist.plugin_config[plg]['plugin_enabled'] === 'False') {
-                      enabled = 'false';
-                    }
-                    // is plugin enabled?
-                    conf['enabled'] = enabled;
-
-                    if (meta == null || !meta.plugin) {
-                      conf['type'] = 'classic';
-                    } else {
-                      conf['type'] = meta.plugin.type;
-                    }
-
-                    // get description from plugin_config (faster)
-                    let desc = this.pluginconflist.plugin_config[plg]['_description'];
-                    if (conf['type'] === undefined || conf['type'] === 'classic') {
-                      conf['type'] = 'classic';
-                      if (this.pluginconflist.plugin_config[plg]['_meta'] != null) {
-                        desc = this.pluginconflist.plugin_config[plg]['_meta']['plugin']['description'];
-                      }
-                    }
-                    // get description (if defined)
-                    let plgdesc = this.shared.getDescription(desc);
-                    plgdesc = plgdesc.replace(new RegExp('\n', 'g'), '<br>');
-                    plgdesc = plgdesc.replace(new RegExp(' \\*\\*', 'g'), ' <b><mark>');
-                    plgdesc = plgdesc.replace(new RegExp('\\*\\* ', 'g'), '</mark></b> ');
-                    plgdesc = plgdesc.replace(new RegExp(' \\*', 'g'), ' <i><mark>');
-                    plgdesc = plgdesc.replace(new RegExp('\\* ', 'g'), '</mark></i> ');
-                    conf['desc'] = plgdesc;
-
-                    newPlugins.push(conf);
+                let deprecated = '-';
+                if (meta?.plugin) {
+                  if (meta.plugin.state && meta.plugin.state.toLowerCase() === 'deprecated') {
+                    deprecated = '+';
+                  } else if (meta.plugin.state && meta.plugin.state.toLowerCase() === 'develop') {
+                    deprecated = 'd';
+                  } else {
+                    deprecated = '-';
                   }
                 }
-                // assign new reference so PrimeNG p-table detects the change via ngOnChanges
-                this.configuredplugins = newPlugins;
-                this.cdr.markForCheck();
+                const conf = {
+                  confname: confname,
+                  instance: instance,
+                  plugin: deprecated + plgname,
+                  desc: '',
+                };
+
+                let enabled = 'true';
+                if (this.pluginconflist.plugin_config[plg]['plugin_enabled'] === 'False') {
+                  enabled = 'false';
+                }
+                // is plugin enabled?
+                conf['enabled'] = enabled;
+
+                if (meta == null || !meta.plugin) {
+                  conf['type'] = 'classic';
+                } else {
+                  conf['type'] = meta.plugin.type;
+                }
+
+                // get description from plugin_config (faster)
+                let desc = this.pluginconflist.plugin_config[plg]['_description'];
+                if (conf['type'] === undefined || conf['type'] === 'classic') {
+                  conf['type'] = 'classic';
+                  if (this.pluginconflist.plugin_config[plg]['_meta'] != null) {
+                    desc = this.pluginconflist.plugin_config[plg]['_meta']['plugin']['description'];
+                  }
+                }
+                // get description (if defined)
+                let plgdesc = this.shared.getDescription(desc);
+                plgdesc = plgdesc.replace(new RegExp('\n', 'g'), '<br>');
+                plgdesc = plgdesc.replace(new RegExp(' \\*\\*', 'g'), ' <b><mark>');
+                plgdesc = plgdesc.replace(new RegExp('\\*\\* ', 'g'), '</mark></b> ');
+                plgdesc = plgdesc.replace(new RegExp(' \\*', 'g'), ' <i><mark>');
+                plgdesc = plgdesc.replace(new RegExp('\\* ', 'g'), '</mark></i> ');
+                conf['desc'] = plgdesc;
+
+                newPlugins.push(conf);
               }
-            );
-
-        }
-      );
-
-
-
-
+            }
+            // assign new reference so PrimeNG p-table detects the change via ngOnChanges
+            this.configuredplugins = newPlugins;
+            this.cdr.markForCheck();
+          });
+      });
 
     this.cols = [
-      { field: 'enabled',  sfield: '',         header: '' },
-      { field: 'type',     sfield: '',         header: '' },
-      { field: 'confname', sfield: 'confname', header: 'PLUGIN.CONFIGNAME'},
-      { field: 'plugin',   sfield: 'plugin',   header: 'PLUGIN.PLUGINNAME', min_width: '200px'},
-      { field: 'instance', sfield: 'instance', header: 'PLUGIN.INSTANCE', min_width: '120px'},
-      { field: 'desc',     sfield: '',         header: 'PLUGIN.DESCRIPTION'}
-      ];
+      { field: 'enabled', sfield: '', header: '' },
+      { field: 'type', sfield: '', header: '' },
+      { field: 'confname', sfield: 'confname', header: 'PLUGIN.CONFIGNAME' },
+      { field: 'plugin', sfield: 'plugin', header: 'PLUGIN.PLUGINNAME', min_width: '200px' },
+      { field: 'instance', sfield: 'instance', header: 'PLUGIN.INSTANCE', min_width: '120px' },
+      { field: 'desc', sfield: '', header: 'PLUGIN.DESCRIPTION' },
+    ];
 
-    this.configuredplugins = [];   // empty until HTTP response arrives
-
+    this.configuredplugins = []; // empty until HTTP response arrives
   }
-
-
 
   listToString(list) {
     let result = '';
@@ -258,7 +273,6 @@ ngOnInit() {
     return result;
   }
 
-
   stringToList(str) {
     // let wrk = str.trim();
     // wrk =  wrk.replace(/,/g, ' ');   // comma is no delimiter
@@ -267,7 +281,7 @@ ngOnInit() {
     // while (wrk.indexOf('  ') !== -1) {
     //   wrk =  wrk.replace(/  /g, ' ');
     // }
-    if ((str === null) || (str === undefined)) {
+    if (str === null || str === undefined) {
       return [];
     }
     if (str.trim() === '') {
@@ -279,7 +293,6 @@ ngOnInit() {
     }
     return list;
   }
-
 
   // ---------------------------------------------------------
   // Handle the click event on the list of installed plugins
@@ -294,42 +307,45 @@ ngOnInit() {
     this.rowclicked_foredit = rowdata;
 
     const conf = this.pluginconflist.plugin_config[rowdata.confname];
-    console.log({conf});
+    console.log({ conf });
     const meta = this.pluginconflist.plugin_config[rowdata.confname]['_meta'];
     let desc = null;
     this.classic = true;
     if (meta != null && meta !== undefined && meta.plugin !== undefined) {
-      if  (meta.plugin.type !== undefined && meta.plugin.type !== 'classic') {
+      if (meta.plugin.type !== undefined && meta.plugin.type !== 'classic') {
         this.classic = false;
       }
       this.state = '';
-      if  (meta.plugin.state !== undefined) {
+      if (meta.plugin.state !== undefined) {
         this.state = meta.plugin.state;
       }
       desc = meta['plugin']['description'];
     }
     this.dialog_readonly = this.pluginconflist.readonly;
-    this.dialog_description = this.shared.getDescription((desc));
+    this.dialog_description = this.shared.getDescription(desc);
 
     this.plugin_enabled = true;
     if (conf.plugin_enabled !== undefined) {
       console.log('typeof conf.plugin_enabled', typeof conf.plugin_enabled);
       if (typeof conf.plugin_enabled === 'boolean') {
         this.plugin_enabled = conf.plugin_enabled;
-      } else if (typeof conf.plugin_enabled === 'string' && conf.plugin_enabled.toLowerCase() === 'false') {
+      } else if (
+        typeof conf.plugin_enabled === 'string' &&
+        conf.plugin_enabled.toLowerCase() === 'false'
+      ) {
         this.plugin_enabled = false;
       }
     }
 
     const columnDefinitions = [
-      {field: 'name', sfield: 'confname', header: 'PLUGIN.PARAMETER', width: '190px'},
-      {field: 'type', sfield: 'conftype', header: 'PLUGIN.TYPE', width: '80px'},
-      {field: 'value', sfield: 'paramvalue', header: 'PLUGIN.VALUE', width: '240px'},
-      {field: 'desc', sfield: '', header: 'PLUGIN.DESCRIPTION', width: ''}
+      { field: 'name', sfield: 'confname', header: 'PLUGIN.PARAMETER', width: '190px' },
+      { field: 'type', sfield: 'conftype', header: 'PLUGIN.TYPE', width: '80px' },
+      { field: 'value', sfield: 'paramvalue', header: 'PLUGIN.VALUE', width: '240px' },
+      { field: 'desc', sfield: '', header: 'PLUGIN.DESCRIPTION', width: '' },
     ];
 
     const paddingRight = 6; // distance between rnd of value field and beginning of description
-    const widthWide = 600;  // width of wide value fields (gui_type: wide_str)
+    const widthWide = 600; // width of wide value fields (gui_type: wide_str)
 
     for (let i = 0; i < columnDefinitions.length; i++) {
       const width = parseInt(columnDefinitions[i]['width'], 10);
@@ -351,12 +367,14 @@ ngOnInit() {
     this.lang = this.appConfig.defaultLanguage;
     if (meta != null && meta !== undefined && meta['parameters'] !== 'NONE') {
       for (const param in meta['parameters']) {
-        if (meta['parameters'].hasOwnProperty(param) ) {
-
+        if (meta['parameters'].hasOwnProperty(param)) {
           const vl = [];
           if (meta['parameters'][param]['valid_list'] !== undefined) {
             for (let i = 0; i < meta['parameters'][param]['valid_list'].length; i++) {
-              const wrk = {label: String(meta['parameters'][param]['valid_list'][i]), value: meta['parameters'][param]['valid_list'][i]};
+              const wrk = {
+                label: String(meta['parameters'][param]['valid_list'][i]),
+                value: meta['parameters'][param]['valid_list'][i],
+              };
               vl.push(wrk);
             }
           }
@@ -364,21 +382,23 @@ ngOnInit() {
           // generate a valid_list for bool parameters
           if (meta['parameters'][param]['type'] === 'bool') {
             let wrk = {};
-            wrk = {label: 'true', value: true};
+            wrk = { label: 'true', value: true };
             vl.push(wrk);
-            wrk = {label: 'false', value: false};
+            wrk = { label: 'false', value: false };
             vl.push(wrk);
           }
 
           // fill description with active language
-//          const paramdesc = this.shared.getDescription(meta['parameters'][param]['description']);
+          //          const paramdesc = this.shared.getDescription(meta['parameters'][param]['description']);
           let paramdesc = '';
           if (meta['parameters'][param]['description'] !== undefined) {
             paramdesc = meta['parameters'][param]['description'][this.lang];
             if (paramdesc === '' || paramdesc === undefined) {
-              paramdesc = meta['parameters'][param]['description'][this.shared.getFallbackLanguage()];
+              paramdesc =
+                meta['parameters'][param]['description'][this.shared.getFallbackLanguage()];
               if (paramdesc === '' || paramdesc === undefined) {
-                paramdesc = meta['parameters'][param]['description'][this.shared.getFallbackLanguage(1)];
+                paramdesc =
+                  meta['parameters'][param]['description'][this.shared.getFallbackLanguage(1)];
               }
             }
           }
@@ -393,22 +413,25 @@ ngOnInit() {
           paramdesc = paramdesc.replace(new RegExp('\\* ', 'g'), '</mark></i> ');
 
           const paramdata = {
-            'name': param,
-            'type': meta['parameters'][param]['type'],
-            'gui_type': meta['parameters'][param]['gui_type'],
-            'valid_list': vl,
-            'valid_min': meta['parameters'][param]['valid_min'],
-            'valid_max': meta['parameters'][param]['valid_max'],
-            'default': meta['parameters'][param]['default'],
-            'mandatory': meta['parameters'][param]['mandatory'],
-            'value': conf[param],
-            'desc': paramdesc
+            name: param,
+            type: meta['parameters'][param]['type'],
+            gui_type: meta['parameters'][param]['gui_type'],
+            valid_list: vl,
+            valid_min: meta['parameters'][param]['valid_min'],
+            valid_max: meta['parameters'][param]['valid_max'],
+            default: meta['parameters'][param]['default'],
+            mandatory: meta['parameters'][param]['mandatory'],
+            value: conf[param],
+            desc: paramdesc,
           };
 
           if (paramdata['type'] === 'list') {
             paramdata['default'] = this.listToString(meta['parameters'][param]['default']);
           }
-          if (meta['parameters'][param]['hide'] && (['str', 'int'].indexOf(meta['parameters'][param]['type']) !== -1)) {
+          if (
+            meta['parameters'][param]['hide'] &&
+            ['str', 'int'].indexOf(meta['parameters'][param]['type']) !== -1
+          ) {
             paramdata['type'] = 'hide' + '-' + meta['parameters'][param]['type'];
           }
 
@@ -421,7 +444,7 @@ ngOnInit() {
               if (conf[param] === null) {
                 paramdata.value = null;
               } else {
-                paramdata.value = (conf[param].toLowerCase() === 'true');
+                paramdata.value = conf[param].toLowerCase() === 'true';
               }
             }
           } else if (paramdata.type === 'list') {
@@ -439,7 +462,7 @@ ngOnInit() {
       }
     }
 
-/*
+    /*
     // Add an entry for the 'instance' attribute at the end, if it is a multi-instance plugin
     const multiinstance = meta['plugin']['multi_instance'];
     if (multiinstance) {
@@ -457,7 +480,7 @@ ngOnInit() {
     }
 */
 
-/*
+    /*
     // find out, if instance parameter is defined
     let instance_defined = false;
     for (const i in this.parameters) {
@@ -470,9 +493,7 @@ ngOnInit() {
     console.log({instance_defined});
 */
     this.dialog_display = true;
-
   }
-
 
   saveConfig() {
     const conf = this.pluginconflist.plugin_config[this.dialog_configname];
@@ -488,13 +509,15 @@ ngOnInit() {
         conf[this.parameters[i]['name']] = this.parameters[i]['value'];
       }
 
-      if (this.parameters[i]['value'] === undefined) { this.parameters[i]['value'] = null; }
+      if (this.parameters[i]['value'] === undefined) {
+        this.parameters[i]['value'] = null;
+      }
 
       // checking data types
       if (this.parameters[i]['value'] !== null && this.parameters[i]['value'] !== '') {
         const ptype = String(this.parameters[i]['type']).toLowerCase();
         const pvalue = this.parameters[i]['value'] as string;
-        error_text = '\'' + pvalue + '\' ';
+        error_text = "'" + pvalue + "' ";
         if (ptype === 'knx_ga' && !this.shared.is_knx_groupaddress(pvalue)) {
           error_found = true;
           error_text += this.translate.instant('PLUGIN.INVALID_KNX_ADDRESS');
@@ -522,19 +545,48 @@ ngOnInit() {
       }
 
       // check valid minimum and maximum value
-      if ((this.parameters[i]['value'] !== null) && (this.parameters[i]['value'] < this.parameters[i]['valid_min'])) {
+      if (
+        this.parameters[i]['value'] !== null &&
+        this.parameters[i]['value'] < this.parameters[i]['valid_min']
+      ) {
         error_found = true;
-        error_text = this.translate.instant('PLUGIN.DEFINED_MIN') + ' \'' + this.parameters[i]['valid_min'] + '\'';
-        error_text += ', ' + this.translate.instant('PLUGIN.ACTUAL_VALUE') + ' \'' + this.parameters[i]['value'] + '\'';
+        error_text =
+          this.translate.instant('PLUGIN.DEFINED_MIN') +
+          " '" +
+          this.parameters[i]['valid_min'] +
+          "'";
+        error_text +=
+          ', ' +
+          this.translate.instant('PLUGIN.ACTUAL_VALUE') +
+          " '" +
+          this.parameters[i]['value'] +
+          "'";
       }
-      if ((this.parameters[i]['value'] !== null) && (this.parameters[i]['value'] > this.parameters[i]['valid_max'])) {
+      if (
+        this.parameters[i]['value'] !== null &&
+        this.parameters[i]['value'] > this.parameters[i]['valid_max']
+      ) {
         error_found = true;
-        error_text = this.translate.instant('PLUGIN.DEFINED_MAX') + ' \'' + this.parameters[i]['valid_max'] + '\'';
-        error_text += ', ' + this.translate.instant('PLUGIN.ACTUAL_VALUE') + ' \'' + this.parameters[i]['value'] + '\'';
+        error_text =
+          this.translate.instant('PLUGIN.DEFINED_MAX') +
+          " '" +
+          this.parameters[i]['valid_max'] +
+          "'";
+        error_text +=
+          ', ' +
+          this.translate.instant('PLUGIN.ACTUAL_VALUE') +
+          " '" +
+          this.parameters[i]['value'] +
+          "'";
       }
 
       // check if value is mandantory
-      if ((this.parameters[i]['value'] === undefined || this.parameters[i]['value'] === null || this.parameters[i]['value'] === '') && this.parameters[i]['mandatory']) {
+      if (
+        (this.parameters[i]['value'] === undefined ||
+          this.parameters[i]['value'] === null ||
+          this.parameters[i]['value'] === '') &&
+        this.parameters[i]['mandatory']
+      ) {
         error_found = true;
         error_text = this.translate.instant('PLUGIN.MANDATORY_VALUE');
       }
@@ -542,12 +594,17 @@ ngOnInit() {
       if (error_found) {
         errors_found = true;
         error_found = false;
-        this.validation_dialog_text.push(this.translate.instant('PLUGIN.PARAMETER') + ' \'' + this.parameters[i]['name'] + '\': ' + error_text);
+        this.validation_dialog_text.push(
+          this.translate.instant('PLUGIN.PARAMETER') +
+            " '" +
+            this.parameters[i]['name'] +
+            "': " +
+            error_text,
+        );
         this.validation_dialog_parameter = this.parameters[i]['name'];
 
         this.validation_dialog_display = true;
       }
-
     }
     // if validation did not find errors
     if (!errors_found) {
@@ -555,10 +612,18 @@ ngOnInit() {
       this.dialog_display = false;
 
       // console.warn('plugin_config', this.pluginconflist.plugin_config[this.dialog_configname]);
-      for (const param of Object.keys(this.pluginconflist.plugin_config[this.dialog_configname]._meta.parameters)) {
+      for (const param of Object.keys(
+        this.pluginconflist.plugin_config[this.dialog_configname]._meta.parameters,
+      )) {
         // converting list parameters from string to list
-        if (this.pluginconflist.plugin_config[this.dialog_configname]._meta.parameters[param]['type'] === 'list') {
-          this.pluginconflist.plugin_config[this.dialog_configname][param] = this.stringToList(this.pluginconflist.plugin_config[this.dialog_configname][param]);
+        if (
+          this.pluginconflist.plugin_config[this.dialog_configname]._meta.parameters[param][
+            'type'
+          ] === 'list'
+        ) {
+          this.pluginconflist.plugin_config[this.dialog_configname][param] = this.stringToList(
+            this.pluginconflist.plugin_config[this.dialog_configname][param],
+          );
         }
       }
 
@@ -569,16 +634,19 @@ ngOnInit() {
         this.pluginconflist.plugin_config[this.dialog_configname]['plugin_enabled'] = true;
         this.rowclicked_foredit.enabled = 'true';
       }
-      this.rowclicked_foredit.instance = this.pluginconflist.plugin_config[this.dialog_configname]['instance'];
+      this.rowclicked_foredit.instance =
+        this.pluginconflist.plugin_config[this.dialog_configname]['instance'];
 
       // save configuration of the edited plugin to the backend to section <this.dialog_configname>
       // console.log('save configuration of "' + this.dialog_configname + '" to Backend');
-      const config = JSON.parse(JSON.stringify( this.pluginconflist.plugin_config[this.dialog_configname] ));
+      const config = JSON.parse(
+        JSON.stringify(this.pluginconflist.plugin_config[this.dialog_configname]),
+      );
       delete config['_meta'];
       delete config['_description'];
       // console.log({config});
       for (const conf in config) {
-        if (config.hasOwnProperty(conf) ) {
+        if (config.hasOwnProperty(conf)) {
           if (config[conf] === null) {
             delete config[conf];
           }
@@ -589,33 +657,28 @@ ngOnInit() {
       this.restart_core_button = true;
 
       // transfer to backend server
-      this.pluginsdataService.setPluginConfig(this.dialog_configname, {'config': config})
+      this.pluginsdataService
+        .setPluginConfig(this.dialog_configname, { config: config })
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(
-            (response) => {
-              const res = response as { result?: string };
-              if (res.result !== 'ok') {
-                // display error dialog, if save failed?
-              }
-            }
-          );
+        .subscribe((response) => {
+          const res = response as { result?: string };
+          if (res.result !== 'ok') {
+            // display error dialog, if save failed?
+          }
+        });
     }
   }
 
-
   restartShng() {
-    this.serverdataService.restartShngServer()
+    this.serverdataService
+      .restartShngServer()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response) => {
-          const res = response as { result?: string };
-          console.log('restartShng', res.result);
-        }
-      );
+      .subscribe((response) => {
+        const res = response as { result?: string };
+        console.log('restartShng', res.result);
+      });
     this.restart_core_button = false;
   }
-
-
 
   // -------------------------------------------------------------------
   //  Add configuration
@@ -630,47 +693,43 @@ ngOnInit() {
 
     this.spinner_header = this.translate.instant('PLUGIN.LOADLIST');
     this.spinner_display = true;
-    this.pluginsdataService.getInstalledPlugins()
+    this.pluginsdataService
+      .getInstalledPlugins()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response) => {
-          this.plugins_installed = <PluginsInstalled>response;
-          this.plugins_installed_list = Object.keys(<PluginsInstalled>response);
-//          this.schedulerinfo.sort(function (a, b) {return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)});
-          console.log('addPluginDialog', {response});
+      .subscribe((response) => {
+        this.plugins_installed = <PluginsInstalled>response;
+        this.plugins_installed_list = Object.keys(<PluginsInstalled>response);
+        //          this.schedulerinfo.sort(function (a, b) {return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)});
+        console.log('addPluginDialog', { response });
 
-          this.spinner_display = false;
-          this.add_display = true;
+        this.spinner_display = false;
+        this.add_display = true;
 
-          // select display language for plugin descriptions
-          for (let p in this.plugins_installed) {
-            if (p in this.plugins_installed) {
-              this.plugins_installed[p]['disp_description'] = this.plugins_installed[p].description
-                  // getDescription wants a dict {"lang": "text}, but we only have a string...
-                  // this.shared.getDescription(this.plugins_installed[p].description);
-            }
+        // select display language for plugin descriptions
+        for (let p in this.plugins_installed) {
+          if (p in this.plugins_installed) {
+            this.plugins_installed[p]['disp_description'] = this.plugins_installed[p].description;
+            // getDescription wants a dict {"lang": "text}, but we only have a string...
+            // this.shared.getDescription(this.plugins_installed[p].description);
           }
-          for (let i = 0; i < this.plugintypes.length; i++) {
-            this.plugintypes_expanded[i] = false;
-          }
-          this.cdr.markForCheck();
         }
-      );
-
+        for (let i = 0; i < this.plugintypes.length; i++) {
+          this.plugintypes_expanded[i] = false;
+        }
+        this.cdr.markForCheck();
+      });
   }
 
-
   selectPlugin(iplugin) {
-    console.warn({iplugin});
+    console.warn({ iplugin });
     this.selected_plugin = iplugin;
     this.pluginconfig_name = '';
-    this.translate_params = {'selected_plugin': this.selected_plugin};
+    this.translate_params = { selected_plugin: this.selected_plugin };
     this.add_enabled = false;
 
     this.setconfig_display = true;
     // alert('code for selecting plugin "' + iplugin + '" is not yet implemented!');
   }
-
 
   checkInput() {
     this.add_enabled = false;
@@ -681,47 +740,43 @@ ngOnInit() {
           this.add_enabled = false;
         }
       }
-
     }
     console.warn(this.add_enabled);
     return this.add_enabled;
   }
-
 
   addPlugin() {
     if (this.checkInput()) {
       console.warn('Adding Plugin:', this.selected_plugin, this.pluginconfig_name);
       this.setconfig_display = false;
       this.add_display = false;
-      let config = {'plugin_name': this.selected_plugin, 'plugin_enabled': false};
+      let config = { plugin_name: this.selected_plugin, plugin_enabled: false };
 
       // enable added plugin, if parameter configuration_needed is set to false in metadata
       console.log(this.pluginconflist.plugin_config);
       console.log(this.plugins_installed);
 
-      const configuration_needed = this.plugins_installed[this.selected_plugin]['configuration_needed'];
+      const configuration_needed =
+        this.plugins_installed[this.selected_plugin]['configuration_needed'];
       console.log('configuration_needed =', configuration_needed, typeof configuration_needed);
       if (!configuration_needed) {
         console.warn('configuration_needed =', configuration_needed);
-        config = {'plugin_name': this.selected_plugin, 'plugin_enabled': true};
+        config = { plugin_name: this.selected_plugin, plugin_enabled: true };
       }
 
       // transfer to backend server
-      this.pluginsdataService.addPluginConfig(this.pluginconfig_name, {'config': config})
+      this.pluginsdataService
+        .addPluginConfig(this.pluginconfig_name, { config: config })
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(
-          (response) => {
-            if (response) {
-              console.log('PluginConfigComponent.addPlugin(): call ngOnInit()');
-              this.ngOnInit();
-              this.cdr.markForCheck();
-            }
+        .subscribe((response) => {
+          if (response) {
+            console.log('PluginConfigComponent.addPlugin(): call ngOnInit()');
+            this.ngOnInit();
+            this.cdr.markForCheck();
           }
-        );
+        });
     }
   }
-
-
 
   // -------------------------------------------------------------------
   //  Delete configuration
@@ -730,11 +785,10 @@ ngOnInit() {
     console.log('PluginConfigComponent.DeleteConfig:');
     console.warn(this.dialog_configname);
 
-    this.delete_param = {'config': this.dialog_configname};
+    this.delete_param = { config: this.dialog_configname };
 
     this.confirmdelete_display = true;
   }
-
 
   DeleteConfigConfirm() {
     console.log('PluginConfigComponent.DeleteConfigConfirm:');
@@ -744,27 +798,24 @@ ngOnInit() {
     this.confirmdelete_display = false;
 
     // delete on backend server
-    this.pluginsdataService.deletePluginConfig(this.dialog_configname)
+    this.pluginsdataService
+      .deletePluginConfig(this.dialog_configname)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response) => {
-          if (response) {
-            // close configuration dialog
-            this.dialog_display = false;
-            console.log('PluginConfigComponent.DeleteConfigConfirm(): call ngOnInit()');
-            this.ngOnInit();
-            this.restart_core_button = true;
-            this.cdr.markForCheck();
-          }
+      .subscribe((response) => {
+        if (response) {
+          // close configuration dialog
+          this.dialog_display = false;
+          console.log('PluginConfigComponent.DeleteConfigConfirm(): call ngOnInit()');
+          this.ngOnInit();
+          this.restart_core_button = true;
+          this.cdr.markForCheck();
         }
-      );
+      });
 
     // alert('code for removal of plugin "' + this.dialog_configname + '" configurations is not yet implemented');
 
-
     return true;
   }
-
 
   DeleteConfigAbort() {
     console.log('PluginConfigComponent.DeleteConfigAbort:');
@@ -775,4 +826,3 @@ ngOnInit() {
     return false;
   }
 }
-

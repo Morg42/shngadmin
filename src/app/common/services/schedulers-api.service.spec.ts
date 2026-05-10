@@ -1,9 +1,9 @@
-import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
-import { SchedulersApiService } from './schedulers-api.service';
-import { AppConfigService } from './app-config.service';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { createMockAppConfigService } from '../../../testing/test-helpers';
+import { AppConfigService } from './app-config.service';
+import { SchedulersApiService } from './schedulers-api.service';
 
 describe('SchedulersApiService', () => {
   let service: SchedulersApiService;

@@ -1,40 +1,48 @@
-
-import { Component, OnInit, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { PrimeTemplate, TreeNode } from 'primeng/api';
 import { ServerInfo } from '../../common/models/server-info';
-import { TranslateService, TranslatePipe } from '@ngx-translate/core';
-import { TreeNode, PrimeTemplate } from 'primeng/api';
 
-
-import { StructsApiService } from '../../common/services/structs-api.service';
-import { ItemTree } from '../../common/models/item-tree';
-import {PlugininfoType} from '../../common/models/plugin-info';
-import { SystemInfo } from '../../common/models/system-info';
-import { SceneInfo } from '../../common/models/scene-info';
-import { SharedService } from '../../common/services/shared.service';
-import {ServerApiService} from '../../common/services/server-api.service';
-import {Title} from '@angular/platform-browser';
+import { Title } from '@angular/platform-browser';
+import { Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'primeng/accordion';
 import { Bind } from 'primeng/bind';
-import { Accordion, AccordionPanel, AccordionHeader, AccordionContent } from 'primeng/accordion';
-import { Ripple } from 'primeng/ripple';
 import { ButtonDirective } from 'primeng/button';
+import { Ripple } from 'primeng/ripple';
 import { Tree } from 'primeng/tree';
-
-
-
+import { ServerApiService } from '../../common/services/server-api.service';
+import { SharedService } from '../../common/services/shared.service';
+import { StructsApiService } from '../../common/services/structs-api.service';
 
 @Component({
-    selector: 'app-structs',
-    templateUrl: './structs.component.html',
-    styleUrls: ['./structs.component.css'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [Bind, Accordion, AccordionPanel, Ripple, AccordionHeader, AccordionContent, ButtonDirective, Tree, PrimeTemplate, TranslatePipe]
+  selector: 'app-structs',
+  templateUrl: './structs.component.html',
+  styleUrls: ['./structs.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    Bind,
+    Accordion,
+    AccordionPanel,
+    Ripple,
+    AccordionHeader,
+    AccordionContent,
+    ButtonDirective,
+    Tree,
+    PrimeTemplate,
+    TranslatePipe,
+  ],
 })
 export class StructsComponent implements OnInit {
-
-// ----
+  // ----
 
   structsDict: Record<string, unknown>;
   structsList: string[];
@@ -47,9 +55,7 @@ export class StructsComponent implements OnInit {
   structExpanded2: {};
   globalStructsID: string;
 
-
   // systeminfo: SystemInfo = <SystemInfo>{};
-
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -61,7 +67,6 @@ export class StructsComponent implements OnInit {
   private titleService = inject(Title);
 
   serverInfo = <ServerInfo>{};
-
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);
@@ -78,65 +83,62 @@ export class StructsComponent implements OnInit {
     this.structExpanded2 = {};
     this.globalStructsID = 'Individual';
 
-    this.dataServiceServer.getServerinfo()
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(
-            (response) => {
-              this.serverInfo = <ServerInfo> response;
-              this.shared.setGuiLanguage();
+    this.dataServiceServer
+      .getServerinfo()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((response) => {
+        this.serverInfo = <ServerInfo>response;
+        this.shared.setGuiLanguage();
 
-              this.getStructsData();
-            }
-        );
-
+        this.getStructsData();
+      });
   }
 
   getStructsData() {
-    this.dataService.getStructs()
+    this.dataService
+      .getStructs()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response) => {
-          this.structsDict = response as Record<string, unknown>;
-          this.structsList = [];
-          // this.structsDict.sort(function (a, b) {return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)});
-          for (const k in this.structsDict) {
-            if (k in this.structsDict) {
-              this.structsList.push(k);
-              this.displayTree = this.buildDisplayTree(this.structsDict[k]);
-              this.displayTrees[k] = this.displayTree;
-            }
+      .subscribe((response) => {
+        this.structsDict = response as Record<string, unknown>;
+        this.structsList = [];
+        // this.structsDict.sort(function (a, b) {return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)});
+        for (const k in this.structsDict) {
+          if (k in this.structsDict) {
+            this.structsList.push(k);
+            this.displayTree = this.buildDisplayTree(this.structsDict[k]);
+            this.displayTrees[k] = this.displayTree;
           }
-
-          /* sort structList */
-          this.structsList.sort((n1, n2) => {
-            if (n1 > n2) {
-              return 1;
-            }
-            if (n1 < n2) {
-              return -1;
-            }
-            return 0;
-          });
-
-          this.structsGroups = [];
-          // eslint-disable-next-line guard-for-in
-          for (const s in this.structsList) {
-            let prefix = this.structsList[s].split('.')[0];
-            if (this.structsList[s].split('.').length === 1) {
-              prefix = this.globalStructsID;
-              prefix = 'my';
-            }
-            if (this.structsGroups.indexOf(prefix) < 0) {
-              if (prefix === this.globalStructsID || prefix === 'my') {
-                this.structsGroups.unshift(prefix);
-              } else {
-                this.structsGroups.push(prefix);
-              }
-            }
-          }
-          this.cdr.markForCheck();
         }
-      );
+
+        /* sort structList */
+        this.structsList.sort((n1, n2) => {
+          if (n1 > n2) {
+            return 1;
+          }
+          if (n1 < n2) {
+            return -1;
+          }
+          return 0;
+        });
+
+        this.structsGroups = [];
+        // eslint-disable-next-line guard-for-in
+        for (const s in this.structsList) {
+          let prefix = this.structsList[s].split('.')[0];
+          if (this.structsList[s].split('.').length === 1) {
+            prefix = this.globalStructsID;
+            prefix = 'my';
+          }
+          if (this.structsGroups.indexOf(prefix) < 0) {
+            if (prefix === this.globalStructsID || prefix === 'my') {
+              this.structsGroups.unshift(prefix);
+            } else {
+              this.structsGroups.push(prefix);
+            }
+          }
+        }
+        this.cdr.markForCheck();
+      });
   }
 
   // -------------------------------------------------------------------------------------------
@@ -150,7 +152,11 @@ export class StructsComponent implements OnInit {
         if (Array.isArray(subtree)) {
           displayNode['label'] = '- ' + subtree[key];
         } else {
-          if (typeof subtree[key] === 'string' || typeof subtree[key] === 'number' || typeof subtree[key] === 'boolean') {
+          if (
+            typeof subtree[key] === 'string' ||
+            typeof subtree[key] === 'number' ||
+            typeof subtree[key] === 'boolean'
+          ) {
             displayNode['label'] = key + ': ' + subtree[key];
           } else {
             displayNode['label'] = key;
@@ -170,15 +176,14 @@ export class StructsComponent implements OnInit {
     return displayTreeList;
   }
 
-
   expandAll(tree: TreeNode[], structKey: string) {
-    tree.forEach(node => this.expandRecursive(node, true));
+    tree.forEach((node) => this.expandRecursive(node, true));
     this.displayTrees = { ...this.displayTrees, [structKey]: [...tree] };
     this.cdr.markForCheck();
   }
 
   collapseAll(tree: TreeNode[], structKey: string) {
-    tree.forEach(node => this.expandRecursive(node, false));
+    tree.forEach((node) => this.expandRecursive(node, false));
     this.displayTrees = { ...this.displayTrees, [structKey]: [...tree] };
     this.cdr.markForCheck();
   }
@@ -187,10 +192,10 @@ export class StructsComponent implements OnInit {
     const structSublist = [];
     // eslint-disable-next-line guard-for-in
     for (const entry in this.structsList) {
-      if ((group === 'my') && (this.structsList[entry].split('.').length === 1)) {
+      if (group === 'my' && this.structsList[entry].split('.').length === 1) {
         structSublist.push(this.structsList[entry]);
       }
-      if ((group === this.globalStructsID) && (this.structsList[entry].split('.').length === 1)) {
+      if (group === this.globalStructsID && this.structsList[entry].split('.').length === 1) {
         structSublist.push(this.structsList[entry]);
       }
       if (this.structsList[entry].indexOf(group + '.') === 0) {
@@ -207,10 +212,9 @@ export class StructsComponent implements OnInit {
   private expandRecursive(node: TreeNode, isExpand: boolean) {
     node.expanded = isExpand;
     if (node.children) {
-      node.children.forEach( childNode => {
+      node.children.forEach((childNode) => {
         this.expandRecursive(childNode, isExpand);
-      } );
+      });
     }
   }
-
 }

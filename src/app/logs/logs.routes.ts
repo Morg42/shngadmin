@@ -9,5 +9,9 @@ export const LOGS_ROUTES: Routes = [
   { path: 'display', component: LogDisplayComponent, canActivate: [AuthGuardService] },
   { path: 'display/:logname', component: LogDisplayComponent, canActivate: [AuthGuardService] },
   { path: 'logger-list', component: LoggerListComponent, canActivate: [AuthGuardService] },
-  { path: 'logging-configuration', component: LoggingConfigurationComponent, canActivate: [AuthGuardService] },
+  {
+    path: 'logging-configuration',
+    component: LoggingConfigurationComponent,
+    canActivate: [AuthGuardService],
+  },
 ];

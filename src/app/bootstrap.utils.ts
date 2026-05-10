@@ -15,6 +15,6 @@ export function jwtOptionsFactory(injector: Injector) {
     tokenGetter: () => {
       const authService = injector.get(AuthService);
       return authService.getToken();
-    }
+    },
   };
 }

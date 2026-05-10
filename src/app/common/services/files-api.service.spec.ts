@@ -1,9 +1,9 @@
-import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
-import { FilesApiService } from './files-api.service';
-import { AppConfigService } from './app-config.service';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { createMockAppConfigService } from '../../../testing/test-helpers';
+import { AppConfigService } from './app-config.service';
+import { FilesApiService } from './files-api.service';
 
 describe('FilesApiService', () => {
   let service: FilesApiService;
@@ -30,7 +30,7 @@ describe('FilesApiService', () => {
 
   it('readFile() sends a GET to /api/files/{filetype}/', () => {
     service.readFile('logics', 'my_logic.py').subscribe();
-    const req = http.expectOne(r => r.url.startsWith('/api/files/logics/'));
+    const req = http.expectOne((r) => r.url.startsWith('/api/files/logics/'));
     expect(req.request.method).toBe('GET');
     req.flush('');
   });

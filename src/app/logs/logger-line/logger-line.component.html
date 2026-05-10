@@ -1,186 +1,260 @@
-
 @if (loggerActive) {
-    <td class="py-1">{{ loggerName }}</td>
+  <td class="py-1">{{ loggerName }}</td>
 
-    <td class="py-1">
-        @if (loggerName !== 'root') {
-            <p-select [options]="levelOptions" [showClear]="false" placeholder="{{levelDefault}}" [(ngModel)]="logger.active.level" (ngModelChange)="levelChanged(loggerName, $event)"></p-select>
-        }
-        @if (loggerName === 'root') {
-            <a><b>{{ logger.active.level }}</b></a>
-        }
+  <td class="py-1">
+    @if (loggerName !== 'root') {
+      <p-select
+        [options]="levelOptions"
+        [showClear]="false"
+        placeholder="{{ levelDefault }}"
+        [(ngModel)]="logger.active.level"
+        (ngModelChange)="levelChanged(loggerName, $event)"
+      ></p-select>
+    }
+    @if (loggerName === 'root') {
+      <a
+        ><b>{{ logger.active.level }}</b></a
+      >
+    }
+  </td>
+
+  @if (logger.handlers === undefined || logger.handlers.length === 0) {
+    <td class="py-1" colspan="2">
+      <a>( --> logger '{{ getParent(loggerName) }}' )</a>
     </td>
-
-    @if (logger.handlers === undefined || logger.handlers.length === 0) {
-        <td class="py-1" colspan="2">
-            <a>( --> logger '{{ getParent(loggerName) }}' )</a>
-        </td>
-    }
-    @if (!(logger.handlers === undefined || logger.handlers.length === 0)) {
-        <td class="py-1">
-            @if (logger.propagate === false) {
-                <a><b>{{'LOGGERS.NO_PROPAGATION'|translate}}</b></a><br>
-            }
-            @for (h of logger.handlers; track i; let i = $index) {
-                <a>{{ h }}</a>
-                @if (h !== '' && i < logger.handlers.length - 1) {,<br>}
-            }
-        </td>
-        <td class="py-1">
-            @if (logger.propagate === false) {
-                <a><b>{{'LOGGERS.NO_PROPAGATION_2'|translate}}</b></a><br>
-            }
-            @for (ah of logger.active.handlers; track i; let i = $index) {
-                <a>{{ ah }}</a>
-                @if (ah !== '' && i < logger.active.handlers.length - 1) {,<br>}
-            }
-        </td>
-    }
+  }
+  @if (!(logger.handlers === undefined || logger.handlers.length === 0)) {
+    <td class="py-1">
+      @if (logger.propagate === false) {
+        <a
+          ><b>{{ 'LOGGERS.NO_PROPAGATION' | translate }}</b></a
+        ><br />
+      }
+      @for (h of logger.handlers; track i; let i = $index) {
+        <a>{{ h }}</a>
+        @if (h !== '' && i < logger.handlers.length - 1) {
+          ,<br />
+        }
+      }
+    </td>
+    <td class="py-1">
+      @if (logger.propagate === false) {
+        <a
+          ><b>{{ 'LOGGERS.NO_PROPAGATION_2' | translate }}</b></a
+        ><br />
+      }
+      @for (ah of logger.active.handlers; track i; let i = $index) {
+        <a>{{ ah }}</a>
+        @if (ah !== '' && i < logger.active.handlers.length - 1) {
+          ,<br />
+        }
+      }
+    </td>
+  }
 }
 
 @if (!loggerActive) {
-    <td class="py-1" style="color:darkgrey">{{ loggerName }}</td>
-    <td class="py-1" style="color:darkgrey">
-        <a>{{ logger.active.level }}</a>
-        <!--
+  <td class="py-1" style="color: darkgrey">{{ loggerName }}</td>
+  <td class="py-1" style="color: darkgrey">
+    <a>{{ logger.active.level }}</a>
+    <!--
         <p-select [options]="levelOptions" [showClear]="false" placeholder="{{levelDefault}}" [(ngModel)]="loggers[l].active.level" (ngModelChange)="levelChanged(l, $event)"></p-select>
         -->
+  </td>
+
+  @if (logger.handlers === undefined || logger.handlers.length === 0) {
+    <td class="py-1" colspan="2" style="color: darkgrey">
+      <a>( --> logger '{{ getParent(loggerName) }}' )</a>
     </td>
-
-    @if (logger.handlers === undefined || logger.handlers.length === 0) {
-        <td class="py-1" colspan="2" style="color:darkgrey">
-            <a>( --> logger '{{ getParent(loggerName) }}' )</a>
-        </td>
-    }
-    @if (!(logger.handlers === undefined || logger.handlers.length === 0)) {
-        <td class="py-1" style="color:darkgrey">
-            @for (h of logger.handlers; track i; let i = $index) {
-                <a>{{ h }}</a>
-                @if (h !== '' && i < logger.handlers.length - 1) {,<br>}
-            }
-        </td>
-        <td class="py-1" style="color:darkgrey">
-            @for (ah of logger.active.handlers; track i; let i = $index) {
-                <a>{{ ah }}</a>
-                @if (ah !== '' && i < logger.active.handlers.length - 1) {,<br>}
-            }
-        </td>
-    }
-
+  }
+  @if (!(logger.handlers === undefined || logger.handlers.length === 0)) {
+    <td class="py-1" style="color: darkgrey">
+      @for (h of logger.handlers; track i; let i = $index) {
+        <a>{{ h }}</a>
+        @if (h !== '' && i < logger.handlers.length - 1) {
+          ,<br />
+        }
+      }
+    </td>
+    <td class="py-1" style="color: darkgrey">
+      @for (ah of logger.active.handlers; track i; let i = $index) {
+        <a>{{ ah }}</a>
+        @if (ah !== '' && i < logger.active.handlers.length - 1) {
+          ,<br />
+        }
+      }
+    </td>
+  }
 }
 
 <td class="py-1">
-    @if (logger.propagate === false) {
-        <br>
+  @if (logger.propagate === false) {
+    <br />
+  }
+  @for (fn of logger.active.logfiles; track i; let i = $index) {
+    <a class="text-shng" [routerLink]="['/logs/display', this.baseName(fn)]">{{ this.baseName(fn) }}</a>
+    @if (fn !== '' && i < logger.active.logfiles.length - 1 && logger.active.logfiles[i + 1] != '') {
+      ,<br />
     }
-    @for (fn of logger.active.logfiles; track i; let i = $index) {
-        <a class="text-shng" [routerLink]="['/logs/display', this.baseName(fn)]">{{ this.baseName(fn) }}</a>
-        @if (fn !== '' && i < logger.active.logfiles.length - 1 && logger.active.logfiles[i+1] !='') {,<br>}
-    }
+  }
 </td>
 
 <td class="py-1">
-    <button name="delete" title="{{ 'LOGGERS.HANDLER'|translate }}" class="btn btn-outline-dark btn-sm mr-1" (click)="chooseHandlers(loggerName);"><i class="far fa-hand-paper" aria-hidden="true"></i></button>
-    @if (loggerIsDeletable(loggerName)) {
-        <button name="delete" title="{{ 'LOGGERS.DELETE'|translate }}" class="btn btn-outline-danger btn-sm mr-1" (click)="deleteLogger(loggerName);"><i class="far fa-trash-alt" aria-hidden="true" style="color: var(--shng-red);"></i></button>
-    }
+  <button
+    name="delete"
+    title="{{ 'LOGGERS.HANDLER' | translate }}"
+    class="btn btn-outline-dark btn-sm mr-1"
+    (click)="chooseHandlers(loggerName)"
+  >
+    <i class="far fa-hand-paper" aria-hidden="true"></i>
+  </button>
+  @if (loggerIsDeletable(loggerName)) {
+    <button
+      name="delete"
+      title="{{ 'LOGGERS.DELETE' | translate }}"
+      class="btn btn-outline-danger btn-sm mr-1"
+      (click)="deleteLogger(loggerName)"
+    >
+      <i class="far fa-trash-alt" aria-hidden="true" style="color: var(--shng-red)"></i>
+    </button>
+  }
 </td>
-
 
 <!--------------------------------------------------------------------------------------
 -- Confirm dialog vor configuration deletion
 -->
 <p-dialog header="" [(visible)]="confirmdelete_display" [modal]="true" blockScroll="true">
-    <ng-template pTemplate="header">
-        {{'LOGGERS.DELETE_LOGGER'|translate}}
-    </ng-template>
-    <br>
-    {{'LOGGERS.DELETE_LOGGER_TEXT'|translate:delete_param}}
-    <br>
-    <br>
-    <ng-template pTemplate="footer">
-        <button pButton type="button" icon="fa fa-trash-alt" (click)="deleteLoggerConfirm()" label="{{'BUTTON.DELETE'|translate}}" class="ui-button-danger"></button>
-        <button pButton type="button" icon="fa fa-times" (click)="deleteLoggerAbort()" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
-    </ng-template>
+  <ng-template pTemplate="header">
+    {{ 'LOGGERS.DELETE_LOGGER' | translate }}
+  </ng-template>
+  <br />
+  {{ 'LOGGERS.DELETE_LOGGER_TEXT' | translate: delete_param }}
+  <br />
+  <br />
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      type="button"
+      icon="fa fa-trash-alt"
+      (click)="deleteLoggerConfirm()"
+      label="{{ 'BUTTON.DELETE' | translate }}"
+      class="ui-button-danger"
+    ></button>
+    <button
+      pButton
+      type="button"
+      icon="fa fa-times"
+      (click)="deleteLoggerAbort()"
+      label="{{ 'BUTTON.ABORT' | translate }}"
+      class="ui-button-secondary"
+    ></button>
+  </ng-template>
 </p-dialog>
-
 
 <!--------------------------------------------------------------------------------------
   -- Dialog for modifying the selection of handlers for a logger
   -->
 
 <p-dialog
-        header=""
-        [(visible)]="chooseHandlers_display"
-        [modal]="true"
-        blockScroll="true"
-        [closable]="false"
-        [maximizable]="false"
-        [minY]="100"
-        [style]="{'width':'720px', 'minWidth':'600px', 'minHeight':'450px'}"
+  header=""
+  [(visible)]="chooseHandlers_display"
+  [modal]="true"
+  blockScroll="true"
+  [closable]="false"
+  [maximizable]="false"
+  [minY]="100"
+  [style]="{ width: '720px', minWidth: '600px', minHeight: '450px' }"
 >
+  <ng-template pTemplate="header">
+    {{ 'LOGGERS.CHOOSE_HANDLERS' | translate: header_param }}
+  </ng-template>
 
-    <ng-template pTemplate="header">
-        {{'LOGGERS.CHOOSE_HANDLERS'|translate:header_param}}
-    </ng-template>
-
-
-    @if (this.choosableHandlers.length > 0) {
-        {{'LOGGERS.CHOOSE_HANDLERS_TEXT'|translate}}<br>
-        @if (!(logger.propagate === false)) {
-            {{'LOGGERS.CHOOSE_HANDLERS_PROPAGATION_TEXT'|translate}}<br>
+  @if (this.choosableHandlers.length > 0) {
+    {{ 'LOGGERS.CHOOSE_HANDLERS_TEXT' | translate }}<br />
+    @if (!(logger.propagate === false)) {
+      {{ 'LOGGERS.CHOOSE_HANDLERS_PROPAGATION_TEXT' | translate }}<br />
+    }
+    <br />
+    <span style="display: inline-block; width: 120px">{{ 'LOGGERS.HANDLERS' | translate }}:</span>
+    <label style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 10px">
+      <div class="col1" style="border: 0.5px solid lightgrey">
+        @for (hndlr of choosableHandlers1; track $index) {
+          <div>
+            @if (!hndlr.disabled || logger.propagate === false) {
+              &nbsp;
+              <p-checkbox name="group" [value]="true" [(ngModel)]="hndlr.value" [inputId]="hndlr.key"></p-checkbox>
+              <label [for]="hndlr.key">{{ hndlr.name }}</label>
+            }
+            @if (!(!hndlr.disabled || logger.propagate === false)) {
+              &nbsp;
+              <p-checkbox
+                [disabled]="true"
+                name="group"
+                [value]="true"
+                [(ngModel)]="hndlr.value"
+                [inputId]="hndlr.key"
+              ></p-checkbox>
+              <label style="color: darkgrey" [for]="hndlr.key">{{ hndlr.name }}</label>
+            }
+          </div>
         }
-        <br>
-        <span style="display: inline-block; width: 120px;">{{ 'LOGGERS.HANDLERS'|translate }}:</span>
-        <label style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 10px;">
-            <div class="col1" style="border: 0.5px solid lightgrey">
-                @for (hndlr of choosableHandlers1; track $index) {
-                  <div>
-                    @if (!hndlr.disabled || logger.propagate === false) {
-                        &nbsp;
-                        <p-checkbox name="group" [value]="true" [(ngModel)]="hndlr.value" [inputId]="hndlr.key"></p-checkbox>
-                        <label [for]="hndlr.key">{{ hndlr.name }}</label>
-                    }
-                    @if (!(!hndlr.disabled || logger.propagate === false)) {
-                        &nbsp;
-                        <p-checkbox [disabled]="true" name="group" [value]="true" [(ngModel)]="hndlr.value" [inputId]="hndlr.key"></p-checkbox>
-                        <label style="color: darkgrey" [for]="hndlr.key">{{ hndlr.name }}</label>
-                    }
-                  </div>
-                }
-            </div>
-            <div class="col2" style="border: 0.5px solid lightgrey">
-                @for (hndlr of choosableHandlers2; track $index) {
-                  <div>
-                    @if (!hndlr.disabled || logger.propagate === false) {
-                        &nbsp;
-                        <p-checkbox name="group" [value]="true" [(ngModel)]="hndlr.value" [inputId]="hndlr.key"></p-checkbox>
-                        <label [for]="hndlr.key">{{ hndlr.name }}</label>
-                    }
-                    @if (!(!hndlr.disabled || logger.propagate === false)) {
-                        &nbsp;
-                        <p-checkbox [disabled]="true" name="group" [value]="true" [(ngModel)]="hndlr.value" [inputId]="hndlr.key"></p-checkbox>
-                        <label style="color: darkgrey" [for]="hndlr.key">{{ hndlr.name }}</label>
-                    }
-                  </div>
-                }
-            </div>
-        </label>
-    }
+      </div>
+      <div class="col2" style="border: 0.5px solid lightgrey">
+        @for (hndlr of choosableHandlers2; track $index) {
+          <div>
+            @if (!hndlr.disabled || logger.propagate === false) {
+              &nbsp;
+              <p-checkbox name="group" [value]="true" [(ngModel)]="hndlr.value" [inputId]="hndlr.key"></p-checkbox>
+              <label [for]="hndlr.key">{{ hndlr.name }}</label>
+            }
+            @if (!(!hndlr.disabled || logger.propagate === false)) {
+              &nbsp;
+              <p-checkbox
+                [disabled]="true"
+                name="group"
+                [value]="true"
+                [(ngModel)]="hndlr.value"
+                [inputId]="hndlr.key"
+              ></p-checkbox>
+              <label style="color: darkgrey" [for]="hndlr.key">{{ hndlr.name }}</label>
+            }
+          </div>
+        }
+      </div>
+    </label>
+  }
 
-    <br><br>
-    <br><br>
-    <br><br>
-    <br><br>
-    <br>
-    @if (this.choosableHandlers.length === 0) {
-      <p-message severity="error" [text]="'LOGGERS.NO_HANDLER_DEFINED' | translate" styleClass="mt-2"></p-message>
-    }
+  <br /><br />
+  <br /><br />
+  <br /><br />
+  <br /><br />
+  <br />
+  @if (this.choosableHandlers.length === 0) {
+    <p-message severity="error" [text]="'LOGGERS.NO_HANDLER_DEFINED' | translate" styleClass="mt-2"></p-message>
+  }
 
-    <ng-template pTemplate="footer">
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      type="button"
+      id="modifyHandlersButton"
+      icon="pi pi-check"
+      (click)="this.doModifyHandlers()"
+      [disabled]="!handlersChangeEnabled"
+      (disabledChange)="handlersChangeEnabled = $event"
+      label="{{ 'BUTTON.CHANGE' | translate }}"
+      class="ui-button-success"
+      autofocus
+    ></button>
 
-        <button pButton type="button" id="modifyHandlersButton" icon="pi pi-check" (click)="this.doModifyHandlers()" [disabled]="!handlersChangeEnabled" (disabledChange)="handlersChangeEnabled = $event" label="{{'BUTTON.CHANGE'|translate}}" class="ui-button-success" autofocus></button>
-
-        <button pButton type="button" id="cancelChooseHandlersButton" icon="pi pi-times" (click)="chooseHandlers_display=false;" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
-    </ng-template>
+    <button
+      pButton
+      type="button"
+      id="cancelChooseHandlersButton"
+      icon="pi pi-times"
+      (click)="chooseHandlers_display = false"
+      label="{{ 'BUTTON.ABORT' | translate }}"
+      class="ui-button-secondary"
+    ></button>
+  </ng-template>
 </p-dialog>

@@ -1,12 +1,11 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { JwtHelperService } from '@auth0/angular-jwt';
+import { BehaviorSubject } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-import {HttpClient} from '@angular/common/http';
-import {Injectable, inject} from '@angular/core';
-import {JwtHelperService} from '@auth0/angular-jwt';
-import {map} from 'rxjs/operators';
-import {BehaviorSubject, of} from 'rxjs';
-
-import {sha512} from 'js-sha512';
-import {AppConfigService} from './app-config.service';
+import { sha512 } from 'js-sha512';
+import { AppConfigService } from './app-config.service';
 
 interface DecodedJwtToken {
   exp: number;
@@ -17,9 +16,8 @@ interface DecodedJwtToken {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-
 export class AuthService {
   private http = inject(HttpClient);
   public jwtHelper = inject(JwtHelperService);
@@ -33,7 +31,7 @@ export class AuthService {
   isLoginRequiredCount = 0;
   expiredLogin: boolean;
 
-  ttl: number = 0;            // time to live for jwt token
+  ttl: number = 0; // time to live for jwt token
   renewAfter: number = 0;
   tokenRenewal: boolean;
   isRenewing: boolean;
@@ -52,11 +50,9 @@ export class AuthService {
     // console.warn('authService.constructor', {decodedToken} , this.logTimestamp, {timestamp}, this.logTimestamp < timestamp, this.logTimestamp - timestamp);
   }
 
-
   getTimestamp() {
     return Math.round(new Date().getTime() / 1000);
   }
-
 
   login(credentials) {
     console.log('authService.login() entering');
@@ -123,45 +119,47 @@ export class AuthService {
     // return this.http.post('http://smarthomeng.fritz.box:1234/api/authenticate/user', JSON.stringify(send_credentials))
     // const apiUrl = sessionStorage.getItem('apiUrl');
     const apiUrl = '/api/';
-    console.log('login', apiUrl + 'authenticate/user', {send_credentials});
-    return this.http.post<{token?: string}>(apiUrl + 'authenticate/user', JSON.stringify(send_credentials))
-      .pipe(map(response => {
-        const result = response;
+    console.log('login', apiUrl + 'authenticate/user', { send_credentials });
+    return this.http
+      .post<{ token?: string }>(apiUrl + 'authenticate/user', JSON.stringify(send_credentials))
+      .pipe(
+        map((response) => {
+          const result = response;
 
-        let anon = '';
-        if (credentials.username === '') {
-          anon = 'anonymous ';
-        }
-        if (result && result.token) {
-          localStorage.setItem('token', result.token);
+          let anon = '';
+          if (credentials.username === '') {
+            anon = 'anonymous ';
+          }
+          if (result && result.token) {
+            localStorage.setItem('token', result.token);
 
-          const jwt = new JwtHelperService();
-          // this.currentUser = jwt.decodeToken(localStorage.getItem('token'));
-          this.currentUser = this.jwtHelper.decodeToken(localStorage.getItem('token'));
-          // if (this.currentUser.ttl !== undefined) {
-          //   this.ttl = this.currentUser.ttl;
-          // }
-          const decodedToken = this.currentUser;
-          this.ttl = Math.round((decodedToken.exp - decodedToken.iat) / 60 / 60 * 100) / 100;
-          this.renewAfter = decodedToken.iat + (this.ttl * 60 * 60 / 2);
-          this.tokenRenewal = true;
+            const jwt = new JwtHelperService();
+            // this.currentUser = jwt.decodeToken(localStorage.getItem('token'));
+            this.currentUser = this.jwtHelper.decodeToken(localStorage.getItem('token'));
+            // if (this.currentUser.ttl !== undefined) {
+            //   this.ttl = this.currentUser.ttl;
+            // }
+            const decodedToken = this.currentUser;
+            this.ttl = Math.round(((decodedToken.exp - decodedToken.iat) / 60 / 60) * 100) / 100;
+            this.renewAfter = decodedToken.iat + (this.ttl * 60 * 60) / 2;
+            this.tokenRenewal = true;
 
-          // console.log('authService.login', this.ttl, {decodedToken}, this.renewAfter);
+            // console.log('authService.login', this.ttl, {decodedToken}, this.renewAfter);
 
-          // if login succeeds with an empty username, no login is required
-          this.isLoginRequired = !(credentials.username === '');
+            // if login succeeds with an empty username, no login is required
+            this.isLoginRequired = !(credentials.username === '');
 
-          console.log(anon + 'login:', 'success');
-          this.expiredLogin = false;
-          this.loggedIn$.next(true);
-          return true;
-        } else {
-          console.log(anon + 'login:', 'fail');
-          return false;
-        }
-      }));
+            console.log(anon + 'login:', 'success');
+            this.expiredLogin = false;
+            this.loggedIn$.next(true);
+            return true;
+          } else {
+            console.log(anon + 'login:', 'fail');
+            return false;
+          }
+        }),
+      );
   }
-
 
   logout() {
     localStorage.removeItem('token');
@@ -169,23 +167,21 @@ export class AuthService {
     this.loggedIn$.next(false);
   }
 
-
   loginRequired() {
     return this.isLoginRequired;
   }
-
 
   getNewToken() {
     // return this.http.post('http://smarthomeng.fritz.box:1234/api/authenticate/user', JSON.stringify(send_credentials))
     // const apiUrl = sessionStorage.getItem('apiUrl');
     const apiUrl = '/api/';
     console.log('getNewToken', apiUrl + 'authenticate/renew');
-    return this.http.put<{token: string}>(apiUrl + 'authenticate/renew', '')
-      .pipe(map(response => {
+    return this.http.put<{ token: string }>(apiUrl + 'authenticate/renew', '').pipe(
+      map((response) => {
         return response.token;
-      }));
+      }),
+    );
   }
-
 
   renewToken() {
     console.warn('authService.renewToken()');
@@ -201,53 +197,54 @@ export class AuthService {
 
     let newToken: string = oldToken;
     this.isRenewing = true;
-    this.getNewToken()
-      .subscribe(
-        (response) => {
-            newToken = response;
-            const decodedNewToken = this.jwtHelper.decodeToken(newToken);
-            const newttl = Math.round((decodedNewToken.exp - decodedNewToken.iat) / 60 / 60 * 100) / 100;
-            // console.log('authService.renewToken', {decodedNewToken});
+    this.getNewToken().subscribe((response) => {
+      newToken = response;
+      const decodedNewToken = this.jwtHelper.decodeToken(newToken);
+      const newttl =
+        Math.round(((decodedNewToken.exp - decodedNewToken.iat) / 60 / 60) * 100) / 100;
+      // console.log('authService.renewToken', {decodedNewToken});
 
-            if (oldToken === newToken) {
-              console.warn('- Token renewal is disabled');
-              this.tokenRenewal = false;
-
-            } else {
-              localStorage.setItem('token', newToken);
-              this.ttl = Math.round((decodedNewToken.exp - decodedNewToken.iat) / 60 / 60 * 100) / 100;
-              this.renewAfter = decodedNewToken.iat + (this.ttl * 60 * 60 / 2);
-            }
-            this.isRenewing = false;
-        }
-      );
+      if (oldToken === newToken) {
+        console.warn('- Token renewal is disabled');
+        this.tokenRenewal = false;
+      } else {
+        localStorage.setItem('token', newToken);
+        this.ttl = Math.round(((decodedNewToken.exp - decodedNewToken.iat) / 60 / 60) * 100) / 100;
+        this.renewAfter = decodedNewToken.iat + (this.ttl * 60 * 60) / 2;
+      }
+      this.isRenewing = false;
+    });
   }
 
-
   isLoggedIn(): boolean {
-    console.log('AuthService.isLoggedIn() entered')
+    console.log('AuthService.isLoggedIn() entered');
     const token = localStorage.getItem('token');
-    if (token === null) { 
+    if (token === null) {
       console.log('AuthService.isLoggedIn() localStorage token is null --> leaving');
-      return false; }
+      return false;
+    }
 
     const decodedToken = this.jwtHelper.decodeToken(token);
     const timestamp = this.getTimestamp();
     if (this.ttl === 0) {
-      this.ttl = Math.round((decodedToken.exp - decodedToken.iat) / 60 / 60 * 100) / 100;
-      this.renewAfter = decodedToken.iat + (this.ttl * 60 * 60 / 2);
+      this.ttl = Math.round(((decodedToken.exp - decodedToken.iat) / 60 / 60) * 100) / 100;
+      this.renewAfter = decodedToken.iat + (this.ttl * 60 * 60) / 2;
     }
     if (this.renewAfter === 0) {
-      this.renewAfter = decodedToken.iat + (this.ttl * 60 * 60 / 2);
+      this.renewAfter = decodedToken.iat + (this.ttl * 60 * 60) / 2;
     }
 
     const expirationDate = this.jwtHelper.getTokenExpirationDate(localStorage.getItem('token'));
     const loggedIn = !this.jwtHelper.isTokenExpired(localStorage.getItem('token'));
 
     if (loggedIn && this.logTimestamp < timestamp) {
-      console.log('Login expires in ' + Math.round((decodedToken.exp - timestamp) / 6) / 10 + ' Min');
+      console.log(
+        'Login expires in ' + Math.round((decodedToken.exp - timestamp) / 6) / 10 + ' Min',
+      );
       if (this.tokenRenewal) {
-        console.log('Login renew in ' + Math.round((this.renewAfter - timestamp) / 6) / 10 + ' Min');
+        console.log(
+          'Login renew in ' + Math.round((this.renewAfter - timestamp) / 6) / 10 + ' Min',
+        );
       }
 
       const timeLeftMin = (decodedToken.exp - timestamp) / 60;
@@ -259,7 +256,7 @@ export class AuthService {
       if (!this.expiredLogin) {
         this.expiredLogin = this.jwtHelper.isTokenExpired(localStorage.getItem('token'));
         if (this.expiredLogin) {
-          console.warn('Token expired', {decodedToken});
+          console.warn('Token expired', { decodedToken });
         }
       } else {
         console.warn('Token already expired');
@@ -268,26 +265,25 @@ export class AuthService {
       if (this.tokenRenewal && loggedIn && this.renewAfter < timestamp) {
         this.renewToken();
       }
-      console.log('AuthService.isLoggedIn() return ', {loggedIn})
+      console.log('AuthService.isLoggedIn() return ', { loggedIn });
       return loggedIn;
     }
 
-    if (token === null || decodedToken.iat === null) { 
-      console.log('AuthService.isLoggedIn() token and decodedToken.iat are both null --> return false')
-      return false; 
+    if (token === null || decodedToken.iat === null) {
+      console.log(
+        'AuthService.isLoggedIn() token and decodedToken.iat are both null --> return false',
+      );
+      return false;
     }
 
     return true;
   }
-
 
   getToken(): string {
     return localStorage.getItem('token');
   }
 
-
   isSecuredByLogin(): boolean {
     return true;
   }
 }
-

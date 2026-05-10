@@ -1,45 +1,100 @@
-
 <div class="shngbody">
-
   <div class="button-row">
-    <button pButton label="{{ 'BUTTON.SAVE'|translate }}" type="button" [disabled]="!this.groupChanged" icon="fa fa-check" style="margin-right: 0;" (click)="saveGroup()" class="float-sm-right ui-button-success"></button>
-    <button pButton label="{{ 'BUTTON.DISCARD'|translate }}" type="button" [disabled]="!this.groupChanged" icon="fa fa-times" style="margin-right: 10px;" (click)="this.discardChanges();" class="float-sm-right ui-button-secondary"></button>
+    <button
+      pButton
+      label="{{ 'BUTTON.SAVE' | translate }}"
+      type="button"
+      [disabled]="!this.groupChanged"
+      icon="fa fa-check"
+      style="margin-right: 0"
+      (click)="saveGroup()"
+      class="float-sm-right ui-button-success"
+    ></button>
+    <button
+      pButton
+      label="{{ 'BUTTON.DISCARD' | translate }}"
+      type="button"
+      [disabled]="!this.groupChanged"
+      icon="fa fa-times"
+      style="margin-right: 10px"
+      (click)="this.discardChanges()"
+      class="float-sm-right ui-button-secondary"
+    ></button>
   </div>
 
   <div class="logics-groupslist">
-    <button pButton label="{{ 'BUTTON.NEW_GROUP'|translate }}" type="button" [disabled]="!((myEditGroup === '') || (!this.groupChanged))  " icon="far fa-file" style="margin-left: 3px; margin-right: 10px;" (click)="newGroup()" class="float-sm-left ui-button-success"></button>
-    <button pButton type="button" [disabled]="myEditGroup === ''" icon="far fa-trash-alt" style="margin-right: 0; width: 25px;" (click)="deleteGroup()" class="float-sm-left ui-button-danger"></button>
-    <br>
-    <br>
+    <button
+      pButton
+      label="{{ 'BUTTON.NEW_GROUP' | translate }}"
+      type="button"
+      [disabled]="!(myEditGroup === '' || !this.groupChanged)"
+      icon="far fa-file"
+      style="margin-left: 3px; margin-right: 10px"
+      (click)="newGroup()"
+      class="float-sm-left ui-button-success"
+    ></button>
+    <button
+      pButton
+      type="button"
+      [disabled]="myEditGroup === ''"
+      icon="far fa-trash-alt"
+      style="margin-right: 0; width: 25px"
+      (click)="deleteGroup()"
+      class="float-sm-left ui-button-danger"
+    ></button>
+    <br />
+    <br />
 
     <i class="fa fa-sitemap" style="margin-left: 5px; color: #a2a2a2"></i>
-    <a style="margin-left: 5px; color: #727272">{{ 'LOGICS.GROUPS'|translate }}</a>
+    <a style="margin-left: 5px; color: #727272">{{ 'LOGICS.GROUPS' | translate }}</a>
 
-    <p-listbox [options]="menuGroupList"
-               [(ngModel)]="selectedGroup"
-               [disabled]="!((myEditGroup === '') || !groupChanged)"
-               (onChange)="groupSelected()" optionLabel="label"
-               [style]="{'width':'100%'}"
-               [listStyle]="{'height': 'calc(100vh - 213px)', 'min-height':'200px'}">
+    <p-listbox
+      [options]="menuGroupList"
+      [(ngModel)]="selectedGroup"
+      [disabled]="!(myEditGroup === '' || !groupChanged)"
+      (onChange)="groupSelected()"
+      optionLabel="label"
+      [style]="{ width: '100%' }"
+      [listStyle]="{ height: 'calc(100vh - 213px)', 'min-height': '200px' }"
+    >
     </p-listbox>
   </div>
 
   <div class="logics-groupeditor">
-
     <table id="1" class="table table-striped">
       <tr>
-        <td width="120px">{{ 'LOGIC_GROUPS.GROUP_NAME'|translate }}</td>
+        <td width="120px">{{ 'LOGIC_GROUPS.GROUP_NAME' | translate }}</td>
         <td>
-          <input [(ngModel)]="myEditGroup" [disabled]="true" type="text" pInputText placeholder="" pInputText name="name" style="width: 100%" [ngStyle]="{'width': 50}"/>
+          <input
+            [(ngModel)]="myEditGroup"
+            [disabled]="true"
+            type="text"
+            pInputText
+            placeholder=""
+            pInputText
+            name="name"
+            style="width: 100%"
+            [ngStyle]="{ width: 50 }"
+          />
         </td>
       </tr>
       <tr>
-        <td width="120px">{{ 'LOGIC_GROUPS.GROUP_TITLE'|translate }}</td>
+        <td width="120px">{{ 'LOGIC_GROUPS.GROUP_TITLE' | translate }}</td>
         <td>
-          <input [(ngModel)]="group.title" (keyup)="this.groupChanged = hasGroupChanged()"  type="text" pInputText placeholder="" pInputText name="description" style="width: 100%" [ngStyle]="{'width': 50}"/>
+          <input
+            [(ngModel)]="group.title"
+            (keyup)="this.groupChanged = hasGroupChanged()"
+            type="text"
+            pInputText
+            placeholder=""
+            pInputText
+            name="description"
+            style="width: 100%"
+            [ngStyle]="{ width: 50 }"
+          />
         </td>
       </tr>
-<!--
+      <!--
       <tr>
         <td>{{ 'LOGIC_EDIT.GROUP_DESCRIPTION'|translate }}</td>
         <td>
@@ -53,94 +108,132 @@
       </tr>
 -->
       <tr>
-        <td>{{ 'LOGIC_GROUPS.GROUP_DESCRIPTION'|translate }}</td>
+        <td>{{ 'LOGIC_GROUPS.GROUP_DESCRIPTION' | translate }}</td>
         <td>
           <div class="description">
-               <div class="description-text" id="group-desc"
-                contenteditable="true"
-                (keyup)="this.groupChanged = hasGroupChanged()">
-                  {{ group.description }}
-               </div>
+            <div
+              class="description-text"
+              id="group-desc"
+              contenteditable="true"
+              (keyup)="this.groupChanged = hasGroupChanged()"
+            >
+              {{ group.description }}
+            </div>
           </div>
         </td>
       </tr>
     </table>
-
   </div>
   <!-- <a style="font-size: small; padding-topt: 5px; padding-left: 10px;">{{ 'RESTART FOR CHANGES'|translate }}</a> -->
-
 </div>
-
 
 <!--
   -- Dialog for setting the name of the new item configuration file
   -->
 
 <p-dialog
-        header=""
-        [(visible)]="newgroup_display"
-        [modal]="true"
-        blockScroll="true"
-        [closable]="false"
-        [maximizable]="false"
-        [minY]="100"
-        [style]="{'minWidth':'600px', 'minHeight':'200px'}"
+  header=""
+  [(visible)]="newgroup_display"
+  [modal]="true"
+  blockScroll="true"
+  [closable]="false"
+  [maximizable]="false"
+  [minY]="100"
+  [style]="{ minWidth: '600px', minHeight: '200px' }"
 >
-
   <ng-template pTemplate="header">
-    {{'LOGIC_GROUPS.NAME_NEW_GROUP'|translate}}
+    {{ 'LOGIC_GROUPS.NAME_NEW_GROUP' | translate }}
   </ng-template>
 
-  <br>
-  {{ 'LOGIC_GROUPS.UNIQUE_NAME'|translate }}&nbsp;
-  <input [(ngModel)]="newGroupname" type="text" (input)="checkInput();" pInputText placeholder="" [ngStyle]="{'width': 20}" autofocus/>
+  <br />
+  {{ 'LOGIC_GROUPS.UNIQUE_NAME' | translate }}&nbsp;
+  <input
+    [(ngModel)]="newGroupname"
+    type="text"
+    (input)="checkInput()"
+    pInputText
+    placeholder=""
+    [ngStyle]="{ width: 20 }"
+    autofocus
+  />
 
-  <br>
-  <br>
+  <br />
+  <br />
   <ng-template pTemplate="footer">
-    <button pButton type="button" icon="pi pi-check" (click)="this.addGroup()" [disabled]="!this.add_enabled" (disabledChange)="this.add_enabled = $event" label="{{'BUTTON.ADD'|translate}}" class="ui-button-success" autofocus></button>
-    <button pButton type="button" icon="pi pi-times" (click)="this.newGroupAbort()" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
+    <button
+      pButton
+      type="button"
+      icon="pi pi-check"
+      (click)="this.addGroup()"
+      [disabled]="!this.add_enabled"
+      (disabledChange)="this.add_enabled = $event"
+      label="{{ 'BUTTON.ADD' | translate }}"
+      class="ui-button-success"
+      autofocus
+    ></button>
+    <button
+      pButton
+      type="button"
+      icon="pi pi-times"
+      (click)="this.newGroupAbort()"
+      label="{{ 'BUTTON.ABORT' | translate }}"
+      class="ui-button-secondary"
+    ></button>
   </ng-template>
 </p-dialog>
-
-
-
 
 <!--
   -- Confirm dialog vor configuration deletion
   -->
 <p-dialog header="" [(visible)]="error_display" [closable]="false" [modal]="true" blockScroll="true">
   <ng-template pTemplate="header">
-    {{'ITEM_CONFIG.CONFIG_ERROR'|translate}}
+    {{ 'ITEM_CONFIG.CONFIG_ERROR' | translate }}
   </ng-template>
-  <br>
-  <pre>
-{{'ITEM_CONFIG.CONFIG_ERROR_TEXT'|translate}}
+  <br />
+  <pre
+    >{{ 'ITEM_CONFIG.CONFIG_ERROR_TEXT' | translate }}
 
     {{ myTextOutput }}
   </pre>
-  <br>
+  <br />
   <ng-template pTemplate="footer">
-    <button pButton type="button" (click)="error_display = false;" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
+    <button
+      pButton
+      type="button"
+      (click)="error_display = false"
+      label="{{ 'BUTTON.CLOSE' | translate }}"
+      class="ui-button-success"
+    ></button>
   </ng-template>
 </p-dialog>
-
 
 <!--
   -- Confirm dialog vor configuration deletion
   -->
 <p-dialog header="" [(visible)]="confirmdelete_display" [modal]="true" blockScroll="true">
   <ng-template pTemplate="header">
-    {{'ITEM_CONFIG.DELETE_CONFIG'|translate}}
+    {{ 'ITEM_CONFIG.DELETE_CONFIG' | translate }}
   </ng-template>
-  <br>
-  {{'ITEM_CONFIG.DELETE_CONFIG_FILE'|translate:delete_param}}
-  <br>
-  <br>
+  <br />
+  {{ 'ITEM_CONFIG.DELETE_CONFIG_FILE' | translate: delete_param }}
+  <br />
+  <br />
   <ng-template pTemplate="footer">
-    <button pButton type="button" icon="fa fa-trash-alt" (click)="DeleteGroupConfirm()" label="{{'BUTTON.DELETE'|translate}}" class="ui-button-danger"></button>
-    <button pButton type="button" icon="fa fa-times" (click)="confirmdelete_display = false" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
+    <button
+      pButton
+      type="button"
+      icon="fa fa-trash-alt"
+      (click)="DeleteGroupConfirm()"
+      label="{{ 'BUTTON.DELETE' | translate }}"
+      class="ui-button-danger"
+    ></button>
+    <button
+      pButton
+      type="button"
+      icon="fa fa-times"
+      (click)="confirmdelete_display = false"
+      label="{{ 'BUTTON.ABORT' | translate }}"
+      class="ui-button-secondary"
+    ></button>
   </ng-template>
 </p-dialog>
-
-

@@ -1,5 +1,4 @@
-
-import {LogicsWatchItem} from './logics-watch-item';
+import { LogicsWatchItem } from './logics-watch-item';
 
 //
 // Datatype for <shng-server>:<port>/api/logics

@@ -1,66 +1,85 @@
-
 <!--
   -- List of configured plugins
   -->
-
 
 <!--
 <div style="margin-left: 10px; margin-right: 10px;">
 -->
 <div class="shngbody">
-  <div class="shng_headline" style="margin-top: 5px; margin-left: 8px;">
+  <div class="shng_headline" style="margin-top: 5px; margin-left: 8px">
     <h3>
-      {{'PLUGIN.PLUGIN_CONFIGURATION'|translate}}
+      {{ 'PLUGIN.PLUGIN_CONFIGURATION' | translate }}
       @if (spinner_display) {
-        <span style="margin-left: 1rem; font-size: 0.75rem; font-weight: normal; color: #666; vertical-align: middle;">
-          <p-progressSpinner [style]="{'width': '18px', 'height': '18px'}" styleClass="plugin-loading-spinner"></p-progressSpinner>
+        <span style="margin-left: 1rem; font-size: 0.75rem; font-weight: normal; color: #666; vertical-align: middle">
+          <p-progressSpinner
+            [style]="{ width: '18px', height: '18px' }"
+            styleClass="plugin-loading-spinner"
+          ></p-progressSpinner>
           &nbsp;{{ spinner_header }}
         </span>
       }
-      <button pButton type="button" style="margin-left: 0; margin-top: 5px; font-size: medium;" id="btn-monitor" [disabled]="false" (click)="addPluginDialog();" icon="fa fa-plus" label="{{ 'BUTTON.ADD_PLUGIN'|translate }}" class="ui-button-success float-sm-right"></button>
+      <button
+        pButton
+        type="button"
+        style="margin-left: 0; margin-top: 5px; font-size: medium"
+        id="btn-monitor"
+        [disabled]="false"
+        (click)="addPluginDialog()"
+        icon="fa fa-plus"
+        label="{{ 'BUTTON.ADD_PLUGIN' | translate }}"
+        class="ui-button-success float-sm-right"
+      ></button>
     </h3>
   </div>
 
   <div class="body-content">
-    <table class="table table-striped table-hover" style="width:100%;">
+    <table class="table table-striped table-hover" style="width: 100%">
       <thead>
         <tr class="shng_heading">
-          <th style="width:30px; border:0;"></th>
-          <th style="width:30px; border:0;"></th>
-          <th style="border:0;">{{ 'PLUGIN.CONFIGNAME'|translate }}</th>
-          <th style="min-width:200px; border:0;">{{ 'PLUGIN.PLUGINNAME'|translate }}</th>
-          <th style="min-width:120px; border:0;">{{ 'PLUGIN.INSTANCE'|translate }}</th>
-          <th style="border:0;">{{ 'PLUGIN.DESCRIPTION'|translate }}</th>
+          <th style="width: 30px; border: 0"></th>
+          <th style="width: 30px; border: 0"></th>
+          <th style="border: 0">{{ 'PLUGIN.CONFIGNAME' | translate }}</th>
+          <th style="min-width: 200px; border: 0">{{ 'PLUGIN.PLUGINNAME' | translate }}</th>
+          <th style="min-width: 120px; border: 0">{{ 'PLUGIN.INSTANCE' | translate }}</th>
+          <th style="border: 0">{{ 'PLUGIN.DESCRIPTION' | translate }}</th>
         </tr>
       </thead>
       <tbody>
         @for (row of configuredplugins; track $index) {
-          <tr style="cursor:pointer;" (click)="rowClicked($event, row)">
+          <tr style="cursor: pointer" (click)="rowClicked($event, row)">
             <td>
               @if (row['enabled'] === 'true') {
-                <i style="color: var(--shng-blue);" class="fa fa-toggle-on"></i>
+                <i style="color: var(--shng-blue)" class="fa fa-toggle-on"></i>
               }
               @if (row['enabled'] === 'false') {
-                <i style="color: var(--shng-toggle-off);" class="fa fa-toggle-off"></i>
+                <i style="color: var(--shng-toggle-off)" class="fa fa-toggle-off"></i>
               }
             </td>
             <td>
-              @if (['web','protocol','interface','gateway','system'].includes(row['type'])) {
-                <img ngSrc="assets/img/plugin_{{ row['type'] }}.svg" style="width:25px;" width="25" height="25"/>
+              @if (['web', 'protocol', 'interface', 'gateway', 'system'].includes(row['type'])) {
+                <img ngSrc="assets/img/plugin_{{ row['type'] }}.svg" style="width: 25px" width="25" height="25" />
               } @else if (row['type'] === 'classic') {
                 &nbsp;-
               } @else {
-                <img ngSrc="assets/img/plugin_defaultlogo.png" style="width:25px;" height="300" width="300"/>
+                <img ngSrc="assets/img/plugin_defaultlogo.png" style="width: 25px" height="300" width="300" />
               }
             </td>
             <td>{{ row['confname'] }}</td>
             <td>
               {{ row['plugin'].substr(1) }}
               @if (row['plugin'].charAt(0) === '+') {
-                &nbsp;<fa-icon style="color: var(--shng-warning);" title="{{'PLUGIN.DEPRECATED'|translate}}" [icon]="faExclamationTriangle"></fa-icon>
+                &nbsp;<fa-icon
+                  style="color: var(--shng-warning)"
+                  title="{{ 'PLUGIN.DEPRECATED' | translate }}"
+                  [icon]="faExclamationTriangle"
+                ></fa-icon>
               }
               @if (row['plugin'].charAt(0) === 'd') {
-                &nbsp;<fa-icon style="color: var(--shng-orange);" title="{{'PLUGIN.DEVELOP'|translate}}" [icon]="faCode"></fa-icon>
+                &nbsp;<fa-icon
+                  style="color: var(--shng-orange)"
+                  title="{{ 'PLUGIN.DEVELOP' | translate }}"
+                  [icon]="faCode"
+                ></fa-icon>
               }
             </td>
             <td>{{ row['instance'] }}</td>
@@ -71,22 +90,29 @@
     </table>
 
     @if (dialog_readonly === false && restart_core_button) {
-      <a style="font-size: small">{{ 'RESTART FOR CHANGES'|translate }}</a>
+      <a style="font-size: small">{{ 'RESTART FOR CHANGES' | translate }}</a>
     }
     @if (dialog_readonly === false && !restart_core_button) {
       <a style="font-size: small">&nbsp;</a>
     }
   </div>
   <div class="body-footer">
-    <br>
-    <button pButton type="button" class="float-sm-left btn-shng btn btn-sm ui-button-success" style="float: left;" [disabled]="!restart_core_button" (click)="restartShng()" icon="fa fa-circle-notch" label="{{'BUTTON.RESTART_SHNG'|translate}}"></button>
-<!--
+    <br />
+    <button
+      pButton
+      type="button"
+      class="float-sm-left btn-shng btn btn-sm ui-button-success"
+      style="float: left"
+      [disabled]="!restart_core_button"
+      (click)="restartShng()"
+      icon="fa fa-circle-notch"
+      label="{{ 'BUTTON.RESTART_SHNG' | translate }}"
+    ></button>
+    <!--
     <button pButton type="button" class="float-sm-right btn-shng btn btn-sm" style="float: left; margin-left: 0px; margin-top: 5px; margin-bottom: 10px; font-size: medium;" [disabled]="!restart_core_button" (click)="restartShng()" icon="fa fa-circle-notch" label="{{'BUTTON.RESTART_SHNG'|translate}}" class="ui-button-success"></button>
 -->
   </div>
 </div>
-
-
 
 <!-- ---------------------------------------------------------------------------------------
   -- Dialog for configuring the parameters of a plugin
@@ -100,13 +126,14 @@
   [closable]="false"
   [maximizable]="true"
   [minY]="100"
-  [style]="{'minWidth':'600px', 'minHeight':'300px', 'maxHeight':'98%'}"
+  [style]="{ minWidth: '600px', minHeight: '300px', maxHeight: '98%' }"
 >
-
   <ng-template pTemplate="header">
-    {{'CONFIGURATION'|translate}} <strong>{{ this.dialog_configname }}</strong> &nbsp; (Plugin <strong>{{ this.dialog_pluginname }}</strong>)
+    {{ 'CONFIGURATION' | translate }} <strong>{{ this.dialog_configname }}</strong> &nbsp; (Plugin
+    <strong>{{ this.dialog_pluginname }}</strong
+    >)
     @if (plugin_enabled === false) {
-      &nbsp; - &nbsp;<strong>{{'PLUGIN.PLUGIN_DISABLED'|translate}}</strong>
+      &nbsp; - &nbsp;<strong>{{ 'PLUGIN.PLUGIN_DISABLED' | translate }}</strong>
     }
   </ng-template>
 
@@ -125,31 +152,48 @@
       </tr>
       <tr>
         <td align="center">
-          <fa-icon style="color: var(--shng-warning);" title="{{'PLUGIN.DEPRECATED'|translate}}" [icon]="faExclamationTriangle"></fa-icon> &nbsp;
+          <fa-icon
+            style="color: var(--shng-warning)"
+            title="{{ 'PLUGIN.DEPRECATED' | translate }}"
+            [icon]="faExclamationTriangle"
+          ></fa-icon>
+          &nbsp;
         </td>
         <td colspan="3">
-          <a style="width: 50%; padding:0; background-color: #ffffff; border:0;"><strong>{{'PLUGIN.DEPRECATED'|translate}}:</strong></a>
+          <a style="width: 50%; padding: 0; background-color: #ffffff; border: 0"
+            ><strong>{{ 'PLUGIN.DEPRECATED' | translate }}:</strong></a
+          >
         </td>
       </tr>
       <tr>
         <td></td>
         <td colspan="3">
-          <p style="padding:0; background-color: #f2f2f2; border:0;">{{'PLUGIN.DEPRECATED_TEXT'|translate}}</p>
+          <p style="padding: 0; background-color: #f2f2f2; border: 0">{{ 'PLUGIN.DEPRECATED_TEXT' | translate }}</p>
         </td>
       </tr>
     }
   </table>
-  <br>
+  <br />
 
   @if (!this.classic) {
-    <p-table [style]="{'minHeight':'200px', 'height':'calc(80vh - 200px)'}" [columns]="parameter_cols" [value]="parameters" selectionMode="single">
+    <p-table
+      [style]="{ minHeight: '200px', height: 'calc(80vh - 200px)' }"
+      [columns]="parameter_cols"
+      [value]="parameters"
+      selectionMode="single"
+    >
       <ng-template pTemplate="header" let-columns>
         <tr>
           @for (col of columns; track $index) {
-            <th [pSortableColumn]="col.field" [ngStyle]="{'width': col.width}">
-              {{col.header|translate}}
+            <th [pSortableColumn]="col.field" [ngStyle]="{ width: col.width }">
+              {{ col.header | translate }}
               @if (col.field !== '') {
-                <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                <p-sortIcon
+                  [field]="col.field"
+                  ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"
+                ></p-sortIcon>
               }
             </th>
           }
@@ -158,34 +202,33 @@
       <ng-template pTemplate="body" let-rowData let-columns="columns">
         <tr>
           @for (col of columns; track $index) {
-          <td>
-
-            @if (dialog_readonly === false && col.field === 'value') {
-              <app-dynamic-field [row]="rowData" [col]="col"></app-dynamic-field>
-            }
-            @if (dialog_readonly === true || col.field !== 'value') {
-              @if (dialog_readonly === true || col.field !== 'desc') {
-                {{rowData[col.field]}}
+            <td>
+              @if (dialog_readonly === false && col.field === 'value') {
+                <app-dynamic-field [row]="rowData" [col]="col"></app-dynamic-field>
               }
-              @if (dialog_readonly === true || col.field === 'desc') {
-                @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
-                  <div [innerHTML]="rowData[col.field]"></div>
+              @if (dialog_readonly === true || col.field !== 'value') {
+                @if (dialog_readonly === true || col.field !== 'desc') {
+                  {{ rowData[col.field] }}
                 }
-                @if (col.field == 'desc' && rowData.gui_type == 'wide_str') {
-                  <div [ngStyle]="{'padding-left': col.paddingleft}">
+                @if (dialog_readonly === true || col.field === 'desc') {
+                  @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
                     <div [innerHTML]="rowData[col.field]"></div>
-                  </div>
+                  }
+                  @if (col.field == 'desc' && rowData.gui_type == 'wide_str') {
+                    <div [ngStyle]="{ 'padding-left': col.paddingleft }">
+                      <div [innerHTML]="rowData[col.field]"></div>
+                    </div>
+                  }
                 }
-              }
-<!--
+                <!--
               @if (typeof rowData[col.field]  !== 'string') {
                 @for (bl of col.field; track $index) {
                   {{ bl }}}
                 }
               }
 -->
-            }
-          </td>
+              }
+            </td>
           }
         </tr>
       </ng-template>
@@ -193,26 +236,54 @@
   }
   @if (this.classic) {
     <h4>
-      {{'PLUGIN.CLASSIC_NOT_CONFIGURABLE'|translate}}
-    </h4><br>
+      {{ 'PLUGIN.CLASSIC_NOT_CONFIGURABLE' | translate }}
+    </h4>
+    <br />
   }
 
   <ng-template pTemplate="footer">
     @if (dialog_readonly === false) {
-      <a style="font-size: small">{{ 'RESTART FOR CHANGES'|translate }}&nbsp; &nbsp; &nbsp;</a>
-<!--
+      <a style="font-size: small">{{ 'RESTART FOR CHANGES' | translate }}&nbsp; &nbsp; &nbsp;</a>
+      <!--
       <button pButton type="button" icon="fa fa-trash-alt" (click)="deleteConfigComponent.delete(dialog_configname)" label="{{'BUTTON.DELETE'|translate}}" class="ui-button-danger float-sm-left"></button>
 -->
-      <button pButton type="button" icon="fa fa-trash-alt" (click)="DeleteConfig()" label="{{'BUTTON.DELETE'|translate}}" class="ui-button-danger float-sm-left"></button>
-      <button pButton type="button" icon="fa fa-check" (click)="saveConfig()" label="{{'BUTTON.SAVE'|translate}}" class="ui-button-success"></button>
-      <button pButton type="button" icon="fa fa-times" (click)="dialog_display=false" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
+      <button
+        pButton
+        type="button"
+        icon="fa fa-trash-alt"
+        (click)="DeleteConfig()"
+        label="{{ 'BUTTON.DELETE' | translate }}"
+        class="ui-button-danger float-sm-left"
+      ></button>
+      <button
+        pButton
+        type="button"
+        icon="fa fa-check"
+        (click)="saveConfig()"
+        label="{{ 'BUTTON.SAVE' | translate }}"
+        class="ui-button-success"
+      ></button>
+      <button
+        pButton
+        type="button"
+        icon="fa fa-times"
+        (click)="dialog_display = false"
+        label="{{ 'BUTTON.ABORT' | translate }}"
+        class="ui-button-secondary"
+      ></button>
     }
     @if (dialog_readonly === true) {
-      <button pButton type="button" icon="fa fa-times" (click)="dialog_display=false" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
+      <button
+        pButton
+        type="button"
+        icon="fa fa-times"
+        (click)="dialog_display = false"
+        label="{{ 'BUTTON.CLOSE' | translate }}"
+        class="ui-button-success"
+      ></button>
     }
   </ng-template>
 </p-dialog>
-
 
 <!--
   -- Validation dialog, showing information about the error, if from validation fails
@@ -220,7 +291,7 @@
 
 <p-dialog header="" [(visible)]="validation_dialog_display" [modal]="true" blockScroll="true">
   <ng-template pTemplate="header">
-    {{'PLUGIN.CONFIGURATION_ERRORS'|translate}}
+    {{ 'PLUGIN.CONFIGURATION_ERRORS' | translate }}
   </ng-template>
 
   @for (l of this.validation_dialog_text; track $index) {
@@ -230,14 +301,16 @@
   }
 
   <ng-template pTemplate="footer">
-    <button pButton type="button" icon="pi pi-times" (click)="validation_dialog_display=false" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
+    <button
+      pButton
+      type="button"
+      icon="pi pi-times"
+      (click)="validation_dialog_display = false"
+      label="{{ 'BUTTON.CLOSE' | translate }}"
+      class="ui-button-success"
+    ></button>
   </ng-template>
 </p-dialog>
-
-
-
-
-
 
 <!-- ---------------------------------------------------------------------------------------
   -- Add Dialog: For selecting a plugin to add to the configured plugins from list of all installed plugins
@@ -254,13 +327,12 @@
   [resizable]="true"
   [maximizable]="false"
   [minY]="100"
-  [style]="{'minWidth':'600px', 'minHeight':'300px'}"
+  [style]="{ minWidth: '600px', minHeight: '300px' }"
 >
-
   <ng-template pTemplate="header">
-    {{'PLUGIN.ADD'|translate}}
+    {{ 'PLUGIN.ADD' | translate }}
     @if (plugin_enabled === false) {
-      &nbsp; - &nbsp;<strong>{{'PLUGIN.PLUGIN_DISABLED'|translate}}</strong>
+      &nbsp; - &nbsp;<strong>{{ 'PLUGIN.PLUGIN_DISABLED' | translate }}</strong>
     }
   </ng-template>
 
@@ -268,74 +340,101 @@
     @for (plugintype of plugintypes; track i; let i = $index) {
       <p-accordion-panel [value]="i">
         <p-accordion-header (click)="pluginadd.maximize()">
-          <span style="font-size: larger;"><img ngSrc="assets/img/plugin_{{ plugintype }}.svg" style="width: 30px; cursor: pointer;"/> {{plugintype.charAt(0).toUpperCase() + plugintype.substring(1)}} Plugins</span>
+          <span style="font-size: larger"
+            ><img ngSrc="assets/img/plugin_{{ plugintype }}.svg" style="width: 30px; cursor: pointer" />
+            {{ plugintype.charAt(0).toUpperCase() + plugintype.substring(1) }} Plugins</span
+          >
         </p-accordion-header>
         <p-accordion-content>
-        <!--
+          <!--
           <table class="table table-striped table-hover" [columns]="cols" [value]="configuredplugins" selectionMode="single">
         -->
           <table class="table table-striped table-hover">
             <colgroup>
-              <col minwidth="200px">
-              <col width="25px">
-              <col minwidth="400px">
+              <col minwidth="200px" />
+              <col width="25px" />
+              <col minwidth="400px" />
             </colgroup>
             <thead>
-              <th>{{'PLUGIN.PLUGINNAME'|translate}}</th>
-              <th>{{'PLUGIN.MULTI INSTANCE'|translate}}</th>
-              <th>{{'PLUGIN.DESCRIPTION'|translate}}</th>
+              <th>{{ 'PLUGIN.PLUGINNAME' | translate }}</th>
+              <th>{{ 'PLUGIN.MULTI INSTANCE' | translate }}</th>
+              <th>{{ 'PLUGIN.DESCRIPTION' | translate }}</th>
             </thead>
             @for (iplugin of plugins_installed_list; track $index) {
-              @if ((plugins_installed[iplugin].type === plugintype) || (plugintype === 'unclassified' && plugintypes.indexOf(plugins_installed[iplugin].type) === -1 )) {
+              @if (
+                plugins_installed[iplugin].type === plugintype ||
+                (plugintype === 'unclassified' && plugintypes.indexOf(plugins_installed[iplugin].type) === -1)
+              ) {
                 <tr style="cursor: pointer" (click)="selectPlugin(iplugin)">
-                  <td style="padding-left: 15px;">
-                    {{iplugin}}
-                    @if (plugins_installed[iplugin].state && (plugins_installed[iplugin].state.toLowerCase() === 'deprecated')) {
-                      &nbsp; <fa-icon style="color: var(--shng-warning);" title="{{'PLUGIN.DEPRECATED'|translate}}" [icon]="faExclamationTriangle"></fa-icon>
+                  <td style="padding-left: 15px">
+                    {{ iplugin }}
+                    @if (
+                      plugins_installed[iplugin].state &&
+                      plugins_installed[iplugin].state.toLowerCase() === 'deprecated'
+                    ) {
+                      &nbsp;
+                      <fa-icon
+                        style="color: var(--shng-warning)"
+                        title="{{ 'PLUGIN.DEPRECATED' | translate }}"
+                        [icon]="faExclamationTriangle"
+                      ></fa-icon>
                     }
-                    @if (plugins_installed[iplugin].state && (plugins_installed[iplugin].state.toLowerCase() === 'develop')) {
-                      &nbsp; <fa-icon style="color: var(--shng-orange);" title="{{'PLUGIN.DEVELOP'|translate}}" [icon]="faCode"></fa-icon>
+                    @if (
+                      plugins_installed[iplugin].state && plugins_installed[iplugin].state.toLowerCase() === 'develop'
+                    ) {
+                      &nbsp;
+                      <fa-icon
+                        style="color: var(--shng-orange)"
+                        title="{{ 'PLUGIN.DEVELOP' | translate }}"
+                        [icon]="faCode"
+                      ></fa-icon>
                     }
-                  <td>&nbsp; &nbsp;
+                  </td>
+
+                  <td>
+                    &nbsp; &nbsp;
                     @if (plugins_installed[iplugin].multi_instance) {
-                      <i style="color: var(--shng-blue);" class="fa fa-check"></i>
+                      <i style="color: var(--shng-blue)" class="fa fa-check"></i>
                     }
                   </td>
                   <td>
-                    {{plugins_installed[iplugin]['disp_description']}}
+                    {{ plugins_installed[iplugin]['disp_description'] }}
                   </td>
                 </tr>
               }
             }
           </table>
-      </p-accordion-content>
+        </p-accordion-content>
       </p-accordion-panel>
     }
   </p-accordion>
 
   @if (dialog_readonly === false) {
-    <a style="font-size: small">{{ 'RESTART FOR CHANGES'|translate }}</a>
+    <a style="font-size: small">{{ 'RESTART FOR CHANGES' | translate }}</a>
   }
 
   <ng-template pTemplate="footer">
     @if (dialog_readonly === false) {
-<!--
+      <!--
       <button pButton type="button" icon="pi pi-check" (click)="this.saveConfig()" label="{{'BUTTON.SAVE'|translate}}" class="ui-button-success"></button>
 -->
-      <button pButton type="button" icon="pi pi-times" (click)="add_display=false" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-secondary"></button>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-times"
+        (click)="add_display = false"
+        label="{{ 'BUTTON.CLOSE' | translate }}"
+        class="ui-button-secondary"
+      ></button>
     }
   </ng-template>
 </p-dialog>
-
-
 
 <!--
   -- Progress spinner
   -->
 
 <!-- loading state is shown inline in the headline, no modal needed -->
-
-
 
 <!--
   -- Dialog for setting the configuration name of a plugin(-instance)
@@ -349,53 +448,87 @@
   [closable]="false"
   [maximizable]="false"
   [minY]="100"
-  [style]="{'minWidth':'600px', 'minHeight':'200px'}"
+  [style]="{ minWidth: '600px', minHeight: '200px' }"
 >
-
   <ng-template pTemplate="header">
-    {{'PLUGIN.NAME_CONFIGURATION'|translate:translate_params}}
+    {{ 'PLUGIN.NAME_CONFIGURATION' | translate: translate_params }}
     @if (plugin_enabled === false) {
-      &nbsp; - &nbsp;<strong>{{'PLUGIN.PLUGIN_DISABLED'|translate}}</strong>
+      &nbsp; - &nbsp;<strong>{{ 'PLUGIN.PLUGIN_DISABLED' | translate }}</strong>
     }
   </ng-template>
 
-  <br>
-  {{ 'PLUGIN.UNIQUE_NAME'|translate }}&nbsp;
-  <input [(ngModel)]="pluginconfig_name" (keyup.enter)="this.addPlugin();" type="text" (input)="checkInput();" pInputText placeholder="" [ngStyle]="{'width': 20}" autofocus/>
+  <br />
+  {{ 'PLUGIN.UNIQUE_NAME' | translate }}&nbsp;
+  <input
+    [(ngModel)]="pluginconfig_name"
+    (keyup.enter)="this.addPlugin()"
+    type="text"
+    (input)="checkInput()"
+    pInputText
+    placeholder=""
+    [ngStyle]="{ width: 20 }"
+    autofocus
+  />
 
-  <br>
-  <br>
+  <br />
+  <br />
   @if (dialog_readonly === false) {
-    <a style="font-size: small">{{ 'RESTART FOR CHANGES'|translate }}</a>
+    <a style="font-size: small">{{ 'RESTART FOR CHANGES' | translate }}</a>
   }
   <ng-template pTemplate="footer">
     @if (dialog_readonly === false) {
-      <button pButton type="button" icon="pi pi-check" (click)="this.addPlugin()" [disabled]="!this.add_enabled" (disabledChange)="this.add_enabled = $event" label="{{'BUTTON.ADD'|translate}}" class="ui-button-success" autofocus></button>
-      <button pButton type="button" icon="pi pi-times" (click)="setconfig_display=false" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-check"
+        (click)="this.addPlugin()"
+        [disabled]="!this.add_enabled"
+        (disabledChange)="this.add_enabled = $event"
+        label="{{ 'BUTTON.ADD' | translate }}"
+        class="ui-button-success"
+        autofocus
+      ></button>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-times"
+        (click)="setconfig_display = false"
+        label="{{ 'BUTTON.ABORT' | translate }}"
+        class="ui-button-secondary"
+      ></button>
     }
   </ng-template>
 </p-dialog>
-
-
 
 <!--
   -- Confirm dialog vor configuration deletion
   -->
 <p-dialog header="" [(visible)]="confirmdelete_display" [modal]="true" blockScroll="true">
   <ng-template pTemplate="header">
-    {{'PLUGIN.DELETE_CONFIG'|translate}}
+    {{ 'PLUGIN.DELETE_CONFIG' | translate }}
   </ng-template>
-  <br>
-  {{'PLUGIN.DELETE_CONFIG_TEXT'|translate:delete_param}}
-  <br>
-  <br>
+  <br />
+  {{ 'PLUGIN.DELETE_CONFIG_TEXT' | translate: delete_param }}
+  <br />
+  <br />
   <ng-template pTemplate="footer">
-    <button pButton type="button" icon="fa fa-trash-alt" (click)="DeleteConfigConfirm()" label="{{'BUTTON.DELETE'|translate}}" class="ui-button-danger"></button>
-    <button pButton type="button" icon="fa fa-times" (click)="DeleteConfigAbort()" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
+    <button
+      pButton
+      type="button"
+      icon="fa fa-trash-alt"
+      (click)="DeleteConfigConfirm()"
+      label="{{ 'BUTTON.DELETE' | translate }}"
+      class="ui-button-danger"
+    ></button>
+    <button
+      pButton
+      type="button"
+      icon="fa fa-times"
+      (click)="DeleteConfigAbort()"
+      label="{{ 'BUTTON.ABORT' | translate }}"
+      class="ui-button-secondary"
+    ></button>
   </ng-template>
 </p-dialog>
-
-
-
 
 <!-- --------------------------------------------------------------------------------------------------- -->

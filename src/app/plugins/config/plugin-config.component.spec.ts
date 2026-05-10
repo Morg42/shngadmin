@@ -1,19 +1,21 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { of } from 'rxjs';
-import { PluginConfigComponent } from './plugin-config.component';
-import { ServerApiService } from '../../common/services/server-api.service';
-import { AuthService } from '../../common/services/auth.service';
-import { AppConfigService } from '../../common/services/app-config.service';
-import { OlddataService } from '../../common/services/olddata.service';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import {translateTestingModule, 
-  createMockAuthService,
+import { of } from 'rxjs';
+import {
   createMockAppConfigService,
-  createMockOlddataService} from '../../../testing/test-helpers';
+  createMockAuthService,
+  createMockOlddataService,
+  translateTestingModule,
+} from '../../../testing/test-helpers';
+import { AppConfigService } from '../../common/services/app-config.service';
+import { AuthService } from '../../common/services/auth.service';
+import { OlddataService } from '../../common/services/olddata.service';
+import { ServerApiService } from '../../common/services/server-api.service';
+import { PluginConfigComponent } from './plugin-config.component';
 
 describe('PluginConfigComponent', () => {
   let component: PluginConfigComponent;
@@ -34,10 +36,7 @@ describe('PluginConfigComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        PluginConfigComponent,
-        translateTestingModule,
-      ],
+      imports: [PluginConfigComponent, translateTestingModule],
       providers: [
         provideRouter([]),
         provideHttpClient(),
@@ -49,8 +48,8 @@ describe('PluginConfigComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
-    .overrideComponent(PluginConfigComponent, { set: { imports: [TranslatePipe] } })
-    .compileComponents();
+      .overrideComponent(PluginConfigComponent, { set: { imports: [TranslatePipe] } })
+      .compileComponents();
 
     fixture = TestBed.createComponent(PluginConfigComponent);
     component = fixture.componentInstance;

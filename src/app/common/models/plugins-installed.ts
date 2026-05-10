@@ -1,5 +1,3 @@
-
-
 //
 // Datatype for <shng-server>:<port>/api/installed
 //
@@ -16,4 +14,3 @@ export interface PluginInstalled {
 export interface PluginsInstalled {
   [key: string]: PluginInstalled;
 }
-

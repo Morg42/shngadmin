@@ -1,4 +1,3 @@
-
 :host ::ng-deep .ui-menubar-root-list {
   /*
     padding-left:145px;
@@ -14,7 +13,6 @@
   }
 }
 
-
 /* css for System-Info tab */
 .navi {
   display: grid;
@@ -24,8 +22,7 @@
   align-items: center;
 }
 
-.navi>span
-{
+.navi > span {
   min-height: 55px;
   padding: 12px 0;
   /* align-self: stretch; */
@@ -33,19 +30,17 @@
   background: #ddffee;
   background: #eee;
 }
-.navi>p-menubar
-{
+.navi > p-menubar {
   min-height: 55px;
   padding-left: 0;
   padding-top: 2px;
 }
 
 img#logo {
-  position:absolute;
-  left:0;
-  padding-left:20px;
+  position: absolute;
+  left: 0;
+  padding-left: 20px;
 }
-
 
 /* The navigation bar */
 .fixednavbar {
@@ -60,8 +55,12 @@ img#logo {
   display: none;
 }
 @media screen and (min-width: 0px) and (max-width: 887px) {
-  .hide-on-small { display: none;}
-  .hide-on-large { display: unset;}
+  .hide-on-small {
+    display: none;
+  }
+  .hide-on-large {
+    display: unset;
+  }
 }
 
 .menubox {

@@ -1,4 +1,3 @@
-
 {
   "readonly": false,
   "plugin_config": {
@@ -35,9 +34,7 @@
               "de": "Update von Werten durch das Backend Plugin ist erlaubt",
               "en": "Update of values through the backend plugin is allowed"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "developer_mode": {
@@ -47,9 +44,7 @@
               "de": "Entwickler Modus aktivieren",
               "en": "Activate developer mode"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "pypi_timeout": {
@@ -59,9 +54,7 @@
               "de": "Timeout bei der Abfrage der pypi Website",
               "en": "Timeout for getting data from the pypi website"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -96,9 +89,7 @@
               "de": "Prefix, der dem Sektionsnamen in /etc/logic.yaml vorangstellt wird",
               "en": "Prefix that is added to the beginning of the section name in /etc/logic.yaml"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -141,9 +132,7 @@
               "de": "Wenn dieser Parameter False ist, ist der CLI Zugriff rein lesend.\n\n Um Updates duchführen zu können, muss dieser Parameter auf True gesetzt werden.",
               "en": "Restrict the access of the items to read only (false) or allows read/write access (true)."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "ip": {
@@ -153,9 +142,7 @@
               "de": "Legt fest auf welchen Netzwerk Interfaces CLI nach Verbindungen lauscht (127.0.0.1 für localhost, 0.0.0.0 für alle Netzwerk Interfaces)",
               "en": "used network interface, e.g. 127.0.0.1 (localhost) or listen on all network interfaces: 0.0.0.0"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "port": {
@@ -167,9 +154,7 @@
               "de": "Netzwerk Port der für die Verbindung genutzt wird",
               "en": "used network port"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "hashed_password": {
@@ -178,9 +163,7 @@
               "de": "Hash (SHA-512) des Passwortes zum Login. Hashes können durch das backend Plugin erzeugt werden. Wenn kein Passwort verwendet werden soll wird eine Warnung geloggt. Soll dieses Log unterbleiben, muss für diesen Parameter 'none' eingegeben werden.",
               "en": "password that needs to be entered on login. SHA-512 hashed. Hashes can be created via the backend plugin. If you don't use a password, a warning will be logged. If you don't want that log entry, this parameter must be set to 'none'."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "webif_pagelength": {
@@ -191,9 +174,7 @@
               "de": "... [webif_pagelength] ...",
               "en": "... [webif_pagelength] ..."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "instance": {
@@ -202,9 +183,7 @@
               "de": "... [instance] ...",
               "en": "... [instance] ..."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -234,12 +213,7 @@
               },
               "group": {
                 "type": "str",
-                "valid_list": [
-                  "item",
-                  "log",
-                  "logic",
-                  "scheduler"
-                ],
+                "valid_list": ["item", "log", "logic", "scheduler"],
                 "description": {
                   "de": "Kommando Gruppe (item, log, logic, scheduler)",
                   "en": "Command group (item, log, logic, scheduler)"
@@ -348,9 +322,7 @@
               "de": "IP Adresse bzw. Hostname der HomeMatic CCU2 Zentrale",
               "en": "ip address or hostname of the HomeMatic CCU2 gateway"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "username": {
@@ -360,9 +332,7 @@
               "de": "Username für das Login",
               "en": "Username for the login"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "password": {
@@ -373,9 +343,7 @@
               "de": "Passwort für das Login",
               "en": "Password for the login"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "learnmode_length": {
@@ -387,9 +355,7 @@
               "de": "Dauer des Anlernmodus der HomeMatic CCU2 Zentrale nach Aktivierung durch das Web Interface",
               "en": "Duration of learnmode of the HomeMatic CCU2 gateway after activation through the web interface"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -400,9 +366,7 @@
               "de": "Adresse des HomeMatic Devices, welches über die HomeMatic CCU2 Zentrale angesteuert werden soll",
               "en": "Adress of the HomeMatic device that shall be controlled (through the HomeMatic CCU2 central unit)"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "hm_function": {
@@ -411,9 +375,7 @@
               "de": "Name der Funktion des HomeMatic Devices, welche genutzt werden soll",
               "en": "Name of the function of the HomeMatic Device that shall be used"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "hm_channel": {
@@ -422,9 +384,7 @@
               "de": "Optional: Kanal des Devices auf dem die Funktion angesteuert werden soll.\nMuss nur angegeben werden, wenn die gewünschte Funktion von dem Device mehrfach zur Verfügung gestellt wird",
               "en": "Optional: Channel of the devicemon which the function shall be used.\nHas only to be specified, if the requested function is implemented more than once on the device."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -462,9 +422,7 @@
               "de": "Gruppenadresse, um die Uhrzeit an den Knx-Bus zu senden",
               "en": "groupadress to send a timestamp to the knx bus"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "date_ga": {
@@ -473,9 +431,7 @@
               "de": "Gruppenadresse, um das Datum an den Knx-Bus zu senden",
               "en": "groupadress to send the date to the knx bus"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "send_time": {
@@ -486,44 +442,22 @@
               "de": "Zeitintervall (in Sekunden) zum Senden von Uhrzeit und Datum an den KNX-Bus",
               "en": "time interval (in seconds) to send time and date to the knx bus"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "busmonitor": {
             "type": "str",
             "default": "off",
-            "valid_list": [
-              "on",
-              "off",
-              "true",
-              "false",
-              "logger"
-            ],
+            "valid_list": ["on", "off", "true", "false", "logger"],
             "valid_list_description": {
-              "de": [
-                "Ein",
-                "Aus",
-                "Ein",
-                "Aus",
-                "in eigenen Logger"
-              ],
-              "en": [
-                "On",
-                "Off",
-                "On",
-                "Off",
-                "to own logger"
-              ]
+              "de": ["Ein", "Aus", "Ein", "Aus", "in eigenen Logger"],
+              "en": ["On", "Off", "On", "Off", "to own logger"]
             },
             "description": {
               "de": "Wenn auf 'on'/'true' gesetzt, wird jedes KNX-Paket im Standard-Logger protokolliert. Wenn 'logger' eingestellt ist, werden alle KNX-Meldungen in einem separaten Logger 'knx_busmonitor' protokolliert.",
               "en": "If set to 'on'/'true' every KNX packet will be logged to the default plugin logger. If set to 'logger', all knx messages will be logged to a separate logger 'knx_busmonitor'"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "host": {
@@ -533,9 +467,7 @@
               "de": "IP Adresse des Computers auf dem der EIB Daemon bzw. KNX Daemon läuft. Standard: Auf dem Computer auf dem SmartHomeMG läuft.",
               "en": "IP address of the computer the eib daemon or knx daemon is running on. Default: The Daemon is running on the computer SmartHomeNG is running on."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "port": {
@@ -547,9 +479,7 @@
               "de": "Port, der bei der Kommunikation mit dem Eibd- oder Knxd-Daemon verwendet wird",
               "en": "Port to be used when communicating to eibd or knxd daemon"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "readonly": {
@@ -559,9 +489,7 @@
               "de": "Wenn der Wert auf \"True\" gesetzt ist, liest das Plugin nur den KNX-Bus und sendet keine Nachrichten an den Bus.",
               "en": "If set to True, the plugin only read the knx bus and send no group message to the bus."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "enable_stats": {
@@ -571,9 +499,7 @@
               "de": "Wenn diese Option auf \"True\" gesetzt ist, werden die Statistikfunktionen aktiviert um Daten erfassen",
               "en": "if set to True, the statistic functions are enabled to collect data"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -667,9 +593,7 @@
               "de": "Dieses Attribut setzt den Typ des KNX-Datenpunktes, der für die Konvertierung der KNX-Nachrichten in das interne SmartHomeNG-Format verwendet wird. Die Angabe ist zwingend erforderlich ist. Wenn Sie keinen Wert angeben, wird das Element vom Plugin ignoriert. Der DPT muss dem Typ des Artikels entsprechen!",
               "en": "This attribute set the KNX datapoint type used for conversion of the KNX messages to internal SmartHomeNG format. It is mandatory. If you don't provide one the item will be ignored by the plugin. The DPT has to match the type of the item! BE CAREFUL to put the value in quotes to ensure they are interpreted as strings and not as numbers!"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "knx_send": {
@@ -678,9 +602,7 @@
               "de": "Gruppenadresse, an die gesendet werden soll, wenn das Element geändert wird. Sie können eine oder mehrere Gruppenadressen angeben.",
               "en": "Group address to send to, if the item is changed. You could specify one or more group addresses."
             },
-            "listtype": [
-              "knx_ga"
-            ],
+            "listtype": ["knx_ga"],
             "listlen": 0
           },
           "knx_listen": {
@@ -689,9 +611,7 @@
               "de": "Gruppenadresse (oder Liste von Gruppenadressen), auf die gehört werden soll. KNX-Nachrichten an diese Gruppenadresse(n) ändern den Wert des Items",
               "en": "Group address (or list of group addresses) to listen for. KNX messages to this group address(es) will change the item's value"
             },
-            "listtype": [
-              "knx_ga"
-            ],
+            "listtype": ["knx_ga"],
             "listlen": 0
           },
           "knx_init": {
@@ -700,9 +620,7 @@
               "de": "Gruppenadresse für die Initialisierung des Items. Der KNX-Bus wird nach dem Wert abgefragt. Die Angabe impliziert knx_listen, also muss knx_listen nicht für diese Gruppenadresse angegeben werden.",
               "en": "Group address to use for initialization of the item. The KNX bus is queried for the value. It implies knx_listen, so knx_listen need not to be specified for this group address."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "knx_cache": {
@@ -711,9 +629,7 @@
               "de": "Gruppenadresse für die Initialisierung des Items. Der Wert wird aus dem Cache von KNXD/EIBD gelesen. Wenn kein Cache-Wert vorhanden ist, wird der KNX-Bus nach dem Wert abgefragt. Die Angabe impliziert knx_listen, also muss knx_listen nicht für diese Gruppenadresse angegeben werden.",
               "en": "Group address to use for initialization of the item. The value is read from the cache of KNXD/EIBD. If no cached value exists, the KNX bus is queried for the value. It implies knx_listen, so knx_listen need not to be specified for this group address."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "knx_reply": {
@@ -722,9 +638,7 @@
               "de": "Eine oder mehrere Gruppenadressen angeben, um den Objektwert vom KNX-Bus aus lesen zu können.",
               "en": "Specify one or more group addresses to allow reading the item value from the KNX bus."
             },
-            "listtype": [
-              "knx_ga"
-            ],
+            "listtype": ["knx_ga"],
             "listlen": 0
           },
           "knx_status": {
@@ -733,9 +647,7 @@
               "de": "Ähnlich wie bei knx_send, sendet aber auch bei Änderungen über KNX, wenn sich der knx_status GA vom Ziel-GA unterscheidet. Sie können eine oder mehrere Gruppenadressen angeben.",
               "en": "Similar to knx_send but will send updates even for changes via KNX if the knx_status GA differs from the destination GA. You could specify one or more group addresses."
             },
-            "listtype": [
-              "knx_ga"
-            ],
+            "listtype": ["knx_ga"],
             "listlen": 0
           },
           "knx_poll": {
@@ -744,10 +656,7 @@
               "de": "Geben Sie eine abzurufende Gruppenadresse und das Zeitintervall in Sekunden für eine automatisierte Abfrage vom KNX Bus in Form einer Liste an. Der erste Eintrag ist die Gruppenadresse, der zweite Eintrag ist das Pollintervall in Sekunden. Dies kann für Aktoren oder Sensoren verwendet werden, die keine regelmäßige Übermittlung von Werten unterstützen.",
               "en": "Specify a group address to poll and the time interval in seconds for an automated query of KNX in form of a list. First entry is the group address, second entry is the poll interval in seconds. This may be used for actors or sensors that do no support a regular sending of values themselves."
             },
-            "listtype": [
-              "knx_ga",
-              "int"
-            ],
+            "listtype": ["knx_ga", "int"],
             "listlen": 2
           }
         },
@@ -758,9 +667,7 @@
               "de": "Gruppenadresse (oder Liste von Gruppenadressen), auf die gehört werden soll. KNX-Nachrichten an diese Gruppenadresse(n) werden an die Logik weitergegeben",
               "en": "Group address (or list of group addresses) to listen for. KNX messages to this group address(es) will be directed to th logic"
             },
-            "listtype": [
-              "knx_ga"
-            ],
+            "listtype": ["knx_ga"],
             "listlen": 0
           },
           "knx_reply": {
@@ -769,9 +676,7 @@
               "de": "Eine oder mehrere Gruppenadressen angeben, um den Objektwert vom KNX-Bus aus lesen zu können.",
               "en": "Specify one or more group addresses to allow reading the item value from the KNX bus."
             },
-            "listtype": [
-              "knx_ga"
-            ],
+            "listtype": ["knx_ga"],
             "listlen": 0
           }
         },
@@ -1020,9 +925,7 @@
               "de": "**Adresse des MQTT Brokers**: Spezifiziert die IP Adresse des MQTT Brokers.\nWenn der MQTT Broker auf dem selben Rechner auf dem auch SmartHomeNG läuft,\nmuss dieser Parameter nicht angegeben werden.\n",
               "en": "**Address of MQTT broker**: Specifies the IP adress of the MQTT broker to use.\nIf you use a broker on the computer you are running SmartHomeNG on, you don't\nneed to specify this parameter. In this case it is assumed, that the MQTT broker\nruns on the same machine as SmartHomeNG and 127.0.0.1 (for localhost) is used.\n"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "port": {
@@ -1038,19 +941,13 @@
               "de": "**Vom Broker benutzter Port**: Port 1883 und 8883 sind bei der IANA reservierte Ports für MQTT.\\n\n\\n\n- 1883: Der Standard MQTT Port. Er ist bei IANA definiert als **MQTT over TCP**\\n\n- 8883: Der Standard MQTT Port. Er ist bei IANA definiert als **Secure MQTT**\\n\n\\n\nIn einem Standard Setup muss dieser Parameter nicht angegeben werden.\n",
               "en": "**Port used by broker**: Port 1883 and 8883 are the IANA reserved ports for MQTT.\\n\n\\n\n- 1883: This is the default MQTT port. It is defined at IANA as MQTT over TCP\\n\n- 8883: This is the default MQTT port for MQTT over TLS. It’s registered at IANA for Secure MQTT\\n\n\\n\nIn a standard setup you should not need to configure this parameter.\n"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "qos": {
             "type": "int",
             "default": 1,
-            "valid_list": [
-              0,
-              1,
-              2
-            ],
+            "valid_list": [0, 1, 2],
             "description": {
               "de": "Quality of Service",
               "en": "Quality of Service"
@@ -1059,9 +956,7 @@
               "de": "**Quality-Of-Service**: QoS definiert den Standard Quality-of-Service Level für die Kommunikation mit dem Broker. Der Level kann durch setzen des ** mqtt_qos** Attributes in den individuellen Items überschrieben werden.\\n\n\\n\nMQTT unterstützt drei Level für den Quality-of-Service (0=at most once, 1=at least once, 2=excactly once). QoS 2 hat den meisten Overhead und sollte nur genutzt werden, wenn unbedingt nötig.\\n\n\\n\nEine gute Erläuterung zu QoS im MQTT Protokoll kann hier gefunden werden: http://www.hivemq.com/blog/mqtt-essentials-part-6-mqtt-quality-of-service-levels (Englisch).\\n\n",
               "en": "**Quality-Of-Service**: qos defines the default quality of service level used when communicating with the broker. It can be overwritten by setting the mqtt_qos attribute on an individual item.\n\n\n\nMQTT supports three levels for Quality-Of-Service (0=at most once, 1=at least once, 2=excactly once). QoS 2 has the most overhead and should be used only if needed.\n\n\n\nA good explanation about Quality-of-Service in MQTT can be found here: http://www.hivemq.com/blog/mqtt-essentials-part-6-mqtt-quality-of-service-levels.\n\n"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "last_will_topic": {
@@ -1076,9 +971,7 @@
               "de": "**MQTT testament Message**: Wenn kein **last_will_topic** angegeben wird,\nwird keine MQTT last-will-message gesendet. Als Standard wird eine last-will\nmessage durch den Broker nur versendet wenn die Verbindung des Clients zum Broker\nabbricht (sie also nicht ordnungsgemäß geschlossen wird).\\n\n\\n\n-> Last-will-messages werden mit dem Standard QoS gesendet.\\n\n\\n\nFalls eine birth-message konfiguriert ist, wird die last-will-message mit\ngesetztem retain Flag gesendet und die last-will-message wird auch gesendet\nwenn die Verbindung ordnungsgemäß geschlossen wird (z.B. beim Beenden\nvon SmartHomeNG).\n",
               "en": "**MQTT testament message**: if **last_will_topic** is not specified, there will\nbe no MQTT last-will-message sent. As a standard the last-will message will only\nbe sent if the connection to the broker aborts (is not closed in an orderly manner).\\n\n\\n\nLast-will-messages will be sent with the default QoS.\\n\n\\n\nIf you specify a birth-message, the last-will-message will be sent with the\nretain flag set and the last-will-message will also be sent if the connection\nis closed orderly (by shutting down SmartHomeNG).\n"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "last_will_payload": {
@@ -1089,9 +982,7 @@
               "de": "Payload für die MQTT testament message. Wenn keine <strong>last_will_payload</strong> angegeben wird, wird kein Last-Will Telegramm gesendet.",
               "en": "Payload for the MQTT testament message. If **last_will_payload** is not specified, there will be no last-will message sent."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "birth_topic": {
@@ -1106,9 +997,7 @@
               "de": "Die birth-Message ist das Gegenteil zur MQTT Testament Message und wird gesendet, wenn das Plugin startet. Falls kein **birth_topic** konfiguriert ist, wird das **last_will_topic** auch für die Birth-Message verwendet. Birth-Messages werden mit der Standard QoS und gesetztem Retain Flag gesendet.",
               "en": "The birth message is the opposite to the MQTT Testament message and sent, when the plugin starts up. if birth_topic is not specified, the last_will_topic will be used for the birth message too. Birth-messages will be sent with the default QoS and the retain flag set."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "birth_payload": {
@@ -1119,9 +1008,7 @@
               "de": "Payload für das Birth Telegramm. Wenn keine birth_payload konfiguriert ist, wird keine Birth Message gesendet. In diesem Fall wird auch keine last-will message gesendet, falls die Verbindung ordnungsgemäß geschlossen wird (beim Beenden von SmartHomeNG).",
               "en": "Payload for the birth telegram. if birth_payload is not specified, no birth message will be sent. In this case there will be no last-will message sent, if the connection is closed orderly (by shutting down SmartHomeNG)."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "publish_items": {
@@ -1135,9 +1022,7 @@
               "de": "-> ***Noch nicht implementiert***\\n\n\\n\n**publish_items** steuert ob die Items mit ihrem Item-Path publiziert werden\nsollen. Falls publish_items auf True gesetzt ist, werden Items publiziert (unter\nVerwendung von **items_topic_prefix**), falls die ACL-Settings für das Item es\nerlauben.\n",
               "en": "-> ***not yet implemented***\\n\n\\n\n**publish_items** controls weather the items should be published by their\nitem-path. If publish_items is set to True, items are published (using items_topic_prefix)\nif the acl-setting for that items allows it.\n"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "items_topic_prefix": {
@@ -1151,9 +1036,7 @@
               "de": "-> ***Noch nicht implementiert***\\n\n\\n\nitems_topic_prefix definiert den Präfix beim Erstellen des MQTT Topic vom Item Pathfrom item-path.\n",
               "en": "-> ***not yet implemented***\\n\n\\n\nitems_topic_prefix defines the prefix when building the MQTT topic from item-path.\n"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "user": {
@@ -1167,9 +1050,7 @@
               "de": "Username zum Login beim MQTT Broker, falls der Broker für user/password Authentifizierung konfiguriert ist.\\n\n\\n\n**ACHTUNG**: Bis zur Implementierung von TLS, werden Username und Password unverschlüsselt übertragen.\n",
               "en": "Username to login to the MQTT broker, if the broker is configured for user/password authentication.\\n\n\\n\n**NOTICE**: Until Implementation of TLS, username and password are transmitted unencrypted.\n"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "password": {
@@ -1184,9 +1065,7 @@
               "de": "Passwort zum Login beim MQTT Broker, falls der Broker für user/password Authentifizierung konfiguriert ist.\\n\n\\n\n**ACHTUNG**:\\n\n\\n\n- Bis zur Implementierung von TLS, werden Username und Password unverschlüsselt übertragen.\\n\n- Bei der jetzigen Implementierung wird das Passwort in **../etc/plugin.yaml** im Klartext gespeichert.\\n\n\\n\n\\n\n",
               "en": "Password to login to the MQTT broker, if the broker is configured for user/password authentication.\\n\n\\n\n**NOTICE**:\\n\n\\n\n- Until Implementation of TLS, username and password are transmitted unencrypted.\\n\n- At this stage of implementation the Password is stored in the plugin.yaml file as clear text.\\n\n\\n\n\\n\n"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "broker_monitoring": {
@@ -1196,20 +1075,13 @@
               "de": "Ermöglicht das Monitoring einiger Broker Werte durch das Web Interfase.",
               "en": "Enables monitoring some broker data through the web interface."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "acl": {
             "type": "str",
             "default": "none",
-            "valid_list": [
-              "none",
-              "pub",
-              "sub",
-              "pubsub"
-            ],
+            "valid_list": ["none", "pub", "sub", "pubsub"],
             "description": {
               "de": "Zugriffskontrolle (none/publish/subscribe)",
               "en": "Accesscontrol (none/publish/subscribe)"
@@ -1218,9 +1090,7 @@
               "de": "-> ***Noch nicht implementiert***\\n\n\\n\n**acl** definiert den globalen Default für die Zugriffskontrolle zu den Items.\nAccess control ist nur aktiv, wenn die Item-Tree Struktur von SmartHomeNG publiziert wird.\\n\n\\n\n- none=kein Zugriff\\n\n- pub=Publiziere als Topic (Read-Only von anderen Clients aus)\\n\n- sub=Abonniere (subscribe) ein Topic (Akzeptiere Daten von anderen Clients)\\n\n- pubsub=Publiziere und Abonniere (publish and subscribe) ein Topic.\\n\n\\n\nDieser Parameter definert die Standard Zugriffskontrolle für Items, welche keine individuelle Zugriffskontrolle konfiguriert haben.\n",
               "en": "-> ***not yet implemented***\\n\n\\n\n**acl** defines the global default setting for the access control to the items.\nAccess control is only active, when publishing the item-tree structure of SmartHomeNG.\\n\n\\n\n- none=no access\\n\n- pub=publish as topic (read only from other client)\\n\n- sub=subscribe to topic (accept data from other clients)\\n\n- pubsub=publish and subscribe topic.\\n\n\\n\nThis parameter defines the default access control for items, which have no individual access control configured.\n"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -1235,9 +1105,7 @@
               "de": "Wenn mqtt_topic konfiguriert ist, wird das Topic für ein- und ausgehende Messages\nverwendet. Dabei werden evtl. konfigurierte seperate Werte für mqtt_topic_out und\nmqtt_topic_in überschrieben.\n",
               "en": "If you specify mqtt_topic, it set this topic for in- and outgoing messages.\nThus it overwrites seperate values you might have specified for mqtt_topic_out\nor mqtt_topic_in.\n"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "mqtt_topic_in": {
@@ -1250,9 +1118,7 @@
               "de": "mqtt_topic_in definiert das MQTT Topic, welches abonniert wird. Bei Empfang\neiner Message mit diesem Topic, wird die Payload benutzt um den Wert des Items\nzu setzen.\n",
               "en": "mqtt_topic_in defines the MQTT topic to subscribe to. Upon receiving a message\nwith this topic, the payload is used to set the item's value.\n"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "mqtt_topic_out": {
@@ -1265,9 +1131,7 @@
               "de": "mqtt_topic_out definiert das MQTT Topic unter dem der Wert des Items als\nPayload publiziert wird.\n",
               "en": "mqtt_topic_out defines the MQTT topic under which the items value is to be\npublished as payload.\n"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "mqtt_topic_init": {
@@ -1280,18 +1144,12 @@
               "de": "mqtt_topic_init ist äquivalent zu mqtt_topic_out, außer dass das Topic beim\nStart von SmartHomeNG initialisiert (also eine MQTT message gesendet) wird.\n",
               "en": "mqtt_topic_init is equivalent to mqtt_topic_out, except it initializes the\ntopic when SmartHomeNG ist started.\n"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "mqtt_qos": {
             "type": "int",
-            "valid_list": [
-              0,
-              1,
-              2
-            ],
+            "valid_list": [0, 1, 2],
             "description": {
               "de": "Quality of Service",
               "en": "Quality of Service"
@@ -1300,9 +1158,7 @@
               "de": "mqtt_qos definert den Quality of Service Level, der für dieses Item bei der\nKommunikation mit dem Broker genutzt wird. Falls nicht angegeben, wird das\nglobale Setting des Plugins genutzt.\n",
               "en": "mqtt_qos defines the quality of service level for this item used when communicating\nwith the broker. If not specified, the plugin's default is used.\n"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "mqtt_retain": {
@@ -1316,9 +1172,7 @@
               "de": "Wenn mqtt_retain auf True gesetzt ist, werden MQTT Messages für dieses Item mit\ngesetztem Reatin Flag gesendet.\\n\n",
               "en": "When set to True, the MQTT message is sent with the retain flag set.\\n\n"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         }
@@ -1357,9 +1211,7 @@
               "de": "Voller Pfad zum Datenfile (Textdatei).",
               "en": "Full path to data file (text file)."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "callers": {
@@ -1369,9 +1221,7 @@
               "de": "(optional) Liste von Event-Sourcen, um Events aufzuzeichnen. Wenn ein Item geändert wird, werden nur\nEvents von Callern aus der Liste mit dem Plugin aufgezeichnet.",
               "en": "(optional) List of event sources for recording of events. Only item changed with a caller in the list\nare recorded to the simulation file."
             },
-            "listtype": [
-              "str"
-            ],
+            "listtype": ["str"],
             "listlen": 0
           }
         },
@@ -1383,9 +1233,7 @@
               "de": "Entweder der Wert \"track\", \"state\", \"control\", \"message\" oder \"tank\". Außer \"track\" dürfen die Werte\nnur exakt einem Item zugeordnet werden. Sie dienen der internen Datenhaltung des Plugins. \"track\"\ndient dazu, den Wert eines Items mit dem Plugin aufzuzeichnen. Es darf daher auch in mehreren Items gesetzt\nwerden.",
               "en": "May be either the value \"track\", \"state\", \"control\", \"message\" or \"tank\". Besides \"track\" the values\nmay only be assigned one time over all items. They are used for plugin internal information storage.\n\"track\" may be assigned to multiple items and is used to record the value changes of that item."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -1426,9 +1274,7 @@
               "de": "Basisverzeichnis der smartVISU. Nur wenn dieser Wert konfiguriert ist, kann das Plugin Seiten für die smartVISU generieren.",
               "en": "You could generate pages for the smartVISU visualisation if you specify the smartvisu_dir which should be set to the root directory of your smartVISU installation."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "generate_pages": {
@@ -1438,9 +1284,7 @@
               "de": "Falls True, werden Seiten für smartVISU generiert",
               "en": "If True, pages for smartVISU are generated"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "overwrite_templates": {
@@ -1450,25 +1294,18 @@
               "de": "Sollen in der smartVISU bereits existierende Templates überschrieben werden?",
               "en": "Should templates already that already exist in smartVISU bi overwritten?"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "visu_style": {
             "type": "str",
             "default": "std",
-            "valid_list": [
-              "std",
-              "blk"
-            ],
+            "valid_list": ["std", "blk"],
             "description": {
               "de": "Benutzer Style für die generierten Visualisierungs-Seiten",
               "en": "Style used for the generated visualization"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "handle_widgets": {
@@ -1478,9 +1315,7 @@
               "de": "Standardmäßig werden Widgets aus den Plugins in die smartVISU kopiert und eingebunden. Dieses kann verhindert werden, wenn dieser Parameter auf False gesetzt wird.",
               "en": "By default, the visu plugin handles smartVISU widgets. If your run into problems, you can disable the widget handling by setting this attribute to False."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -1499,9 +1334,7 @@
               "de": "Setzen Sie 'sv_page' auf einen der angegebenen Werte, um eine Seite für dieses Item zu generieren. Jedes Widget unterhalb dieses Elements wird auf der Seite angezeigt",
               "en": "Set sv_page to to one of the listed values generate a page for this item. Every widget beneath this item will be included in the page"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "sv_overview": {
@@ -1510,9 +1343,7 @@
               "de": "Wenn eine Seite sv_page als 'overview' definiert hat, werden Items eines bestimmten Typs angezeigt. Der Name/Bezeichner des Typs wird definiert, indem 'sv_overview' auf einen eindeutigen Namen gesetzt wird. Damit Elemente auf dieser Seite angezeigt werden, müssen die Items 'sv_item_type' definieren und auf den Wert von 'sv_overview' setzen.",
               "en": "If a page has defined sv_page as overview, it shows items of a specific type. The name/identifier of the type is defined by setting sv_overview to an unique name. For items to be displayed on this page, the items have to define sv_item_type and set it to the value of sv_overview."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "sv_item_type": {
@@ -1521,9 +1352,7 @@
               "de": "sv_item_type erlaubt es, items auf anderen Seiten als der Raum-Seite anzuzeigen",
               "en": "sv_item_type allows items to be displayed on an overview page."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "sv_img": {
@@ -1532,9 +1361,7 @@
               "de": "Bild, das in der Navigation der smartVISU angezeigt wird",
               "en": "By setting sv_img you could assign an icon or picture for a page or widget"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "sv_widget": {
@@ -1543,9 +1370,7 @@
               "de": "Definition des Widgets, welches für das Item verwendet wird",
               "en": "allows the specification of a widget. You could define multiple widgets. The widget(s) is/are shown by being encapsulated in a block of type 2 (Collapsable Block) - Relative item references are supported"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "sv_widget2": {
@@ -1554,9 +1379,7 @@
               "de": "Definition des zweiten Widgets, welches für das Item verwendet wird",
               "en": "Definition of the secondary widget which is used for the item"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "sv_nav_aside": {
@@ -1565,9 +1388,7 @@
               "de": "Ermöglicht die Angabe eines Widgets, das auf der rechten Seite der Navigationsleiste für einen Raum angezeigt wird. (obere Zeile) - Relative Item-Referenzen werden unterstützt",
               "en": "allows the specification of a widget, that is being displayed at the right side of the navigation bar for a room. (upper line) - Relative item references are supported"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "sv_nav_aside2": {
@@ -1576,9 +1397,7 @@
               "de": "Ermöglicht die Angabe eines Widgets, das auf der rechten Seite der Navigationsleiste für einen Raum angezeigt wird. (untere Zeile) - Relative Item-Referenzen werden unterstützt.",
               "en": "allows the specification of a widget, that is being displayed at the right side of the navigation bar for a room. (lower line) - Relative item references are supported."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "sv_heading_left": {
@@ -1587,9 +1406,7 @@
               "de": "erlaubt die Angabe eines Widgets, das oben auf einer Raumseite angezeigt wird. Dieses Widget wird angezeigt, ohne in einem Block gekapselt zu sein. Das Widget ist nach links ausgerichtet",
               "en": "allows the specification of a widget, hat is being displayed at the top of a room-page. This widget is shown without being encapsulated in a block. The widget is aligned to to the left"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "sv_heading_center": {
@@ -1598,9 +1415,7 @@
               "de": "erlaubt die Angabe eines Widgets, das oben auf einer Raumseite angezeigt wird. Dieses Widget wird angezeigt, ohne in einem Block gekapselt zu sein. Das Widget wird zentriert",
               "en": "allows the specification of a widget, hat is being displayed at the top of a room-page. This widget is shown without being encapsulated in a block. The widget is aligned to to the center"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "sv_heading_right": {
@@ -1609,9 +1424,7 @@
               "de": "erlaubt die Angabe eines Widgets, das oben auf einer Raumseite angezeigt wird. Dieses Widget wird angezeigt, ohne in einem Block gekapselt zu sein. Das Widget ist nach rechts ausgerichtet",
               "en": "allows the specification of a widget, hat is being displayed at the top of a room-page. This widget is shown without being encapsulated in a block. The widget is aligned to to the right"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -1653,9 +1466,7 @@
               "de": "Persönlicher API Key für TankerKoenig. Registrierung unter https://creativecommons.tankerkoenig.de.",
               "en": "Your own personal API key for TankerKoenig. For your own key register to https://creativecommons.tankerkoenig.de."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -1775,9 +1586,7 @@
               "de": "IP Adresse, falls nicht auf allen IPs des hosts gelauscht werden soll",
               "en": "ip address to use, if not listening on all ip addresses of the host"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "port": {
@@ -1788,9 +1597,7 @@
               "de": "Port der für den Websocket Zugriff verwendet wird",
               "en": "Port that is used for the websocket protocol"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "tls": {
@@ -1800,22 +1607,13 @@
               "de": "TLS benutzen? Falls auf True gesetzt, muss SmartHomeNGs /etc Directory die Zertifikat-Dateien home.crt, home.key und ca.crt enthalten",
               "en": "Use TLS? If set to True, SmartHomeNGs /etc directory must contain the certificate files: home.crt, home.key, ca.crt"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "acl": {
             "type": "str",
             "default": "ro",
-            "valid_list": [
-              "rw",
-              "ro",
-              "deny",
-              true,
-              "yes",
-              "no"
-            ],
+            "valid_list": ["rw", "ro", "deny", true, "yes", "no"],
             "valid_list_description": {
               "de": [
                 "Lesen/Schreiben",
@@ -1838,35 +1636,22 @@
               "de": "Steuert den Zugriff über Websocket Protokoll - Voreinstellung für alle Items",
               "en": "Control access through wbsocket protocol - Default for all items"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "wsproto": {
             "type": "int",
             "default": 4,
-            "valid_list": [
-              3,
-              4
-            ],
+            "valid_list": [3, 4],
             "valid_list_description": {
-              "de": [
-                "Version 3",
-                "Version 4"
-              ],
-              "en": [
-                "version 3",
-                "version 4"
-              ]
+              "de": ["Version 3", "Version 4"],
+              "en": ["version 3", "version 4"]
             },
             "description": {
               "de": "Verwendete Version des Websocket Protokolls",
               "en": "Used version of the websocket protocol"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "querydef": {
@@ -1876,9 +1661,7 @@
               "de": "Wenn dieser Wert auf True gesetzt wird, ist es Websocket Clients möglich Item- und Logik Definitionen abzufragen",
               "en": "Websocket clients can query item- and logic definitions, if set to True"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -1886,14 +1669,7 @@
           "visu_acl": {
             "type": "str",
             "default": "ro",
-            "valid_list": [
-              "rw",
-              "ro",
-              "deny",
-              true,
-              "yes",
-              "no"
-            ],
+            "valid_list": ["rw", "ro", "deny", true, "yes", "no"],
             "valid_list_description": {
               "de": [
                 "Lesen/Schreiben",
@@ -1916,9 +1692,7 @@
               "de": "Steuert den Zugriff auf das Item über Websocket Protokoll",
               "en": "Control access to this item through wbsocket protocol"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -1926,10 +1700,7 @@
           "visu_acl": {
             "type": "bool",
             "default": false,
-            "valid_list": [
-              true,
-              false
-            ],
+            "valid_list": [true, false],
             "valid_list_description": {
               "de": [
                 "Logik kann durch smartVISU getriggert werden",
@@ -1944,9 +1715,7 @@
               "de": "Dieses Attribut kann für jede Logik in ../etc/logic.yaml angegeben werden.",
               "en": "This attribute can be added to every logic in ../etc/logic.yaml."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -2015,9 +1784,7 @@
               "de": "Den bei Wunderground registrierten API Key eingeben",
               "en": "Enter you registered wunderground API key"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "language": {
@@ -2027,9 +1794,7 @@
               "de": "Definiert die Sprache in der Wunderground Vorhersagedaten liefern soll (en: Englisch, de: Deutsch, fr: Französisch). Für weitere Sprachen bitte die von Wunderground definierten codes verwenden.",
               "en": "Defines the language for the forcast data (en: English, de: German, fr: French). For other languages use language codes defined by Wunderground."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "location": {
@@ -2039,9 +1804,7 @@
               "de": "Ort für den die Wetterinformationen angefordert werden sollen",
               "en": "The location for which you want weather information"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "cycle": {
@@ -2051,9 +1814,7 @@
               "de": "Dieser Parameter muss normalerweise nicht angegeben werden. Er erlaubt es die Update-Frquenz anzupassen (Standard: alle 600 Sekunden). Mit dem Standardwert werden die Wetterdaten alle 10 Minuten aktualisiert. Das stellt sicher, dass die maximale Tagesmenge von 500 Requests für den gebührenfreien Account nicht überschritten werden, selbst wenn Wetter für zwei Orte oder für die smartVISU angefordert wird.",
               "en": "This parameter usually doesn't have to be specified. It allows to change the update frequency (cycle every 600 seconds). As a standard, the plugin updates the weather data every 10 minutes. This ensures that the maximum of 500 requests for the free-of-charge- account are not maxed out, even if you use wunderground weather for two locations and/or smartVISU."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "item_subtree": {
@@ -2062,9 +1823,7 @@
               "de": "item_subtree definiert den Teilbaum der Items, welchen das wunderground plugin während der Updates nach dem wug_matchstring Attribut durchsuchen soll.",
               "en": "item_subtree defines the part of the item-tree which the wunderground plugin searches during data updates for the wug_matchstring attribute.\nIf item_subtree is not defined or empty, the whole item-tree is searched, which creates unnecessary overhead vor SmartHomeNG.\nIf you are going to configure multiple instances of the plugin to get the weather report for multiple locations, you have to specify the parameter, or you will get da data mix up.\n\n\nThe subtrees defined by item_subtree for the different instances must not intersect!"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -2075,9 +1834,7 @@
               "de": "wug_matchstring enthält eine Zeichenkette, die zum parsen der von Wunderground gesendeten Daten verwendet wird. Item Definitionen mit den üblicherweise verwendeten Mactchstrings sind in der README nachzulesen.",
               "en": "wug_matchstring contains a matchstring for parsing the data sent by wunderground. Item definitions with commonly used matchstrings can be found in the README file."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "wug_datatype": {
@@ -2086,9 +1843,7 @@
               "de": "wug_datatype kann genutzt werden, um fehlerhafte Daten herauszufiltern, die evtl. von Zeit zu Zeit von einer Wunderground Wetterstation gesendet werden. Diese fehlerhaften Werte werden dann nicht in das Item geschrieben. Dieses Attribut kann die Werte positive und percent annehmen.\n\n\n- positive: Filtert alle Werte kleiner 0 heraus.\n- percent: Filtert alle Werte heraus, die kleiner 0 oder größer als 100 sind.",
               "en": "wug_datatype is used to filter out wrong data that may be sent by a weatherstation from time to time. Those wrong values are filtered and not written to the item. This attribute can have the values positive and percent.\n\n\n- positive filters out all values less than 0.\n- percent filters out values less than 0 and values greater than 100."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "wug_xmlstring": {
@@ -2097,9 +1852,7 @@
               "de": "Veraltet. Bitte stattdessen wug_matchstring verwenden.",
               "en": "Deprecated. Use wug_matchstring instead."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -2203,9 +1956,7 @@
               "de": "Den bei Wunderground registrierten API Key eingeben",
               "en": "Enter you registered wunderground API key"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "language": {
@@ -2215,9 +1966,7 @@
               "de": "Definiert die Sprache in der Wunderground Vorhersagedaten liefern soll (en: Englisch, de: Deutsch, fr: Französisch). Für weitere Sprachen bitte die von Wunderground definierten codes verwenden.",
               "en": "Defines the language for the forcast data (en: English, de: German, fr: French). For other languages use language codes defined by Wunderground."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "location": {
@@ -2227,9 +1976,7 @@
               "de": "Ort für den die Wetterinformationen angefordert werden sollen",
               "en": "The location for which you want weather information"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "cycle": {
@@ -2239,9 +1986,7 @@
               "de": "Dieser Parameter muss normalerweise nicht angegeben werden. Er erlaubt es die Update-Frquenz anzupassen (Standard: alle 600 Sekunden). Mit dem Standardwert werden die Wetterdaten alle 10 Minuten aktualisiert. Das stellt sicher, dass die maximale Tagesmenge von 500 Requests für den gebührenfreien Account nicht überschritten werden, selbst wenn Wetter für zwei Orte oder für die smartVISU angefordert wird.",
               "en": "This parameter usually doesn't have to be specified. It allows to change the update frequency (cycle every 600 seconds). As a standard, the plugin updates the weather data every 10 minutes. This ensures that the maximum of 500 requests for the free-of-charge- account are not maxed out, even if you use wunderground weather for two locations and/or smartVISU."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "item_subtree": {
@@ -2250,9 +1995,7 @@
               "de": "item_subtree definiert den Teilbaum der Items, welchen das wunderground plugin während der Updates nach dem wug_matchstring Attribut durchsuchen soll.",
               "en": "item_subtree defines the part of the item-tree which the wunderground plugin searches during data updates for the wug_matchstring attribute.\nIf item_subtree is not defined or empty, the whole item-tree is searched, which creates unnecessary overhead vor SmartHomeNG.\nIf you are going to configure multiple instances of the plugin to get the weather report for multiple locations, you have to specify the parameter, or you will get da data mix up.\n\n\nThe subtrees defined by item_subtree for the different instances must not intersect!"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -2263,9 +2006,7 @@
               "de": "wug_matchstring enthält eine Zeichenkette, die zum parsen der von Wunderground gesendeten Daten verwendet wird. Item Definitionen mit den üblicherweise verwendeten Mactchstrings sind in der README nachzulesen.",
               "en": "wug_matchstring contains a matchstring for parsing the data sent by wunderground. Item definitions with commonly used matchstrings can be found in the README file."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "wug_datatype": {
@@ -2274,9 +2015,7 @@
               "de": "wug_datatype kann genutzt werden, um fehlerhafte Daten herauszufiltern, die evtl. von Zeit zu Zeit von einer Wunderground Wetterstation gesendet werden. Diese fehlerhaften Werte werden dann nicht in das Item geschrieben. Dieses Attribut kann die Werte positive und percent annehmen.\n\n\n- positive: Filtert alle Werte kleiner 0 heraus.\n- percent: Filtert alle Werte heraus, die kleiner 0 oder größer als 100 sind.",
               "en": "wug_datatype is used to filter out wrong data that may be sent by a weatherstation from time to time. Those wrong values are filtered and not written to the item. This attribute can have the values positive and percent.\n\n\n- positive filters out all values less than 0.\n- percent filters out values less than 0 and values greater than 100."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "wug_xmlstring": {
@@ -2285,9 +2024,7 @@
               "de": "Veraltet. Bitte stattdessen wug_matchstring verwenden.",
               "en": "Deprecated. Use wug_matchstring instead."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -2415,9 +2152,7 @@
               "de": "(optional) Nutzername für den Login. Kann für manche Features benötigt werden!",
               "en": "(optional) Login information (user). Can be needed to use some features of the AVM device."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "password": {
@@ -2428,9 +2163,7 @@
               "de": "(optional) Passwort für den Login. Wird in der Regel immer benötigt und aus Sicherheitsgründen empfohlen.",
               "en": "(optional) Password for login. Is normally always needed and recommended due to security reasons"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "host": {
@@ -2440,9 +2173,7 @@
               "de": "(optional) Hostname oder IP-Adresse des FritzDevice.",
               "en": "(optional) Hostname or ip address of the FritzDevice."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "port": {
@@ -2452,9 +2183,7 @@
               "de": "(optional) Port des FritzDevice, normalerweise 49433 für https oder 49000 für http",
               "en": "(optional) Port of the FritzDevice, typically 49433 for https or 49000 for http"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "cycle": {
@@ -2464,9 +2193,7 @@
               "de": "(optional) Zeit zwischen zwei Updateläufen. Default ist 300 Sekunden.",
               "en": "(optional) Time period between two update cycles. Default is 300 seconds."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "ssl": {
@@ -2476,9 +2203,7 @@
               "de": "(optional) Mit True wird das FritzDevice via https, mit False via http angesprochen.",
               "en": "(optional) True will add \"https\", False \"http\" to the URLs in the plugin."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "verify": {
@@ -2488,9 +2213,7 @@
               "de": "(optional) Schaltet die Zertifikate-Prüfung an oder aus. Normalerweise False.",
               "en": "(optional) Turns certificate verification on or off. Typically False"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "call_monitor": {
@@ -2500,9 +2223,7 @@
               "de": "(optional) Aktiviert oder deaktiviert den MonitoringService, welcher auf den Call Monitor des FritzDevice verbindet. Der Call Monitor muss über ein verbundenes Telefon via #96*5* aktiviert sein.",
               "en": "(optional) Activates or deactivates the MonitoringService, which connects to the FritzDevice`s call monitor. The call monitor has to be activated before by a connected telephone via calling #96*5*"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "call_monitor_incoming_filter": {
@@ -2512,9 +2233,7 @@
               "de": "(optional) Spezielle Rufnummern ausfiltern, die vom Callmonitor ignoriert werden sollen.",
               "en": "(optional) Filter only specific numbers to be watched by call monitor"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "instance": {
@@ -2524,9 +2243,7 @@
               "de": "(optional) Eindeutiger Identifier für die Instanz des Plugins, also für jedes FritzDevice. Kann bei nur einem Gerät / Single Instance Betrieb des Plugins entfallen.",
               "en": "(optional) Unique identifier for each FritzDevice / each instance of the plugin. Can be skipped if only one device is used / the plugin is operated single instance."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -2594,9 +2311,7 @@
               "power",
               "temperature"
             ],
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "avm_incoming_allowed": {
@@ -2606,9 +2321,7 @@
               "de": "(optional) Definition der erlaubten eingehenden Rufnummer in Items vom avm_data_type `monitor_trigger`.",
               "en": "(optional) Definition of the allowed incoming number. Only in items of avm_data_type `monitor_trigger`."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "avm_target_number": {
@@ -2618,9 +2331,7 @@
               "de": "(optional) Definition der erlaubten angerufenen Rufnummer in Items vom avm_data_type `monitor_trigger`.",
               "en": "(optional) Definition of the allowed called number. Only in items of avm_data_type `monitor_trigger`."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "mac": {
@@ -2630,9 +2341,7 @@
               "de": "Definition der MAC Adresse für Items vom avm_data_type `network_device`. Nur für diese Items mandatory!",
               "en": "Definition of the MAC address for items of avm_data_type `network_device`. Only mandatory for these items!"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "ain": {
@@ -2642,9 +2351,7 @@
               "de": "Definition der Aktor Identifikationsnummer (AIN)Items vom avm_data_type `aha_device`. Nur für diese Items mandatory!",
               "en": "Definition of the actor identification number (AIN) for items of avm_data_type `aha_device`. Only mandatory for these items!"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         }
@@ -2689,9 +2396,7 @@
               "de": "(optional) Nutzername für den Login. Kann für manche Features benötigt werden!",
               "en": "(optional) Login information (user). Can be needed to use some features of the AVM device."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "password": {
@@ -2702,9 +2407,7 @@
               "de": "(optional) Passwort für den Login. Wird in der Regel immer benötigt und aus Sicherheitsgründen empfohlen.",
               "en": "(optional) Password for login. Is normally always needed and recommended due to security reasons"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "host": {
@@ -2714,9 +2417,7 @@
               "de": "(optional) Hostname oder IP-Adresse des FritzDevice.",
               "en": "(optional) Hostname or ip address of the FritzDevice."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "port": {
@@ -2726,9 +2427,7 @@
               "de": "(optional) Port des FritzDevice, normalerweise 49433 für https oder 49000 für http",
               "en": "(optional) Port of the FritzDevice, typically 49433 for https or 49000 for http"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "cycle": {
@@ -2738,9 +2437,7 @@
               "de": "(optional) Zeit zwischen zwei Updateläufen. Default ist 300 Sekunden.",
               "en": "(optional) Time period between two update cycles. Default is 300 seconds."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "ssl": {
@@ -2750,9 +2447,7 @@
               "de": "(optional) Mit True wird das FritzDevice via https, mit False via http angesprochen.",
               "en": "(optional) True will add \"https\", False \"http\" to the URLs in the plugin."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "verify": {
@@ -2762,9 +2457,7 @@
               "de": "(optional) Schaltet die Zertifikate-Prüfung an oder aus. Normalerweise False.",
               "en": "(optional) Turns certificate verification on or off. Typically False"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "call_monitor": {
@@ -2774,9 +2467,7 @@
               "de": "(optional) Aktiviert oder deaktiviert den MonitoringService, welcher auf den Call Monitor des FritzDevice verbindet. Der Call Monitor muss über ein verbundenes Telefon via #96*5* aktiviert sein.",
               "en": "(optional) Activates or deactivates the MonitoringService, which connects to the FritzDevice`s call monitor. The call monitor has to be activated before by a connected telephone via calling #96*5*"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "call_monitor_incoming_filter": {
@@ -2786,9 +2477,7 @@
               "de": "(optional) Spezielle Rufnummern ausfiltern, die vom Callmonitor ignoriert werden sollen.",
               "en": "(optional) Filter only specific numbers to be watched by call monitor"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "instance": {
@@ -2798,9 +2487,7 @@
               "de": "(optional) Eindeutiger Identifier für die Instanz des Plugins, also für jedes FritzDevice. Kann bei nur einem Gerät / Single Instance Betrieb des Plugins entfallen.",
               "en": "(optional) Unique identifier for each FritzDevice / each instance of the plugin. Can be skipped if only one device is used / the plugin is operated single instance."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -2868,9 +2555,7 @@
               "power",
               "temperature"
             ],
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "avm_incoming_allowed": {
@@ -2880,9 +2565,7 @@
               "de": "(optional) Definition der erlaubten eingehenden Rufnummer in Items vom avm_data_type `monitor_trigger`.",
               "en": "(optional) Definition of the allowed incoming number. Only in items of avm_data_type `monitor_trigger`."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "avm_target_number": {
@@ -2892,9 +2575,7 @@
               "de": "(optional) Definition der erlaubten angerufenen Rufnummer in Items vom avm_data_type `monitor_trigger`.",
               "en": "(optional) Definition of the allowed called number. Only in items of avm_data_type `monitor_trigger`."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "mac": {
@@ -2904,9 +2585,7 @@
               "de": "Definition der MAC Adresse für Items vom avm_data_type `network_device`. Nur für diese Items mandatory!",
               "en": "Definition of the MAC address for items of avm_data_type `network_device`. Only mandatory for these items!"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "ain": {
@@ -2916,9 +2595,7 @@
               "de": "Definition der Aktor Identifikationsnummer (AIN)Items vom avm_data_type `aha_device`. Nur für diese Items mandatory!",
               "en": "Definition of the actor identification number (AIN) for items of avm_data_type `aha_device`. Only mandatory for these items!"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         }
@@ -2964,9 +2641,7 @@
               "de": "(optional) Nutzername für den Login.",
               "en": "(optional) Login information (user)."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "password": {
@@ -2976,9 +2651,7 @@
               "de": "(optional) Passwort für den Login. Wird aus Sicherheitsgründen empfohlen.",
               "en": "(optional) Password for login. Is recommended due to security reasons"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "host": {
@@ -2988,9 +2661,7 @@
               "de": "(optional) Hostname oder IP-Adresse des Geräts auf dem OpenWebIF läuft.",
               "en": "(optional) Hostname or ip address of the device on which OpenWebIF is running."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "port": {
@@ -3000,9 +2671,7 @@
               "de": "Port des OpenWebIF.",
               "en": "Port on which the OpenWebIF is accessible."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "ssl": {
@@ -3012,9 +2681,7 @@
               "de": "(optional) Mit True wird das OpenWebIF via https, mit False via http angesprochen.",
               "en": "(optional) True will add \"https\", False \"http\" to the URLs in the plugin."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "verify": {
@@ -3024,9 +2691,7 @@
               "de": "(optional) Schaltet die Zertifikate-Prüfung an oder aus. Normalerweise False.",
               "en": "(optional) Turns certificate verification on or off. Typically False"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "cycle": {
@@ -3036,9 +2701,7 @@
               "de": "(optional) Zeit zwischen zwei Updateläufen. Default ist 300 Sekunden.",
               "en": "(optional) Timeperiod between two update cycles. Default is 300 seconds."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "fast_cycle": {
@@ -3048,9 +2711,7 @@
               "de": "(optional) Zeit zwischen zwei Updateläufen für besondere Items, die schneller geupdated werden. Default ist 10 Sekunden.",
               "en": "(optional) Timeperiod between two update cycles for items, which are updated faster. Default is 10 seconds."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "instance": {
@@ -3060,9 +2721,7 @@
               "de": "(optional) Eindeutiger Identifier für die Instanz des Plugins. Kann bei nur einem Gerät / Single Instance Betrieb des Plugins entfallen.",
               "en": "(optional) Unique identifier for each instance of the plugin. Can be skipped if only one device is used / the plugin is operated single instance."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -3073,9 +2732,7 @@
               "de": "Datentyp für Plugin-Items. Siehe README.",
               "en": "Data type for plugin items. See README."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "enigma2_page": {
@@ -3084,9 +2741,7 @@
               "de": "Notwendig für bestimmte Plugin-Items. Siehe README.",
               "en": "Required for specific plugin items. See README."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "sref": {
@@ -3095,9 +2750,7 @@
               "de": "Referenz auf Services (bspw. Sender), siehe README.",
               "en": "Service reference, see README."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -3127,25 +2780,10 @@
               "messagetype": {
                 "type": "int",
                 "default": 1,
-                "valid_list": [
-                  0,
-                  1,
-                  2,
-                  3
-                ],
+                "valid_list": [0, 1, 2, 3],
                 "valid_list_description": {
-                  "de": [
-                    "Ja/Nein",
-                    "Info",
-                    "Mitteilung",
-                    "Achtung"
-                  ],
-                  "en": [
-                    "Yes/No",
-                    "Info",
-                    "Message",
-                    "Attention"
-                  ]
+                  "de": ["Ja/Nein", "Info", "Mitteilung", "Achtung"],
+                  "en": ["Yes/No", "Info", "Message", "Attention"]
                 },
                 "description": {
                   "de": "messagetype bestimmt die Art wie die Mitteilung angezeigt werden soll",
@@ -3171,14 +2809,7 @@
             "parameters": {
               "value": {
                 "type": "int",
-                "valid_list": [
-                  0,
-                  1,
-                  2,
-                  3,
-                  4,
-                  5
-                ],
+                "valid_list": [0, 1, 2, 3, 4, 5],
                 "valid_list_description": {
                   "de": [
                     "Toggle Standby",
@@ -3255,9 +2886,7 @@
               "de": "(optional) Nutzername für den Login.",
               "en": "(optional) Login information (user)."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "password": {
@@ -3267,9 +2896,7 @@
               "de": "(optional) Passwort für den Login. Wird aus Sicherheitsgründen empfohlen.",
               "en": "(optional) Password for login. Is recommended due to security reasons"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "host": {
@@ -3279,9 +2906,7 @@
               "de": "(optional) Hostname oder IP-Adresse des Geräts auf dem OpenWebIF läuft.",
               "en": "(optional) Hostname or ip address of the device on which OpenWebIF is running."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "port": {
@@ -3291,9 +2916,7 @@
               "de": "Port des OpenWebIF.",
               "en": "Port on which the OpenWebIF is accessible."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "ssl": {
@@ -3303,9 +2926,7 @@
               "de": "(optional) Mit True wird das OpenWebIF via https, mit False via http angesprochen.",
               "en": "(optional) True will add \"https\", False \"http\" to the URLs in the plugin."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "verify": {
@@ -3315,9 +2936,7 @@
               "de": "(optional) Schaltet die Zertifikate-Prüfung an oder aus. Normalerweise False.",
               "en": "(optional) Turns certificate verification on or off. Typically False"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "cycle": {
@@ -3327,9 +2946,7 @@
               "de": "(optional) Zeit zwischen zwei Updateläufen. Default ist 300 Sekunden.",
               "en": "(optional) Timeperiod between two update cycles. Default is 300 seconds."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "fast_cycle": {
@@ -3339,9 +2956,7 @@
               "de": "(optional) Zeit zwischen zwei Updateläufen für besondere Items, die schneller geupdated werden. Default ist 10 Sekunden.",
               "en": "(optional) Timeperiod between two update cycles for items, which are updated faster. Default is 10 seconds."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "instance": {
@@ -3351,9 +2966,7 @@
               "de": "(optional) Eindeutiger Identifier für die Instanz des Plugins. Kann bei nur einem Gerät / Single Instance Betrieb des Plugins entfallen.",
               "en": "(optional) Unique identifier for each instance of the plugin. Can be skipped if only one device is used / the plugin is operated single instance."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -3364,9 +2977,7 @@
               "de": "Datentyp für Plugin-Items. Siehe README.",
               "en": "Data type for plugin items. See README."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "enigma2_page": {
@@ -3375,9 +2986,7 @@
               "de": "Notwendig für bestimmte Plugin-Items. Siehe README.",
               "en": "Required for specific plugin items. See README."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "sref": {
@@ -3386,9 +2995,7 @@
               "de": "Referenz auf Services (bspw. Sender), siehe README.",
               "en": "Service reference, see README."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -3418,25 +3025,10 @@
               "messagetype": {
                 "type": "int",
                 "default": 1,
-                "valid_list": [
-                  0,
-                  1,
-                  2,
-                  3
-                ],
+                "valid_list": [0, 1, 2, 3],
                 "valid_list_description": {
-                  "de": [
-                    "Ja/Nein",
-                    "Info",
-                    "Mitteilung",
-                    "Achtung"
-                  ],
-                  "en": [
-                    "Yes/No",
-                    "Info",
-                    "Message",
-                    "Attention"
-                  ]
+                  "de": ["Ja/Nein", "Info", "Mitteilung", "Achtung"],
+                  "en": ["Yes/No", "Info", "Message", "Attention"]
                 },
                 "description": {
                   "de": "messagetype bestimmt die Art wie die Mitteilung angezeigt werden soll",
@@ -3462,14 +3054,7 @@
             "parameters": {
               "value": {
                 "type": "int",
-                "valid_list": [
-                  0,
-                  1,
-                  2,
-                  3,
-                  4,
-                  5
-                ],
+                "valid_list": [0, 1, 2, 3, 4, 5],
                 "valid_list_description": {
                   "de": [
                     "Toggle Standby",
@@ -3546,9 +3131,7 @@
               "de": "(optional) Nutzername für den Login.",
               "en": "(optional) Login information (user)."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "password": {
@@ -3558,9 +3141,7 @@
               "de": "(optional) Passwort für den Login. Wird aus Sicherheitsgründen empfohlen.",
               "en": "(optional) Password for login. Is recommended due to security reasons"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "host": {
@@ -3570,9 +3151,7 @@
               "de": "(optional) Hostname oder IP-Adresse des Geräts auf dem OpenWebIF läuft.",
               "en": "(optional) Hostname or ip address of the device on which OpenWebIF is running."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "port": {
@@ -3582,9 +3161,7 @@
               "de": "Port des OpenWebIF.",
               "en": "Port on which the OpenWebIF is accessible."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "ssl": {
@@ -3594,9 +3171,7 @@
               "de": "(optional) Mit True wird das OpenWebIF via https, mit False via http angesprochen.",
               "en": "(optional) True will add \"https\", False \"http\" to the URLs in the plugin."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "verify": {
@@ -3606,9 +3181,7 @@
               "de": "(optional) Schaltet die Zertifikate-Prüfung an oder aus. Normalerweise False.",
               "en": "(optional) Turns certificate verification on or off. Typically False"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "cycle": {
@@ -3618,9 +3191,7 @@
               "de": "(optional) Zeit zwischen zwei Updateläufen. Default ist 300 Sekunden.",
               "en": "(optional) Timeperiod between two update cycles. Default is 300 seconds."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "fast_cycle": {
@@ -3630,9 +3201,7 @@
               "de": "(optional) Zeit zwischen zwei Updateläufen für besondere Items, die schneller geupdated werden. Default ist 10 Sekunden.",
               "en": "(optional) Timeperiod between two update cycles for items, which are updated faster. Default is 10 seconds."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "instance": {
@@ -3642,9 +3211,7 @@
               "de": "(optional) Eindeutiger Identifier für die Instanz des Plugins. Kann bei nur einem Gerät / Single Instance Betrieb des Plugins entfallen.",
               "en": "(optional) Unique identifier for each instance of the plugin. Can be skipped if only one device is used / the plugin is operated single instance."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -3655,9 +3222,7 @@
               "de": "Datentyp für Plugin-Items. Siehe README.",
               "en": "Data type for plugin items. See README."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "enigma2_page": {
@@ -3666,9 +3231,7 @@
               "de": "Notwendig für bestimmte Plugin-Items. Siehe README.",
               "en": "Required for specific plugin items. See README."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "sref": {
@@ -3677,9 +3240,7 @@
               "de": "Referenz auf Services (bspw. Sender), siehe README.",
               "en": "Service reference, see README."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -3709,25 +3270,10 @@
               "messagetype": {
                 "type": "int",
                 "default": 1,
-                "valid_list": [
-                  0,
-                  1,
-                  2,
-                  3
-                ],
+                "valid_list": [0, 1, 2, 3],
                 "valid_list_description": {
-                  "de": [
-                    "Ja/Nein",
-                    "Info",
-                    "Mitteilung",
-                    "Achtung"
-                  ],
-                  "en": [
-                    "Yes/No",
-                    "Info",
-                    "Message",
-                    "Attention"
-                  ]
+                  "de": ["Ja/Nein", "Info", "Mitteilung", "Achtung"],
+                  "en": ["Yes/No", "Info", "Message", "Attention"]
                 },
                 "description": {
                   "de": "messagetype bestimmt die Art wie die Mitteilung angezeigt werden soll",
@@ -3753,14 +3299,7 @@
             "parameters": {
               "value": {
                 "type": "int",
-                "valid_list": [
-                  0,
-                  1,
-                  2,
-                  3,
-                  4,
-                  5
-                ],
+                "valid_list": [0, 1, 2, 3, 4, 5],
                 "valid_list_description": {
                   "de": [
                     "Toggle Standby",
@@ -3829,18 +3368,9 @@
     "HUE": {
       "class_name": "HUE",
       "class_path": "plugins.hue",
-      "hue_ip": [
-        "PhilipsHueBridge.fritz.box",
-        "10.0.0.236"
-      ],
-      "hue_port": [
-        80,
-        80
-      ],
-      "hue_user": [
-        "knxbususer",
-        "user2"
-      ],
+      "hue_ip": ["PhilipsHueBridge.fritz.box", "10.0.0.236"],
+      "hue_port": [80, 80],
+      "hue_user": ["knxbususer", "user2"],
       "_meta": {
         "plugin": {
           "type": "gateway",
@@ -3864,9 +3394,7 @@
               "en": "ip address of the Philips HUE bridge"
             },
             "mandatory": true,
-            "listtype": [
-              "ip"
-            ],
+            "listtype": ["ip"],
             "listlen": 0
           },
           "hue_port": {
@@ -3877,9 +3405,7 @@
               "de": "Port für die the Philips HUE Bridge",
               "en": "Port on the Philips HUE bridge"
             },
-            "listtype": [
-              "int"
-            ],
+            "listtype": ["int"],
             "listlen": 0
           },
           "hue_user": {
@@ -3888,9 +3414,7 @@
               "de": "User um sich an der Philips HUE Bridge anzumelden",
               "en": "User to login to the Philips HUE bridge"
             },
-            "listtype": [
-              "str"
-            ],
+            "listtype": ["str"],
             "listlen": 0
           },
           "cycle_lamps": {
@@ -3901,9 +3425,7 @@
               "de": "Abfrage-Zyklus für Leuchten Updates",
               "en": "Cycle time for update of lamps"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "cycle_bridges": {
@@ -3914,9 +3436,7 @@
               "de": "Abfrage-Zyklus für Bridge Updates",
               "en": "Cycle time for update of bridges"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "default_transitionTime": {
@@ -3927,9 +3447,7 @@
               "de": "Zeitraum zwischen den den Checks der Leuchten durch die HUE Bridge selbst",
               "en": "Time in seconds how fast check states of the lamps are changed through the bridge itself"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         }
@@ -3955,10 +3473,7 @@
     "database": {
       "plugin_name": "database",
       "driver": "sqlite3",
-      "connect": [
-        "database:/usr/local/shng_dev/var/db/smarthomeng.db",
-        "check_same_thread:0"
-      ],
+      "connect": ["database:/usr/local/shng_dev/var/db/smarthomeng.db", "check_same_thread:0"],
       "_meta": {
         "plugin": {
           "type": "system",
@@ -3984,9 +3499,7 @@
               "de": "Spezifiziert das DB-API2 Treiber Modul",
               "en": "specifies the DB-API2 driver module (e.g. Python includes the SQLite driver by importing the module sqlite3, to use it here just set the driver parameter to the module name sqlite3)"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "connect": {
@@ -3995,9 +3508,7 @@
               "de": "Spezifiziert die Verbindungsparameter, welche genutzt werden, um die connect() Funktion des DB API 2 aufzurufen.",
               "en": "specifies the connection parameters which is directly used to invoke the connect() function of the DB API 2 implementation (for SQLite lookup here, other databases depends on implementation). An example connect string for pymysql could be connect = host:127.0.0.1 | user:db_user | passwd:db_password | db:smarthome"
             },
-            "listtype": [
-              "str"
-            ],
+            "listtype": ["str"],
             "listlen": 0
           },
           "prefix": {
@@ -4006,9 +3517,7 @@
               "de": "Enthält ein Prefix welches vor die Datenbanktabellen des Plugins geschrieben wird",
               "en": "if you want to log into an existing database with other tables you can specify a prefix for the plugins' tables"
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "cycle": {
@@ -4018,9 +3527,7 @@
               "de": "Dump Cycle bestimmt wie oft die Daten auf Platte geschrieben werden (in Sekunden).",
               "en": "Dump cycle defined how often the database is dumped to disc (in seconds)."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "precision": {
@@ -4030,27 +3537,19 @@
               "de": "Genauigkeit der aus der Datenbank ausgelesenen Werte (Nachkommastellen).",
               "en": "Precision of values read from database (digits after comma)."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
         "item_attributes": {
           "database": {
             "type": "str",
-            "valid_list": [
-              "",
-              "yes",
-              "init"
-            ],
+            "valid_list": ["", "yes", "init"],
             "description": {
               "de": "Wenn auf 'yes' gesetzt, werden die Werte des Items in die Datenbank geschrieben. Wenn auf 'init' gesetzt, wird zusätzlich beim Start von SmartHomeNG der Wert in die Datenbank geschrieben.",
               "en": "This attribute enables the database logging when set (just use value 'yes'). If value 'init' is used, an item will be initalized from the database after SmartHomeNG is restarted."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -4593,9 +4092,7 @@
               "de": "(optional) Mode des Plugins: \"all\", wenn die Webservice-Schnittstelle alle Items der SmartHomeNG Instanz verfügbar machen soll (default). Ansonsten werden nur Items ausgeliefert, die einem Set via webservices_set zugeordnet sind.",
               "en": "(optional) Mode of the plugin: \"all\", if standard interface with all items shall be enabled (default if left empty). Otherwise only items are delivered via the interface that are added to a set via webservices_set attribute."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -4606,9 +4103,7 @@
               "de": "(optional) webservices_set enthält eine Zeichenkette, die zum Bündeln von Items in sets genutzt wird. Das Set steht unter http://;/[rest|ws]/itemset/ bereit.",
               "en": "(optional) webservices_set contains a String, which is used to provide multiple item data via one webservice call. The set is available at http://;/[rest|ws]/itemset/."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "webservices_data": {
@@ -4617,9 +4112,7 @@
               "de": "(optional) webservices_data dient dazu, die Rückgabedaten von Items zu limitieren. Wird als Wert \"val\" eingegeben, so wird nur der Pfadname und der Wert zurückgegeben, sonst zusätzlich alle Metainformationen.",
               "en": "(optional) webservices_data is used, to limit the returned values for an item. If the attribute value \"val\" is set, only the path name and the item value is returned. Otherwise, also all meta information is returned."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },
@@ -4657,9 +4150,7 @@
               "de": "MAC Adresse des per WOL aufzuweckenden Geräts.",
               "en": "MAC address of device that shall be started by WOL."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           },
           "wol_ip": {
@@ -4669,9 +4160,7 @@
               "de": "(optional) IP Adresse des per WOL aufzuweckenden Geräts.",
               "en": "(optional) IP address of device that shall be started by WOL."
             },
-            "listtype": [
-              "foo"
-            ],
+            "listtype": ["foo"],
             "listlen": 0
           }
         },

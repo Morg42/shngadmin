@@ -1,38 +1,70 @@
 @switch (inputKind) {
   @case ('select') {
-    <p-select [options]="row.valid_list" [showClear]="true" [placeholder]="row.default"
-              [(ngModel)]="row[col.field]" (ngModelChange)="row[col.field] = $event; onChanged()">
+    <p-select
+      [options]="row.valid_list"
+      [showClear]="true"
+      [placeholder]="row.default"
+      [(ngModel)]="row[col.field]"
+      (ngModelChange)="row[col.field] = $event; onChanged()"
+    >
     </p-select>
   }
   @case ('number') {
-    <input [(ngModel)]="row[col.field]" type="number"
-           [min]="row.valid_min" [max]="row.valid_max"
-           pInputText [placeholder]="row.default" [name]="col.field"
-           [ngStyle]="{'width': col.iwidth}"
-           (ngModelChange)="onChanged()"/>
+    <input
+      [(ngModel)]="row[col.field]"
+      type="number"
+      [min]="row.valid_min"
+      [max]="row.valid_max"
+      pInputText
+      [placeholder]="row.default"
+      [name]="col.field"
+      [ngStyle]="{ width: col.iwidth }"
+      (ngModelChange)="onChanged()"
+    />
   }
   @case ('password') {
-    <input [(ngModel)]="row[col.field]" type="password"
-           pInputText [placeholder]="row.default" [name]="col.field"
-           [ngStyle]="{'width': col.iwidth}"
-           (ngModelChange)="onChanged()"/>
+    <input
+      [(ngModel)]="row[col.field]"
+      type="password"
+      pInputText
+      [placeholder]="row.default"
+      [name]="col.field"
+      [ngStyle]="{ width: col.iwidth }"
+      (ngModelChange)="onChanged()"
+    />
   }
   @case ('text-readonly') {
-    <input [(ngModel)]="row[col.field]" type="text" readonly
-           pInputText [placeholder]="row.default" [name]="col.field"
-           [ngStyle]="{'width': col.iwidth, 'color': '#000077'}"
-           (ngModelChange)="onChanged()"/>
+    <input
+      [(ngModel)]="row[col.field]"
+      type="text"
+      readonly
+      pInputText
+      [placeholder]="row.default"
+      [name]="col.field"
+      [ngStyle]="{ width: col.iwidth, color: '#000077' }"
+      (ngModelChange)="onChanged()"
+    />
   }
   @case ('text-wide') {
-    <input [(ngModel)]="row[col.field]" type="text"
-           pInputText [placeholder]="row.default" [name]="col.field"
-           [ngStyle]="{'width': col.iwidthwide}"
-           (ngModelChange)="onChanged()"/>
+    <input
+      [(ngModel)]="row[col.field]"
+      type="text"
+      pInputText
+      [placeholder]="row.default"
+      [name]="col.field"
+      [ngStyle]="{ width: col.iwidthwide }"
+      (ngModelChange)="onChanged()"
+    />
   }
   @case ('text') {
-    <input [(ngModel)]="row[col.field]" type="text"
-           pInputText [placeholder]="row.default" [name]="col.field"
-           [ngStyle]="{'width': col.iwidth}"
-           (ngModelChange)="onChanged()"/>
+    <input
+      [(ngModel)]="row[col.field]"
+      type="text"
+      pInputText
+      [placeholder]="row.default"
+      [name]="col.field"
+      [ngStyle]="{ width: col.iwidth }"
+      (ngModelChange)="onChanged()"
+    />
   }
 }

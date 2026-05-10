@@ -1,335 +1,471 @@
-
 <div class="shngbody2">
   <div>
-  <p-tabs value="0">
-    <p-tablist>
-      <p-tab value="0">{{ 'SERVICES.SERVICES'|translate }}</p-tab>
-      <p-tab value="1">{{ 'SERVICES.EVAL CHECKER'|translate }}</p-tab>
-      <p-tab value="2">{{ 'SERVICES.YAML CHECKER'|translate }}</p-tab>
-      <p-tab value="3">{{ 'SERVICES.CONF TO YAML'|translate }}</p-tab>
-      <p-tab value="4">{{ 'SERVICES.CACHE_CHECKER'|translate }}</p-tab>
-    </p-tablist>
-    <p-tabpanels>
-    <p-tabpanel value="0">
-      <div class="tab-content-services">
-        <table class="table table-striped">
+    <p-tabs value="0">
+      <p-tablist>
+        <p-tab value="0">{{ 'SERVICES.SERVICES' | translate }}</p-tab>
+        <p-tab value="1">{{ 'SERVICES.EVAL CHECKER' | translate }}</p-tab>
+        <p-tab value="2">{{ 'SERVICES.YAML CHECKER' | translate }}</p-tab>
+        <p-tab value="3">{{ 'SERVICES.CONF TO YAML' | translate }}</p-tab>
+        <p-tab value="4">{{ 'SERVICES.CACHE_CHECKER' | translate }}</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel value="0">
+          <div class="tab-content-services">
+            <table class="table table-striped">
               <thead border="0">
                 <tr class="shng_heading">
-                  <th width="60" style="border: 0;"></th>
-                  <th style="width:350px; border: 0;">{{'SERVICES.SERVICE'|translate}}</th>
-                  <th style="width:380px; border: 0;">{{'SERVICES.STATUS'|translate}}</th>
-                  <th style="border: 0;">{{'SERVICES.ACTION'|translate}}</th>
+                  <th width="60" style="border: 0"></th>
+                  <th style="width: 350px; border: 0">{{ 'SERVICES.SERVICE' | translate }}</th>
+                  <th style="width: 380px; border: 0">{{ 'SERVICES.STATUS' | translate }}</th>
+                  <th style="border: 0">{{ 'SERVICES.ACTION' | translate }}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td class="row-icon"><img ngSrc="assets/img/languages.svg" alt="Icon languages" width="48" height="48"></td>
-                  <td>{{'SERVICES.LANGUAGE_UI'|translate}}</td>
-                  <td><strong>{{this.default_language}}</strong></td>
-                  <td style="padding-top:21px;">
-                    <p-select [style]="{'width':'150px'}" [options]="valid_languagelist" [showClear]="false" placeholder="{{valid_default_language}}" (onChange)="setLanguage()" [(ngModel)]="selected_language" (ngModelChange)="selected_language = $event"></p-select>
+                  <td class="row-icon">
+                    <img ngSrc="assets/img/languages.svg" alt="Icon languages" width="48" height="48" />
+                  </td>
+                  <td>{{ 'SERVICES.LANGUAGE_UI' | translate }}</td>
+                  <td>
+                    <strong>{{ this.default_language }}</strong>
+                  </td>
+                  <td style="padding-top: 21px">
+                    <p-select
+                      [style]="{ width: '150px' }"
+                      [options]="valid_languagelist"
+                      [showClear]="false"
+                      placeholder="{{ valid_default_language }}"
+                      (onChange)="setLanguage()"
+                      [(ngModel)]="selected_language"
+                      (ngModelChange)="selected_language = $event"
+                    ></p-select>
                   </td>
                 </tr>
                 <tr>
-                  <td class="row-icon"><img ngSrc="assets/img/logo_small_76x76.png" alt="SmartHomeNG logo" width="48" height="48"></td>
+                  <td class="row-icon">
+                    <img ngSrc="assets/img/logo_small_76x76.png" alt="SmartHomeNG logo" width="48" height="48" />
+                  </td>
                   <td>SmartHomeNG</td>
-                  <td><strong>{{shng_status}}</strong></td>
+                  <td>
+                    <strong>{{ shng_status }}</strong>
+                  </td>
                   <td class="row-button">
-                    <button pButton type="button" icon="fa fa-circle-notch" [disabled]="(shng_statuscode !== 20)" (click)="this.restartShng()" label="{{'BUTTON.RESTART_SHNG'|translate}}" class="ui-button-success"></button>
+                    <button
+                      pButton
+                      type="button"
+                      icon="fa fa-circle-notch"
+                      [disabled]="shng_statuscode !== 20"
+                      (click)="this.restartShng()"
+                      label="{{ 'BUTTON.RESTART_SHNG' | translate }}"
+                      class="ui-button-success"
+                    ></button>
                   </td>
                 </tr>
                 <tr>
-                  <td class="row-icon"><img ngSrc="assets/img/backup.svg" alt="SmartHomeNG logo" width="48" height="48"></td>
-                  <td>{{'SERVICES.BACKUP_CONFIG'|translate}}</td>
-                  <td><strong>{{shared.displayDateTime(serverInfo.last_backup)}}</strong></td>
-                  <td style="padding-top:17px;">
-                    <button pButton type="button" icon="fa fa-download" style="margin: 5px 0" [disabled]="backup_disabled || (shng_statuscode !== 20)" (click)="this.downloadBackup()" label="{{'BUTTON.DOWNLOAD'|translate}}" class="ui-button-success"></button>
+                  <td class="row-icon">
+                    <img ngSrc="assets/img/backup.svg" alt="SmartHomeNG logo" width="48" height="48" />
+                  </td>
+                  <td>{{ 'SERVICES.BACKUP_CONFIG' | translate }}</td>
+                  <td>
+                    <strong>{{ shared.displayDateTime(serverInfo.last_backup) }}</strong>
+                  </td>
+                  <td style="padding-top: 17px">
+                    <button
+                      pButton
+                      type="button"
+                      icon="fa fa-download"
+                      style="margin: 5px 0"
+                      [disabled]="backup_disabled || shng_statuscode !== 20"
+                      (click)="this.downloadBackup()"
+                      label="{{ 'BUTTON.DOWNLOAD' | translate }}"
+                      class="ui-button-success"
+                    ></button>
                     &nbsp;
-                    <button pButton type="button" icon="fa fa-upload" [disabled]="restore_disabled || (shng_statuscode !== 20)" (click)="this.restoreBackup()" label="{{'BUTTON.RESTORE'|translate}}" class="ui-button-success"></button>
+                    <button
+                      pButton
+                      type="button"
+                      icon="fa fa-upload"
+                      [disabled]="restore_disabled || shng_statuscode !== 20"
+                      (click)="this.restoreBackup()"
+                      label="{{ 'BUTTON.RESTORE' | translate }}"
+                      class="ui-button-success"
+                    ></button>
                   </td>
                 </tr>
                 <tr>
-                  <td class="row-icon"><img ngSrc="assets/img/plugin_gateway.svg" alt="Icon knxd" width="48" height="48"></td>
-                  <td>{{'SERVICES.KNX_SUPPORT'|translate}}</td>
-                  <td><strong>{{serverInfo.daemon_knx|translate}}</strong></td>
+                  <td class="row-icon">
+                    <img ngSrc="assets/img/plugin_gateway.svg" alt="Icon knxd" width="48" height="48" />
+                  </td>
+                  <td>{{ 'SERVICES.KNX_SUPPORT' | translate }}</td>
+                  <td>
+                    <strong>{{ serverInfo.daemon_knx | translate }}</strong>
+                  </td>
                   <td></td>
                 </tr>
                 <tr>
-                  <td class="row-icon"><img ngSrc="assets/img/pins_and_ribbon.svg" alt="Icon 1-wire" width="48" height="48"></td>
-                  <td>{{'SERVICES.OW_SUPPORT'|translate}}</td>
-                  <td><strong>{{serverInfo.daemon_ow|translate}}</strong></td>
+                  <td class="row-icon">
+                    <img ngSrc="assets/img/pins_and_ribbon.svg" alt="Icon 1-wire" width="48" height="48" />
+                  </td>
+                  <td>{{ 'SERVICES.OW_SUPPORT' | translate }}</td>
+                  <td>
+                    <strong>{{ serverInfo.daemon_ow | translate }}</strong>
+                  </td>
                   <td></td>
                 </tr>
                 <tr>
-                  <td class="row-icon"><img ngSrc="assets/img/mqtt_logo.png" alt="Icon mqtt" width="48" height="48"></td>
-                  <td>{{'SERVICES.MQTT_SUPPORT'|translate}}</td>
-                  <td><strong>{{serverInfo.daemon_mqtt|translate}}</strong></td>
+                  <td class="row-icon">
+                    <img ngSrc="assets/img/mqtt_logo.png" alt="Icon mqtt" width="48" height="48" />
+                  </td>
+                  <td>{{ 'SERVICES.MQTT_SUPPORT' | translate }}</td>
+                  <td>
+                    <strong>{{ serverInfo.daemon_mqtt | translate }}</strong>
+                  </td>
                   <td></td>
                 </tr>
                 @if (serverInfo.daemon_node_red !== 'SERVICES.INACTIVE') {
                   <tr>
-                    <td class="row-icon"><img ngSrc="assets/img/node-red.png" alt="Icon node_red" width="48" height="48"></td>
-                    <td>{{'SERVICES.NODE_RED_SUPPORT'|translate}}</td>
-                    <td><strong>{{serverInfo.daemon_node_red|translate}}</strong></td>
+                    <td class="row-icon">
+                      <img ngSrc="assets/img/node-red.png" alt="Icon node_red" width="48" height="48" />
+                    </td>
+                    <td>{{ 'SERVICES.NODE_RED_SUPPORT' | translate }}</td>
+                    <td>
+                      <strong>{{ serverInfo.daemon_node_red | translate }}</strong>
+                    </td>
                     <td></td>
                   </tr>
                 }
                 <tr>
                   <td class="row-icon">
-                    <img ngSrc="assets/img/password.svg" alt="Icon password" width="48" height="48">
-                    <div id="hash_value" style="margin-top: 15px; width:70px;">{{ pwd_hash }}</div>
+                    <img ngSrc="assets/img/password.svg" alt="Icon password" width="48" height="48" />
+                    <div id="hash_value" style="margin-top: 15px; width: 70px">{{ pwd_hash }}</div>
                   </td>
                   <td>
-                    {{'SERVICES.PASSWORD_HASH'|translate}}
+                    {{ 'SERVICES.PASSWORD_HASH' | translate }}
                   </td>
-                  <td style="padding-top:13px;">
-                    <input class="form-control" [(ngModel)]="pwd_clear" [type]="pwd_show ? 'text' : 'password'" id="plainpass" size="20" maxlength="50" style="width: 250px;"/>
+                  <td style="padding-top: 13px">
+                    <input
+                      class="form-control"
+                      [(ngModel)]="pwd_clear"
+                      [type]="pwd_show ? 'text' : 'password'"
+                      id="plainpass"
+                      size="20"
+                      maxlength="50"
+                      style="width: 250px"
+                    />
                     <!-- ToDo set style in next line, was 'style="..." -->
-                    <input type="checkbox" [(ngModel)]="pwd_show" id="showtext"  onclick="this.pwd_show = true;"> {{ 'SERVICES.SHOW_PASSWORD'|translate }}
+                    <input type="checkbox" [(ngModel)]="pwd_show" id="showtext" onclick="this.pwd_show = true" />
+                    {{ 'SERVICES.SHOW_PASSWORD' | translate }}
                   </td>
-                  <td style="padding-top:22px;">
-                    <button pButton type="button" icon="fa fa-toolbox" (click)="createPwdHash()" id="create_hash" label="{{'BUTTON.CREATE_HASH'|translate}}" class="ui-button-success"></button>
+                  <td style="padding-top: 22px">
+                    <button
+                      pButton
+                      type="button"
+                      icon="fa fa-toolbox"
+                      (click)="createPwdHash()"
+                      id="create_hash"
+                      label="{{ 'BUTTON.CREATE_HASH' | translate }}"
+                      class="ui-button-success"
+                    ></button>
                   </td>
                 </tr>
-
               </tbody>
-
             </table>
-      </div>
-    </p-tabpanel>
+          </div>
+        </p-tabpanel>
 
-
-    <!-- ------------------------------------------------------------------------------------
+        <!-- ------------------------------------------------------------------------------------
           Eval checker
     ------------------------------------------------------------------------------------- -->
 
-    <p-tabpanel value="1">
-      <div class="tab-content-services">
-        <div class="container-fluid" style="margin-top: 10px; margin-left: 10px; margin-right: 10px;">
-        </div>
+        <p-tabpanel value="1">
+          <div class="tab-content-services">
+            <div class="container-fluid" style="margin-top: 10px; margin-left: 10px; margin-right: 10px"></div>
 
-        <div style="font-weight: normal; padding-top: 10px; padding-left: 10px; padding-right: 5px;">
-          {{ 'SERVICES.EVAL_CHECK_SOURCE'|translate }}
-          <ngx-codemirror #evalcodeeditor
-                          [options]="cmEvalOptions"
-                          [(ngModel)]="myEvalTextarea"
-                          [autoFocus]="true"
-          ></ngx-codemirror>
-        </div>
+            <div style="font-weight: normal; padding-top: 10px; padding-left: 10px; padding-right: 5px">
+              {{ 'SERVICES.EVAL_CHECK_SOURCE' | translate }}
+              <ngx-codemirror
+                #evalcodeeditor
+                [options]="cmEvalOptions"
+                [(ngModel)]="myEvalTextarea"
+                [autoFocus]="true"
+              ></ngx-codemirror>
+            </div>
 
-        <br>
-        <div style="font-weight: normal; padding-top: 10px; padding-left: 10px; padding-right: 5px;">
-          {{ 'SERVICES.EVAL_RELATIVE_TO'|translate }}: &nbsp;
-          <input type="text" pInputText style="width: 400px" [(ngModel)]="myRelativeTo"/>
-          <button pButton label="{{ 'BUTTON.CHECK'|translate }}" type="button" style="margin-right: 0;" (click)="checkEval()" class="float-sm-right ui-button-success"></button>
-        </div>
+            <br />
+            <div style="font-weight: normal; padding-top: 10px; padding-left: 10px; padding-right: 5px">
+              {{ 'SERVICES.EVAL_RELATIVE_TO' | translate }}: &nbsp;
+              <input type="text" pInputText style="width: 400px" [(ngModel)]="myRelativeTo" />
+              <button
+                pButton
+                label="{{ 'BUTTON.CHECK' | translate }}"
+                type="button"
+                style="margin-right: 0"
+                (click)="checkEval()"
+                class="float-sm-right ui-button-success"
+              ></button>
+            </div>
 
-        <br>
-        <div style="font-weight: normal; padding-top: 10px; padding-left: 10px; padding-right: 5px;">
-          {{ 'SERVICES.EVAL_CHECK_EXPANDED'|translate }}
-          <ngx-codemirror #evalcodeeditor2
-                          [options]="cmEvalOptionsOutput"
-                          [ngModel]="myEvalTextOutput"
-                          [autoFocus]="true"
-                          [disabled]="true"
-          ></ngx-codemirror>
-        </div>
+            <br />
+            <div style="font-weight: normal; padding-top: 10px; padding-left: 10px; padding-right: 5px">
+              {{ 'SERVICES.EVAL_CHECK_EXPANDED' | translate }}
+              <ngx-codemirror
+                #evalcodeeditor2
+                [options]="cmEvalOptionsOutput"
+                [ngModel]="myEvalTextOutput"
+                [autoFocus]="true"
+                [disabled]="true"
+              ></ngx-codemirror>
+            </div>
 
+            <br />
+            <div style="font-weight: normal; padding-top: 10px; padding-left: 10px; padding-right: 5px">
+              <table>
+                <tr>
+                  <td>{{ 'SERVICES.EVAL_CHECK_RESULT' | translate }}: &nbsp;</td>
+                  <td>
+                    <strong>{{ myEvalResult }}</strong>
+                  </td>
+                </tr>
+                <tr>
+                  <td>{{ 'SERVICES.EVAL_RESULT_TYPE' | translate }}: &nbsp;</td>
+                  <td>
+                    <strong>{{ myResultType }}</strong>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </p-tabpanel>
 
-        <br>
-        <div style="font-weight: normal; padding-top: 10px; padding-left: 10px; padding-right: 5px;">
-          <table>
-            <tr>
-              <td>{{ 'SERVICES.EVAL_CHECK_RESULT'|translate }}: &nbsp;</td>
-              <td><strong>{{ myEvalResult }}</strong></td>
-            </tr>
-            <tr>
-              <td>{{ 'SERVICES.EVAL_RESULT_TYPE'|translate }}: &nbsp;</td>
-              <td><strong>{{ myResultType }}</strong></td>
-            </tr>
-          </table>
-        </div>
-      </div>
-    </p-tabpanel>
-
-
-    <!-- ------------------------------------------------------------------------------------
+        <!-- ------------------------------------------------------------------------------------
           YAML Syntax checker
     ------------------------------------------------------------------------------------- -->
 
-    <p-tabpanel value="2">
+        <p-tabpanel value="2">
+          <div class="tab-content-services">
+            <div style="width: 50%; float: left; font-weight: normal; padding: 10px; padding-right: 5px">
+              {{ 'SERVICES.YAML_CHECK_SOURCE' | translate }}
+              <button
+                pButton
+                label="{{ 'BUTTON.CHECK' | translate }}"
+                type="button"
+                style="margin-right: 0"
+                (click)="checkYaml()"
+                class="float-sm-right ui-button-success"
+              ></button>
+            </div>
+            <div style="width: 49%; float: right; font-weight: normal; padding-top: 10px; padding-left: 0">
+              {{ 'SERVICES.YAML_CHECK_RESULT' | translate }}
+            </div>
 
-      <div class="tab-content-services">
+            <table>
+              <tbody>
+                <tr>
+                  <td style="width: 49%; height: 100px; margin-top: 10px; padding-left: 10px; padding-right: 5px">
+                    <ngx-codemirror
+                      #codeeditor
+                      [options]="cmOptions"
+                      [(ngModel)]="myTextarea"
+                      [autoFocus]="true"
+                    ></ngx-codemirror>
+                  </td>
+                  <td style="width: 49%; height: 100px; margin-top: 10px; padding-left: 0">
+                    <ngx-codemirror
+                      #codeeditor2
+                      [options]="cmOptionsOutput"
+                      [ngModel]="myTextOutput"
+                      [autoFocus]="true"
+                      [disabled]="true"
+                    ></ngx-codemirror>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </p-tabpanel>
 
-        <div style="width: 50%; float: left; font-weight: normal; padding: 10px; padding-right: 5px;">
-          {{ 'SERVICES.YAML_CHECK_SOURCE'|translate }}
-          <button pButton label="{{ 'BUTTON.CHECK'|translate }}" type="button" style="margin-right: 0;" (click)="checkYaml()" class="float-sm-right ui-button-success"></button>
-        </div>
-        <div style="width: 49%; float: right; font-weight: normal; padding-top: 10px; padding-left: 0;">
-          {{ 'SERVICES.YAML_CHECK_RESULT'|translate }}
-        </div>
-
-        <table>
-          <tbody>
-            <tr>
-              <td style="width: 49%; height: 100px; margin-top: 10px; padding-left: 10px; padding-right: 5px;">
-                <ngx-codemirror #codeeditor
-                  [options]="cmOptions"
-                  [(ngModel)]="myTextarea"
-                  [autoFocus]="true"
-                ></ngx-codemirror>
-              </td>
-              <td style="width: 49%; height: 100px; margin-top: 10px; padding-left: 0;">
-                <ngx-codemirror #codeeditor2
-                  [options]="cmOptionsOutput"
-                  [ngModel]="myTextOutput"
-                  [autoFocus]="true"
-                  [disabled]="true"
-                ></ngx-codemirror>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-      </div>
-    </p-tabpanel>
-
-
-    <!-- ------------------------------------------------------------------------------------
+        <!-- ------------------------------------------------------------------------------------
            CONF to YAML converter
     ------------------------------------------------------------------------------------- -->
 
-    <p-tabpanel value="3">
-      <div class="tab-content-services">
+        <p-tabpanel value="3">
+          <div class="tab-content-services">
+            <div style="width: 50%; float: left; font-weight: normal; padding: 10px; padding-right: 5px">
+              {{ 'SERVICES.YAML_CONVERTER_SOURCE' | translate }}
+              <button
+                pButton
+                label="{{ 'BUTTON.CHECK' | translate }}"
+                type="button"
+                style="margin-right: 0"
+                (click)="convertYaml()"
+                class="float-sm-right ui-button-success"
+              ></button>
+            </div>
+            <div style="width: 49%; float: right; font-weight: normal; padding-top: 10px; padding-left: 0">
+              {{ 'SERVICES.YAML_CONVERTER_RESULT' | translate }}
+            </div>
 
-        <div style="width: 50%; float: left; font-weight: normal; padding: 10px; padding-right: 5px;">
-          {{ 'SERVICES.YAML_CONVERTER_SOURCE'|translate }}
-          <button pButton label="{{ 'BUTTON.CHECK'|translate }}" type="button" style="margin-right: 0;" (click)="convertYaml()" class="float-sm-right ui-button-success"></button>
-        </div>
-        <div style="width: 49%; float: right; font-weight: normal; padding-top: 10px; padding-left: 0;">
-          {{ 'SERVICES.YAML_CONVERTER_RESULT'|translate }}
-        </div>
+            <table>
+              <tbody>
+                <tr>
+                  <td style="width: 49%; height: 100px; margin-top: 10px; padding-left: 10px; padding-right: 5px">
+                    <ngx-codemirror
+                      #convertercodeeditor
+                      [options]="cmConveterOptions"
+                      [(ngModel)]="myConverterTextarea"
+                      [autoFocus]="true"
+                    ></ngx-codemirror>
+                  </td>
+                  <td style="width: 49%; height: 100px; margin-top: 10px; padding-left: 0">
+                    <ngx-codemirror
+                      #convertercodeeditor2
+                      [options]="cmConverterOptionsOutput"
+                      [ngModel]="myConverterTextOutput"
+                      [autoFocus]="true"
+                      [disabled]="true"
+                    ></ngx-codemirror>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </p-tabpanel>
 
-        <table>
-          <tbody>
-            <tr>
-              <td style="width: 49%; height: 100px; margin-top: 10px; padding-left: 10px; padding-right: 5px;">
-                  <ngx-codemirror #convertercodeeditor
-                                  [options]="cmConveterOptions"
-                                  [(ngModel)]="myConverterTextarea"
-                                  [autoFocus]="true"
-                  ></ngx-codemirror>
-              </td>
-              <td style="width: 49%; height: 100px; margin-top: 10px; padding-left: 0;">
-                  <ngx-codemirror #convertercodeeditor2
-                                  [options]="cmConverterOptionsOutput"
-                                  [ngModel]="myConverterTextOutput"
-                                  [autoFocus]="true"
-                                  [disabled]="true"
-                  ></ngx-codemirror>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </p-tabpanel>
-
-
-    <!-- ------------------------------------------------------------------------------------
+        <!-- ------------------------------------------------------------------------------------
           Cache Checker
     ------------------------------------------------------------------------------------- -->
 
-    <p-tabpanel value="4">
-      <div class="tab-content-services-cache">
-        <div class="tab-content-services-cache-header">
-          <div class="tab-header" style="padding: 15px;margin-left: 5px;">
-            {{ 'SERVICES.FILES_WITHOUT_ITEM'|translate }} /var/cache: <strong>{{ cacheInfo.length }}</strong>
-          </div>
-        </div>
-<!--
+        <p-tabpanel value="4">
+          <div class="tab-content-services-cache">
+            <div class="tab-content-services-cache-header">
+              <div class="tab-header" style="padding: 15px; margin-left: 5px">
+                {{ 'SERVICES.FILES_WITHOUT_ITEM' | translate }} /var/cache: <strong>{{ cacheInfo.length }}</strong>
+              </div>
+            </div>
+            <!--
           <div class="tab-content-services-header" style="margin: 15px;margin-left: 5px;">
           {{ 'SERVICES.FILES_WITHOUT_ITEM'|translate }} /var/cache: <strong>{{ cacheInfo.length }}</strong>
           </div>
 -->
-          <div class="tab-content-services-cache-content">
-            <table class="table table-striped" style="border: 1px solid #ccc;">
-            <thead><tr>
-              <th><input [(ngModel)]="cacheAllChecked" (change)="cacheCheckAll()" type="checkbox"/></th>
-              <th style="width: 550px;">{{ 'SERVICES.FILENAME'|translate }}</th>
-              <th style="min-width:200px;">{{ 'SERVICES.LAST_MODIFICATION'|translate }}</th>
-              <th style="min-width:200px;">{{ 'SERVICES.CREATION_DATE'|translate }}</th>
-              <th>{{ 'SERVICES.ACTIONS'|translate }}</th>
-            </tr></thead>
+            <div class="tab-content-services-cache-content">
+              <table class="table table-striped" style="border: 1px solid #ccc">
+                <thead>
+                  <tr>
+                    <th><input [(ngModel)]="cacheAllChecked" (change)="cacheCheckAll()" type="checkbox" /></th>
+                    <th style="width: 550px">{{ 'SERVICES.FILENAME' | translate }}</th>
+                    <th style="min-width: 200px">{{ 'SERVICES.LAST_MODIFICATION' | translate }}</th>
+                    <th style="min-width: 200px">{{ 'SERVICES.CREATION_DATE' | translate }}</th>
+                    <th>{{ 'SERVICES.ACTIONS' | translate }}</th>
+                  </tr>
+                </thead>
 
-            <tbody>
-              @for (cacheEntry of cacheInfo; track $index; let i = $index) {
-                <tr>
-                  <td><input [(ngModel)]="cacheEntry.checked" type="checkbox"/></td>
-                  <td>{{ cacheEntry.filename }}</td>
-                  <td>{{ cacheEntry.last_modified }}</td>
-                  <td>{{ cacheEntry.created }}</td>
-                  <td>
-                    <button pButton type="button" (click)="deleteCacheEntry(i)" label="{{'BUTTON.DELETE'|translate}}" class="ui-button-success"></button>
-                  </td>
-                </tr>
+                <tbody>
+                  @for (cacheEntry of cacheInfo; track $index; let i = $index) {
+                    <tr>
+                      <td><input [(ngModel)]="cacheEntry.checked" type="checkbox" /></td>
+                      <td>{{ cacheEntry.filename }}</td>
+                      <td>{{ cacheEntry.last_modified }}</td>
+                      <td>{{ cacheEntry.created }}</td>
+                      <td>
+                        <button
+                          pButton
+                          type="button"
+                          (click)="deleteCacheEntry(i)"
+                          label="{{ 'BUTTON.DELETE' | translate }}"
+                          class="ui-button-success"
+                        ></button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            <div class="tab-content-services-cache-footer">
+              @if (cacheInfo.length !== 0) {
+                <button
+                  pButton
+                  type="button"
+                  (click)="deleteCacheSelected()"
+                  label="{{ 'BUTTON.DELETE_SELECTED' | translate }}"
+                  class="ui-button-success"
+                ></button>
               }
-            </tbody>
-          </table>
+              @if (cacheInfo.length === 0) {
+                <button
+                  pButton
+                  type="button"
+                  (click)="loadCacheOrphans()"
+                  label="{{ 'BUTTON.UPDATE' | translate }}"
+                  class="ui-button-success"
+                ></button>
+              }
+            </div>
           </div>
-
-          <div class="tab-content-services-cache-footer">
-          @if (cacheInfo.length !== 0) {
-            <button pButton type="button" (click)="deleteCacheSelected()" label="{{'BUTTON.DELETE_SELECTED'|translate}}" class="ui-button-success"></button>
-          }
-          @if (cacheInfo.length === 0) {
-            <button pButton type="button" (click)="loadCacheOrphans()" label="{{'BUTTON.UPDATE'|translate}}" class="ui-button-success"></button>
-          }
-          </div>
-      </div>
-    </p-tabpanel>
-
-    </p-tabpanels>
-  </p-tabs>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
   </div>
 </div>
 
-
-<p-dialog header="{{'SERVICES.BACKUP_DONE_TITLE'|translate}}" [(visible)]="show_backup_confirm" [modal]="true" [style]="{width: '600px', minWidth: '400px'}" [minY]="70"
-          [baseZIndex]="10000">
-    <span>{{'SERVICES.BACKUP_DONE'|translate}}</span>
+<p-dialog
+  header="{{ 'SERVICES.BACKUP_DONE_TITLE' | translate }}"
+  [(visible)]="show_backup_confirm"
+  [modal]="true"
+  [style]="{ width: '600px', minWidth: '400px' }"
+  [minY]="70"
+  [baseZIndex]="10000"
+>
+  <span>{{ 'SERVICES.BACKUP_DONE' | translate }}</span>
   <ng-template pTemplate="footer">
-    <button type="button" pButton icon="pi pi-check" (click)="show_backup_confirm = false" label="{{'BUTTON.OK'|translate}}" class="ui-button-success"></button>
+    <button
+      type="button"
+      pButton
+      icon="pi pi-check"
+      (click)="show_backup_confirm = false"
+      label="{{ 'BUTTON.OK' | translate }}"
+      class="ui-button-success"
+    ></button>
   </ng-template>
 </p-dialog>
 
+<p-dialog
+  header="{{ 'SERVICES.RESTORE_TITLE' | translate }}"
+  [(visible)]="show_restore_chooser"
+  [modal]="true"
+  [style]="{ width: '720px', minWidth: '400px' }"
+  [minY]="140"
+  [baseZIndex]="10000"
+>
+  <span>{{ 'SERVICES.RESTORE' | translate }}</span>
+  <br /><br />
 
-<p-dialog header="{{'SERVICES.RESTORE_TITLE'|translate}}"
-          [(visible)]="show_restore_chooser"
-          [modal]="true"
-          [style]="{width: '720px', minWidth: '400px'}"
-          [minY]="140"
-          [baseZIndex]="10000">
-
-  <span>{{'SERVICES.RESTORE'|translate}}</span>
-  <br><br>
-
-  <p-fileUpload #upload_form
-                name="demo[]"
-                mode="advanced"
-                [auto]="false"
-                url="./api/files/restore?filename=restore_backup.zip"
-                [method]="'PUT'"
-                accept="application/x-zip-compressed,application/zip"
-                customUpload="true"
-                (uploadHandler)="myUploader($event, upload_form)"
-                chooseLabel="{{'SERVICES.CHOOSE_FILE'|translate}}"
-                uploadLabel="{{'SERVICES.UPLOAD_RESTORE'|translate}}"
-                cancelLabel="{{'SERVICES.CANCEL'|translate}}"
-                fileLimit="1"
-                maxFileSize="1000000">
+  <p-fileUpload
+    #upload_form
+    name="demo[]"
+    mode="advanced"
+    [auto]="false"
+    url="./api/files/restore?filename=restore_backup.zip"
+    [method]="'PUT'"
+    accept="application/x-zip-compressed,application/zip"
+    customUpload="true"
+    (uploadHandler)="myUploader($event, upload_form)"
+    chooseLabel="{{ 'SERVICES.CHOOSE_FILE' | translate }}"
+    uploadLabel="{{ 'SERVICES.UPLOAD_RESTORE' | translate }}"
+    cancelLabel="{{ 'SERVICES.CANCEL' | translate }}"
+    fileLimit="1"
+    maxFileSize="1000000"
+  >
   </p-fileUpload>
 
   <ng-template pTemplate="footer">
-    <button type="button" pButton icon="fa fa-times" (click)="show_restore_chooser = false" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
+    <button
+      type="button"
+      pButton
+      icon="fa fa-times"
+      (click)="show_restore_chooser = false"
+      label="{{ 'BUTTON.CLOSE' | translate }}"
+      class="ui-button-success"
+    ></button>
   </ng-template>
 </p-dialog>

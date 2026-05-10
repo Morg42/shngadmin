@@ -1,42 +1,59 @@
-import { Component, OnInit, OnDestroy, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import {AppConfigService} from '../../common/services/app-config.service';
-import { Title } from '@angular/platform-browser';
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  inject,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
+import { Title } from '@angular/platform-browser';
+import { AppConfigService } from '../../common/services/app-config.service';
 
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { ChartData } from 'chart.js';
 import { combineLatest } from 'rxjs';
 
-import { OlddataService } from '../../common/services/olddata.service';
-import { SystemInfo } from '../../common/models/system-info';
-import { PypiInfo } from '../../common/models/pypi-info';
-import { WebsocketService } from '../../common/services/websocket.service';
-import { WebsocketPluginService } from '../../common/services/websocket-plugin.service';
-import { SharedService } from '../../common/services/shared.service';
-import { ServerApiService } from '../../common/services/server-api.service';
-import {APP_NAME, APP_VERSION} from '../../app.component';
+import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { Bind } from 'primeng/bind';
-import { Tabs, TabList, Tab, TabPanels, TabPanel } from 'primeng/tabs';
-import { Ripple } from 'primeng/ripple';
-import { NgOptimizedImage, DecimalPipe } from '@angular/common';
 import { UIChart } from 'primeng/chart';
-
+import { Ripple } from 'primeng/ripple';
+import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
+import { APP_NAME, APP_VERSION } from '../../app.component';
+import { PypiInfo } from '../../common/models/pypi-info';
+import { SystemInfo } from '../../common/models/system-info';
+import { OlddataService } from '../../common/services/olddata.service';
+import { ServerApiService } from '../../common/services/server-api.service';
+import { SharedService } from '../../common/services/shared.service';
+import { WebsocketPluginService } from '../../common/services/websocket-plugin.service';
+import { WebsocketService } from '../../common/services/websocket.service';
 
 @Component({
-    selector: 'app-system',
-    templateUrl: './system.component.html',
-    styleUrls: ['./system.component.css'],
-    providers: [WebsocketService, WebsocketPluginService],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [Bind, Tabs, TabList, Ripple, Tab, TabPanels, TabPanel, NgOptimizedImage, UIChart, DecimalPipe, TranslatePipe]
+  selector: 'app-system',
+  templateUrl: './system.component.html',
+  styleUrls: ['./system.component.css'],
+  providers: [WebsocketService, WebsocketPluginService],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    Bind,
+    Tabs,
+    TabList,
+    Ripple,
+    Tab,
+    TabPanels,
+    TabPanel,
+    NgOptimizedImage,
+    UIChart,
+    DecimalPipe,
+    TranslatePipe,
+  ],
 })
 export class SystemComponent implements OnDestroy, OnInit {
-
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private http = inject(HttpClient);
@@ -52,7 +69,6 @@ export class SystemComponent implements OnDestroy, OnInit {
 
   loading: boolean = true;
 
-
   systeminfo: SystemInfo = <SystemInfo>{};
   pypiinfo: PypiInfo[];
   reqinfodisplay: {};
@@ -67,29 +83,58 @@ export class SystemComponent implements OnDestroy, OnInit {
   chartoptions1: Record<string, unknown> = { scales: { x: {}, y: {} } };
   chartoptionsSystem: Record<string, unknown> = {
     plugins: { title: { display: true, text: 'System' } },
-    scales: { x: {}, y: {} }
+    scales: { x: {}, y: {} },
   };
   chartoptionsShng: Record<string, unknown> = {
     plugins: { title: { display: true, text: 'SmartHomeNG' } },
-    scales: { x: {}, y: { min: 0 } }
+    scales: { x: {}, y: { min: 0 } },
   };
   chartoptionsScheduler: Record<string, unknown> = {
     plugins: { title: { display: true, text: 'SmartHomeNG Scheduler' } },
-    scales: { x: {}, y: { min: 0 } }
+    scales: { x: {}, y: { min: 0 } },
   };
   chartoptionsDisc: Record<string, unknown> = {
     plugins: { title: { display: true, text: 'Disc' } },
-    scales: { x: {}, y: {} }
+    scales: { x: {}, y: {} },
   };
 
   private static emptyDataset(label: string): ChartData {
-    return { labels: [], datasets: [{ label, data: [], fill: false, backgroundColor: '#709cc2', borderColor: '#709cc2', pointRadius: 0 }] };
+    return {
+      labels: [],
+      datasets: [
+        {
+          label,
+          data: [],
+          fill: false,
+          backgroundColor: '#709cc2',
+          borderColor: '#709cc2',
+          pointRadius: 0,
+        },
+      ],
+    };
   }
   private static emptyDataset2(label1: string, label2: string): ChartData {
-    return { labels: [], datasets: [
-      { label: label1, data: [], fill: false, backgroundColor: '#ff8000', borderColor: '#ff8000', pointRadius: 0 },
-      { label: label2, data: [], fill: false, backgroundColor: '#709cc2', borderColor: '#709cc2', pointRadius: 0 },
-    ]};
+    return {
+      labels: [],
+      datasets: [
+        {
+          label: label1,
+          data: [],
+          fill: false,
+          backgroundColor: '#ff8000',
+          borderColor: '#ff8000',
+          pointRadius: 0,
+        },
+        {
+          label: label2,
+          data: [],
+          fill: false,
+          backgroundColor: '#709cc2',
+          borderColor: '#709cc2',
+          pointRadius: 0,
+        },
+      ],
+    };
   }
 
   chartdataLoad: ChartData = SystemComponent.emptyDataset('Load');
@@ -97,7 +142,10 @@ export class SystemComponent implements OnDestroy, OnInit {
   chartdataSwap: ChartData = SystemComponent.emptyDataset('Swap used (MByte)');
   chartdataMemory: ChartData = SystemComponent.emptyDataset('Memory (MByte)');
   chartdataThreads: ChartData = SystemComponent.emptyDataset('Threads');
-  chartdataWorkerThreads: ChartData = SystemComponent.emptyDataset2('Started Workers', 'Active Workers');
+  chartdataWorkerThreads: ChartData = SystemComponent.emptyDataset2(
+    'Started Workers',
+    'Active Workers',
+  );
   chartdataDisk: ChartData = SystemComponent.emptyDataset('% disc usage');
 
   appName = APP_NAME;
@@ -112,27 +160,23 @@ export class SystemComponent implements OnDestroy, OnInit {
 
     this.dataServiceServer!.getServerinfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response) => {
-          this.setTitle(this.translate.instant('MENU.SYSTEM_PROPERTIES'));
-          this.initSystemInfo();
-          this.cdr.markForCheck();
-        }
-      );
+      .subscribe((response) => {
+        this.setTitle(this.translate.instant('MENU.SYSTEM_PROPERTIES'));
+        this.initSystemInfo();
+        this.cdr.markForCheck();
+      });
   }
-
 
   ngOnDestroy(): void {
     this.websocketPluginService.disconnect();
   }
 
-
   initSystemInfo() {
-
     // ---------------------------------------------
     // Initialize system info (from OlddataService)
     //
-    this.dataService.getSysteminfo()
+    this.dataService
+      .getSysteminfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response: SystemInfo) => {
@@ -145,14 +189,14 @@ export class SystemComponent implements OnDestroy, OnInit {
         (error) => {
           console.log('SystemComponent: dataService.getSysteminfo():');
           console.log(error);
-        }
+        },
       );
-
 
     // -----------------------------------
     // Initialize Pypi info
     //
-    this.dataService.getPypiinfo()
+    this.dataService
+      .getPypiinfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response: PypiInfo[]) => {
@@ -186,8 +230,11 @@ export class SystemComponent implements OnDestroy, OnInit {
           // count if package without requirements exist
           this.norequirementcount = 0;
           for (let i = 0; i < this.pypiinfo.length; ++i) {
-            if (this.pypiinfo[i].is_required === false && this.pypiinfo[i].is_required_for_docbuild === false &&
-              this.pypiinfo[i].is_required_for_testsuite === false) {
+            if (
+              this.pypiinfo[i].is_required === false &&
+              this.pypiinfo[i].is_required_for_docbuild === false &&
+              this.pypiinfo[i].is_required_for_testsuite === false
+            ) {
               this.norequirementcount++;
             }
           }
@@ -198,51 +245,58 @@ export class SystemComponent implements OnDestroy, OnInit {
           }
           this.cdr.markForCheck();
         },
-        (error) => console.log('SystemComponent: dataService.getPypiinfo():' + error)
+        (error) => console.log('SystemComponent: dataService.getPypiinfo():' + error),
       );
-
 
     // -----------------------------------
     // Initialize info for the graph-tab
     //
     this.initCharts();
 
-
     let filepath = '/3rdpartylicenses.txt';
     const hostip = this.appConfig.hostIp;
     const disclosureText = document.getElementById('disclosuretext');
     filepath = '/admin' + filepath;
-    this.http.get(filepath, {responseType: 'text'})
+    this.http
+      .get(filepath, { responseType: 'text' })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
-        response => {
+        (response) => {
           const message = response.toString();
           if (disclosureText) {
             disclosureText.textContent = message;
           }
         },
-        error => {
+        (error) => {
           if (disclosureText) {
-            disclosureText.textContent = '\nERROR ' + error.status + ':\n\n    ' + error.url + '   ' + error.statusText;
+            disclosureText.textContent =
+              '\nERROR ' + error.status + ':\n\n    ' + error.url + '   ' + error.statusText;
           }
-        });
+        },
+      );
   }
-
 
   // ===================================
   // methods for the Pypi check tab
   // -----------------------------------
   //
   buildreqinfostring(element) {
-
     /* Build String for requirements column */
     let reqString = '';
 
-    if (element['vers_req_min'] !== '' && element['vers_req_max'] !== '' && (element['vers_req_min'] !== element['vers_req_max'])) {
+    if (
+      element['vers_req_min'] !== '' &&
+      element['vers_req_max'] !== '' &&
+      element['vers_req_min'] !== element['vers_req_max']
+    ) {
       // MIN and MAX filled, MIN != MAX
       reqString += element['vers_req_min'] + ' <= ';
     } else {
-      if (element['vers_req_min'] !== '' && element['vers_req_max'] != '' && (element['vers_req_min'] == element['vers_req_max'])) {
+      if (
+        element['vers_req_min'] !== '' &&
+        element['vers_req_max'] != '' &&
+        element['vers_req_min'] == element['vers_req_max']
+      ) {
         // ELSE: MIN and MAX filled, MIN == MAX
         reqString += ' == ' + element['vers_req_min'];
       } else {
@@ -262,7 +316,6 @@ export class SystemComponent implements OnDestroy, OnInit {
     return reqString;
   }
 
-
   // ===================================
   // methods for the graph tab
   // -----------------------------------
@@ -280,9 +333,8 @@ export class SystemComponent implements OnDestroy, OnInit {
           backgroundColor: '#709cc2',
           borderColor: '#709cc2',
           pointRadius: 0,
-
-        }
-      ]
+        },
+      ],
     };
 
     this.chartdataThreads = {
@@ -295,9 +347,8 @@ export class SystemComponent implements OnDestroy, OnInit {
           backgroundColor: '#709cc2',
           borderColor: '#709cc2',
           pointRadius: 0,
-
-        }
-      ]
+        },
+      ],
     };
 
     this.chartdataWorkerThreads = {
@@ -310,7 +361,6 @@ export class SystemComponent implements OnDestroy, OnInit {
           backgroundColor: '#ff8000',
           borderColor: '#ff8000',
           pointRadius: 0,
-
         },
         {
           label: 'Active Workers',
@@ -319,9 +369,8 @@ export class SystemComponent implements OnDestroy, OnInit {
           backgroundColor: '#709cc2',
           borderColor: '#709cc2',
           pointRadius: 0,
-
-        }
-      ]
+        },
+      ],
     };
 
     this.chartdataSystemMemory = {
@@ -334,9 +383,8 @@ export class SystemComponent implements OnDestroy, OnInit {
           backgroundColor: '#709cc2',
           borderColor: '#709cc2',
           pointRadius: 0,
-
-        }
-      ]
+        },
+      ],
     };
 
     this.chartdataSwap = {
@@ -349,9 +397,8 @@ export class SystemComponent implements OnDestroy, OnInit {
           backgroundColor: '#709cc2',
           borderColor: '#709cc2',
           pointRadius: 0,
-
-        }
-      ]
+        },
+      ],
     };
 
     this.chartdataMemory = {
@@ -364,9 +411,8 @@ export class SystemComponent implements OnDestroy, OnInit {
           backgroundColor: '#709cc2',
           borderColor: '#709cc2',
           pointRadius: 0,
-
-        }
-      ]
+        },
+      ],
     };
 
     this.chartdataDisk = {
@@ -379,9 +425,8 @@ export class SystemComponent implements OnDestroy, OnInit {
           backgroundColor: '#709cc2',
           borderColor: '#709cc2',
           pointRadius: 0,
-
-        }
-      ]
+        },
+      ],
     };
 
     this.websocketPluginService.connect();
@@ -397,48 +442,85 @@ export class SystemComponent implements OnDestroy, OnInit {
 
   drawCharts() {
     console.log('DrawCharts()');
-    this.websocketPluginService.systemloadUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      this.chartdataLoad = this.updateChartData(this.chartdataLoad, this.websocketPluginService.systemload.series);
-      this.cdr.markForCheck();
-    });
-    this.websocketPluginService.systemmemoryUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      this.chartdataSystemMemory = this.updateChartData(this.chartdataSystemMemory, this.websocketPluginService.systemmemory.series);
-      this.cdr.markForCheck();
-    });
-    this.websocketPluginService.systemswapUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      this.chartdataSwap = this.updateChartData(this.chartdataSwap, this.websocketPluginService.systemswap.series);
-      this.cdr.markForCheck();
-    });
-    this.websocketPluginService.memoryUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      this.chartdataMemory = this.updateChartData(this.chartdataMemory, this.websocketPluginService.memory.series);
-      this.cdr.markForCheck();
-    });
-    this.websocketPluginService.threadsUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      this.chartdataThreads = this.updateChartData(this.chartdataThreads, this.websocketPluginService.threads.series);
-      this.cdr.markForCheck();
-    });
+    this.websocketPluginService.systemloadUpdate$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.chartdataLoad = this.updateChartData(
+          this.chartdataLoad,
+          this.websocketPluginService.systemload.series,
+        );
+        this.cdr.markForCheck();
+      });
+    this.websocketPluginService.systemmemoryUpdate$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.chartdataSystemMemory = this.updateChartData(
+          this.chartdataSystemMemory,
+          this.websocketPluginService.systemmemory.series,
+        );
+        this.cdr.markForCheck();
+      });
+    this.websocketPluginService.systemswapUpdate$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.chartdataSwap = this.updateChartData(
+          this.chartdataSwap,
+          this.websocketPluginService.systemswap.series,
+        );
+        this.cdr.markForCheck();
+      });
+    this.websocketPluginService.memoryUpdate$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.chartdataMemory = this.updateChartData(
+          this.chartdataMemory,
+          this.websocketPluginService.memory.series,
+        );
+        this.cdr.markForCheck();
+      });
+    this.websocketPluginService.threadsUpdate$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.chartdataThreads = this.updateChartData(
+          this.chartdataThreads,
+          this.websocketPluginService.threads.series,
+        );
+        this.cdr.markForCheck();
+      });
     combineLatest([
       this.websocketPluginService.workerThreadsUpdate$,
-      this.websocketPluginService.idleWorkerThreadsUpdate$
-    ]).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      const workerSeries = this.websocketPluginService.workerThreads.series;
-      const idleSeries = this.websocketPluginService.idleWorkerThreads.series;
-      const len = Math.min(workerSeries.length, idleSeries.length);
-      const activeSeries = [];
-      for (let i = 0; i < len; i++) {
-        activeSeries.push([workerSeries[i][0], workerSeries[i][1] - idleSeries[i][1], workerSeries[i][2]]);
-      }
-      this.chartdataWorkerThreads = this.updateChartData(
-        this.chartdataWorkerThreads, workerSeries.slice(0, len), activeSeries
-      );
-      this.cdr.markForCheck();
-    });
-    this.websocketPluginService.diskUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      this.chartdataDisk = this.updateChartData(this.chartdataDisk, this.websocketPluginService.disk.series);
-      this.cdr.markForCheck();
-    });
+      this.websocketPluginService.idleWorkerThreadsUpdate$,
+    ])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        const workerSeries = this.websocketPluginService.workerThreads.series;
+        const idleSeries = this.websocketPluginService.idleWorkerThreads.series;
+        const len = Math.min(workerSeries.length, idleSeries.length);
+        const activeSeries = [];
+        for (let i = 0; i < len; i++) {
+          activeSeries.push([
+            workerSeries[i][0],
+            workerSeries[i][1] - idleSeries[i][1],
+            workerSeries[i][2],
+          ]);
+        }
+        this.chartdataWorkerThreads = this.updateChartData(
+          this.chartdataWorkerThreads,
+          workerSeries.slice(0, len),
+          activeSeries,
+        );
+        this.cdr.markForCheck();
+      });
+    this.websocketPluginService.diskUpdate$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.chartdataDisk = this.updateChartData(
+          this.chartdataDisk,
+          this.websocketPluginService.disk.series,
+        );
+        this.cdr.markForCheck();
+      });
   }
-
 
   updateChartData(chartdata: ChartData, dataseries: any[], dataseries2: any[] = null): ChartData {
     const labels: string[] = [];
@@ -460,10 +542,4 @@ export class SystemComponent implements OnDestroy, OnInit {
 
     return { ...chartdata, labels, datasets };
   }
-
-
-
-
-
 }
-

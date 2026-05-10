@@ -1,4 +1,3 @@
-
 .shngbody {
   /*
     display: grid;
@@ -38,12 +37,11 @@
   float: right;
 }
 
-.tab-shng > a{
+.tab-shng > a {
   border-bottom: none !important;
   outline: 0 !important;
-  color:rgb(160, 160, 160);
+  color: rgb(160, 160, 160);
 }
-
 
 /*
 .CodeMirror {

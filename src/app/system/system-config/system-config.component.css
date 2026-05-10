@@ -1,10 +1,8 @@
-
-::ng-deep .tab-shng > a{
+::ng-deep .tab-shng > a {
   border-bottom: none !important;
   outline: 0 !important;
-  color:rgb(160, 160, 160);
+  color: rgb(160, 160, 160);
 }
-
 
 .body {
   margin: 0;
@@ -15,16 +13,17 @@
   margin: 0;
   padding: 0;
 
-  padding-left: 10px;       /* padding around tab border */
+  padding-left: 10px; /* padding around tab border */
   padding-right: 10px;
 
   display: grid;
   grid-template-rows: 50px auto 65px;
   grid-template-columns: 1fr;
 
-  grid-template-areas: "body-header"
-                      "body-content"
-                      "body-footer";
+  grid-template-areas:
+    'body-header'
+    'body-content'
+    'body-footer';
 
   grid-gap: 0;
   grid-auto-flow: row;
@@ -52,7 +51,6 @@
   grid-auto-rows: minmax(50px, max-content);
 }
 
-
 .body-footer {
   grid-area: body-footer;
   width: 100%;
@@ -76,4 +74,3 @@
   grid-area: tab-footer;
   width: 100%;
 }
-

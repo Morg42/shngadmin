@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { SharedService } from './shared.service';
+import { createMockAppConfigService, translateTestingModule } from '../../../testing/test-helpers';
 import { AppConfigService } from './app-config.service';
+import { SharedService } from './shared.service';
 import { UserPreferencesService } from './user-preferences.service';
-import { translateTestingModule, createMockAppConfigService } from '../../../testing/test-helpers';
 
 describe('SharedService', () => {
   let service: SharedService;
@@ -87,7 +87,7 @@ describe('SharedService', () => {
 
     it('rejects invalid IPv6 addresses', () => {
       expect(service.is_ipv6('gggg::1')).toBe(false);
-      expect(service.is_ipv6('1:2:3:4:5:6:7:8:9')).toBe(false);  // too many groups
+      expect(service.is_ipv6('1:2:3:4:5:6:7:8:9')).toBe(false); // too many groups
     });
   });
 
@@ -103,9 +103,9 @@ describe('SharedService', () => {
     });
 
     it('rejects invalid MAC addresses', () => {
-      expect(service.is_mac('AA:BB:CC:DD:EE')).toBe(false);       // too short
-      expect(service.is_mac('AA-BB-CC-DD-EE-FF')).toBe(false);    // wrong separator
-      expect(service.is_mac('GG:BB:CC:DD:EE:FF')).toBe(false);    // invalid hex
+      expect(service.is_mac('AA:BB:CC:DD:EE')).toBe(false); // too short
+      expect(service.is_mac('AA-BB-CC-DD-EE-FF')).toBe(false); // wrong separator
+      expect(service.is_mac('GG:BB:CC:DD:EE:FF')).toBe(false); // invalid hex
       expect(service.is_mac('')).toBe(false);
     });
   });
@@ -145,15 +145,15 @@ describe('SharedService', () => {
     });
 
     it('rejects addresses out of range', () => {
-      expect(service.is_knx_groupaddress('32/0/0')).toBe(false);  // main > 31
-      expect(service.is_knx_groupaddress('0/8/0')).toBe(false);   // middle > 7
+      expect(service.is_knx_groupaddress('32/0/0')).toBe(false); // main > 31
+      expect(service.is_knx_groupaddress('0/8/0')).toBe(false); // middle > 7
       expect(service.is_knx_groupaddress('0/0/256')).toBe(false); // sub > 255
     });
 
     it('rejects malformed addresses', () => {
-      expect(service.is_knx_groupaddress('1/2')).toBe(false);         // missing part
-      expect(service.is_knx_groupaddress('a/b/c')).toBe(false);       // not numeric
-      expect(service.is_knx_groupaddress('1/2/3/4')).toBe(false);     // too many parts
+      expect(service.is_knx_groupaddress('1/2')).toBe(false); // missing part
+      expect(service.is_knx_groupaddress('a/b/c')).toBe(false); // not numeric
+      expect(service.is_knx_groupaddress('1/2/3/4')).toBe(false); // too many parts
     });
   });
 
@@ -191,7 +191,7 @@ describe('SharedService', () => {
     });
 
     it('falls back to first fallback language when current language missing', () => {
-      const dict = { de: 'Deutsche Beschreibung' };  // no 'en' key
+      const dict = { de: 'Deutsche Beschreibung' }; // no 'en' key
       // first fallback is 'en' from mock, second is 'de' — 'de' exists
       const result = service.getDescription(dict);
       expect(typeof result).toBe('string');

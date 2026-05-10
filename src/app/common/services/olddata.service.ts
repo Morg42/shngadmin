@@ -1,23 +1,18 @@
-
 //import {APP_BASE_HREF} from '@angular/common';
-import {Inject, Injectable, OnInit, inject} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {ItemDetails} from '../models/item-details';
-import {TranslateService} from '@ngx-translate/core';
+import { HttpClient } from '@angular/common/http';
+import { Inject, Injectable, OnInit, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 //import {SystemInfo} from '../models/system-info';
 // import {ServerInfo} from '../models/server-info';
 
-let url_start : string = 'http://';
-let host_ip : string = '';
+let url_start: string = 'http://';
+let host_ip: string = '';
 // let shng_serverinfo: ServerInfo = <ServerInfo>{'itemtree_fullpath': true};
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-
 export class OlddataService implements OnInit {
-
   private http = inject(HttpClient);
   private translate = inject(TranslateService);
 
@@ -26,22 +21,20 @@ export class OlddataService implements OnInit {
   href = '';
 
   constructor(@Inject('BASE_URL') baseUrl: string) {
-
     console.log('OlddataService.constructor:');
 
     // this language will be used as a fallback when a translation isn't found in the current language
     this.translate.setDefaultLang('en');
 
-    console.log('OlddataService.constructor using ', {baseUrl});
+    console.log('OlddataService.constructor using ', { baseUrl });
     this.baseUrl = baseUrl;
 
     if (host_ip === '') {
       host_ip = location.host;
       url_start = (baseUrl.endsWith('/') ? baseUrl : baseUrl + '/') + 'admin/';
-      console.log('OlddataService.constructor ', {url_start}, {host_ip});
+      console.log('OlddataService.constructor ', { url_start }, { host_ip });
     }
   }
-
 
   ngOnInit() {
     console.log('OlddataService.ngOnInit:');
@@ -51,7 +44,6 @@ export class OlddataService implements OnInit {
     console.log('OlddataService.getSysteminfo: url: ' + url);
     return this.http.get(url);
   }
-
 
   getPypiinfo() {
     const url = url_start + 'pypi.json\\';
@@ -67,40 +59,40 @@ export class OlddataService implements OnInit {
     return this.http.get(url);
   }
 
-
   getItemDetails(itempath: string) {
-//    const url = this.url_start + 'item_detail_json.html?item_path=';
-//    const url = 'http://10.0.0.174:1234/admin/item_detail_json.html?item_path=beoremote';
+    //    const url = this.url_start + 'item_detail_json.html?item_path=';
+    //    const url = 'http://10.0.0.174:1234/admin/item_detail_json.html?item_path=beoremote';
 
     const url = url_start + 'item_detail_json.html?item_path=' + itempath;
     console.log('OlddataService.getItemDetails: url: ' + url);
     console.log('OlddataService.getItemDetails: itempath: ' + itempath);
     return this.http.get(url);
-
   }
-
 
   // --------------------------------
   //  Change value of specified item
   //
   changeItemValue(itempath: string, value: string | number | boolean) {
-    const url = url_start + 'item_change_value.html?item_path=' + itempath + '&value=' + encodeURIComponent(value);
+    const url =
+      url_start +
+      'item_change_value.html?item_path=' +
+      itempath +
+      '&value=' +
+      encodeURIComponent(value);
     console.log('OlddataService.changeItemValue: url: ' + url);
-    this.http.get(url)
-      .subscribe(
-        (response: unknown) => {
-          console.log('updateValue:');
-          console.log({response});
-        },
-        (error) => {
-          console.log('ERROR: OlddataServicechangeItemValue(',{itempath}, ',',{value},')');
-          console.log(error);
-        }
-      );
+    this.http.get(url).subscribe(
+      (response: unknown) => {
+        console.log('updateValue:');
+        console.log({ response });
+      },
+      (error) => {
+        console.log('ERROR: OlddataServicechangeItemValue(', { itempath }, ',', { value }, ')');
+        console.log(error);
+      },
+    );
   }
 
-
-/*
+  /*
   // -----------------------------------------------------------
   //  Update config of one plugin in etc/plugin.yaml on backend
   //
@@ -125,7 +117,4 @@ export class OlddataService implements OnInit {
     }
   }
 */
-
 }
-
-

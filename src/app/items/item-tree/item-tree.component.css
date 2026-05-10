@@ -1,10 +1,7 @@
-::ng-deep .tab-shng > a{
+::ng-deep .tab-shng > a {
   border-bottom: none !important;
   outline: 0 !important;
-  color:rgb(160, 160, 160);
+  color: rgb(160, 160, 160);
 }
 
-
 /* p-tree base styles are in global styles.css */
-
-

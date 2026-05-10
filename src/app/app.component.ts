@@ -1,18 +1,24 @@
-import {Component, OnInit, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {Title} from '@angular/platform-browser';
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Title } from '@angular/platform-browser';
 
-import {TranslateService} from '@ngx-translate/core';
-import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import {ServerApiService} from './common/services/server-api.service';
-import {AuthService} from './common/services/auth.service';
-import {ServerInfo} from './common/models/server-info';
-import {SharedService} from './common/services/shared.service';
-import {UserPreferencesService} from './common/services/user-preferences.service';
-import { TopNavigationComponent } from './top-navigation/top-navigation.component';
 import { RouterOutlet } from '@angular/router';
-
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { ServerInfo } from './common/models/server-info';
+import { AuthService } from './common/services/auth.service';
+import { ServerApiService } from './common/services/server-api.service';
+import { SharedService } from './common/services/shared.service';
+import { UserPreferencesService } from './common/services/user-preferences.service';
+import { TopNavigationComponent } from './top-navigation/top-navigation.component';
 
 // Allow ngx-translate to find translation files on other path than /assets/i18n/...
 export function HttpLoaderFactory(http: HttpClient) {
@@ -25,15 +31,13 @@ export const APP_NAME = 'shngAdmin';
 export const APP_VERSION = '0.9.18';
 
 @Component({
-    selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrls: ['./app.component.css'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [TopNavigationComponent, RouterOutlet]
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [TopNavigationComponent, RouterOutlet],
 })
-
 export class AppComponent implements OnInit {
-
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private http = inject(HttpClient);
@@ -62,7 +66,8 @@ export class AppComponent implements OnInit {
 
     console.log('AppComponent.constructor getServerBasicInfo:');
     //    this.dataService.getServerBasicinfo()
-    this.dataService.getServerBasicinfo()
+    this.dataService
+      .getServerBasicinfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response: ServerInfo) => {
@@ -72,8 +77,8 @@ export class AppComponent implements OnInit {
           this.cdr.markForCheck();
         },
         (error) => {
-          console.warn('DataService: getServerBasicinfo():', {error});
-        }
+          console.warn('DataService: getServerBasicinfo():', { error });
+        },
       );
   }
 
@@ -81,10 +86,7 @@ export class AppComponent implements OnInit {
     this.titleService.setTitle(newTitle);
   }
 
-
   ngOnInit() {
     console.log('AppComponent was loaded');
   }
-
 }
-

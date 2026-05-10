@@ -1,15 +1,21 @@
-
-import { Component, OnInit, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Title } from '@angular/platform-browser';
+import { Router, RouterLink } from '@angular/router';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { AppConfigService } from '../common/services/app-config.service';
-import { TranslateService, TranslatePipe } from '@ngx-translate/core';
-import { ServerApiService } from '../common/services/server-api.service';
-import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../common/services/auth.service';
+import { ServerApiService } from '../common/services/server-api.service';
 import { SharedService } from '../common/services/shared.service';
-import { Title } from '@angular/platform-browser';
-import { NgOptimizedImage } from '@angular/common';
 
 interface MenuEntry {
   label: string;
@@ -23,14 +29,13 @@ interface MenuItem {
 }
 
 @Component({
-    selector: 'app-top-navigation',
-    templateUrl: './top-navigation.component.html',
-    styleUrls: ['./top-navigation.component.css'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [NgOptimizedImage, RouterLink, TranslatePipe],
+  selector: 'app-top-navigation',
+  templateUrl: './top-navigation.component.html',
+  styleUrls: ['./top-navigation.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NgOptimizedImage, RouterLink, TranslatePipe],
 })
 export class TopNavigationComponent implements OnInit {
-
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private translate = inject(TranslateService);
@@ -58,24 +63,32 @@ export class TopNavigationComponent implements OnInit {
 
     // One-shot initialisation: load server config, set up translate, attempt
     // anonymous login.  After this the component reacts purely via observables.
-    this.dataServiceServer.getServerinfo()
+    this.dataServiceServer
+      .getServerinfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.developerMode = this.appConfig.developerMode;
         this.isTouchDevice = !this.appConfig.clickDropdownHeader;
 
         console.log('TopNavigationComponent.ngOnInit: getLangs()', this.translate.getLangs());
-        console.log('TopNavigationComponent.ngOnInit: getDefaultLang()', this.translate.getDefaultLang());
+        console.log(
+          'TopNavigationComponent.ngOnInit: getDefaultLang()',
+          this.translate.getDefaultLang(),
+        );
         this.translate.use(this.appConfig.defaultLanguage);
         this.translate.setDefaultLang(this.appConfig.defaultLanguage);
         this.shared.setGuiLanguage();
-        console.log('TopNavigationComponent.ngOnInit: getDefaultLang() =', this.translate.getDefaultLang());
+        console.log(
+          'TopNavigationComponent.ngOnInit: getDefaultLang() =',
+          this.translate.getDefaultLang(),
+        );
 
         this.setTitle(this.translate.instant('SmartHomeNG'));
 
         const credentials = { username: '', password: '' };
         console.log('signIn', { credentials });
-        this.authService.login(credentials)
+        this.authService
+          .login(credentials)
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe((result: boolean) => {
             console.log('Anonymous login:', { result });
@@ -87,7 +100,7 @@ export class TopNavigationComponent implements OnInit {
     // Rebuild menu whenever the active language changes.
     this.appConfig.config$
       .pipe(
-        map(cfg => cfg.defaultLanguage),
+        map((cfg) => cfg.defaultLanguage),
         distinctUntilChanged(),
         takeUntilDestroyed(this.destroyRef),
       )
@@ -97,14 +110,12 @@ export class TopNavigationComponent implements OnInit {
       });
 
     // Sync loggedIn / loginRequired whenever auth state changes.
-    this.authService.loggedIn$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(loggedIn => {
-        this.loggedIn = loggedIn;
-        this.loginRequired = this.authService.loginRequired();
-        this.buildMenu();
-        this.cdr.markForCheck();
-      });
+    this.authService.loggedIn$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((loggedIn) => {
+      this.loggedIn = loggedIn;
+      this.loginRequired = this.authService.loginRequired();
+      this.buildMenu();
+      this.cdr.markForCheck();
+    });
 
     console.log('TopNavigationComponent.ngOnInit() leaving');
   }
@@ -178,9 +189,9 @@ export class TopNavigationComponent implements OnInit {
   }
 
   private closeTouchDropdown() {
-    document.querySelectorAll('.dropdown-touch-open').forEach(el =>
-      el.classList.remove('dropdown-touch-open')
-    );
+    document
+      .querySelectorAll('.dropdown-touch-open')
+      .forEach((el) => el.classList.remove('dropdown-touch-open'));
     this.openMenuLabel = null;
   }
 
@@ -203,26 +214,43 @@ export class TopNavigationComponent implements OnInit {
 
   buildMenu() {
     console.log('TopNavigationComponent.buildMenu entering');
-    console.log('TopNavigationComponent.buildMenu: default_language=', this.appConfig.defaultLanguage);
+    console.log(
+      'TopNavigationComponent.buildMenu: default_language=',
+      this.appConfig.defaultLanguage,
+    );
 
     this.setMenuEntry(0, this.translate.instant('MENU.SYSTEM'), ['/system/systemproperties']);
-    this.setSubmenuEntry(0, 0, this.translate.instant('MENU.SYSTEM_PROPERTIES'), ['/system/systemproperties']);
-    this.setSubmenuEntry(0, 1, this.translate.instant('MENU.SYSTEM_CONFIGURATION'), ['/system/config']);
+    this.setSubmenuEntry(0, 0, this.translate.instant('MENU.SYSTEM_PROPERTIES'), [
+      '/system/systemproperties',
+    ]);
+    this.setSubmenuEntry(0, 1, this.translate.instant('MENU.SYSTEM_CONFIGURATION'), [
+      '/system/config',
+    ]);
 
     this.setMenuEntry(1, this.translate.instant('MENU.SERVICES'), ['/services']);
     this.setSubmenuEntry(1, 0, this.translate.instant('MENU.SERVICES'), ['/services']);
-    this.setSubmenuEntry(1, 1, this.translate.instant('MENU.FUNCTION_CONFIGURATION'), ['/services/functions']);
+    this.setSubmenuEntry(1, 1, this.translate.instant('MENU.FUNCTION_CONFIGURATION'), [
+      '/services/functions',
+    ]);
 
     this.setMenuEntry(2, this.translate.instant('MENU.ITEMS'), ['/item_tree']);
     this.setSubmenuEntry(2, 0, this.translate.instant('MENU.ITEM_TREE'), ['/item_tree']);
-    this.setSubmenuEntry(2, 1, this.translate.instant('MENU.ITEM_CONFIGURATION'), ['/items/config']);
+    this.setSubmenuEntry(2, 1, this.translate.instant('MENU.ITEM_CONFIGURATION'), [
+      '/items/config',
+    ]);
     if (this.developerMode === true && false) {
-      this.setSubmenuEntry(2, 2, this.translate.instant('MENU.ITEM_CONFIGURATION') + ' (dev)', ['/items/config2']);
+      this.setSubmenuEntry(2, 2, this.translate.instant('MENU.ITEM_CONFIGURATION') + ' (dev)', [
+        '/items/config2',
+      ]);
       this.setSubmenuEntry(2, 3, this.translate.instant('MENU.ITEM_STRUCTS'), ['/items/structs']);
-      this.setSubmenuEntry(2, 4, this.translate.instant('MENU.ITEM_STRUCT_CONFIGURATION'), ['/items/struct_config']);
+      this.setSubmenuEntry(2, 4, this.translate.instant('MENU.ITEM_STRUCT_CONFIGURATION'), [
+        '/items/struct_config',
+      ]);
     } else {
       this.setSubmenuEntry(2, 2, this.translate.instant('MENU.ITEM_STRUCTS'), ['/items/structs']);
-      this.setSubmenuEntry(2, 3, this.translate.instant('MENU.ITEM_STRUCT_CONFIGURATION'), ['/items/struct_config']);
+      this.setSubmenuEntry(2, 3, this.translate.instant('MENU.ITEM_STRUCT_CONFIGURATION'), [
+        '/items/struct_config',
+      ]);
     }
 
     this.setMenuEntry(3, this.translate.instant('MENU.LOGICS'), ['/logics-list']);
@@ -231,11 +259,15 @@ export class TopNavigationComponent implements OnInit {
 
     this.setMenuEntry(4, this.translate.instant('MENU.PLUGINS'), ['/plugins_list']);
     this.setSubmenuEntry(4, 0, this.translate.instant('MENU.PLUGINS_LIST'), ['/plugins_list']);
-    this.setSubmenuEntry(4, 1, this.translate.instant('MENU.PLUGINS_CONFIGURATION'), ['/plugins/config']);
+    this.setSubmenuEntry(4, 1, this.translate.instant('MENU.PLUGINS_CONFIGURATION'), [
+      '/plugins/config',
+    ]);
 
     this.setMenuEntry(5, this.translate.instant('MENU.SCENES'), ['/scenes/list']);
     this.setSubmenuEntry(5, 0, this.translate.instant('MENU.SCENE_LIST'), ['/scenes/list']);
-    this.setSubmenuEntry(5, 1, this.translate.instant('MENU.SCENE_CONFIGURATION'), ['/scenes/config']);
+    this.setSubmenuEntry(5, 1, this.translate.instant('MENU.SCENE_CONFIGURATION'), [
+      '/scenes/config',
+    ]);
 
     this.setMenuEntry(6, this.translate.instant('MENU.SCHEDULERS'), ['/schedulers']);
     this.setSubmenuEntry(6, 0, this.translate.instant('MENU.SCHEDULERS'), ['/schedulers']);
@@ -243,8 +275,12 @@ export class TopNavigationComponent implements OnInit {
 
     this.setMenuEntry(7, this.translate.instant('MENU.LOGS'), ['/logs/display']);
     this.setSubmenuEntry(7, 0, this.translate.instant('MENU.LOGS_DISPLAY'), ['/logs/display']);
-    this.setSubmenuEntry(7, 1, this.translate.instant('MENU.LOGGER_CONFIGURATION'), ['/logs/logger-list']);
-    this.setSubmenuEntry(7, 2, this.translate.instant('MENU.LOGGING_CONFIGURATION'), ['/logs/logging-configuration']);
+    this.setSubmenuEntry(7, 1, this.translate.instant('MENU.LOGGER_CONFIGURATION'), [
+      '/logs/logger-list',
+    ]);
+    this.setSubmenuEntry(7, 2, this.translate.instant('MENU.LOGGING_CONFIGURATION'), [
+      '/logs/logging-configuration',
+    ]);
     console.log('TopNavigationComponent.buildMenu leaving');
   }
 

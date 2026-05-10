@@ -1,131 +1,212 @@
-
-<div style="margin-left: 10px; margin-right: 10px;">
+<div style="margin-left: 10px; margin-right: 10px">
   <p-tabs value="0">
     <p-tablist>
-      <p-tab value="0">{{ 'ITEMS.ITEMS'|translate }} ({{ 'ITEMS.TOTAL'|translate }}: {{itemcount}})</p-tab>
-      <p-tab value="1">{{ 'ITEMS.MONITORED ITEMS'|translate }}</p-tab>
+      <p-tab value="0">{{ 'ITEMS.ITEMS' | translate }} ({{ 'ITEMS.TOTAL' | translate }}: {{ itemcount }})</p-tab>
+      <p-tab value="1">{{ 'ITEMS.MONITORED ITEMS' | translate }}</p-tab>
     </p-tablist>
     <p-tabpanels>
-    <p-tabpanel value="0">
-
-
-      <!--
+      <p-tabpanel value="0">
+        <!--
             <bs-alert *ngIf="alertText !== ''" type="warning"  [dismissible]="true" >
               <strong>Warning!</strong> Better check yourself, you're not looking too good.
             </bs-alert>
       -->
 
-      <!------------------------------------------>
-      <!--   Modal dialog with details   -->
-      <!------------------------------------------>
+        <!------------------------------------------>
+        <!--   Modal dialog with details   -->
+        <!------------------------------------------>
 
-      <p-dialog header="{{ 'Ungültiger Wert'|translate }}" [(visible)]="showItemAlert" [modal]="true" [style]="{width: '900px', minWidth: '400px'}" [baseZIndex]="10000">
-        @if (item_val) {
-          <p>{{alertText}}</p>
-          <p></p>
-          <a [translate]="'Eingegebener Wert'"></a>: '{{item_val.value}}'
-        }
-        <ng-template #footer>
-          <button type="button" tabindex="1" autofocus="autofocus" class="btn btn-primary btn-sm btn-shng" (click)="closeAlert(itemdetails.value)">{{'CLOSE'|translate}}</button>
-        </ng-template>
-      </p-dialog>
+        <p-dialog
+          header="{{ 'Ungültiger Wert' | translate }}"
+          [(visible)]="showItemAlert"
+          [modal]="true"
+          [style]="{ width: '900px', minWidth: '400px' }"
+          [baseZIndex]="10000"
+        >
+          @if (item_val) {
+            <p>{{ alertText }}</p>
+            <p></p>
+            <a [translate]="'Eingegebener Wert'"></a>: '{{ item_val.value }}'
+          }
+          <ng-template #footer>
+            <button
+              type="button"
+              tabindex="1"
+              autofocus="autofocus"
+              class="btn btn-primary btn-sm btn-shng"
+              (click)="closeAlert(itemdetails.value)"
+            >
+              {{ 'CLOSE' | translate }}
+            </button>
+          </ng-template>
+        </p-dialog>
 
-
-        <div class="container-fluid navBorder" style="overflow: hidden; border-top: 0;">
+        <div class="container-fluid navBorder" style="overflow: hidden; border-top: 0">
           <div>
             <div class="row">
               <div class="col shng_headline">
-
-                  <div class="form-group">
-
-                    <input type="input" pTooltip="{{'ITEMS.TOOLTIP SEARCH'|translate:searchStart_param}}" tooltipPosition="top" class="form-control" id="filter" #filter (keyup)="filterTree($event, filter.value)" placeholder="{{ 'ITEMS.SEARCH ITEMPATH'|translate }}..." value="{{ '' }}"/>
-
-                  </div>
+                <div class="form-group">
+                  <input
+                    type="input"
+                    pTooltip="{{ 'ITEMS.TOOLTIP SEARCH' | translate: searchStart_param }}"
+                    tooltipPosition="top"
+                    class="form-control"
+                    id="filter"
+                    #filter
+                    (keyup)="filterTree($event, filter.value)"
+                    placeholder="{{ 'ITEMS.SEARCH ITEMPATH' | translate }}..."
+                    value="{{ '' }}"
+                  />
+                </div>
               </div>
               <div class="col shng_headline">
-                <button type="button" class="btn btn-shng btn-sm" style="margin-right: 5px" id="btn-clear-search" [disabled]="!treeIsFiltered" (click)="clearFilter($event, filter)"><fa-icon [icon]="faCircleNotch"></fa-icon> {{ 'ITEMS.RESET'|translate }}</button>
-                <button type="button" class="btn btn-shng btn-sm" style="margin-right: 5px; background-color: var(--shng-secondary-button)" id="btn-expand-all" (click)="expandAll()"><fa-icon [icon]="faFolderOpen"></fa-icon>&nbsp;{{ 'ITEMS.EXPAND ALL'|translate }}</button>
-                <button type="button" class="btn btn-shng btn-sm" style="margin-right: 5px; background-color: var(--shng-secondary-button)" id="btn-collapse-all" (click)="collapseAll()"><fa-icon [icon]="faFolder"></fa-icon> {{ 'ITEMS.REDUCE ALL'|translate }}</button>
+                <button
+                  type="button"
+                  class="btn btn-shng btn-sm"
+                  style="margin-right: 5px"
+                  id="btn-clear-search"
+                  [disabled]="!treeIsFiltered"
+                  (click)="clearFilter($event, filter)"
+                >
+                  <fa-icon [icon]="faCircleNotch"></fa-icon> {{ 'ITEMS.RESET' | translate }}
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-shng btn-sm"
+                  style="margin-right: 5px; background-color: var(--shng-secondary-button)"
+                  id="btn-expand-all"
+                  (click)="expandAll()"
+                >
+                  <fa-icon [icon]="faFolderOpen"></fa-icon>&nbsp;{{ 'ITEMS.EXPAND ALL' | translate }}
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-shng btn-sm"
+                  style="margin-right: 5px; background-color: var(--shng-secondary-button)"
+                  id="btn-collapse-all"
+                  (click)="collapseAll()"
+                >
+                  <fa-icon [icon]="faFolder"></fa-icon> {{ 'ITEMS.REDUCE ALL' | translate }}
+                </button>
               </div>
             </div>
           </div>
 
           <div class="row">
-            <div class="col" style="max-width: 50%;">
+            <div class="col" style="max-width: 50%">
               <div class="card">
                 <div class="card-body p-1">
-                  <div id="tree" style="overflow-y: scroll;">
+                  <div id="tree" style="overflow-y: scroll">
                     <div class="col-sm-12">
-
-                        <p-tree [value]="filteredTree"
-                                (onNodeSelect)="nodeSelect($event)"
-                                selectionMode="single"
-                                [(selection)]="selectedFile"
-                                emptyMessage="{{'ITEMS.NO ITEMS'|translate}}">
-                          <ng-template let-node  pTemplate="default">
-                            @if (node.tags[0] > 0 && !this.treeIsFiltered) {
-                              {{node.label}} &nbsp;
-                              <span style="background:#dadada;">
-                                &nbsp; {{node.tags[0]}} &nbsp;
-                              </span>
-                            }
-                            @if (node.tags[0] === 0 || this.treeIsFiltered) {
-                              <span style="float: left;">{{node.label}}</span>
-                            }
-                          </ng-template>
-
-
-                        </p-tree>
-
+                      <p-tree
+                        [value]="filteredTree"
+                        (onNodeSelect)="nodeSelect($event)"
+                        selectionMode="single"
+                        [(selection)]="selectedFile"
+                        emptyMessage="{{ 'ITEMS.NO ITEMS' | translate }}"
+                      >
+                        <ng-template let-node pTemplate="default">
+                          @if (node.tags[0] > 0 && !this.treeIsFiltered) {
+                            {{ node.label }} &nbsp;
+                            <span style="background: #dadada"> &nbsp; {{ node.tags[0] }} &nbsp; </span>
+                          }
+                          @if (node.tags[0] === 0 || this.treeIsFiltered) {
+                            <span style="float: left">{{ node.label }}</span>
+                          }
+                        </ng-template>
+                      </p-tree>
                     </div>
-
                   </div>
                 </div>
               </div>
             </div>
-            <div class="col" style="max-width: 50%;">
-              <div class="card" >
+            <div class="col" style="max-width: 50%">
+              <div class="card">
                 <div class="card-header p-1 shng_heading">
-                  <button type="button" class="float-sm-right btn btn-shng btn-sm" style="margin-left: 5px; background-color: var(--shng-secondary-button)" id="btn-reload" (click)="getDetails(itemdetails.path);"><fa-icon [icon]="faSync"></fa-icon> {{ 'ITEMS.RELOAD'|translate }}</button>
+                  <button
+                    type="button"
+                    class="float-sm-right btn btn-shng btn-sm"
+                    style="margin-left: 5px; background-color: var(--shng-secondary-button)"
+                    id="btn-reload"
+                    (click)="getDetails(itemdetails.path)"
+                  >
+                    <fa-icon [icon]="faSync"></fa-icon> {{ 'ITEMS.RELOAD' | translate }}
+                  </button>
                   @if (!isItemMonitored(itemdetails.path)) {
-                    <button type="button" class="float-sm-right btn btn-shng btn-sm" style="margin-left: 5px" id="btn-monitor-on" [disabled]="(itemdetails.path === undefined)" (click)="monitorItem(itemdetails.path, true);"><fa-icon [icon]="faThumbtack"></fa-icon> {{ 'ITEMS.MONITOR'|translate }}</button>
+                    <button
+                      type="button"
+                      class="float-sm-right btn btn-shng btn-sm"
+                      style="margin-left: 5px"
+                      id="btn-monitor-on"
+                      [disabled]="itemdetails.path === undefined"
+                      (click)="monitorItem(itemdetails.path, true)"
+                    >
+                      <fa-icon [icon]="faThumbtack"></fa-icon> {{ 'ITEMS.MONITOR' | translate }}
+                    </button>
                   }
                   @if (isItemMonitored(itemdetails.path)) {
-                    <button type="button" class="float-sm-right btn-shng-outline-secondary btn-sm" style="margin-left: 5px;" id="btn-monitor-off" [disabled]="(itemdetails.path === undefined)" (click)="monitorItem(itemdetails.path, false);"><i style="color: #c40808;" class="far fa-trash-alt"></i> {{ 'ITEMS.MONITOR'|translate }}</button>
+                    <button
+                      type="button"
+                      class="float-sm-right btn-shng-outline-secondary btn-sm"
+                      style="margin-left: 5px"
+                      id="btn-monitor-off"
+                      [disabled]="itemdetails.path === undefined"
+                      (click)="monitorItem(itemdetails.path, false)"
+                    >
+                      <i style="color: #c40808" class="far fa-trash-alt"></i> {{ 'ITEMS.MONITOR' | translate }}
+                    </button>
                   }
-                  <strong>{{ 'ITEMS.ITEM DETAILS'|translate }}</strong>
+                  <strong>{{ 'ITEMS.ITEM DETAILS' | translate }}</strong>
                 </div>
-                <div class="card-body p-1" style="position: relative;">
+                <div class="card-body p-1" style="position: relative">
                   <div class="card-text" style="">
-                    <div id="cardOverlay" class="cardOverlay" style="position: relative; top: 45%; left:45%;">
-                        <span id="reload-element" class="fas fa-sync fa-4x"></span>
+                    <div id="cardOverlay" class="cardOverlay" style="position: relative; top: 45%; left: 45%">
+                      <span id="reload-element" class="fas fa-sync fa-4x"></span>
                     </div>
-                    <div id="tree_detail" class="data-container refresh-data pre-scrollable" style="overflow-x: auto;">
+                    <div id="tree_detail" class="data-container refresh-data pre-scrollable" style="overflow-x: auto">
                       @if (itemdetailsloaded === false) {
-                        <span>
-                          {{ 'ITEMS.CHOOSE ITEM IN TREE'|translate }}<br>
-                        </span>
+                        <span> {{ 'ITEMS.CHOOSE ITEM IN TREE' | translate }}<br /> </span>
                       }
 
                       @if (itemdetailsloaded) {
                         <table class="table table-striped table-hover">
-                          <thead><tr class="shng_heading"><th class="py-1" style="min-width: 235px;">{{ 'ITEMS.ATTRIBUTE'|translate }}</th><th class="py-1">{{ 'ITEMS.VALUE'|translate }}</th></tr></thead>
+                          <thead>
+                            <tr class="shng_heading">
+                              <th class="py-1" style="min-width: 235px">{{ 'ITEMS.ATTRIBUTE' | translate }}</th>
+                              <th class="py-1">{{ 'ITEMS.VALUE' | translate }}</th>
+                            </tr>
+                          </thead>
                           <tbody>
-                            <tr><td class="py-1">{{'ITEMS.PATH'|translate}}</td><td class="py-1">{{itemdetails.path}}</td></tr>
-                            <tr><td class="py-1">{{'ITEMS.NAME'|translate}}</td><td class="py-1">{{itemdetails.name}}</td></tr>
-                            <tr><td class="py-1">{{'ITEMS.TYPE'|translate}}</td><td class="py-1">{{itemdetails.type}}</td></tr>
+                            <tr>
+                              <td class="py-1">{{ 'ITEMS.PATH' | translate }}</td>
+                              <td class="py-1">{{ itemdetails.path }}</td>
+                            </tr>
+                            <tr>
+                              <td class="py-1">{{ 'ITEMS.NAME' | translate }}</td>
+                              <td class="py-1">{{ itemdetails.name }}</td>
+                            </tr>
+                            <tr>
+                              <td class="py-1">{{ 'ITEMS.TYPE' | translate }}</td>
+                              <td class="py-1">{{ itemdetails.type }}</td>
+                            </tr>
                             @if (itemdetails.description !== undefined && itemdetails.description !== '') {
-                              <tr><td class="py-1">{{'ITEMS.DESCRIPTION'|translate}}</td><td class="py-1">{{itemdetails.description}}</td></tr>
+                              <tr>
+                                <td class="py-1">{{ 'ITEMS.DESCRIPTION' | translate }}</td>
+                                <td class="py-1">{{ itemdetails.description }}</td>
+                              </tr>
                             }
                             @if (itemdetails.struct !== undefined) {
-                              <tr><td class="py-1">{{'ITEMS.STRUCT'|translate}}</td><td class="py-1">{{itemdetails.struct}}</td></tr>
+                              <tr>
+                                <td class="py-1">{{ 'ITEMS.STRUCT' | translate }}</td>
+                                <td class="py-1">{{ itemdetails.struct }}</td>
+                              </tr>
                             }
-<!--
+                            <!--
                             <tr><td class="py-1">{{'value'|translate}}</td><td class="py-1">{{itemdetails.input}}</td></tr>
 -->
 
                             <tr>
-                              <td class="py-1">{{'ITEMS.VALUE'|translate}}</td>
+                              <td class="py-1">{{ 'ITEMS.VALUE' | translate }}</td>
                               <td class="py-1">
                                 @switch (itemdetails.type) {
                                   @case ('bool') {
@@ -143,117 +224,295 @@
                                       }
                                     </select>
                                     -->
-                                    <p-toggleSwitch [(ngModel)]="itemdetails.value"
-                                                   (onChange)="updateValue(itemdetails.path, itemdetails.value, itemdetails.type, itemdetails.value)">
+                                    <p-toggleSwitch
+                                      [(ngModel)]="itemdetails.value"
+                                      (onChange)="
+                                        updateValue(
+                                          itemdetails.path,
+                                          itemdetails.value,
+                                          itemdetails.type,
+                                          itemdetails.value
+                                        )
+                                      "
+                                    >
                                     </p-toggleSwitch>
                                   }
-                                  @case (itemdetails.type === 'str' || itemdetails.type === 'list' || itemdetails.type === 'dict' ? itemdetails.type : '') {
-                                    <textarea type="text" class="form-control" style="resize: none;" #item_value (blur)="updateValue(itemdetails.path, item_value, itemdetails.type, itemdetails.value)" id="item_value">{{itemdetails.value}}</textarea>
+                                  @case (
+                                    itemdetails.type === 'str' ||
+                                    itemdetails.type === 'list' ||
+                                    itemdetails.type === 'dict'
+                                      ? itemdetails.type
+                                      : ''
+                                  ) {
+                                    <textarea
+                                      type="text"
+                                      class="form-control"
+                                      style="resize: none"
+                                      #item_value
+                                      (blur)="
+                                        updateValue(itemdetails.path, item_value, itemdetails.type, itemdetails.value)
+                                      "
+                                      id="item_value"
+                                      >{{ itemdetails.value }}</textarea
+                                    >
                                   }
-                                  @case (itemdetails.type === 'num' || itemdetails.type === 'scene' ? itemdetails.type : '') {
-                                    <input type="text" class="form-control" #item_value (blur)="updateValue(itemdetails.path, item_value, itemdetails.type, itemdetails.value)" id="item_value" value="{{itemdetails.value}}"/>
+                                  @case (
+                                    itemdetails.type === 'num' || itemdetails.type === 'scene' ? itemdetails.type : ''
+                                  ) {
+                                    <input
+                                      type="text"
+                                      class="form-control"
+                                      #item_value
+                                      (blur)="
+                                        updateValue(itemdetails.path, item_value, itemdetails.type, itemdetails.value)
+                                      "
+                                      id="item_value"
+                                      value="{{ itemdetails.value }}"
+                                    />
                                   }
-<!--
+                                  <!--
                                   @case (itemdetails.type === 'num' || itemdetails.type === 'scene' ? itemdetails.type : '') {
                                     <input type="text" class="form-control" #item_value (blur)="myalert.show()" id="item_value" value="{{itemdetails.value}}"/>
                                   }
 -->
                                   @default {
-                                    {{itemdetails.value}}
+                                    {{ itemdetails.value }}
                                   }
                                 }
                               </td>
                             </tr>
 
                             <tr></tr>
-                            <tr class="shng_heading"><th class="py-1" colspan="2" style="height: 45px; vertical-align: bottom">{{ 'ITEMS.UPDATE INFORMATION'|translate }}:</th></tr>
+                            <tr class="shng_heading">
+                              <th class="py-1" colspan="2" style="height: 45px; vertical-align: bottom">
+                                {{ 'ITEMS.UPDATE INFORMATION' | translate }}:
+                              </th>
+                            </tr>
 
-                            <tr><td class="py-1">{{'ITEMS.LAST UPDATE'|translate}}</td><td class="py-1">{{shared.displayDateTime(itemdetails.last_update)}}</td></tr>
-                            <tr><td class="py-1">{{'ITEMS.LAST CHANGE'|translate}}</td><td class="py-1">{{shared.displayDateTime(itemdetails.last_change)}}</td></tr>
-                            <tr><td class="py-1">{{'ITEMS.UPDATE AGE'|translate}}</td><td class="py-1">{{this.update_age}}</td></tr>
-                            <tr><td class="py-1">{{'ITEMS.CHANGE AGE'|translate}}</td><td class="py-1">{{this.change_age}}</td></tr>
-                            <tr><td class="py-1">{{'ITEMS.UPDATE BY'|translate}}</td><td class="py-1">{{itemdetails.updated_by}}</td></tr>
-                            <tr><td class="py-1">{{'ITEMS.CHANGE BY'|translate}}</td><td class="py-1">{{itemdetails.changed_by}}</td></tr>
-                            <tr><td class="py-1">{{'ITEMS.LAST VALUE'|translate}}</td><td class="py-1">{{itemdetails.last_value}}</td></tr>
+                            <tr>
+                              <td class="py-1">{{ 'ITEMS.LAST UPDATE' | translate }}</td>
+                              <td class="py-1">{{ shared.displayDateTime(itemdetails.last_update) }}</td>
+                            </tr>
+                            <tr>
+                              <td class="py-1">{{ 'ITEMS.LAST CHANGE' | translate }}</td>
+                              <td class="py-1">{{ shared.displayDateTime(itemdetails.last_change) }}</td>
+                            </tr>
+                            <tr>
+                              <td class="py-1">{{ 'ITEMS.UPDATE AGE' | translate }}</td>
+                              <td class="py-1">{{ this.update_age }}</td>
+                            </tr>
+                            <tr>
+                              <td class="py-1">{{ 'ITEMS.CHANGE AGE' | translate }}</td>
+                              <td class="py-1">{{ this.change_age }}</td>
+                            </tr>
+                            <tr>
+                              <td class="py-1">{{ 'ITEMS.UPDATE BY' | translate }}</td>
+                              <td class="py-1">{{ itemdetails.updated_by }}</td>
+                            </tr>
+                            <tr>
+                              <td class="py-1">{{ 'ITEMS.CHANGE BY' | translate }}</td>
+                              <td class="py-1">{{ itemdetails.changed_by }}</td>
+                            </tr>
+                            <tr>
+                              <td class="py-1">{{ 'ITEMS.LAST VALUE' | translate }}</td>
+                              <td class="py-1">{{ itemdetails.last_value }}</td>
+                            </tr>
 
-                            <tr><td class="py-1">{{'ITEMS.PREVIOUS UPDATE'|translate}}</td><td class="py-1">{{shared.displayDateTime(itemdetails.previous_update)}}</td></tr>
-                            <tr><td class="py-1">{{'ITEMS.PREVIOUS CHANGE'|translate}}</td><td class="py-1">{{shared.displayDateTime(itemdetails.previous_change)}}</td></tr>
-                            <tr><td class="py-1">{{'ITEMS.PREVIOUS UPDATE AGE'|translate}}</td><td class="py-1">{{this.previous_update_age}}</td></tr>
-                            <tr><td class="py-1">{{'ITEMS.PREVIOUS CHANGE AGE'|translate}}</td><td class="py-1">{{this.previous_change_age}}</td></tr>
-                            <tr><td class="py-1">{{'ITEMS.PREVIOUS UPDATE BY'|translate}}</td><td class="py-1">{{itemdetails.previous_update_by}}</td></tr>
-                            <tr><td class="py-1">{{'ITEMS.PREVIOUS CHANGE BY'|translate}}</td><td class="py-1">{{itemdetails.previous_change_by}}</td></tr>
-                            <tr><td class="py-1">{{'ITEMS.PREVIOUS VALUE'|translate}}</td><td class="py-1">{{itemdetails.previous_value}}</td></tr>
+                            <tr>
+                              <td class="py-1">{{ 'ITEMS.PREVIOUS UPDATE' | translate }}</td>
+                              <td class="py-1">{{ shared.displayDateTime(itemdetails.previous_update) }}</td>
+                            </tr>
+                            <tr>
+                              <td class="py-1">{{ 'ITEMS.PREVIOUS CHANGE' | translate }}</td>
+                              <td class="py-1">{{ shared.displayDateTime(itemdetails.previous_change) }}</td>
+                            </tr>
+                            <tr>
+                              <td class="py-1">{{ 'ITEMS.PREVIOUS UPDATE AGE' | translate }}</td>
+                              <td class="py-1">{{ this.previous_update_age }}</td>
+                            </tr>
+                            <tr>
+                              <td class="py-1">{{ 'ITEMS.PREVIOUS CHANGE AGE' | translate }}</td>
+                              <td class="py-1">{{ this.previous_change_age }}</td>
+                            </tr>
+                            <tr>
+                              <td class="py-1">{{ 'ITEMS.PREVIOUS UPDATE BY' | translate }}</td>
+                              <td class="py-1">{{ itemdetails.previous_update_by }}</td>
+                            </tr>
+                            <tr>
+                              <td class="py-1">{{ 'ITEMS.PREVIOUS CHANGE BY' | translate }}</td>
+                              <td class="py-1">{{ itemdetails.previous_change_by }}</td>
+                            </tr>
+                            <tr>
+                              <td class="py-1">{{ 'ITEMS.PREVIOUS VALUE' | translate }}</td>
+                              <td class="py-1">{{ itemdetails.previous_value }}</td>
+                            </tr>
 
-                            <tr class="shng_heading"><th class="py-1" colspan="2" style="height: 45px; vertical-align: bottom">{{'ITEMS.EVALUATION AND TRIGGER'|translate}}:</th></tr>
-                            <tr><td class="py-1">{{'cache'|translate}}</td><td class="py-1">{{itemdetails.cache}}</td></tr>
-                            <tr><td class="py-1">{{'enforce_updates'|translate}}</td><td class="py-1">{{itemdetails.enforce_updates}}</td></tr>
-                            <tr><td class="py-1">{{'enforce_change'|translate}}</td><td class="py-1">{{itemdetails.enforce_change}}</td></tr>
+                            <tr class="shng_heading">
+                              <th class="py-1" colspan="2" style="height: 45px; vertical-align: bottom">
+                                {{ 'ITEMS.EVALUATION AND TRIGGER' | translate }}:
+                              </th>
+                            </tr>
+                            <tr>
+                              <td class="py-1">{{ 'cache' | translate }}</td>
+                              <td class="py-1">{{ itemdetails.cache }}</td>
+                            </tr>
+                            <tr>
+                              <td class="py-1">{{ 'enforce_updates' | translate }}</td>
+                              <td class="py-1">{{ itemdetails.enforce_updates }}</td>
+                            </tr>
+                            <tr>
+                              <td class="py-1">{{ 'enforce_change' | translate }}</td>
+                              <td class="py-1">{{ itemdetails.enforce_change }}</td>
+                            </tr>
 
                             @if (itemdetails.trigger_condition !== undefined && itemdetails.trigger_condition !== '-') {
-                              <tr><td class="py-1">{{'trigger_condition'|translate}}</td><td class="py-1">{{itemdetails.trigger_condition}}</td></tr>
-                              <tr><td class="py-1">{{'trigger_condition raw'|translate}}</td><td class="py-1">{{itemdetails.trigger_condition_raw}}</td></tr>
+                              <tr>
+                                <td class="py-1">{{ 'trigger_condition' | translate }}</td>
+                                <td class="py-1">{{ itemdetails.trigger_condition }}</td>
+                              </tr>
+                              <tr>
+                                <td class="py-1">{{ 'trigger_condition raw' | translate }}</td>
+                                <td class="py-1">{{ itemdetails.trigger_condition_raw }}</td>
+                              </tr>
                             }
 
-                            <tr><td class="py-1">{{'eval'|translate}}</td><td class="py-1">{{itemdetails.eval}}</td></tr>
-                            <tr><td class="py-1">{{'eval_trigger'|translate}}</td><td class="py-1">{{itemdetails.trigger}}</td></tr>
+                            <tr>
+                              <td class="py-1">{{ 'eval' | translate }}</td>
+                              <td class="py-1">{{ itemdetails.eval }}</td>
+                            </tr>
+                            <tr>
+                              <td class="py-1">{{ 'eval_trigger' | translate }}</td>
+                              <td class="py-1">{{ itemdetails.trigger }}</td>
+                            </tr>
 
                             @if (itemdetails.hysteresis_input !== undefined && itemdetails.hysteresis_input !== '-') {
-                              <tr><td class="py-1">{{'hysteresis_input'|translate}}</td><td class="py-1">{{itemdetails.hysteresis_input}}</td></tr>
-                              <tr><td class="py-1">{{'hysteresis_upper_threshold'|translate}}</td><td class="py-1">{{itemdetails.hysteresis_upper_threshold}}</td></tr>
-                              <tr><td class="py-1">{{'hysteresis_lower_threshold'|translate}}</td><td class="py-1">{{itemdetails.hysteresis_lower_threshold}}</td></tr>
+                              <tr>
+                                <td class="py-1">{{ 'hysteresis_input' | translate }}</td>
+                                <td class="py-1">{{ itemdetails.hysteresis_input }}</td>
+                              </tr>
+                              <tr>
+                                <td class="py-1">{{ 'hysteresis_upper_threshold' | translate }}</td>
+                                <td class="py-1">{{ itemdetails.hysteresis_upper_threshold }}</td>
+                              </tr>
+                              <tr>
+                                <td class="py-1">{{ 'hysteresis_lower_threshold' | translate }}</td>
+                                <td class="py-1">{{ itemdetails.hysteresis_lower_threshold }}</td>
+                              </tr>
                             }
 
-                            <tr><td class="py-1">{{'on_update'|translate}}</td><td class="py-1">{{itemdetails.on_update}}</td></tr>
-                            <tr><td class="py-1">{{'on_change'|translate}}</td><td class="py-1">{{itemdetails.on_change}}</td></tr>
+                            <tr>
+                              <td class="py-1">{{ 'on_update' | translate }}</td>
+                              <td class="py-1">{{ itemdetails.on_update }}</td>
+                            </tr>
+                            <tr>
+                              <td class="py-1">{{ 'on_change' | translate }}</td>
+                              <td class="py-1">{{ itemdetails.on_change }}</td>
+                            </tr>
 
                             @if (itemdetails.log_change !== undefined && itemdetails.log_change !== '-') {
-                              <tr><td class="py-1">{{'log_change'|translate}}</td><td class="py-1">{{itemdetails.log_change}}</td></tr>
-                              <tr><td class="py-1">{{'log_level'|translate}}</td><td class="py-1">{{itemdetails.log_level}}</td></tr>
-                              <tr><td class="py-1">{{'log_text'|translate}}</td><td class="py-1">{{itemdetails.log_text}}</td></tr>
-                              <tr><td class="py-1">{{'log_mapping'|translate}}</td><td class="py-1">{{itemdetails.log_mapping}}</td></tr>
-                              <tr><td class="py-1">{{'log_rules'|translate}}</td><td class="py-1">{{itemdetails.log_rules}}</td></tr>
+                              <tr>
+                                <td class="py-1">{{ 'log_change' | translate }}</td>
+                                <td class="py-1">{{ itemdetails.log_change }}</td>
+                              </tr>
+                              <tr>
+                                <td class="py-1">{{ 'log_level' | translate }}</td>
+                                <td class="py-1">{{ itemdetails.log_level }}</td>
+                              </tr>
+                              <tr>
+                                <td class="py-1">{{ 'log_text' | translate }}</td>
+                                <td class="py-1">{{ itemdetails.log_text }}</td>
+                              </tr>
+                              <tr>
+                                <td class="py-1">{{ 'log_mapping' | translate }}</td>
+                                <td class="py-1">{{ itemdetails.log_mapping }}</td>
+                              </tr>
+                              <tr>
+                                <td class="py-1">{{ 'log_rules' | translate }}</td>
+                                <td class="py-1">{{ itemdetails.log_rules }}</td>
+                              </tr>
                             }
 
-                            <tr><td class="py-1">{{'cycle'|translate}}</td><td class="py-1">{{itemdetails.cycle}}</td></tr>
-                            <tr><td class="py-1">{{'crontab'|translate}}</td><td class="py-1">{{itemdetails.crontab}}</td></tr>
-                            <tr><td class="py-1">{{'autotimer'|translate }}</td><td class="py-1">{{itemdetails.autotimer}}</td></tr>
+                            <tr>
+                              <td class="py-1">{{ 'cycle' | translate }}</td>
+                              <td class="py-1">{{ itemdetails.cycle }}</td>
+                            </tr>
+                            <tr>
+                              <td class="py-1">{{ 'crontab' | translate }}</td>
+                              <td class="py-1">{{ itemdetails.crontab }}</td>
+                            </tr>
+                            <tr>
+                              <td class="py-1">{{ 'autotimer' | translate }}</td>
+                              <td class="py-1">{{ itemdetails.autotimer }}</td>
+                            </tr>
 
                             @if (itemdetails.threshold !== undefined && itemdetails.threshold !== '-') {
-                              <tr><td class="py-1">{{'threshold'|translate}}</td><td class="py-1">{{itemdetails.threshold}}</td></tr>
+                              <tr>
+                                <td class="py-1">{{ 'threshold' | translate }}</td>
+                                <td class="py-1">{{ itemdetails.threshold }}</td>
+                              </tr>
                               @if (itemdetails.threshold_crossed !== undefined) {
-                                <tr><td class="py-1">{{'threshold crossed'|translate}}</td><td class="py-1">{{itemdetails.threshold_crossed}}</td></tr>
+                                <tr>
+                                  <td class="py-1">{{ 'threshold crossed' | translate }}</td>
+                                  <td class="py-1">{{ itemdetails.threshold_crossed }}</td>
+                                </tr>
                               }
                             }
 
                             @if (JSON.stringify(itemdetails.config) !== '{}') {
-                              <tr class="shng_heading"><th class="py-1" colspan="2" style="height: 45px; vertical-align: bottom">{{ 'ITEMS.PLUGIN SPECIFIC CONFIGURATION'|translate }}:</th></tr>
+                              <tr class="shng_heading">
+                                <th class="py-1" colspan="2" style="height: 45px; vertical-align: bottom">
+                                  {{ 'ITEMS.PLUGIN SPECIFIC CONFIGURATION' | translate }}:
+                                </th>
+                              </tr>
                               @for (key of Object.keys(itemdetails.config); track $index) {
-                                <tr><td class="py-1">{{key}}</td><td class="py-1">{{itemdetails.config[key]}}</td></tr>
+                                <tr>
+                                  <td class="py-1">{{ key }}</td>
+                                  <td class="py-1">{{ itemdetails.config[key] }}</td>
+                                </tr>
                               }
                             }
 
                             @if (itemdetails.logics && itemdetails.logics.length > 0) {
-                              <tr class="shng_heading"><th class="py-1" colspan="2" style="height: 45px; vertical-align: bottom">{{ 'ITEMS.CONNECTED LOGICS'|translate }}:</th></tr>
+                              <tr class="shng_heading">
+                                <th class="py-1" colspan="2" style="height: 45px; vertical-align: bottom">
+                                  {{ 'ITEMS.CONNECTED LOGICS' | translate }}:
+                                </th>
+                              </tr>
                               @for (logic of itemdetails.logics; track $index) {
                                 <tr>
-                                  <td class="py-1"> <a class="text-shng" [routerLink]="['/logics/edit', logic.name]">{{logic.name}}</a></td>
-                                  <td class="py-1" style="font-size: 12px">{{logic.description}}</td>
+                                  <td class="py-1">
+                                    <a class="text-shng" [routerLink]="['/logics/edit', logic.name]">{{
+                                      logic.name
+                                    }}</a>
+                                  </td>
+                                  <td class="py-1" style="font-size: 12px">{{ logic.description }}</td>
                                 </tr>
                               }
                             }
 
                             @if (itemdetails.triggers && itemdetails.triggers.length > 0) {
-                              <tr class="shng_heading"><th class="py-1" colspan="2" style="height: 45px; vertical-align: bottom">{{ 'ITEMS.CONNECTED TRIGGERS'|translate }}:</th></tr>
+                              <tr class="shng_heading">
+                                <th class="py-1" colspan="2" style="height: 45px; vertical-align: bottom">
+                                  {{ 'ITEMS.CONNECTED TRIGGERS' | translate }}:
+                                </th>
+                              </tr>
                               @for (trigger of itemdetails.triggers; track $index) {
-                                <tr><td class="py-1" colspan="2">{{trigger}}</td></tr>
+                                <tr>
+                                  <td class="py-1" colspan="2">{{ trigger }}</td>
+                                </tr>
                               }
                             }
 
-
                             @if (itemdetails.filename !== 'None') {
-                              <tr><td class="py-1" style="height: 45px; vertical-align: bottom">{{'ITEMS.DEFINED IN'|translate}}</td><td class="py-1" style="height: 45px; vertical-align: bottom">{{itemdetails.filename}}</td></tr>
+                              <tr>
+                                <td class="py-1" style="height: 45px; vertical-align: bottom">
+                                  {{ 'ITEMS.DEFINED IN' | translate }}
+                                </td>
+                                <td class="py-1" style="height: 45px; vertical-align: bottom">
+                                  {{ itemdetails.filename }}
+                                </td>
+                              </tr>
                             }
-
                           </tbody>
                         </table>
                       }
@@ -264,23 +523,19 @@
             </div>
           </div>
         </div>
-    </p-tabpanel>
+      </p-tabpanel>
 
+      <!-------------------------------------------------->
+      <!--   List with monitored items and their data   -->
+      <!-------------------------------------------------->
 
-    <!-------------------------------------------------->
-    <!--   List with monitored items and their data   -->
-    <!-------------------------------------------------->
-
-    <p-tabpanel value="1">
-      <!-- the following container is/needs to be rerenderable -->
-      <ng-container #vc [ngTemplateOutlet]="tpl">
-      </ng-container>
-    </p-tabpanel>
-
+      <p-tabpanel value="1">
+        <!-- the following container is/needs to be rerenderable -->
+        <ng-container #vc [ngTemplateOutlet]="tpl"> </ng-container>
+      </p-tabpanel>
     </p-tabpanels>
   </p-tabs>
 </div>
-
 
 <!--
      The following template is used to render the table with item monitoring data into the monitoring-tab
@@ -288,31 +543,38 @@
 <ng-template #tpl>
   <table class="table table-striped table-hover">
     <thead>
-    <tr class="shng_heading">
-      <th style="min-width: 250px; border-top: 0">{{ 'ITEMS.PATH'|translate }}</th>
-      <th style="width: 150px; border-top: 0">{{ 'ITEMS.VALUE'|translate }}</th>
-      <th style="min-width: 100px; border-top: 0">{{ 'ITEMS.LAST CHANGE'|translate }}</th>
-      <th style="min-width: 100px; border-top: 0">{{ 'ITEMS.CHANGE BY'|translate }}</th>
-      <th style="min-width: 100px; border-top: 0">{{ 'ITEMS.LAST UPDATE'|translate }}</th>
-      <th style="min-width: 100px; border-top: 0">{{ 'ITEMS.UPDATE BY'|translate }}</th>
-      <th style="width: 30px; border-top: 0">{{ 'ITEMS.ACTIONS'|translate }}</th>
-    </tr>
+      <tr class="shng_heading">
+        <th style="min-width: 250px; border-top: 0">{{ 'ITEMS.PATH' | translate }}</th>
+        <th style="width: 150px; border-top: 0">{{ 'ITEMS.VALUE' | translate }}</th>
+        <th style="min-width: 100px; border-top: 0">{{ 'ITEMS.LAST CHANGE' | translate }}</th>
+        <th style="min-width: 100px; border-top: 0">{{ 'ITEMS.CHANGE BY' | translate }}</th>
+        <th style="min-width: 100px; border-top: 0">{{ 'ITEMS.LAST UPDATE' | translate }}</th>
+        <th style="min-width: 100px; border-top: 0">{{ 'ITEMS.UPDATE BY' | translate }}</th>
+        <th style="width: 30px; border-top: 0">{{ 'ITEMS.ACTIONS' | translate }}</th>
+      </tr>
     </thead>
     <tbody>
-    @for (itemdata of monitoredItems; track $index) {
-      <tr>
-        <td class="py-1">{{ itemdata[0] }}</td>
-        <td class="py-1">{{ itemdata[1].value }}</td>
-        <td class="py-1">{{ shared.displayDateTime(itemdata[1].last_change) }}</td>
-        <td class="py-1">{{ itemdata[1].last_change_by }}</td>
-        <td class="py-1">{{ shared.displayDateTime(itemdata[1].last_update) }}</td>
-        <td class="py-1">{{ itemdata[1].last_update_by }}</td>
-        <td class="py-1">
-          <button type="button" class="float-sm-right btn-outline btn-sm" style="margin-left: 5px" id="btn-monitor2t" (click)="monitorItem(itemdata[0], false);"><i style="color: #c40808;" class="far fa-trash-alt"></i></button>
-        </td>
-      </tr>
-    }
-
+      @for (itemdata of monitoredItems; track $index) {
+        <tr>
+          <td class="py-1">{{ itemdata[0] }}</td>
+          <td class="py-1">{{ itemdata[1].value }}</td>
+          <td class="py-1">{{ shared.displayDateTime(itemdata[1].last_change) }}</td>
+          <td class="py-1">{{ itemdata[1].last_change_by }}</td>
+          <td class="py-1">{{ shared.displayDateTime(itemdata[1].last_update) }}</td>
+          <td class="py-1">{{ itemdata[1].last_update_by }}</td>
+          <td class="py-1">
+            <button
+              type="button"
+              class="float-sm-right btn-outline btn-sm"
+              style="margin-left: 5px"
+              id="btn-monitor2t"
+              (click)="monitorItem(itemdata[0], false)"
+            >
+              <i style="color: #c40808" class="far fa-trash-alt"></i>
+            </button>
+          </td>
+        </tr>
+      }
     </tbody>
   </table>
 </ng-template>

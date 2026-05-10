@@ -1,36 +1,36 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import "@fontsource/roboto/400.css";
-@import "@fontsource/roboto/700.css";
+@import '@fontsource/roboto/400.css';
+@import '@fontsource/roboto/700.css';
 
-@import "codemirror/lib/codemirror.css";
-@import "codemirror/addon/hint/show-hint.css";
-@import "codemirror/addon/dialog/dialog.css";
-@import "codemirror/addon/search/matchesonscrollbar.css";
-@import "codemirror/addon/fold/foldgutter.css";
-
+@import 'codemirror/lib/codemirror.css';
+@import 'codemirror/addon/hint/show-hint.css';
+@import 'codemirror/addon/dialog/dialog.css';
+@import 'codemirror/addon/search/matchesonscrollbar.css';
+@import 'codemirror/addon/fold/foldgutter.css';
 
 /* Hide spinners for number fields */
 input[type='number'] {
-  -moz-appearance:textfield;
+  -moz-appearance: textfield;
 }
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-/*
+  /*
   -webkit-appearance: none;
 */
 }
 
-
 /* @import "codemirror/addon/display/fullscreen.css"; */
 .CodeMirror-fullscreen {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   height: auto;
   z-index: 12000;
 }
-
 
 /*
 
@@ -38,18 +38,17 @@ input::-webkit-inner-spin-button {
 
 */
 
-
 :root {
   color-scheme: light;
   --shng-blue: #709cc2;
   --shng-red: #c40808;
   --shng-green: green;
   --shng-warning: #e3d304;
-  --shng-orange: #FF8000;
+  --shng-orange: #ff8000;
 
   --shng-disabled: #bbb;
-/*  älter: --shng-border: #d9d9d9; */
-/*  --shng-border: #f9f9f9; */
+  /*  älter: --shng-border: #d9d9d9; */
+  /*  --shng-border: #f9f9f9; */
   --shng-border: #dee2e5;
   --shng-secondary-button: #e0e0e0;
   --shng-toggle-off: #a9a9a9;
@@ -58,26 +57,54 @@ input::-webkit-inner-spin-button {
   --shng-secondary-button2: #f5f5f5;
 */
 
-
-*, *::before, *::after { box-sizing: border-box; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
-  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family:
+    'Roboto',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
   color: #212529;
 }
 
-h1, h2, h3, h4, h5, h6 { margin-top: 0; margin-bottom: 0.5rem; }
-p  { margin-top: 0; margin-bottom: 1rem; }
-ul, ol, dl { margin-top: 0; margin-bottom: 1rem; }
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+ul,
+ol,
+dl {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
 
 /* PrimeNG Aura adds ~14-18 px padding inside every tab panel by default.
    Content divs (tab-content-services, shngbody, etc.) manage their own
    spacing, so the extra layer is pure whitespace. */
-.p-tabpanel { padding: 0; }
+.p-tabpanel {
+  padding: 0;
+}
 
 textarea {
   white-space: pre;
@@ -89,8 +116,8 @@ textarea {
 /* for PrimeNG */
 
 .ui-state-highlight {
-  background-color: var(--shng-blue) !important; }
-
+  background-color: var(--shng-blue) !important;
+}
 
 /* TurboTable */
 
@@ -105,14 +132,15 @@ textarea {
   background-color: #ffffff !important;
   border: 0 solid var(--shng-border) !important;
   border-bottom-color: var(--shng-border) !important;
-  color: #1b1d1f !important; }
+  color: #1b1d1f !important;
+}
 
 .ui-table .ui-table-tbody > tr {
   background-color: #f0f0f0 !important;
   border-top: 1px solid var(--shng-border) !important;
   border-bottom: 1px solid var(--shng-border) !important;
   border-bottom-color: var(--shng-border) !important;
-  }
+}
 /*
 .ui-table .ui-table-tbody > tr {
   background-color: #f0f0f0 !important;
@@ -126,22 +154,27 @@ textarea {
   border-bottom: 1px solid var(--shng-border) !important;
   background-color: inherit;
   border-top-color: var(--shng-border) !important;
-  border-bottom-color: var(--shng-border) !important; }
+  border-bottom-color: var(--shng-border) !important;
+}
 
 .ui-table .ui-table-tbody > tr.ui-state-highlight {
   background-color: #186ba0 !important;
-  color: #FFFFFF !important; }
+  color: #ffffff !important;
+}
 
 .ui-table .ui-sortable-column.ui-state-highlight {
   background-color: #ffffff !important;
   border-bottom-color: var(--shng-border) !important;
-  color: #1b1d1f !important; }
+  color: #1b1d1f !important;
+}
 
 .ui-table .ui-table-tbody > tr:nth-child(even) {
-  background-color: #ffffff !important; }
+  background-color: #ffffff !important;
+}
 
 .ui-table .ui-sortable-column .ui-sortable-column-icon {
-  color: var(--shng-blue) !important; }
+  color: var(--shng-blue) !important;
+}
 
 .ui-button.ui-state-active {
   background-color: var(--shng-blue) !important;
@@ -157,7 +190,11 @@ textarea {
   background-color: var(--shng-blue) !important;
   border-color: var(--shng-blue);
 }
-.btn-primary:hover { color: #fff; background-color: #286090; border-color: #204d74; }
+.btn-primary:hover {
+  color: #fff;
+  background-color: #286090;
+  border-color: #204d74;
+}
 
 .ui-button-success {
   font-weight: 900;
@@ -182,7 +219,8 @@ textarea {
 }
 
 .ui-button-secondary.ui-state-focus {
-  background-color: var(--shng-red) !important; }
+  background-color: var(--shng-red) !important;
+}
 
 .ui-fileupload-buttonbar .ui-button {
   font-weight: 900;
@@ -190,7 +228,8 @@ textarea {
 }
 
 ui-inputswitch {
-  color: var(--shng-blue) !important; }
+  color: var(--shng-blue) !important;
+}
 
 .fa-icon-grey {
   color: #888888;
@@ -200,56 +239,56 @@ ui-inputswitch {
 
 .ui-table .ui-table-tbody > tr.ui-state-highlight {
   background-color: #186ba0;
-  color: #FFFFFF; }
+  color: #ffffff;
+}
 .ui-table .ui-table-tbody > tr.ui-contextmenu-selected {
   background-color: var(--shng-blue);
-  color: #FFFFFF; }
+  color: #ffffff;
+}
 .ui-table .ui-sortable-column.ui-state-highlight .ui-sortable-column-icon {
-  color: #FFFFFF; }
+  color: #ffffff;
+}
 .ui-table .ui-sortable-column:not(.ui-state-highlight):hover {
   background-color: #eeeeee;
   border-bottom-color: var(--shng-border) !important;
-  color: #212121; }
+  color: #212121;
+}
 .ui-table .ui-sortable-column:not(.ui-state-highlight):hover .ui-sortable-column-icon {
   border-bottom-color: var(--shng-border) !important;
-  color: #212121; }
-.ui-table.ui-table-hoverable-rows .ui-table-tbody > tr:not(.ui-state-highlight):not(.ui-contextmenu-selected):hover {
+  color: #212121;
+}
+.ui-table.ui-table-hoverable-rows
+  .ui-table-tbody
+  > tr:not(.ui-state-highlight):not(.ui-contextmenu-selected):hover {
   cursor: pointer;
   border-bottom-color: var(--shng-border) !important;
   background-color: #eeeeee;
-  color: #212121; }
-
-
-
-
-
-
-
+  color: #212121;
+}
 
 /* for modal vertical align */
 
 .vertical-alignment-helper {
-  display:table;
+  display: table;
   height: 100%;
   width: 100%;
-  pointer-events:none; /* This makes sure that we can still click outside of the modal to close it */
+  pointer-events: none; /* This makes sure that we can still click outside of the modal to close it */
 }
 .vertical-align-center {
   /* To center vertically */
   display: table-cell;
   vertical-align: middle;
-  pointer-events:none;
+  pointer-events: none;
 }
 .modal-content {
   /* Bootstrap sets the size of the modal in the modal-dialog class, we need to inherit it */
-  width:inherit;
-  max-width:inherit; /* For Bootstrap 4 - to avoid the modal window stretching full width */
-  height:inherit;
+  width: inherit;
+  max-width: inherit; /* For Bootstrap 4 - to avoid the modal window stretching full width */
+  height: inherit;
   /* To center horizontally */
   margin: 0 auto;
   pointer-events: all;
 }
-
 
 /* from backend plugin */
 
@@ -257,16 +296,16 @@ plusIconlist-group-item.py-2.node-tree.node-selected {
   background-color: #c3daee;
 }
 
-.table.table-striped.pluginList>tbody>tr:nth-child(even) {
-  background-color:#fff;
+.table.table-striped.pluginList > tbody > tr:nth-child(even) {
+  background-color: #fff;
 }
 
-.table.table-striped.logicsList>tbody>tr:nth-child(4n+3) {
-  background-color:#fff;
+.table.table-striped.logicsList > tbody > tr:nth-child(4n + 3) {
+  background-color: #fff;
 }
 
-.table-hover>tbody>tr:hover>td,
-.table-hover>tbody>tr:hover>th {
+.table-hover > tbody > tr:hover > td,
+.table-hover > tbody > tr:hover > th {
   background-color: #ecf3f8;
 }
 
@@ -275,7 +314,7 @@ plusIconlist-group-item.py-2.node-tree.node-selected {
   display: inline-block;
   height: 22px;
   width: 22px;
-  background-image: url("/gstatic/img/minus.png");
+  background-image: url('/gstatic/img/minus.png');
 }
 
 .plusIcon {
@@ -283,7 +322,7 @@ plusIconlist-group-item.py-2.node-tree.node-selected {
   display: inline-block;
   width: 22px;
   height: 22px;
-  background-image: url("/gstatic/img/plus.png");
+  background-image: url('/gstatic/img/plus.png');
 }
 
 .navBorder {
@@ -300,8 +339,8 @@ plusIconlist-group-item.py-2.node-tree.node-selected {
   top: 0;
   left: 0;
   background: rgba(0, 0, 0, 0.2);
-  border-bottom-right-radius: .25rem;
-  border-bottom-left-radius: .25rem;
+  border-bottom-right-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
 }
 
 .CodeMirror {
@@ -321,16 +360,17 @@ plusIconlist-group-item.py-2.node-tree.node-selected {
 }
 
 .item-box {
-  float:left;
-  border: 1px solid rgba(0,0,0,.125);
-  background-color: rgba(0,0,0,.03);
-  border-radius: .25rem;
+  float: left;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: 0.25rem;
 }
 
 .text-shng {
   color: #337ab7 !important;
 }
-a.text-shng:focus, a.text-shng:hover {
+a.text-shng:focus,
+a.text-shng:hover {
   color: #286090 !important;
 }
 
@@ -345,7 +385,7 @@ a.text-shng:focus, a.text-shng:hover {
   /* border-color: #2e6da4; */
 }
 .btn-shng:disabled,
-.btn-shng[disabled]{
+.btn-shng[disabled] {
   color: #fff;
   background-color: #a6c1d9;
   /* border-color: #2e6da4; */
@@ -384,7 +424,6 @@ a.text-shng:focus, a.text-shng:hover {
 }
 */
 
-
 .btn-shng-outline-secondary {
   color: #868e96;
   background-color: transparent;
@@ -398,18 +437,21 @@ a.text-shng:focus, a.text-shng:hover {
   border-color: #868e96;
 }
 
-.btn-shng-outline-secondary:focus, .btn-shng-outline-secondary.focus {
+.btn-shng-outline-secondary:focus,
+.btn-shng-outline-secondary.focus {
   /*
     box-shadow: 0 0 0 0.2rem rgba(134, 142, 150, 0.5);
   */
 }
 
-.btn-shng-outline-secondary.disabled, .btn-shng-outline-secondary:disabled {
+.btn-shng-outline-secondary.disabled,
+.btn-shng-outline-secondary:disabled {
   color: #c8ccd0;
   background-color: transparent;
 }
 
-.btn-shng-outline-secondary:not([disabled]):not(.disabled):active, .btn-shng-outline-secondary:not([disabled]):not(.disabled).active,
+.btn-shng-outline-secondary:not([disabled]):not(.disabled):active,
+.btn-shng-outline-secondary:not([disabled]):not(.disabled).active,
 .show > .btn-shng-outline-secondary.dropdown-toggle {
   color: #212529;
   background-color: #c8ccd0;
@@ -431,7 +473,8 @@ a.text-shng:focus, a.text-shng:hover {
   border-color: #1f601f;
 }
 
-.btn-shng-success:focus, .btn-success.focus {
+.btn-shng-success:focus,
+.btn-success.focus {
   box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.5);
 }
 /*
@@ -499,7 +542,6 @@ a.text-shng:focus, a.text-shng:hover {
   border-top: 0;
 }
 
-
 /* ============================================================
    Bootstrap 4 replacement utilities
    These reproduce the Bootstrap 4 rules for every class that
@@ -510,46 +552,125 @@ a.text-shng:focus, a.text-shng:hover {
    ============================================================ */
 
 /* --- Spacing (scale: 1=0.25rem  2=0.5rem  3=1rem  4=1.5rem) --- */
-.m-0  { margin: 0 !important; }
-.m-1  { margin: 0.25rem !important; }
-.m-2  { margin: 0.5rem !important; }
-.mt-1 { margin-top: 0.25rem !important; }
-.mt-2 { margin-top: 0.5rem !important; }
-.mt-4 { margin-top: 1.5rem !important; }
-.mb-1 { margin-bottom: 0.25rem !important; }
-.mb-2 { margin-bottom: 0.5rem !important; }
-.ml-0, .ms-0 { margin-left: 0 !important; }
-.ml-1, .ms-1 { margin-left: 0.25rem !important; }
-.ml-2, .ms-2 { margin-left: 0.5rem !important; }
-.mr-1, .me-1 { margin-right: 0.25rem !important; }
-.mr-2, .me-2 { margin-right: 0.5rem !important; }
+.m-0 {
+  margin: 0 !important;
+}
+.m-1 {
+  margin: 0.25rem !important;
+}
+.m-2 {
+  margin: 0.5rem !important;
+}
+.mt-1 {
+  margin-top: 0.25rem !important;
+}
+.mt-2 {
+  margin-top: 0.5rem !important;
+}
+.mt-4 {
+  margin-top: 1.5rem !important;
+}
+.mb-1 {
+  margin-bottom: 0.25rem !important;
+}
+.mb-2 {
+  margin-bottom: 0.5rem !important;
+}
+.ml-0,
+.ms-0 {
+  margin-left: 0 !important;
+}
+.ml-1,
+.ms-1 {
+  margin-left: 0.25rem !important;
+}
+.ml-2,
+.ms-2 {
+  margin-left: 0.5rem !important;
+}
+.mr-1,
+.me-1 {
+  margin-right: 0.25rem !important;
+}
+.mr-2,
+.me-2 {
+  margin-right: 0.5rem !important;
+}
 
 /* padding: note the .p-N names are distinct from PrimeNG's .p-component selectors */
-.p-0  { padding: 0 !important; }
-.p-1  { padding: 0.25rem !important; }
-.p-2  { padding: 0.5rem !important; }
-.py-1 { padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
-.py-2 { padding-top: 0.5rem  !important; padding-bottom: 0.5rem  !important; }
-.pl-2, .ps-2 { padding-left:  0.5rem !important; }
-.pr-2, .pe-2 { padding-right: 0.5rem !important; }
+.p-0 {
+  padding: 0 !important;
+}
+.p-1 {
+  padding: 0.25rem !important;
+}
+.p-2 {
+  padding: 0.5rem !important;
+}
+.py-1 {
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+}
+.py-2 {
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+.pl-2,
+.ps-2 {
+  padding-left: 0.5rem !important;
+}
+.pr-2,
+.pe-2 {
+  padding-right: 0.5rem !important;
+}
 
 /* --- Float --- */
-.float-left,  .float-sm-left  { float: left  !important; }
-.float-right, .float-sm-right { float: right !important; }
+.float-left,
+.float-sm-left {
+  float: left !important;
+}
+.float-right,
+.float-sm-right {
+  float: right !important;
+}
 
 /* --- Grid (minimal subset actually used) --- */
 .container {
-  width: 100%; padding-right: 15px; padding-left: 15px;
-  margin-right: auto; margin-left: auto; max-width: 1140px; box-sizing: border-box;
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 1140px;
+  box-sizing: border-box;
 }
 .container-fluid {
-  width: 100%; padding-right: 15px; padding-left: 15px;
-  margin-right: auto; margin-left: auto; box-sizing: border-box;
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+  box-sizing: border-box;
 }
-.row { display: flex; flex-wrap: wrap; margin-right: -15px; margin-left: -15px; }
-.col, [class*="col-"] { padding-right: 15px; padding-left: 15px; box-sizing: border-box; }
-.col          { flex: 1 1 0%; }
-.col-sm-12    { flex: 0 0 100%; max-width: 100%; }
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+.col,
+[class*='col-'] {
+  padding-right: 15px;
+  padding-left: 15px;
+  box-sizing: border-box;
+}
+.col {
+  flex: 1 1 0%;
+}
+.col-sm-12 {
+  flex: 0 0 100%;
+  max-width: 100%;
+}
 
 /* --- Tables --- */
 .table {
@@ -564,77 +685,153 @@ a.text-shng:focus, a.text-shng:hover {
   vertical-align: top;
   border-top: 1px solid #dee2e6;
 }
-.table thead th { vertical-align: bottom; border-bottom: 2px solid #dee2e6; }
-.table-striped tbody tr:nth-of-type(odd) { background-color: rgba(0, 0, 0, 0.05); }
-.table-responsive { display: block; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #dee2e6;
+}
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+.table-responsive {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
 
 /* --- Card --- */
 .card {
-  position: relative; display: flex; flex-direction: column;
-  min-width: 0; background-color: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.125); border-radius: 0.25rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-radius: 0.25rem;
 }
-.card-body   { flex: 1 1 auto; padding: 1.25rem; }
+.card-body {
+  flex: 1 1 auto;
+  padding: 1.25rem;
+}
 .card-header {
-  padding: 0.75rem 1.25rem; margin-bottom: 0;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 0;
   background-color: rgba(0, 0, 0, 0.03);
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
 }
-.card-text { margin-bottom: 0; }
+.card-text {
+  margin-bottom: 0;
+}
 
 /* --- Form controls --- */
 .form-control {
-  display: block; width: 100%; box-sizing: border-box;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
   height: calc(1.5em + 0.75rem + 2px);
   padding: 0.375rem 0.75rem;
-  font-size: 1rem; font-weight: 400; line-height: 1.5;
-  color: #495057; background-color: #fff;
-  border: 1px solid #ced4da; border-radius: 0.25rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
 }
 .form-control:focus {
-  border-color: #80bdff; outline: 0;
+  border-color: #80bdff;
+  outline: 0;
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
-.form-group { margin-bottom: 1rem; }
+.form-group {
+  margin-bottom: 1rem;
+}
 
 /* --- Buttons (base + variants used in templates) ---
    btn-shng and btn-primary colors are defined above;
    this block adds the structural rules they both depend on.  */
 .btn {
-  display: inline-block; font-weight: 400;
-  text-align: center; white-space: nowrap;
-  vertical-align: middle; user-select: none;
+  display: inline-block;
+  font-weight: 400;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  user-select: none;
   border: 1px solid transparent;
-  padding: 0.375rem 0.75rem; font-size: 1rem; line-height: 1.5;
-  border-radius: 0.25rem; cursor: pointer;
-  box-sizing: border-box; text-decoration: none;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-              border-color 0.15s ease-in-out;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  box-sizing: border-box;
+  text-decoration: none;
+  transition:
+    color 0.15s ease-in-out,
+    background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out;
 }
 .btn:disabled,
-.btn[disabled] { opacity: 0.65; cursor: not-allowed; pointer-events: none; }
-.btn-sm     { padding: 0.25rem 0.5rem; font-size: 0.875rem; border-radius: 0.2rem; }
-.btn-lg     { padding: 0.5rem  1rem;   font-size: 1.25rem;  border-radius: 0.3rem; }
-.btn-block  { display: block; width: 100%; }
+.btn[disabled] {
+  opacity: 0.65;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  border-radius: 0.2rem;
+}
+.btn-lg {
+  padding: 0.5rem 1rem;
+  font-size: 1.25rem;
+  border-radius: 0.3rem;
+}
+.btn-block {
+  display: block;
+  width: 100%;
+}
 
 .btn-outline-dark {
-  color: #343a40; background-color: transparent; border-color: #343a40;
+  color: #343a40;
+  background-color: transparent;
+  border-color: #343a40;
 }
-.btn-outline-dark:hover:not([disabled]) { color: #fff; background-color: #343a40; border-color: #343a40; }
-.btn-outline-dark:disabled              { color: #343a40; opacity: 0.65; }
+.btn-outline-dark:hover:not([disabled]) {
+  color: #fff;
+  background-color: #343a40;
+  border-color: #343a40;
+}
+.btn-outline-dark:disabled {
+  color: #343a40;
+  opacity: 0.65;
+}
 
 .btn-outline-danger {
-  color: #dc3545; background-color: transparent; border-color: #dc3545;
+  color: #dc3545;
+  background-color: transparent;
+  border-color: #dc3545;
 }
-.btn-outline-danger:hover:not([disabled]) { color: #fff; background-color: #dc3545; border-color: #dc3545; }
+.btn-outline-danger:hover:not([disabled]) {
+  color: #fff;
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
 
 .btn-outline-primary {
-  color: #007bff; background-color: transparent; border-color: #007bff;
+  color: #007bff;
+  background-color: transparent;
+  border-color: #007bff;
 }
-.btn-outline-primary:hover:not([disabled]) { color: #fff; background-color: #007bff; border-color: #007bff; }
+.btn-outline-primary:hover:not([disabled]) {
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
+}
 
-.btn-outline { background-color: transparent; border-color: currentColor; }
-
+.btn-outline {
+  background-color: transparent;
+  border-color: currentColor;
+}
 
 /* ================================================================
    PrimeNG Tree (p-tree) — global consistent styling
@@ -687,7 +884,7 @@ a.text-shng:focus, a.text-shng:hover {
   line-height: 1;
   color: inherit;
 }
-.p-tree-node-toggle-button:has([data-p-icon="chevron-down"])::before {
+.p-tree-node-toggle-button:has([data-p-icon='chevron-down'])::before {
   content: '▼';
 }
 
@@ -700,8 +897,8 @@ a.text-shng:focus, a.text-shng:hover {
    it appears before the projected text content, matching tree-view style.
    ================================================================ */
 .p-accordionheader-toggle-icon,
-.p-accordionheader svg[data-p-icon="chevron-down"],
-.p-accordionheader svg[data-p-icon="chevron-up"] {
+.p-accordionheader svg[data-p-icon='chevron-down'],
+.p-accordionheader svg[data-p-icon='chevron-up'] {
   display: none;
 }
 .p-accordionheader {
@@ -714,10 +911,10 @@ a.text-shng:focus, a.text-shng:hover {
 .p-accordionheader:hover {
   background-color: rgba(0, 0, 0, 0.25) !important;
 }
-.p-accordionheader[data-p-active="true"] {
+.p-accordionheader[data-p-active='true'] {
   background-color: transparent !important;
 }
-.p-accordionheader[data-p-active="true"]:hover {
+.p-accordionheader[data-p-active='true']:hover {
   background-color: rgba(0, 0, 0, 0.09) !important;
 }
 .p-accordionheader::before {
@@ -728,7 +925,7 @@ a.text-shng:focus, a.text-shng:hover {
   color: inherit;
   flex-shrink: 0;
 }
-.p-accordionheader[data-p-active="true"]::before {
+.p-accordionheader[data-p-active='true']::before {
   content: '▼';
 }
 
@@ -739,4 +936,3 @@ a.text-shng:focus, a.text-shng:hover {
 .p-tree li.p-tree-node {
   padding: 0 !important;
 }
-

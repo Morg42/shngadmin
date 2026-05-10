@@ -1,38 +1,46 @@
-
-import { Component, AfterViewChecked, OnInit, ViewEncapsulation, ViewChild, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {AppConfigService} from '../common/services/app-config.service';
-import {UserPreferencesService} from '../common/services/user-preferences.service';
+import {
+  AfterViewChecked,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
+import { AppConfigService } from '../common/services/app-config.service';
+import { UserPreferencesService } from '../common/services/user-preferences.service';
 // import { Title } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
 
 import { saveAs } from 'file-saver';
 
-import {ServicesApiService} from '../common/services/services-api.service';
-import {ServerApiService} from '../common/services/server-api.service';
-import {FilesApiService} from '../common/services/files-api.service';
+import { FilesApiService } from '../common/services/files-api.service';
+import { ServerApiService } from '../common/services/server-api.service';
+import { ServicesApiService } from '../common/services/services-api.service';
 
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ServerInfo } from '../common/models/server-info';
-import { TranslateService, TranslatePipe } from '@ngx-translate/core';
-import {SharedService} from '../common/services/shared.service';
+import { SharedService } from '../common/services/shared.service';
 
-import {sha512} from 'js-sha512';
-import { Bind } from 'primeng/bind';
-import { Tabs, TabList, Tab as Tab_1, TabPanels, TabPanel } from 'primeng/tabs';
-import { Ripple } from 'primeng/ripple';
 import { NgOptimizedImage } from '@angular/common';
-import { Select } from 'primeng/select';
 import { FormsModule } from '@angular/forms';
-import { ButtonDirective } from 'primeng/button';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
-import { InputText } from 'primeng/inputtext';
-import { Dialog } from 'primeng/dialog';
+import { sha512 } from 'js-sha512';
 import { PrimeTemplate } from 'primeng/api';
+import { Bind } from 'primeng/bind';
+import { ButtonDirective } from 'primeng/button';
+import { Dialog } from 'primeng/dialog';
 import { FileUpload } from 'primeng/fileupload';
+import { InputText } from 'primeng/inputtext';
+import { Ripple } from 'primeng/ripple';
+import { Select } from 'primeng/select';
+import { Tab as Tab_1, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 // import {LogicsWatchItem} from '../common/models/logics-watch-item';
 // import {SelectItem} from 'primeng/api';
-
 
 export interface CacheEntryType {
   filename: string;
@@ -41,20 +49,34 @@ export interface CacheEntryType {
   checked?: boolean;
 }
 
-
 @Component({
-    selector: 'app-services',
-    templateUrl: './services.component.html',
-    styleUrls: ['./services.component.css'],
-    encapsulation: ViewEncapsulation.None,
-    providers: [],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [Bind, Tabs, TabList, Ripple, Tab_1, TabPanels, TabPanel, NgOptimizedImage, Select, FormsModule, ButtonDirective, CodemirrorModule, InputText, Dialog, PrimeTemplate, FileUpload, TranslatePipe]
+  selector: 'app-services',
+  templateUrl: './services.component.html',
+  styleUrls: ['./services.component.css'],
+  encapsulation: ViewEncapsulation.None,
+  providers: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    Bind,
+    Tabs,
+    TabList,
+    Ripple,
+    Tab_1,
+    TabPanels,
+    TabPanel,
+    NgOptimizedImage,
+    Select,
+    FormsModule,
+    ButtonDirective,
+    CodemirrorModule,
+    InputText,
+    Dialog,
+    PrimeTemplate,
+    FileUpload,
+    TranslatePipe,
+  ],
 })
-
-
 export class ServicesComponent implements AfterViewChecked, OnInit {
-
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private http = inject(HttpClient);
@@ -67,7 +89,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
   private appConfig = inject(AppConfigService);
   private userPrefs = inject(UserPreferencesService);
 
-//  schedulerinfo: SchedulerInfo[];
+  //  schedulerinfo: SchedulerInfo[];
 
   serverInfo = <ServerInfo>{};
   default_language: string;
@@ -109,8 +131,8 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     indentUnit: 4,
     tabSize: 4,
     extraKeys: {
-      'Tab': 'insertSoftTab',
-      'Shift-Tab': 'indentLess'
+      Tab: 'insertSoftTab',
+      'Shift-Tab': 'indentLess',
     },
     lineNumbers: true,
     readOnly: false,
@@ -129,8 +151,8 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     indentUnit: 4,
     tabSize: 4,
     extraKeys: {
-      'Tab': 'insertSoftTab',
-      'Shift-Tab': 'indentLess'
+      Tab: 'insertSoftTab',
+      'Shift-Tab': 'indentLess',
     },
     lineNumbers: true,
     readOnly: false,
@@ -142,7 +164,6 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     autorefresh: true,
     fixedGutter: true,
   };
-
 
   // -----------------------------------------------------
   //  Vars for the YAML syntax checker
@@ -156,8 +177,8 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     indentUnit: 4,
     tabSize: 4,
     extraKeys: {
-      'Tab': 'insertSoftTab',
-      'Shift-Tab': 'indentLess'
+      Tab: 'insertSoftTab',
+      'Shift-Tab': 'indentLess',
     },
     lineNumbers: true,
     readOnly: false,
@@ -176,8 +197,8 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     indentUnit: 4,
     tabSize: 4,
     extraKeys: {
-      'Tab': 'insertSoftTab',
-      'Shift-Tab': 'indentLess'
+      Tab: 'insertSoftTab',
+      'Shift-Tab': 'indentLess',
     },
     lineNumbers: true,
     readOnly: false,
@@ -233,72 +254,63 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     this.titleService.setTitle(newTitle);
   }
 
-
   ngOnInit() {
     // console.log('ServicesComponent.ngOnInit');
 
     for (let i = 1; i <= 100; i++) {
-      this.rulers.push({color: '#eee', column: i * 4, lineStyle: 'dashed'});
+      this.rulers.push({ color: '#eee', column: i * 4, lineStyle: 'dashed' });
     }
 
-    this.dataServiceServer.getServerinfo()
+    this.dataServiceServer
+      .getServerinfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response) => {
-          this.shng_status = '?';
-          this.default_language = this.appConfig.defaultLanguage;
+      .subscribe((response) => {
+        this.shng_status = '?';
+        this.default_language = this.appConfig.defaultLanguage;
 
-          this.serverInfo = <ServerInfo> response;
+        this.serverInfo = <ServerInfo>response;
 
-          this.getShngStatus();
+        this.getShngStatus();
 
-//        this.valid_languagelist = [{label: 'English', value: 'en'},{label: 'Deutsch', value: 'de'},{label: 'Français', value: 'fr'},
-//        {label: 'Polski', value: 'pl'}];
-          this.valid_languagelist = [
-            {label: 'English', value: 'en'},
-            {label: 'Deutsch', value: 'de'},
-            {label: 'Français', value: 'fr'}
-            ];
+        //        this.valid_languagelist = [{label: 'English', value: 'en'},{label: 'Deutsch', value: 'de'},{label: 'Français', value: 'fr'},
+        //        {label: 'Polski', value: 'pl'}];
+        this.valid_languagelist = [
+          { label: 'English', value: 'en' },
+          { label: 'Deutsch', value: 'de' },
+          { label: 'Français', value: 'fr' },
+        ];
 
-          // this.valid_default_language = 'Deutsch';
-          this.selected_language = this.default_language;
+        // this.valid_default_language = 'Deutsch';
+        this.selected_language = this.default_language;
 
-          this.setTitle(this.translate.instant('SERVICES.SERVICES'));
+        this.setTitle(this.translate.instant('SERVICES.SERVICES'));
 
-          this.loadCacheOrphans();
-          this.cdr.markForCheck();
-        }
-      );
-
+        this.loadCacheOrphans();
+        this.cdr.markForCheck();
+      });
   }
-
 
   loadCacheOrphans() {
-
-    this.dataService.getCacheOrphans()
+    this.dataService
+      .getCacheOrphans()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response) => {
-          this.cacheInfo = <CacheEntryType[]> response;
-          this.cacheAllChecked = false;
-          // console.log('loadChacheOrphans', this.cacheInfo);
-          this.cdr.markForCheck();
-        }
-      );
+      .subscribe((response) => {
+        this.cacheInfo = <CacheEntryType[]>response;
+        this.cacheAllChecked = false;
+        // console.log('loadChacheOrphans', this.cacheInfo);
+        this.cdr.markForCheck();
+      });
   }
-
 
   deleteCacheEntry(entryNr) {
     // console.log('deleteCacheEntry', this.cacheInfo[entryNr].filename);
-    this.dataService.deleteCacheFile(this.cacheInfo[entryNr].filename)
+    this.dataService
+      .deleteCacheFile(this.cacheInfo[entryNr].filename)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        () => {
-          this.loadCacheOrphans();
-        }
-      );
+      .subscribe(() => {
+        this.loadCacheOrphans();
+      });
   }
-
 
   deleteCacheSelected() {
     const filelist = [];
@@ -308,16 +320,13 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
       }
     }
 
-    this.dataService.deleteCacheFile(JSON.stringify(filelist))
+    this.dataService
+      .deleteCacheFile(JSON.stringify(filelist))
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        () => {
-          this.loadCacheOrphans();
-        }
-      );
-
+      .subscribe(() => {
+        this.loadCacheOrphans();
+      });
   }
-
 
   cacheCheckAll() {
     for (let i = 0; i < this.cacheInfo.length; i++) {
@@ -325,9 +334,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     }
   }
 
-
   ngAfterViewChecked() {
-
     const evalEditor1 = this.evalCodeEditor.codeMirror;
     const evalEditor2 = this.evalCodeEditor2.codeMirror;
     // const h = evalEditor1.getViewport();
@@ -347,171 +354,154 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     editor4.refresh();
   }
 
-
   createPwdHash() {
     console.log('createPwdHash');
     this.pwd_hash = sha512(this.pwd_clear);
   }
 
-
   checkYaml() {
     // this.myTextoutput = this.myTextarea;
 
-    this.dataService.CheckYamlText(this.myTextarea)
+    this.dataService
+      .CheckYamlText(this.myTextarea)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response) => {
-          this.myTextOutput = response as string;
-          this.cmOptionsOutput.lineNumbers = true;
-          // if (this.myTextOutput.startsWith('ERROR:')) {
-          //   this.cmOptionsOutput.lineNumbers = false;
-          // }
-          this.cmOptionsOutput.lineNumbers = !(this.myTextOutput.startsWith('ERROR:'));
-          const editor2 = this.codeEditor2.codeMirror;
-          editor2.refresh();
-          this.cdr.markForCheck();
-        }
-      );
-
+      .subscribe((response) => {
+        this.myTextOutput = response as string;
+        this.cmOptionsOutput.lineNumbers = true;
+        // if (this.myTextOutput.startsWith('ERROR:')) {
+        //   this.cmOptionsOutput.lineNumbers = false;
+        // }
+        this.cmOptionsOutput.lineNumbers = !this.myTextOutput.startsWith('ERROR:');
+        const editor2 = this.codeEditor2.codeMirror;
+        editor2.refresh();
+        this.cdr.markForCheck();
+      });
   }
-
 
   checkEval() {
-    const evalData = {'expression': this.myEvalTextarea, 'relative_to': this.myRelativeTo};
-    this.dataService.CheckEvalData(evalData)
+    const evalData = { expression: this.myEvalTextarea, relative_to: this.myRelativeTo };
+    this.dataService
+      .CheckEvalData(evalData)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response) => {
-          const myResponse = response as { expression: string; type: string; result: unknown };
-          this.myEvalTextOutput = myResponse.expression;
-          this.myResultType = myResponse.type;
-          if (this.myResultType === 'list' || this.myResultType === 'dict') {
-            this.myEvalResult = JSON.stringify(myResponse.result);
-          } else {
-            this.myEvalResult = String(myResponse.result);
-          }
-          this.cdr.markForCheck();
+      .subscribe((response) => {
+        const myResponse = response as { expression: string; type: string; result: unknown };
+        this.myEvalTextOutput = myResponse.expression;
+        this.myResultType = myResponse.type;
+        if (this.myResultType === 'list' || this.myResultType === 'dict') {
+          this.myEvalResult = JSON.stringify(myResponse.result);
+        } else {
+          this.myEvalResult = String(myResponse.result);
         }
-      );
-
+        this.cdr.markForCheck();
+      });
   }
-
 
   convertYaml() {
     // this.myTextoutput = this.myTextarea;
 
-    this.dataService.ConvertToYamlText(this.myConverterTextarea)
+    this.dataService
+      .ConvertToYamlText(this.myConverterTextarea)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response) => {
-          this.myConverterTextOutput = response as string;
-          this.cmConverterOptionsOutput.lineNumbers = true;
-//          if (this.myConverterTextOutput.startsWith('ERROR:')) {
-//            this.cmConverterOptionsOutput.lineNumbers = false;
-//          }
-//          const editor4 = this.converterCodeEditor2.codeMirror;
-//          editor4.refresh();
-          this.cdr.markForCheck();
-        }
-      );
-
+      .subscribe((response) => {
+        this.myConverterTextOutput = response as string;
+        this.cmConverterOptionsOutput.lineNumbers = true;
+        //          if (this.myConverterTextOutput.startsWith('ERROR:')) {
+        //            this.cmConverterOptionsOutput.lineNumbers = false;
+        //          }
+        //          const editor4 = this.converterCodeEditor2.codeMirror;
+        //          editor4.refresh();
+        this.cdr.markForCheck();
+      });
   }
-
 
   setLanguage() {
     console.log('setLanguage', this.selected_language);
     this.appConfig.setDefaultLanguage(this.selected_language);
-    this.userPrefs.setLanguage(this.selected_language);   // persist across reloads
+    this.userPrefs.setLanguage(this.selected_language); // persist across reloads
     this.shared.setGuiLanguage();
     this.default_language = this.appConfig.defaultLanguage;
   }
-
 
   // -------------------------------------------------------
   // translate status text of SmartHomeNG
   //
   translate_shngStatus(text) {
-//    const translated_text = this.translate.instant('SHNG_STATE.' + text);
-//    if (translated_text.startsWith('SHNG_STATE.')) {
-//      return text;
-//    }
+    //    const translated_text = this.translate.instant('SHNG_STATE.' + text);
+    //    if (translated_text.startsWith('SHNG_STATE.')) {
+    //      return text;
+    //    }
     return this.translate.instant('SHNG_STATE.' + text);
   }
-
 
   // -------------------------------------------------------
   // poll the status of SmartHomeNG and schedule next poll
   //
   getShngStatus() {
     // duration in seconds
-    const interval1 = 5000;    // standard polling: every 5 seconds
-    const interval2 = 1000;    // polling while (re)starting: every second
-    const interval3 = 3000;    // polling while in error state (shng not running)
-    this.dataServiceServer.getShngServerStatus()
+    const interval1 = 5000; // standard polling: every 5 seconds
+    const interval2 = 1000; // polling while (re)starting: every second
+    const interval3 = 3000; // polling while in error state (shng not running)
+    this.dataServiceServer
+      .getShngServerStatus()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response) => {
-          const res = response as { code?: number; text?: string; details?: string };
-          if (res.code === undefined) {
-            // shng is not running
-            this.status_errorcount += 1;
-            console.log('getShngStatus', 'SmartHomeNG not running');
-            this.shng_status =  this.translate_shngStatus('waiting') + '...';
-          } else {
-            // console.log('getShngStatus', res.code, res.text);
-            this.shng_statuscode = res.code;
-            this.shng_status = this.translate_shngStatus(res.text);
-            if (res.details !== undefined) {
-              this.shng_status += ' (' + res.details + ')';
-            }
-            this.status_errorcount = 0;
+      .subscribe((response) => {
+        const res = response as { code?: number; text?: string; details?: string };
+        if (res.code === undefined) {
+          // shng is not running
+          this.status_errorcount += 1;
+          console.log('getShngStatus', 'SmartHomeNG not running');
+          this.shng_status = this.translate_shngStatus('waiting') + '...';
+        } else {
+          // console.log('getShngStatus', res.code, res.text);
+          this.shng_statuscode = res.code;
+          this.shng_status = this.translate_shngStatus(res.text);
+          if (res.details !== undefined) {
+            this.shng_status += ' (' + res.details + ')';
           }
-          if (this.status_errorcount < 20) {
-            // schedule next status check
-            let interval = interval1;
-            if (res.code !== 20) {
-              // code = 20 -> status running
-              if (this.status_errorcount === 0) {
-                interval = interval2;
-              } else {
-                interval = interval3;
-              }
-            }
-            this.sleep(interval).then(() => {
-              this.getShngStatus();
-            });
-          } else {
-            console.warn('getShngStatus', 'Statuspolling aborted');
-            this.shng_status = this.translate_shngStatus('not active');
-            this.shng_statuscode = -1;
-          }
-          this.cdr.markForCheck();
+          this.status_errorcount = 0;
         }
-      );
+        if (this.status_errorcount < 20) {
+          // schedule next status check
+          let interval = interval1;
+          if (res.code !== 20) {
+            // code = 20 -> status running
+            if (this.status_errorcount === 0) {
+              interval = interval2;
+            } else {
+              interval = interval3;
+            }
+          }
+          this.sleep(interval).then(() => {
+            this.getShngStatus();
+          });
+        } else {
+          console.warn('getShngStatus', 'Statuspolling aborted');
+          this.shng_status = this.translate_shngStatus('not active');
+          this.shng_statuscode = -1;
+        }
+        this.cdr.markForCheck();
+      });
   }
 
-
-  sleep (time) {
+  sleep(time) {
     // https://davidwalsh.name/javascript-sleep-function
     return new Promise((resolve) => setTimeout(resolve, time));
   }
-
 
   // -------------------------------------------------------
   // restart SmartHomeNG server application
   //
   restartShng() {
-    this.dataServiceServer.restartShngServer()
+    this.dataServiceServer
+      .restartShngServer()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response) => {
-          const res = response as { result?: string };
-          console.log('restartShng', res.result);
-          this.shng_status = this.translate_shngStatus('Restart clicked');
-          this.shng_statuscode = -1;
-          this.cdr.markForCheck();
-        }
-      );
+      .subscribe((response) => {
+        const res = response as { result?: string };
+        console.log('restartShng', res.result);
+        this.shng_status = this.translate_shngStatus('Restart clicked');
+        this.shng_statuscode = -1;
+        this.cdr.markForCheck();
+      });
   }
 
   downloadBackup() {
@@ -533,25 +523,23 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     }
     filename += 'shng_config_backup_' + today + '.zip';
 
-    this.dataServiceServer.downloadConfigBackup()
+    this.dataServiceServer
+      .downloadConfigBackup()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response) => {
-          const res = response as Blob;
-          // saveAs(res, 'shng_config_backup_' + today + '.zip');
-          saveAs(res, filename);
-          this.show_backup_confirm = true;
-          this.backup_disabled = false;
-          this.restore_disabled = false;
+      .subscribe((response) => {
+        const res = response as Blob;
+        // saveAs(res, 'shng_config_backup_' + today + '.zip');
+        saveAs(res, filename);
+        this.show_backup_confirm = true;
+        this.backup_disabled = false;
+        this.restore_disabled = false;
 
-          this.ngOnInit();
-          this.cdr.markForCheck();
-        }
-      );
+        this.ngOnInit();
+        this.cdr.markForCheck();
+      });
   }
 
   restoreBackup() {
-
     this.backup_disabled = true;
     this.restore_disabled = true;
     this.show_restore_chooser = true;
@@ -559,7 +547,6 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     this.backup_disabled = false;
     this.restore_disabled = false;
   }
-
 
   myUploader(event, form) {
     console.log('myUploader', event.files);
@@ -577,7 +564,6 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     // file reading finished successfully
     reader.addEventListener('load', function () {
       // const text = this.result;
-
       // contents of the file
       // console.log(text);
     });
@@ -599,13 +585,12 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
       // console.warn(reader.result);
       filecontent = reader.result as string;
 
-      this.fileService.saveFile('restore', event.files[0].name, filecontent)
+      this.fileService
+        .saveFile('restore', event.files[0].name, filecontent)
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(
-          () => {
-            this.ngOnInit();
-          }
-        );
+        .subscribe(() => {
+          this.ngOnInit();
+        });
 
       form.clear();
       this.show_restore_chooser = false;
@@ -617,12 +602,10 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     reader.readAsDataURL(event.files[0]);
   }
 
-
-
   doUpload(form) {
     console.log('doUpload');
 
-/*
+    /*
     this.fileService.saveFile('restore', event.files[0].name, 'TEST test')
       .subscribe(
         (response2) => {

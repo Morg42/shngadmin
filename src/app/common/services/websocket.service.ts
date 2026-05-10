@@ -1,7 +1,5 @@
-
 import { Injectable, NgZone, inject } from '@angular/core';
 import { Subject } from 'rxjs';
-
 
 @Injectable()
 export class WebsocketService {
@@ -16,13 +14,10 @@ export class WebsocketService {
   public messages$ = this.messageStream.asObservable();
   public open$ = this.openSubject.asObservable();
 
-
-
   public connect(url: string): void {
     this.reconnectUrl = url;
     this.openConnection(url);
   }
-
 
   private openConnection(url: string): void {
     this.ws = new WebSocket(url);
@@ -30,8 +25,8 @@ export class WebsocketService {
     this.ws.onopen = () => {
       this.ngZone.run(() => {
         console.log('WebSocket connected: ' + url);
-        this.openSubject.next();  // identity sent first via openSubscription handler
-        this.messageQueue.forEach(msg => this.ws.send(JSON.stringify(msg)));
+        this.openSubject.next(); // identity sent first via openSubscription handler
+        this.messageQueue.forEach((msg) => this.ws.send(JSON.stringify(msg)));
         this.messageQueue = [];
       });
     };
@@ -48,7 +43,6 @@ export class WebsocketService {
     };
   }
 
-
   public sendMessage(message: unknown): void {
     if (this.ws?.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(message));
@@ -56,7 +50,6 @@ export class WebsocketService {
       this.messageQueue.push(message);
     }
   }
-
 
   public close(): void {
     this.reconnectUrl = null;

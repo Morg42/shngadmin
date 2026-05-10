@@ -16,10 +16,9 @@ export interface UserPreferences {
  * Storage key: 'shngadmin_prefs'  (single JSON object)
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserPreferencesService {
-
   private static readonly STORAGE_KEY = 'shngadmin_prefs';
   private prefs: UserPreferences = {};
 

@@ -1,17 +1,19 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { of } from 'rxjs';
-import { LogicsGroupsComponent } from './logics-groups.component';
-import { ServerApiService } from '../../common/services/server-api.service';
-import { AuthService } from '../../common/services/auth.service';
-import { AppConfigService } from '../../common/services/app-config.service';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import {translateTestingModule, 
+import { of } from 'rxjs';
+import {
+  createMockAppConfigService,
   createMockAuthService,
-  createMockAppConfigService} from '../../../testing/test-helpers';
+  translateTestingModule,
+} from '../../../testing/test-helpers';
+import { AppConfigService } from '../../common/services/app-config.service';
+import { AuthService } from '../../common/services/auth.service';
+import { ServerApiService } from '../../common/services/server-api.service';
+import { LogicsGroupsComponent } from './logics-groups.component';
 
 describe('LogicsGroupsComponent', () => {
   let component: LogicsGroupsComponent;
@@ -25,10 +27,7 @@ describe('LogicsGroupsComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        LogicsGroupsComponent,
-        translateTestingModule,
-      ],
+      imports: [LogicsGroupsComponent, translateTestingModule],
       providers: [
         provideRouter([]),
         provideHttpClient(),
@@ -39,8 +38,8 @@ describe('LogicsGroupsComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
-    .overrideComponent(LogicsGroupsComponent, { set: { imports: [TranslatePipe] } })
-    .compileComponents();
+      .overrideComponent(LogicsGroupsComponent, { set: { imports: [TranslatePipe] } })
+      .compileComponents();
 
     fixture = TestBed.createComponent(LogicsGroupsComponent);
     component = fixture.componentInstance;

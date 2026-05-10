@@ -1,24 +1,33 @@
+import {
+  AfterViewChecked,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
 
-import {AfterViewChecked, Component, OnInit, ViewChild, ViewEncapsulation, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {ActivatedRoute, convertToParamMap} from '@angular/router';
-
-import { LogsType, LogsInfoDict } from '../../common/models/logfiles-info';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { LogsInfoDict, LogsType } from '../../common/models/logfiles-info';
 import { LogsApiService } from '../../common/services/logs-api.service';
-import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 
-import {Title} from '@angular/platform-browser';
-import {ServerApiService} from '../../common/services/server-api.service';
-import { Bind } from 'primeng/bind';
-import { Select } from 'primeng/select';
-import { FormsModule } from '@angular/forms';
-import { ButtonDirective } from 'primeng/button';
-import { InputText } from 'primeng/inputtext';
-import { CodemirrorModule } from '@ctrl/ngx-codemirror';
-import { Dialog } from 'primeng/dialog';
 import { NgStyle } from '@angular/common';
-import { ProgressSpinner } from 'primeng/progressspinner';
+import { FormsModule } from '@angular/forms';
+import { Title } from '@angular/platform-browser';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { PrimeTemplate } from 'primeng/api';
+import { Bind } from 'primeng/bind';
+import { ButtonDirective } from 'primeng/button';
+import { Dialog } from 'primeng/dialog';
+import { InputText } from 'primeng/inputtext';
+import { ProgressSpinner } from 'primeng/progressspinner';
+import { Select } from 'primeng/select';
+import { ServerApiService } from '../../common/services/server-api.service';
 
 interface DropDownEntry {
   label: string;
@@ -26,15 +35,26 @@ interface DropDownEntry {
 }
 
 @Component({
-    selector: 'app-logs',
-    templateUrl: './log-display.component.html',
-    styleUrls: ['./log-display.component.css'],
-    encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [Bind, Select, FormsModule, ButtonDirective, InputText, CodemirrorModule, Dialog, NgStyle, ProgressSpinner, PrimeTemplate, TranslatePipe]
+  selector: 'app-logs',
+  templateUrl: './log-display.component.html',
+  styleUrls: ['./log-display.component.css'],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    Bind,
+    Select,
+    FormsModule,
+    ButtonDirective,
+    InputText,
+    CodemirrorModule,
+    Dialog,
+    NgStyle,
+    ProgressSpinner,
+    PrimeTemplate,
+    TranslatePipe,
+  ],
 })
 export class LogDisplayComponent implements AfterViewChecked, OnInit {
-
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
@@ -73,17 +93,17 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
     indentUnit: 4,
     tabSize: 4,
     extraKeys: {
-      'F11': function(cm) {
+      F11: function (cm) {
         cm.setOption('fullScreen', !cm.getOption('fullScreen'));
       },
-      'Ctrl-L': function(cm) {
+      'Ctrl-L': function (cm) {
         cm.setOption('lineWrapping', !cm.getOption('lineWrapping'));
       },
-      'Esc': function(cm, fullScreen) {
+      Esc: function (cm, fullScreen) {
         if (cm.getOption('fullScreen')) {
           cm.setOption('fullScreen', false);
         }
-      }
+      },
     },
     fullScreen: false,
     lineNumbers: true,
@@ -95,12 +115,11 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
     autorefresh: true,
     fixedGutter: true,
     foldGutter: true,
-    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
+    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
   };
 
   editorHelp_display = false;
   spinner_display: boolean = false;
-
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);
@@ -114,67 +133,59 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
         logParam = logParam.slice(0, -4);
       }
     }
-    console.log({logParam});
+    console.log({ logParam });
 
-    this.loglevels.push({label: 'ALL', value: 'ALL'});
-    this.loglevels.push({label: 'DEBUG', value: ' DEBUG '});
-    this.loglevels.push({label: 'INFO', value: ' INFO '});
-    this.loglevels.push({label: 'WARNING', value: ' WARNING '});
-    this.loglevels.push({label: 'ERROR', value: ' ERROR '});
-    this.loglevels.push({label: 'CRITICAL', value: ' CRITICAL '});
+    this.loglevels.push({ label: 'ALL', value: 'ALL' });
+    this.loglevels.push({ label: 'DEBUG', value: ' DEBUG ' });
+    this.loglevels.push({ label: 'INFO', value: ' INFO ' });
+    this.loglevels.push({ label: 'WARNING', value: ' WARNING ' });
+    this.loglevels.push({ label: 'ERROR', value: ' ERROR ' });
+    this.loglevels.push({ label: 'CRITICAL', value: ' CRITICAL ' });
 
-    this.dataServiceServer.getServerinfo()
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(
-            (response) => {
-              this.setTitle(this.translate.instant('MENU.LOGS_DISPLAY'));
+    this.dataServiceServer
+      .getServerinfo()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((response) => {
+        this.setTitle(this.translate.instant('MENU.LOGS_DISPLAY'));
 
-              this.dataService.getLogs()
-                  .pipe(takeUntilDestroyed(this.destroyRef))
-                  .subscribe(
-                      (response2: LogsType) => {
-                        this.logs_info = response2['logs'];
-                        this.default_log = response2['default'];
-                        this.logs = [];
-                        for (let log in this.logs_info) {
-                          if (this.logs_info.hasOwnProperty(log)) {
-                            this.logs.push({label: log, value: log});
-                          }
-                        }
-                        this.selectedLog = null;
-                        if (logParam !== undefined) {
-                          if (logParam in this.logs_info) {
-                            this.selectedLog = logParam;
-                            this.fillTimeframe(true);
-                          }
-                        }
-                        if (this.selectedLog == null && this.default_log in this.logs_info) {
-                          this.selectedLog = this.default_log;
-                          this.fillTimeframe(true);
-                        }
-                        this.cdr.markForCheck();
-                      }
-                  );
+        this.dataService
+          .getLogs()
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe((response2: LogsType) => {
+            this.logs_info = response2['logs'];
+            this.default_log = response2['default'];
+            this.logs = [];
+            for (let log in this.logs_info) {
+              if (this.logs_info.hasOwnProperty(log)) {
+                this.logs.push({ label: log, value: log });
+              }
             }
-        );
-
+            this.selectedLog = null;
+            if (logParam !== undefined) {
+              if (logParam in this.logs_info) {
+                this.selectedLog = logParam;
+                this.fillTimeframe(true);
+              }
+            }
+            if (this.selectedLog == null && this.default_log in this.logs_info) {
+              this.selectedLog = this.default_log;
+              this.fillTimeframe(true);
+            }
+            this.cdr.markForCheck();
+          });
+      });
   }
 
-
   ngAfterViewChecked() {
-
     const editor1 = this.codeEditor.codeMirror;
     if (editor1.getOption('fullScreen')) {
       editor1.setSize('100vw', '100vh');
     } else {
       // editor1.setSize('97vw', '83vh');
       editor1.setSize('calc(100% - 5px)', 'calc(100vh - 160px)');
-
     }
     editor1.refresh();
   }
-
-
 
   fillTimeframe(useActual = false) {
     if (this.selectedLog === null) {
@@ -187,32 +198,35 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
       this.logs_info[this.selectedLog].push(this.logs_info[this.selectedLog][0]);
       this.logs_info[this.selectedLog].splice(0, 1);
 
-      for (let i = 0; i < (this.logs_info[this.selectedLog]).length; i++) {
-          // build entry for drop down list to select logfile
-          let tf = this.logs_info[this.selectedLog][i][0];
-          const tf_split = tf.split('.');
-          if (tf_split.length > 2) {
-            if (tf_split[1] === 'log') {
-              // for logfile names build as <logname>.log.<date>
-              tf = '*' + tf_split[2];
-            }
-            if (tf_split[2] === 'log') {
-              // for logfile names build as <logname>.<date>.log
-              tf = '*' + tf_split[1];
-            }
+      for (let i = 0; i < this.logs_info[this.selectedLog].length; i++) {
+        // build entry for drop down list to select logfile
+        let tf = this.logs_info[this.selectedLog][i][0];
+        const tf_split = tf.split('.');
+        if (tf_split.length > 2) {
+          if (tf_split[1] === 'log') {
+            // for logfile names build as <logname>.log.<date>
+            tf = '*' + tf_split[2];
           }
-          if (tf_split.length === 2) {
-            // for logfile names build as <logname>.log
-            tf = '.' + this.translate.instant('LOGS.ACTUAL');
+          if (tf_split[2] === 'log') {
+            // for logfile names build as <logname>.<date>.log
+            tf = '*' + tf_split[1];
           }
-          // add file size to entry for drop down list
-          let tfsize = this.logs_info[this.selectedLog][i][1];
-          let tfunit = 'KB';
-          if (Number(tfsize) > 1024) {
-            tfsize = (Number(tfsize) / 1024).toFixed(1);
-            tfunit = 'MB';
-          }
-          const wrk = {label: tf.substr(1) + ' (' + tfsize + tfunit + ')', value: this.logs_info[this.selectedLog][i][0]};
+        }
+        if (tf_split.length === 2) {
+          // for logfile names build as <logname>.log
+          tf = '.' + this.translate.instant('LOGS.ACTUAL');
+        }
+        // add file size to entry for drop down list
+        let tfsize = this.logs_info[this.selectedLog][i][1];
+        let tfunit = 'KB';
+        if (Number(tfsize) > 1024) {
+          tfsize = (Number(tfsize) / 1024).toFixed(1);
+          tfunit = 'MB';
+        }
+        const wrk = {
+          label: tf.substr(1) + ' (' + tfsize + tfunit + ')',
+          value: this.logs_info[this.selectedLog][i][0],
+        };
 
         if (tf_split.length === 2) {
           this.files.unshift(wrk);
@@ -233,7 +247,6 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
     }
   }
 
-
   changedTimeframe() {
     if (this.selectedFile === null) {
       this.readLogfile();
@@ -242,14 +255,16 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
     }
   }
 
-
   filterLogChunk() {
     this.logfile_content = '';
-    this.cmOptions.lineNumbers = ((this.level_filter === 'ALL') && (this.text_filter === ''));
+    this.cmOptions.lineNumbers = this.level_filter === 'ALL' && this.text_filter === '';
 
     const filter = this.text_filter;
     for (let i = 0; i < this.logfile_chunk['loglines'].length; i++) {
-      if (this.level_filter === 'ALL' || this.logfile_chunk['loglines'][i].indexOf(this.level_filter) > -1) {
+      if (
+        this.level_filter === 'ALL' ||
+        this.logfile_chunk['loglines'][i].indexOf(this.level_filter) > -1
+      ) {
         if (filter === '' || this.logfile_chunk['loglines'][i].indexOf(filter) > -1) {
           this.logfile_content += this.logfile_chunk['loglines'][i];
         }
@@ -269,38 +284,35 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
       this.spinner_display = true;
       this.displayLogfile = String(this.selectedFile);
 
-      this.dataService.readLogfile(this.displayLogfile, chunk)
+      this.dataService
+        .readLogfile(this.displayLogfile, chunk)
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(
-          (response: string) => {
-            // console.log({response});
-            this.logfile_chunk = <any> response;
-            this.first_chunk = (this.logfile_chunk['lines'][0] === 1);
-            this.last_chunk = this.logfile_chunk['lastchunk'];
-            this.chunk_no = this.logfile_chunk['chunk'];
-            this.cmOptions.lineNumbers = true;
-            this.cmOptions.firstLineNumber = this.logfile_chunk['lines'][0];
-            if (this.cmOptions.firstLineNumber !== undefined) {
-              for (let i = 0; i < this.logfile_chunk['loglines'].length; i++) {
-                let wrk2 = '';
-                for (let c = 0; c < this.logfile_chunk['loglines'][i].length; c++) {
-                  if (this.logfile_chunk['loglines'][i][c].charCodeAt(0) === 160) {
-                    wrk2 += ' ';
-                  } else {
-                    wrk2 += this.logfile_chunk['loglines'][i][c];
-                  }
+        .subscribe((response: string) => {
+          // console.log({response});
+          this.logfile_chunk = <any>response;
+          this.first_chunk = this.logfile_chunk['lines'][0] === 1;
+          this.last_chunk = this.logfile_chunk['lastchunk'];
+          this.chunk_no = this.logfile_chunk['chunk'];
+          this.cmOptions.lineNumbers = true;
+          this.cmOptions.firstLineNumber = this.logfile_chunk['lines'][0];
+          if (this.cmOptions.firstLineNumber !== undefined) {
+            for (let i = 0; i < this.logfile_chunk['loglines'].length; i++) {
+              let wrk2 = '';
+              for (let c = 0; c < this.logfile_chunk['loglines'][i].length; c++) {
+                if (this.logfile_chunk['loglines'][i][c].charCodeAt(0) === 160) {
+                  wrk2 += ' ';
+                } else {
+                  wrk2 += this.logfile_chunk['loglines'][i][c];
                 }
-                this.logfile_chunk['loglines'][i] = wrk2;
               }
+              this.logfile_chunk['loglines'][i] = wrk2;
             }
-
-            this.filterLogChunk();
-            this.spinner_display = false;
-            this.cdr.markForCheck();
           }
-        );
+
+          this.filterLogChunk();
+          this.spinner_display = false;
+          this.cdr.markForCheck();
+        });
     }
   }
-
 }
-

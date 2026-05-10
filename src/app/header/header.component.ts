@@ -1,34 +1,35 @@
-
-import { Component, OnInit, DestroyRef, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {AppConfigService} from '../common/services/app-config.service';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AppConfigService } from '../common/services/app-config.service';
 // import { isSuccess } from '@angular/http/src/http_utils';
 
-import { TranslateService, TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MenuItem } from 'primeng/api';
 
-import { ServerInfo } from '../common/models/server-info';
-import { ServerApiService } from '../common/services/server-api.service';
-import { AuthService } from '../common/services/auth.service';
+import { NgOptimizedImage } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { Bind } from 'primeng/bind';
-import { Menubar } from 'primeng/menubar';
-import { NgOptimizedImage } from '@angular/common';
 import { ButtonDirective } from 'primeng/button';
-
+import { Menubar } from 'primeng/menubar';
+import { AuthService } from '../common/services/auth.service';
+import { ServerApiService } from '../common/services/server-api.service';
 
 @Component({
-    selector: 'app-header',
-    templateUrl: './header.component.html',
-    styleUrls: ['./header.component.css'],
-    providers: [],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [Bind, Menubar, NgOptimizedImage, RouterLink, ButtonDirective, TranslatePipe]
+  selector: 'app-header',
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.css'],
+  providers: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [Bind, Menubar, NgOptimizedImage, RouterLink, ButtonDirective, TranslatePipe],
 })
-
-
 export class HeaderComponent implements OnInit {
-
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private dataServiceServer = inject(ServerApiService);
@@ -37,7 +38,7 @@ export class HeaderComponent implements OnInit {
   public authService = inject(AuthService);
   private appConfig = inject(AppConfigService);
 
-//  faCircleNotch = faCircleNotch;
+  //  faCircleNotch = faCircleNotch;
 
   items: MenuItem[];
   menuInitialized: boolean;
@@ -45,35 +46,30 @@ export class HeaderComponent implements OnInit {
   // server_info: ServerInfo;
   developerMode: boolean;
 
-
-
   ngOnInit() {
     // console.log('HeaderComponent.ngOnInit');
 
-    this.dataServiceServer.getServerinfo()
+    this.dataServiceServer
+      .getServerinfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response) => {
-          this.developerMode = (this.appConfig.developerMode);
-          this.buildMenu();
-          this.cdr.markForCheck();
+      .subscribe((response) => {
+        this.developerMode = this.appConfig.developerMode;
+        this.buildMenu();
+        this.cdr.markForCheck();
 
-          const credentials = {'username': '', 'password': ''};
-          // console.log('signIn', {credentials});
-          this.authService.login(credentials)
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe((result: boolean) => {
-              // console.log('Anonymous login:', {result});
+        const credentials = { username: '', password: '' };
+        // console.log('signIn', {credentials});
+        this.authService
+          .login(credentials)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe((result: boolean) => {
+            // console.log('Anonymous login:', {result});
 
-              this.buildMenu();
-              this.cdr.markForCheck();
-            });
-
-        }
-      );
-
+            this.buildMenu();
+            this.cdr.markForCheck();
+          });
+      });
   }
-
 
   buildMenu() {
     // console.log('HeaderComponent.buildMenu');
@@ -89,8 +85,8 @@ export class HeaderComponent implements OnInit {
           {
             label: this.translate.instant('MENU.CONFIGURATION'),
             routerLink: ['/system/config'],
-          }
-        ]
+          },
+        ],
       },
       {
         label: this.translate.instant('MENU.SERVICES'),
@@ -99,13 +95,13 @@ export class HeaderComponent implements OnInit {
       {
         label: this.translate.instant('MENU.ITEMS'),
         routerLink: ['/items'],
-        items: []
+        items: [],
       },
       {
         label: this.translate.instant('MENU.LOGICS'),
         routerLink: ['/logics'],
       },
-/*
+      /*
       {
         label: this.translate.instant('MENU.SCHEDULERS'),
         routerLink: ['/schedulers'],
@@ -122,8 +118,8 @@ export class HeaderComponent implements OnInit {
           {
             label: this.translate.instant('MENU.CONFIGURATION'),
             routerLink: ['/plugins/config'],
-          }
-        ]
+          },
+        ],
       },
       {
         label: this.translate.instant('MENU.SCENES'),
@@ -136,8 +132,8 @@ export class HeaderComponent implements OnInit {
           {
             label: this.translate.instant('MENU.SCENE_CONFIGURATION'),
             routerLink: ['/scenes/config'],
-          }
-        ]
+          },
+        ],
       },
       {
         label: this.translate.instant('MENU.SCHEDULERS'),
@@ -150,8 +146,8 @@ export class HeaderComponent implements OnInit {
           {
             label: this.translate.instant('MENU.THREADS'),
             routerLink: ['/threads'],
-          }
-        ]
+          },
+        ],
       },
       {
         label: this.translate.instant('MENU.LOGS'),
@@ -168,8 +164,8 @@ export class HeaderComponent implements OnInit {
           {
             label: this.translate.instant('MENU.CONFIGURATION'),
             routerLink: ['/logs/logging-configuration'],
-          }
-        ]
+          },
+        ],
       },
       {
         label: this.translate.instant('MENU.LOGIN'),
@@ -213,7 +209,6 @@ export class HeaderComponent implements OnInit {
 
     this.menuInitialized = true;
   }
-
 
   getMenuItems() {
     // console.log('HeaderComponent.getMenuItems');
@@ -265,7 +260,7 @@ export class HeaderComponent implements OnInit {
       }
 
       this.items[3].label = this.translate.instant('MENU.LOGICS');
-//      this.items[4].label = this.translate.instant('MENU.SCHEDULERS');
+      //      this.items[4].label = this.translate.instant('MENU.SCHEDULERS');
       this.items[4].label = this.translate.instant('MENU.PLUGINS');
       this.items[4].items[0].label = this.translate.instant('MENU.PLUGINS_LIST');
       this.items[4].items[1].label = this.translate.instant('MENU.CONFIGURATION');

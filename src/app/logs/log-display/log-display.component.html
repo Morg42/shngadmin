@@ -1,77 +1,182 @@
-
-<div style="margin-left: 10px; margin-right: 10px;">
-  <h6>SmartHomeNG {{ 'LOGS.LOGFILE'|translate }}:
-    <p-select [style]="{'width':'300px'}" [options]="logs" [(ngModel)]="selectedLog" placeholder="{{ 'LOGS.SELECT_LOG'|translate }}" (onChange)="fillTimeframe()"></p-select>
-    &nbsp; {{ 'LOGS.TIMEFRAME'|translate }}:
-    <p-select [style]="{'width':'210px'}" [options]="files" [(ngModel)]="selectedFile" placeholder="{{ 'LOGS.SELECT_FILE'|translate }}" (onChange)="changedTimeframe()"></p-select>
-    &nbsp; &nbsp; <button pButton id="reloadLogButton" type="button" (click)="this.readLogfile()" [disabled]="(selectedLog === null) || (selectedFile === null)" label="{{'BUTTON.RELOAD_LOG'|translate}}" class="ui-button-success"></button>
+<div style="margin-left: 10px; margin-right: 10px">
+  <h6>
+    SmartHomeNG {{ 'LOGS.LOGFILE' | translate }}:
+    <p-select
+      [style]="{ width: '300px' }"
+      [options]="logs"
+      [(ngModel)]="selectedLog"
+      placeholder="{{ 'LOGS.SELECT_LOG' | translate }}"
+      (onChange)="fillTimeframe()"
+    ></p-select>
+    &nbsp; {{ 'LOGS.TIMEFRAME' | translate }}:
+    <p-select
+      [style]="{ width: '210px' }"
+      [options]="files"
+      [(ngModel)]="selectedFile"
+      placeholder="{{ 'LOGS.SELECT_FILE' | translate }}"
+      (onChange)="changedTimeframe()"
+    ></p-select>
+    &nbsp; &nbsp;
+    <button
+      pButton
+      id="reloadLogButton"
+      type="button"
+      (click)="this.readLogfile()"
+      [disabled]="selectedLog === null || selectedFile === null"
+      label="{{ 'BUTTON.RELOAD_LOG' | translate }}"
+      class="ui-button-success"
+    ></button>
   </h6>
 
-  <div class="form-group" style="display:inline; width: 98%">
-    <div style="margin-top: 2px; float:left; font-size: 20px;">{{ 'LOGS.FILTER'|translate }}:</div>
-    <input type="text" class="form-control form-control-sm" id="text_filter" pInputText [(ngModel)]="text_filter" style= "margin-top: 2px; margin-left: 10px; width: 395px; float:left;" (ngModelChange)="filterLogChunk()">
-    <p-select [style]="{'margin-left': '10px', 'width':'120px'}" [options]="loglevels" [(ngModel)]="level_filter" (onChange)="filterLogChunk()"></p-select>
-    <button pButton label="{{ 'BUTTON.CLEAR_FILTER'|translate }}" type="button" style="margin-top: 2px; margin-left: 12px; margin-right: 10px" icon="fa fa-filter" (click)="text_filter = ''; level_filter = 'ALL'; filterLogChunk()" class="ui-button-success"></button>
+  <div class="form-group" style="display: inline; width: 98%">
+    <div style="margin-top: 2px; float: left; font-size: 20px">{{ 'LOGS.FILTER' | translate }}:</div>
+    <input
+      type="text"
+      class="form-control form-control-sm"
+      id="text_filter"
+      pInputText
+      [(ngModel)]="text_filter"
+      style="margin-top: 2px; margin-left: 10px; width: 395px; float: left"
+      (ngModelChange)="filterLogChunk()"
+    />
+    <p-select
+      [style]="{ 'margin-left': '10px', width: '120px' }"
+      [options]="loglevels"
+      [(ngModel)]="level_filter"
+      (onChange)="filterLogChunk()"
+    ></p-select>
+    <button
+      pButton
+      label="{{ 'BUTTON.CLEAR_FILTER' | translate }}"
+      type="button"
+      style="margin-top: 2px; margin-left: 12px; margin-right: 10px"
+      icon="fa fa-filter"
+      (click)="text_filter = ''; level_filter = 'ALL'; filterLogChunk()"
+      class="ui-button-success"
+    ></button>
 
-    <button pButton type="button" style="margin-top: 2px; margin-left: 31px; width: 25px;" [disabled]="first_chunk" icon="fa fa-fast-backward" (click)="readLogfile(1)" class="ui-button-success"></button>
-    <button pButton type="button" style="margin-top: 2px; margin-left: 2px; margin-right: 5px;  width: 25px;" [disabled]="first_chunk" icon="fa fa-step-backward" (click)="readLogfile(chunk_no - 1)" class="ui-button-success"></button>
+    <button
+      pButton
+      type="button"
+      style="margin-top: 2px; margin-left: 31px; width: 25px"
+      [disabled]="first_chunk"
+      icon="fa fa-fast-backward"
+      (click)="readLogfile(1)"
+      class="ui-button-success"
+    ></button>
+    <button
+      pButton
+      type="button"
+      style="margin-top: 2px; margin-left: 2px; margin-right: 5px; width: 25px"
+      [disabled]="first_chunk"
+      icon="fa fa-step-backward"
+      (click)="readLogfile(chunk_no - 1)"
+      class="ui-button-success"
+    ></button>
     {{ chunk_no }}
-    <button pButton type="button" style="margin-top: 2px; margin-left: 5px; width: 25px;" [disabled]="last_chunk" icon="fa fa-step-forward" (click)="readLogfile(chunk_no + 1)" class="ui-button-success"></button>
-    <button pButton type="button" style="margin-top: 2px; margin-left: 2px; width: 25px;" [disabled]="last_chunk" icon="fa fa-fast-forward" (click)="readLogfile(0)" class="ui-button-success"></button>
-    <button pButton type="button" style="margin-top: 2px; margin-left: 10px; width: 25px;" title="{{ 'LOGS.SCROLL_DOWN'|translate }}" icon="fa fa-arrow-circle-down" (click)="scrollDown()" class="ui-button-success"></button>
+    <button
+      pButton
+      type="button"
+      style="margin-top: 2px; margin-left: 5px; width: 25px"
+      [disabled]="last_chunk"
+      icon="fa fa-step-forward"
+      (click)="readLogfile(chunk_no + 1)"
+      class="ui-button-success"
+    ></button>
+    <button
+      pButton
+      type="button"
+      style="margin-top: 2px; margin-left: 2px; width: 25px"
+      [disabled]="last_chunk"
+      icon="fa fa-fast-forward"
+      (click)="readLogfile(0)"
+      class="ui-button-success"
+    ></button>
+    <button
+      pButton
+      type="button"
+      style="margin-top: 2px; margin-left: 10px; width: 25px"
+      title="{{ 'LOGS.SCROLL_DOWN' | translate }}"
+      icon="fa fa-arrow-circle-down"
+      (click)="scrollDown()"
+      class="ui-button-success"
+    ></button>
 
-    <button pButton type="button" [disabled]="false" icon="fa fa-info" style="margin-right: 10px; width: 25px;" (click)="this.editorHelp_display = true;" class="float-sm-right ui-button-success"></button>
-
+    <button
+      pButton
+      type="button"
+      [disabled]="false"
+      icon="fa fa-info"
+      style="margin-right: 10px; width: 25px"
+      (click)="this.editorHelp_display = true"
+      class="float-sm-right ui-button-success"
+    ></button>
   </div>
 
-  <div style="height: 100px; margin-left: 0; margin-top: 10px; padding-left: 10px; padding-right: 5px;">
-    <ngx-codemirror #codeeditor
-                    [options]="cmOptions"
-                    [(ngModel)]="logfile_content"
-                    [autoFocus]="true"
-    ></ngx-codemirror>
+  <div style="height: 100px; margin-left: 0; margin-top: 10px; padding-left: 10px; padding-right: 5px">
+    <ngx-codemirror #codeeditor [options]="cmOptions" [(ngModel)]="logfile_content" [autoFocus]="true"></ngx-codemirror>
   </div>
-
 </div>
-
 
 <p-dialog
   #logspinner
-  header="{{'LOGS.LOADCHUNK'|translate}}..."
-  [ngStyle]="{'align': 'center'}"
+  header="{{ 'LOGS.LOADCHUNK' | translate }}..."
+  [ngStyle]="{ align: 'center' }"
   [(visible)]="spinner_display"
-  [modal]="true" blockScroll="true"
+  [modal]="true"
+  blockScroll="true"
   [closable]="false"
   [resizable]="false"
   [maximizable]="false"
   [minY]="100"
-  [style]="{'minWidth':'200px', 'minHeight':'100px'}"
+  [style]="{ minWidth: '200px', minHeight: '100px' }"
 >
   <div align="center">
     <p-progressSpinner></p-progressSpinner>
   </div>
 </p-dialog>
 
-
 <p-dialog header="" [(visible)]="editorHelp_display" [closable]="true" [modal]="true" dynamic="true" blockScroll="true">
   <ng-template pTemplate="header">
-    {{'HELP.EDITOR-KEYS'|translate}}
+    {{ 'HELP.EDITOR-KEYS' | translate }}
   </ng-template>
-  <br>
+  <br />
   <table>
     <thead>
-    <th><u>{{'HELP.KEY'|translate}}</u></th>
-    <th style="width: 20px;"></th>
-    <th><u>{{'HELP.DESCRIPTION'|translate}}</u></th>
+      <th>
+        <u>{{ 'HELP.KEY' | translate }}</u>
+      </th>
+      <th style="width: 20px"></th>
+      <th>
+        <u>{{ 'HELP.DESCRIPTION' | translate }}</u>
+      </th>
     </thead>
     <tbody>
-    <tr><td>F11</td>          <td></td> <td>{{'HELP.F11'|translate}}</td></tr>
-    <tr><td>Esc</td>          <td></td> <td>{{'HELP.ESC'|translate}}</td></tr>
-    <tr><td>Ctrl-L</td>       <td></td> <td>{{'HELP.CTRL-L'|translate}}</td></tr>
+      <tr>
+        <td>F11</td>
+        <td></td>
+        <td>{{ 'HELP.F11' | translate }}</td>
+      </tr>
+      <tr>
+        <td>Esc</td>
+        <td></td>
+        <td>{{ 'HELP.ESC' | translate }}</td>
+      </tr>
+      <tr>
+        <td>Ctrl-L</td>
+        <td></td>
+        <td>{{ 'HELP.CTRL-L' | translate }}</td>
+      </tr>
     </tbody>
   </table>
-  <br>
+  <br />
   <ng-template pTemplate="footer">
-    <button pButton type="button" (click)="editorHelp_display = false;" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
+    <button
+      pButton
+      type="button"
+      (click)="editorHelp_display = false"
+      label="{{ 'BUTTON.CLOSE' | translate }}"
+      class="ui-button-success"
+    ></button>
   </ng-template>
 </p-dialog>

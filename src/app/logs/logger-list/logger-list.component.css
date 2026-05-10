@@ -6,18 +6,16 @@
 }
 */
 
-.tab-shng > a{
+.tab-shng > a {
   border-bottom: none !important;
   outline: 0 !important;
   color: rgb(160, 160, 160);
 }
 
-
 .CodeMirror {
-  width:48vw;
-  height:70vh;
+  width: 48vw;
+  height: 70vh;
 }
-
 
 .body {
   margin: 0;
@@ -28,16 +26,17 @@
   margin: 0;
   padding: 0;
 
-  padding-left: 10px;       /* padding around tab border */
+  padding-left: 10px; /* padding around tab border */
   padding-right: 10px;
 
   display: grid;
   grid-template-rows: 0 auto 0;
   grid-template-columns: 1fr;
 
-  grid-template-areas: "body-header-services"
-                      "body-content-services"
-                      "body-footer-services";
+  grid-template-areas:
+    'body-header-services'
+    'body-content-services'
+    'body-footer-services';
 
   grid-gap: 0;
   grid-auto-flow: row;
@@ -85,7 +84,7 @@
   height: calc(100vh - 60px - 41px - 10px);
   border: 1px solid #dee2e6;
   border-top: 0;
-  padding-left: 10px;       /* padding around striped table inside tab border */
+  padding-left: 10px; /* padding around striped table inside tab border */
   padding-right: 10px;
   overflow: auto;
   /*
@@ -103,13 +102,13 @@
 }
 
 .tab-content-services table td {
-  padding-top:23px;
+  padding-top: 23px;
 }
 .tab-content-services .row-icon {
-  padding-top:15px;
+  padding-top: 15px;
 }
 .tab-content-services .row-button {
-  padding-top:22px;
+  padding-top: 22px;
 }
 
 /*
@@ -141,27 +140,26 @@
   padding-top: 15px;
 }
 
-
 .tab-content-services-cache {
   grid-area: tab-content;
   width: 100%;
   height: calc(100vh - 60px - 41px - 50px - 10px);
   border: 1px solid #dee2e6;
   border-top: 0;
-/*overflow: auto; */
+  /*overflow: auto; */
 
   display: grid;
   grid-template-rows: 50px auto 50px;
   grid-template-columns: 1fr;
 
-  grid-template-areas: "tab-content-services-cache-header"
-                       "tab-content-services-cache-content"
-                       "tab-content-services-cache-footer";
+  grid-template-areas:
+    'tab-content-services-cache-header'
+    'tab-content-services-cache-content'
+    'tab-content-services-cache-footer';
 
   grid-gap: 0;
   grid-auto-flow: row;
 }
-
 
 .tab-content-services-cache-header {
   grid-area: tab-content-services-cache-header;

@@ -50,12 +50,8 @@
       "q21.log.2018-11-22",
       "q21.log.2018-11-23"
     ],
-    "smarthome-additional": [
-      "smarthome-additional.log"
-    ],
-    "smarthome-details-1": [
-      "smarthome-details-1.log"
-    ],
+    "smarthome-additional": ["smarthome-additional.log"],
+    "smarthome-details-1": ["smarthome-details-1.log"],
     "smarthome-details": [
       "smarthome-details.log",
       "smarthome-details.log.2018-11-17",
@@ -66,9 +62,7 @@
       "smarthome-details.log.2018-11-22",
       "smarthome-details.log.2018-11-23"
     ],
-    "smarthome-dev": [
-      "smarthome-dev.log"
-    ],
+    "smarthome-dev": ["smarthome-dev.log"],
     "smarthome-develop": [
       "smarthome-develop.log",
       "smarthome-develop.log.2018-11-17",
@@ -92,5 +86,3 @@
   },
   "default": "smarthome-warnings"
 }
-
-

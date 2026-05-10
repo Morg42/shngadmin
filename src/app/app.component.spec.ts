@@ -1,17 +1,19 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { of } from 'rxjs';
-import { AppComponent } from './app.component';
-import { ServerApiService } from './common/services/server-api.service';
-import { AuthService } from './common/services/auth.service';
-import { AppConfigService } from './common/services/app-config.service';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import {translateTestingModule, 
+import { of } from 'rxjs';
+import {
+  createMockAppConfigService,
   createMockAuthService,
-  createMockAppConfigService} from '../testing/test-helpers';
+  translateTestingModule,
+} from '../testing/test-helpers';
+import { AppComponent } from './app.component';
+import { AppConfigService } from './common/services/app-config.service';
+import { AuthService } from './common/services/auth.service';
+import { ServerApiService } from './common/services/server-api.service';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -25,10 +27,7 @@ describe('AppComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        AppComponent,
-        translateTestingModule,
-      ],
+      imports: [AppComponent, translateTestingModule],
       providers: [
         provideRouter([]),
         provideHttpClient(),
@@ -40,8 +39,8 @@ describe('AppComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
-    .overrideComponent(AppComponent, { set: { imports: [TranslatePipe] } })
-    .compileComponents();
+      .overrideComponent(AppComponent, { set: { imports: [TranslatePipe] } })
+      .compileComponents();
 
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;

@@ -1,17 +1,19 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { of } from 'rxjs';
-import { LoggerListComponent } from './logger-list.component';
-import { ServerApiService } from '../../common/services/server-api.service';
-import { AuthService } from '../../common/services/auth.service';
-import { AppConfigService } from '../../common/services/app-config.service';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import {translateTestingModule, 
+import { of } from 'rxjs';
+import {
+  createMockAppConfigService,
   createMockAuthService,
-  createMockAppConfigService} from '../../../testing/test-helpers';
+  translateTestingModule,
+} from '../../../testing/test-helpers';
+import { AppConfigService } from '../../common/services/app-config.service';
+import { AuthService } from '../../common/services/auth.service';
+import { ServerApiService } from '../../common/services/server-api.service';
+import { LoggerListComponent } from './logger-list.component';
 
 describe('LoggerListComponent', () => {
   let component: LoggerListComponent;
@@ -25,10 +27,7 @@ describe('LoggerListComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        LoggerListComponent,
-        translateTestingModule,
-      ],
+      imports: [LoggerListComponent, translateTestingModule],
       providers: [
         provideRouter([]),
         provideHttpClient(),
@@ -39,8 +38,8 @@ describe('LoggerListComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
-    .overrideComponent(LoggerListComponent, { set: { imports: [TranslatePipe] } })
-    .compileComponents();
+      .overrideComponent(LoggerListComponent, { set: { imports: [TranslatePipe] } })
+      .compileComponents();
 
     fixture = TestBed.createComponent(LoggerListComponent);
     component = fixture.componentInstance;

@@ -1,25 +1,44 @@
-import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
-import { LoggersType } from '../../common/models/loggers-info';
-import { Bind } from 'primeng/bind';
-import { Select } from 'primeng/select';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { Dialog } from 'primeng/dialog';
+import { TranslatePipe } from '@ngx-translate/core';
 import { PrimeTemplate } from 'primeng/api';
+import { Bind } from 'primeng/bind';
 import { ButtonDirective } from 'primeng/button';
 import { Checkbox } from 'primeng/checkbox';
+import { Dialog } from 'primeng/dialog';
 import { Message } from 'primeng/message';
-import { TranslatePipe } from '@ngx-translate/core';
+import { Select } from 'primeng/select';
+import { LoggersType } from '../../common/models/loggers-info';
 
 @Component({
-    selector: 'logger-line',
-    templateUrl: './logger-line.component.html',
-    styleUrls: ['./logger-line.component.css'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [Bind, Select, FormsModule, RouterLink, Dialog, PrimeTemplate, ButtonDirective, Checkbox, Message, TranslatePipe]
+  selector: 'logger-line',
+  templateUrl: './logger-line.component.html',
+  styleUrls: ['./logger-line.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    Bind,
+    Select,
+    FormsModule,
+    RouterLink,
+    Dialog,
+    PrimeTemplate,
+    ButtonDirective,
+    Checkbox,
+    Message,
+    TranslatePipe,
+  ],
 })
 export class LoggerLineComponent implements OnInit {
-
   @Input() loggerName: string;
   @Input() logger: LoggersType;
   @Input() loggerActive: boolean;
@@ -29,15 +48,15 @@ export class LoggerLineComponent implements OnInit {
   @Output() loggerDelete = new EventEmitter();
   @Output() modifyHandlers = new EventEmitter();
 
-
-  levelOptions: {}[] = [{label: 'ERROR', value: 'ERROR'},
-    {label: 'WARNING', value: 'WARNING'},
-    {label: 'NOTICE', value: 'NOTICE'},
-    {label: 'INFO', value: 'INFO'},
-    {label: 'DBGHIGH', value: 'DBGHIGH'},
-    {label: 'DBGMED', value: 'DBGMED'},
-    {label: 'DBGLOW', value: 'DBGLOW'},
-    {label: 'DEBUG', value: 'DEBUG'}
+  levelOptions: {}[] = [
+    { label: 'ERROR', value: 'ERROR' },
+    { label: 'WARNING', value: 'WARNING' },
+    { label: 'NOTICE', value: 'NOTICE' },
+    { label: 'INFO', value: 'INFO' },
+    { label: 'DBGHIGH', value: 'DBGHIGH' },
+    { label: 'DBGMED', value: 'DBGMED' },
+    { label: 'DBGLOW', value: 'DBGLOW' },
+    { label: 'DEBUG', value: 'DEBUG' },
   ];
 
   levelDefault: string = 'WARNING';
@@ -57,16 +76,13 @@ export class LoggerLineComponent implements OnInit {
 
   private readonly cdr = inject(ChangeDetectorRef);
 
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 
   getParent(logger) {
     const parts = logger.split('.');
     parts.pop();
     return parts.join('.');
   }
-
 
   baseName(str, withExtension = true) {
     let base = str;
@@ -77,7 +93,6 @@ export class LoggerLineComponent implements OnInit {
     return base;
   }
 
-
   levelChanged(lg, level) {
     let activeLevel = this.levelDefault;
     if (level !== null) {
@@ -86,11 +101,15 @@ export class LoggerLineComponent implements OnInit {
     this.levelChange.emit(activeLevel);
   }
 
-
   loggerIsDeletable(logger) {
-
-    if (logger === 'plugins' || logger === 'logics' || logger === 'items' || logger === 'functions' ||
-        logger === 'lib' || logger === 'modules') {
+    if (
+      logger === 'plugins' ||
+      logger === 'logics' ||
+      logger === 'items' ||
+      logger === 'functions' ||
+      logger === 'lib' ||
+      logger === 'modules'
+    ) {
       return false;
     }
     if (logger.startsWith('plugins.')) {
@@ -105,13 +124,16 @@ export class LoggerLineComponent implements OnInit {
       return true;
     }
 
-    if (logger.startsWith('functions.') || logger.startsWith('lib.') || logger.startsWith('modules.')) {
+    if (
+      logger.startsWith('functions.') ||
+      logger.startsWith('lib.') ||
+      logger.startsWith('modules.')
+    ) {
       return true;
     }
 
     return false;
   }
-
 
   // ------------------------------------------------------------------------------
   //   functions to support choosing of handlers
@@ -119,10 +141,12 @@ export class LoggerLineComponent implements OnInit {
 
   chooseHandlers(logger) {
     // this.loggerToModify = logger;
-    this.header_param = {'logger': logger};
-    this.handlers = [{'name': 'tst_file', 'key': 'tst_file'},
-      {'name': 'tst_file2', 'key': 'tst_file2'},
-      {'name': 'tst_file3', 'key': 'tst_file3'}];
+    this.header_param = { logger: logger };
+    this.handlers = [
+      { name: 'tst_file', key: 'tst_file' },
+      { name: 'tst_file2', key: 'tst_file2' },
+      { name: 'tst_file3', key: 'tst_file3' },
+    ];
 
     this.choosableHandlers = [];
     console.log('definedHandlers', this.definedHandlers);
@@ -144,10 +168,10 @@ export class LoggerLineComponent implements OnInit {
             val = [true];
           }
         }
-        this.choosableHandlers.push({name: key, key: key, value: val, disabled: parentFound});
+        this.choosableHandlers.push({ name: key, key: key, value: val, disabled: parentFound });
       }
     }
-    this.choosableHandlers = this.choosableHandlers.sort(function(a, b) {
+    this.choosableHandlers = this.choosableHandlers.sort(function (a, b) {
       if (a.name > b.name) {
         return 1;
       }
@@ -174,7 +198,6 @@ export class LoggerLineComponent implements OnInit {
     this.chooseHandlers_display = true;
   }
 
-
   doModifyHandlers() {
     this.chooseHandlers_display = false;
 
@@ -185,8 +208,6 @@ export class LoggerLineComponent implements OnInit {
       }
     }
     this.modifyHandlers.emit(selectedHandlers);
-
-
   }
 
   // ------------------------------------------------------------------------------
@@ -195,10 +216,9 @@ export class LoggerLineComponent implements OnInit {
 
   deleteLogger(logger) {
     this.loggerToDelete = logger;
-    this.delete_param = {'logger': logger};
+    this.delete_param = { logger: logger };
     this.confirmdelete_display = true;
   }
-
 
   deleteLoggerConfirm() {
     this.confirmdelete_display = false;

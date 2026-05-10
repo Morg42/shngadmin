@@ -1,8 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { LoggerLineComponent } from './logger-line.component';
-import {translateTestingModule,   } from '../../../testing/test-helpers';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslatePipe } from '@ngx-translate/core';
+import { translateTestingModule } from '../../../testing/test-helpers';
+import { LoggerLineComponent } from './logger-line.component';
 
 describe('LoggerLineComponent', () => {
   let component: LoggerLineComponent;
@@ -10,14 +10,11 @@ describe('LoggerLineComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        LoggerLineComponent,
-        translateTestingModule,
-      ],
+      imports: [LoggerLineComponent, translateTestingModule],
       schemas: [NO_ERRORS_SCHEMA],
     })
-    .overrideComponent(LoggerLineComponent, { set: { imports: [TranslatePipe] } })
-    .compileComponents();
+      .overrideComponent(LoggerLineComponent, { set: { imports: [TranslatePipe] } })
+      .compileComponents();
 
     fixture = TestBed.createComponent(LoggerLineComponent);
     component = fixture.componentInstance;

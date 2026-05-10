@@ -1,17 +1,19 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { of } from 'rxjs';
-import { SceneConfigurationComponent } from './scene-configuration.component';
-import { ServerApiService } from '../../common/services/server-api.service';
-import { AuthService } from '../../common/services/auth.service';
-import { AppConfigService } from '../../common/services/app-config.service';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import {translateTestingModule, 
+import { of } from 'rxjs';
+import {
+  createMockAppConfigService,
   createMockAuthService,
-  createMockAppConfigService} from '../../../testing/test-helpers';
+  translateTestingModule,
+} from '../../../testing/test-helpers';
+import { AppConfigService } from '../../common/services/app-config.service';
+import { AuthService } from '../../common/services/auth.service';
+import { ServerApiService } from '../../common/services/server-api.service';
+import { SceneConfigurationComponent } from './scene-configuration.component';
 
 describe('SceneConfigurationComponent', () => {
   let component: SceneConfigurationComponent;
@@ -25,10 +27,7 @@ describe('SceneConfigurationComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        SceneConfigurationComponent,
-        translateTestingModule,
-      ],
+      imports: [SceneConfigurationComponent, translateTestingModule],
       providers: [
         provideRouter([]),
         provideHttpClient(),
@@ -39,12 +38,19 @@ describe('SceneConfigurationComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
-    .overrideComponent(SceneConfigurationComponent, { set: { imports: [TranslatePipe] } })
-    .compileComponents();
+      .overrideComponent(SceneConfigurationComponent, { set: { imports: [TranslatePipe] } })
+      .compileComponents();
 
     fixture = TestBed.createComponent(SceneConfigurationComponent);
     component = fixture.componentInstance;
-    (component as any).codeEditor = { codeMirror: { getOption: jest.fn(() => false), setSize: jest.fn(), refresh: jest.fn(), state: { completionActive: false } } };
+    (component as any).codeEditor = {
+      codeMirror: {
+        getOption: jest.fn(() => false),
+        setSize: jest.fn(),
+        refresh: jest.fn(),
+        state: { completionActive: false },
+      },
+    };
     fixture.detectChanges();
   });
 

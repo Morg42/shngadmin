@@ -1,319 +1,685 @@
-
 <div class="shngbody">
   <div class="body-content">
     <p-tabs value="0">
       <p-tablist>
-        <p-tab value="0">{{ 'LOGIC_EDIT.CODE'|translate }}</p-tab>
-        <p-tab value="1">{{ 'LOGIC_EDIT.PARAMETERS'|translate }}</p-tab>
+        <p-tab value="0">{{ 'LOGIC_EDIT.CODE' | translate }}</p-tab>
+        <p-tab value="1">{{ 'LOGIC_EDIT.PARAMETERS' | translate }}</p-tab>
       </p-tablist>
       <p-tabpanels>
-      <p-tabpanel value="0">
-
-        <div  class="tab-header">
-        </div>
-        <div  class="tab-content">
-          <table>
-            <tbody>
-            <tr>
-              <td>
-                <div style="font-weight: normal; padding-top: 10px; padding-left: 10px; padding-right: 5px">
-                  @if (logic && logic.enabled && myLogicIsLoaded) {
-                    <span style="color: var(--shng-green);" class="fas fa-play-circle" title="{{ 'LOGIC_EDIT.ACTIVE'|translate }}"></span>
-                  }
-                  @if (logic && (!logic.enabled  || !myLogicIsLoaded)) {
-                    <span style="color: var(--shng-red);" class="fas fa-pause-circle" title="{{ 'LOGIC_EDIT.INACTIVE'|translate }}"></span>
-                  }
-                  {{ 'LOGIC_EDIT.FILENAME'|translate }}: <strong>../logics/{{ myEditFilename }}</strong>
-                  <button pButton label="{{ 'BUTTON.SAVE_LOAD'|translate }}" type="button" [disabled]="!this.logicChanged" icon="fa fa-check" style="margin-right: 0;" (click)="saveLogic(true)" class="float-sm-right ui-button-success"></button>
-                  <button pButton label="{{ 'BUTTON.SAVE'|translate }}" type="button" [disabled]="!this.logicChanged" icon="fa fa-check" style="margin-right: 5px;" (click)="saveLogic()" class="float-sm-right ui-button-success"></button>
-                  <button pButton label="{{ 'BUTTON.DISCARD'|translate }}" type="button" [disabled]="(myEditFilename === '') || (!this.logicChanged)" icon="fa fa-times" style="margin-right: 5px;" (click)="discardChanges();" class="float-sm-right ui-button-secondary"></button>
-<!--
+        <p-tabpanel value="0">
+          <div class="tab-header"></div>
+          <div class="tab-content">
+            <table>
+              <tbody>
+                <tr>
+                  <td>
+                    <div style="font-weight: normal; padding-top: 10px; padding-left: 10px; padding-right: 5px">
+                      @if (logic && logic.enabled && myLogicIsLoaded) {
+                        <span
+                          style="color: var(--shng-green)"
+                          class="fas fa-play-circle"
+                          title="{{ 'LOGIC_EDIT.ACTIVE' | translate }}"
+                        ></span>
+                      }
+                      @if (logic && (!logic.enabled || !myLogicIsLoaded)) {
+                        <span
+                          style="color: var(--shng-red)"
+                          class="fas fa-pause-circle"
+                          title="{{ 'LOGIC_EDIT.INACTIVE' | translate }}"
+                        ></span>
+                      }
+                      {{ 'LOGIC_EDIT.FILENAME' | translate }}: <strong>../logics/{{ myEditFilename }}</strong>
+                      <button
+                        pButton
+                        label="{{ 'BUTTON.SAVE_LOAD' | translate }}"
+                        type="button"
+                        [disabled]="!this.logicChanged"
+                        icon="fa fa-check"
+                        style="margin-right: 0"
+                        (click)="saveLogic(true)"
+                        class="float-sm-right ui-button-success"
+                      ></button>
+                      <button
+                        pButton
+                        label="{{ 'BUTTON.SAVE' | translate }}"
+                        type="button"
+                        [disabled]="!this.logicChanged"
+                        icon="fa fa-check"
+                        style="margin-right: 5px"
+                        (click)="saveLogic()"
+                        class="float-sm-right ui-button-success"
+                      ></button>
+                      <button
+                        pButton
+                        label="{{ 'BUTTON.DISCARD' | translate }}"
+                        type="button"
+                        [disabled]="myEditFilename === '' || !this.logicChanged"
+                        icon="fa fa-times"
+                        style="margin-right: 5px"
+                        (click)="discardChanges()"
+                        class="float-sm-right ui-button-secondary"
+                      ></button>
+                      <!--
                   <button pButton label="{{ 'BUTTON.TRIGGER'|translate }}" type="button" [disabled]="(myEditFilename === '') " icon="fa fa-hand-pointer" style="margin-right: 5px;" (click)="triggerLogic();" class="float-sm-right ui-button-success"></button>
 -->
-                  <button pButton label="{{ 'BUTTON.HELP'|translate }}" type="button" [disabled]="false" icon="fa fa-info" style="margin-left: 20px; margin-right: 5px;" (click)="editorHelp_display = true;" class="float-sm-right ui-button-success"></button>
+                      <button
+                        pButton
+                        label="{{ 'BUTTON.HELP' | translate }}"
+                        type="button"
+                        [disabled]="false"
+                        icon="fa fa-info"
+                        style="margin-left: 20px; margin-right: 5px"
+                        (click)="editorHelp_display = true"
+                        class="float-sm-right ui-button-success"
+                      ></button>
 
-                  @if (this.myLogicIsLoaded) {
-                    @if (logic.enabled) {
-                      <button name="disable" title="{{ 'LOGICS.DISABLE'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="disableLogic(logic.name);"><i class="fas fa-pause"></i></button>
-                      <button name="reload"  title="{{ 'LOGICS.RELOAD'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="reloadLogic(logic.name);"><i class="fas fa-sync"></i></button>
-                      <button name="trigger" title="{{ 'LOGICS.TRIGGER'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="triggerLogic();"><i class="fas fa-hand-pointer"></i></button>
-                    } @else {
-                      <button name="enable"  title="{{ 'LOGICS.ENABLE'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="enableLogic(logic.name);"><i class="fas fa-play"></i></button>
-                      <button name="reload"  title="{{ 'LOGICS.RELOAD'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="reloadLogic(logic.name);"><i class="fas fa-sync"></i></button>
-                      <button disabled="true" name="trigger" title="{{ 'LOGICS.TRIGGER'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right"><i class="fas fa-hand-pointer"></i></button>
-                    }
-                  } @else {
-                    <button disabled="true" name="enable"  title="{{ 'LOGICS.ENABLE'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="enableLogic(logic.name);"><i class="fas fa-play"></i></button>
-                    <button disabled="true" name="reload"  title="{{ 'LOGICS.RELOAD'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="reloadLogic(logic.name);"><i class="fas fa-sync"></i></button>
-                    <button disabled="true" name="trigger" title="{{ 'LOGICS.TRIGGER'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right"><i class="fas fa-hand-pointer"></i></button>
-                  }
+                      @if (this.myLogicIsLoaded) {
+                        @if (logic.enabled) {
+                          <button
+                            name="disable"
+                            title="{{ 'LOGICS.DISABLE' | translate }}"
+                            class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                            (click)="disableLogic(logic.name)"
+                          >
+                            <i class="fas fa-pause"></i>
+                          </button>
+                          <button
+                            name="reload"
+                            title="{{ 'LOGICS.RELOAD' | translate }}"
+                            class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                            (click)="reloadLogic(logic.name)"
+                          >
+                            <i class="fas fa-sync"></i>
+                          </button>
+                          <button
+                            name="trigger"
+                            title="{{ 'LOGICS.TRIGGER' | translate }}"
+                            class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                            (click)="triggerLogic()"
+                          >
+                            <i class="fas fa-hand-pointer"></i>
+                          </button>
+                        } @else {
+                          <button
+                            name="enable"
+                            title="{{ 'LOGICS.ENABLE' | translate }}"
+                            class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                            (click)="enableLogic(logic.name)"
+                          >
+                            <i class="fas fa-play"></i>
+                          </button>
+                          <button
+                            name="reload"
+                            title="{{ 'LOGICS.RELOAD' | translate }}"
+                            class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                            (click)="reloadLogic(logic.name)"
+                          >
+                            <i class="fas fa-sync"></i>
+                          </button>
+                          <button
+                            disabled="true"
+                            name="trigger"
+                            title="{{ 'LOGICS.TRIGGER' | translate }}"
+                            class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                          >
+                            <i class="fas fa-hand-pointer"></i>
+                          </button>
+                        }
+                      } @else {
+                        <button
+                          disabled="true"
+                          name="enable"
+                          title="{{ 'LOGICS.ENABLE' | translate }}"
+                          class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                          (click)="enableLogic(logic.name)"
+                        >
+                          <i class="fas fa-play"></i>
+                        </button>
+                        <button
+                          disabled="true"
+                          name="reload"
+                          title="{{ 'LOGICS.RELOAD' | translate }}"
+                          class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                          (click)="reloadLogic(logic.name)"
+                        >
+                          <i class="fas fa-sync"></i>
+                        </button>
+                        <button
+                          disabled="true"
+                          name="trigger"
+                          title="{{ 'LOGICS.TRIGGER' | translate }}"
+                          class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                        >
+                          <i class="fas fa-hand-pointer"></i>
+                        </button>
+                      }
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div style="margin-top: 10px; padding-left: 10px; padding-right: 5px">
+                      <ngx-codemirror
+                        #codeeditor
+                        (keyup)="logicsCodeKeyUp($event)"
+                        [options]="cmOptions"
+                        name="cmLogics"
+                        [(ngModel)]="myTextarea"
+                        [autoFocus]="true"
+                      ></ngx-codemirror>
+                      <a style="font-size: small">{{ 'RESTART LOGIC FOR CHANGES' | translate }}</a>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </p-tabpanel>
 
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div style="margin-top: 10px; padding-left: 10px; padding-right: 5px">
-                  <ngx-codemirror #codeeditor (keyup)="logicsCodeKeyUp($event)"
-                                  [options]="cmOptions"
-                                  name="cmLogics"
-                                  [(ngModel)]="myTextarea"
-                                  [autoFocus]="true"
-                  ></ngx-codemirror>
-                  <a style="font-size: small">{{ 'RESTART LOGIC FOR CHANGES'|translate }}</a>
-                </div>
-              </td>
-
-            </tr>
-            </tbody>
-          </table>
-        </div>
-
-      </p-tabpanel>
-
-
-
-      <p-tabpanel value="1">
-
-        <div  class="tab-header-parameter">
-          @if (logic) {
-            {{ 'LOGIC_EDIT.LOGICNAME'|translate }}: <strong>{{ logic.name }}</strong>
-          }
-          <button pButton label="{{ 'BUTTON.SAVE_LOAD'|translate }}" type="button" [disabled]="!this.logicChanged" icon="fa fa-check" style="margin-right: 0;" (click)="saveLogic(true)" class="float-sm-right ui-button-success"></button>
-          <button pButton label="{{ 'BUTTON.SAVE'|translate }}" type="button" [disabled]="!this.logicChanged" icon="fa fa-check" style="margin-right: 5px;" (click)="saveLogic()" class="float-sm-right ui-button-success"></button>
-          <button pButton label="{{ 'BUTTON.DISCARD'|translate }}" type="button" [disabled]="(myEditFilename === '') || (!this.logicChanged)" icon="fa fa-times" style="margin-right: 5px;" (click)="discardChanges();" class="float-sm-right ui-button-secondary"></button>
-          <!--
+        <p-tabpanel value="1">
+          <div class="tab-header-parameter">
+            @if (logic) {
+              {{ 'LOGIC_EDIT.LOGICNAME' | translate }}: <strong>{{ logic.name }}</strong>
+            }
+            <button
+              pButton
+              label="{{ 'BUTTON.SAVE_LOAD' | translate }}"
+              type="button"
+              [disabled]="!this.logicChanged"
+              icon="fa fa-check"
+              style="margin-right: 0"
+              (click)="saveLogic(true)"
+              class="float-sm-right ui-button-success"
+            ></button>
+            <button
+              pButton
+              label="{{ 'BUTTON.SAVE' | translate }}"
+              type="button"
+              [disabled]="!this.logicChanged"
+              icon="fa fa-check"
+              style="margin-right: 5px"
+              (click)="saveLogic()"
+              class="float-sm-right ui-button-success"
+            ></button>
+            <button
+              pButton
+              label="{{ 'BUTTON.DISCARD' | translate }}"
+              type="button"
+              [disabled]="myEditFilename === '' || !this.logicChanged"
+              icon="fa fa-times"
+              style="margin-right: 5px"
+              (click)="discardChanges()"
+              class="float-sm-right ui-button-secondary"
+            ></button>
+            <!--
                             <button pButton label="{{ 'BUTTON.TRIGGER'|translate }}" type="button" [disabled]="(myEditFilename === '') " icon="fa fa-hand-pointer" style="margin-right: 5px;" (click)="triggerLogic();" class="float-sm-right ui-button-success"></button>
           -->
-          <button pButton label="{{ 'BUTTON.HELP'|translate }}" type="button" [disabled]="false" icon="fa fa-info" style="margin-left: 20px; margin-right: 5px;" (click)="editorHelp_display = true;" class="float-sm-right ui-button-success"></button>
+            <button
+              pButton
+              label="{{ 'BUTTON.HELP' | translate }}"
+              type="button"
+              [disabled]="false"
+              icon="fa fa-info"
+              style="margin-left: 20px; margin-right: 5px"
+              (click)="editorHelp_display = true"
+              class="float-sm-right ui-button-success"
+            ></button>
 
-
-          @if (this.myLogicIsLoaded) {
-            @if (logic.enabled) {
-              <button name="disable" title="{{ 'LOGICS.DISABLE'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="disableLogic(logic.name);"><i class="fas fa-pause"></i></button>
-              <button name="reload"  title="{{ 'LOGICS.RELOAD'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="reloadLogic(logic.name);"><i class="fas fa-sync"></i></button>
-              <button name="trigger" title="{{ 'LOGICS.TRIGGER'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="triggerLogic();"><i class="fas fa-hand-pointer"></i></button>
+            @if (this.myLogicIsLoaded) {
+              @if (logic.enabled) {
+                <button
+                  name="disable"
+                  title="{{ 'LOGICS.DISABLE' | translate }}"
+                  class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                  (click)="disableLogic(logic.name)"
+                >
+                  <i class="fas fa-pause"></i>
+                </button>
+                <button
+                  name="reload"
+                  title="{{ 'LOGICS.RELOAD' | translate }}"
+                  class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                  (click)="reloadLogic(logic.name)"
+                >
+                  <i class="fas fa-sync"></i>
+                </button>
+                <button
+                  name="trigger"
+                  title="{{ 'LOGICS.TRIGGER' | translate }}"
+                  class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                  (click)="triggerLogic()"
+                >
+                  <i class="fas fa-hand-pointer"></i>
+                </button>
+              } @else {
+                <button
+                  name="enable"
+                  title="{{ 'LOGICS.ENABLE' | translate }}"
+                  class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                  (click)="enableLogic(logic.name)"
+                >
+                  <i class="fas fa-play"></i>
+                </button>
+                <button
+                  name="reload"
+                  title="{{ 'LOGICS.RELOAD' | translate }}"
+                  class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                  (click)="reloadLogic(logic.name)"
+                >
+                  <i class="fas fa-sync"></i>
+                </button>
+                <button
+                  disabled="true"
+                  name="trigger"
+                  title="{{ 'LOGICS.TRIGGER' | translate }}"
+                  class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                >
+                  <i class="fas fa-hand-pointer"></i>
+                </button>
+              }
             } @else {
-              <button name="enable"  title="{{ 'LOGICS.ENABLE'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="enableLogic(logic.name);"><i class="fas fa-play"></i></button>
-              <button name="reload"  title="{{ 'LOGICS.RELOAD'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="reloadLogic(logic.name);"><i class="fas fa-sync"></i></button>
-              <button disabled="true" name="trigger" title="{{ 'LOGICS.TRIGGER'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right"><i class="fas fa-hand-pointer"></i></button>
+              <button
+                disabled="true"
+                name="enable"
+                title="{{ 'LOGICS.ENABLE' | translate }}"
+                class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                (click)="enableLogic(logic.name)"
+              >
+                <i class="fas fa-play"></i>
+              </button>
+              <button
+                disabled="true"
+                name="reload"
+                title="{{ 'LOGICS.RELOAD' | translate }}"
+                class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                (click)="reloadLogic(logic.name)"
+              >
+                <i class="fas fa-sync"></i>
+              </button>
+              <button
+                disabled="true"
+                name="trigger"
+                title="{{ 'LOGICS.TRIGGER' | translate }}"
+                class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+              >
+                <i class="fas fa-hand-pointer"></i>
+              </button>
             }
-          } @else {
-            <button disabled="true" name="enable"  title="{{ 'LOGICS.ENABLE'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="enableLogic(logic.name);"><i class="fas fa-play"></i></button>
-            <button disabled="true" name="reload"  title="{{ 'LOGICS.RELOAD'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right" (click)="reloadLogic(logic.name);"><i class="fas fa-sync"></i></button>
-            <button disabled="true" name="trigger" title="{{ 'LOGICS.TRIGGER'|translate }}" class="btn btn-outline-dark btn-sm mr-1 float-sm-right"><i class="fas fa-hand-pointer"></i></button>
-          }
-
-        </div>
-        <div class="tab-content-parameter">
-
-          <table id="1" class="table table-striped">
-            <tr>
-              <td>{{ 'LOGIC_EDIT.DESCRIPTION'|translate }}</td>
-              <td colspan="3">
-                <input [(ngModel)]="logic.logic_description" (keyup)="this.logicChanged = hasLogicChanged()"  type="text" pInputText placeholder="" pInputText name="description" style="width: 100%" [ngStyle]="{'width': 50}"/>
-              </td>
-            </tr>
-            <tr>
-              <td>{{ 'LOGIC_EDIT.GROUP'|translate }}</td>
-              <td colspan="3">
-                <input [(ngModel)]="logic.group" (keyup)="this.logicChanged = hasLogicChanged()"  type="text" pInputText placeholder="" pInputText name="group" style="width: 400px" [ngStyle]="{'width': 50}"/>
-              </td>
-            </tr>
-            <tr>
-              <td width="15%">{{ 'LOGIC_EDIT.STATUS'|translate }}</td>
-              @if (logic && logic.enabled) {
-                <td width="35%"><span style="color: var(--shng-green);  vertical-align: middle" class="fas fa-play-circle"></span> {{ 'LOGIC_EDIT.ACTIVE'|translate }}</td>
-              }
-              @if (logic && !logic.enabled) {
-                <td width="35%"><span style="color: var(--shng-red);  vertical-align: middle" class="fas fa-play-circle"></span> {{ 'LOGIC_EDIT.INACTIVE'|translate }}</td>
-              }
-              <td width="20%"></td>
-              <td width="30%"></td>
-            </tr>
-            <tr>
-              <td>{{ 'LOGIC_EDIT.LAST_EXEC'|translate }}</td>
-              <td>
-                @if (logic) {
-                  {{ logic.last_run }}
-                }
-              </td>
-              <td>{{ 'LOGIC_EDIT.NEXT_EXEC'|translate }}</td>
-              <td>
-                @if (logic) {
-                  {{ logic.next_exec }}
-                }
-              </td>
-            </tr>
-
-            <tr><td colspan="4"></td></tr>
-            <tr>
-              <td><strong>{{ 'LOGIC_EDIT.PARAMETER'|translate }}</strong></td>
-              <td colspan="3"><strong>{{ 'LOGIC_EDIT.VALUE'|translate }}</strong></td>
-            </tr>
-            <tr>
-              <td>Cycle</td>
-              <td colspan="3">
-                <input [(ngModel)]="logic.cycle" (keyup)="this.logicChanged = hasLogicChanged()" type="number" min="1" max="65535" pInputText placeholder="" pInputText name="cycle" style="width: 150px" [ngStyle]="{'width': 6}"/>
-              </td>
-            </tr>
-            <tr>
-              <td>Crontab(s)</td>
-              <td colspan="3">
-                <input [(ngModel)]="logic.crontab" (keyup)="this.logicChanged = hasLogicChanged()"  type="text" pInputText placeholder="" pInputText name="crontab" style="width: 400px" [ngStyle]="{'width': 50}"/>
-              </td>
-            </tr>
-            <tr>
-              <td>Watch Item(s)@if (this.logic.watch_item!==undefined) {: {{ this.logic.watch_item.length }}}</td>
-              <td colspan="3">
-                @if (this.logic.watch_item!==undefined) {
-                  @for (watch_item of this.logic.watch_item; track $index) {
-                    <button pButton label="{{watch_item}}" type="button" id="{{watch_item}}" icon="fa fa-times" (click)="removeItem(watch_item)" class="float-sm-left ui-button-secondary mr-2 mb-2"></button>
-                  }
-                  @if (this.logic.watch_item.length > 0) {
-                    <br style="clear:both;"/>
-                  }
-                }
-                @if (this.wrongWatchItem) {
-                  <p-message severity="error" [text]="'LOGIC_EDIT.ITEM_INVALID' | translate" [closable]="true" (onClose)="this.wrongWatchItem = false"></p-message>
-                }
-                <div>
-                  <div style="float:left;">
-                  <ngx-codemirror #watchitems (keyup)="watchItemKeyUp($event)"
-                                (keyup.enter)="addItem()"
-                                name="cmWatchItems"
-                                [options]="cmOptionsWatchItems"
-                                [(ngModel)]="myTextareaWatchItems"
-                                [autoFocus]="false"
-                  ></ngx-codemirror>
-                  </div>
-                  <div style="float:left;" class="ml-2">
-                    <button pButton label="{{'LOGIC_EDIT.ADD_ITEM'|translate }}" class="ui-button-success" (click)="addItem()"></button>
-                  </div>
-                  <br style="clear:both;"/>
-                </div>
-              </td>
-            </tr>
-          </table>
-
-          <div style="margin-left: 10px; padding-top: 20px; padding-bottom: 10px;"><strong>{{ 'LOGIC_EDIT.PLUGIN_SPECIFIC'|translate }}</strong></div>
-
-          <p-table [columns]="parameter_cols" [value]="parameters" selectionMode="single">
-            <ng-template pTemplate="header" let-columns>
+          </div>
+          <div class="tab-content-parameter">
+            <table id="1" class="table table-striped">
               <tr>
-                @for (col of columns; track $index) {
-                  <th [pSortableColumn]="col.field" [ngStyle]="{'width': col.width}">
-                    {{col.header|translate}}
-                    @if (col.field !== '') {
-                      <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
-                    }
-                  </th>
-                }
+                <td>{{ 'LOGIC_EDIT.DESCRIPTION' | translate }}</td>
+                <td colspan="3">
+                  <input
+                    [(ngModel)]="logic.logic_description"
+                    (keyup)="this.logicChanged = hasLogicChanged()"
+                    type="text"
+                    pInputText
+                    placeholder=""
+                    pInputText
+                    name="description"
+                    style="width: 100%"
+                    [ngStyle]="{ width: 50 }"
+                  />
+                </td>
               </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-rowData let-columns="columns">
               <tr>
-                @for (col of columns; track $index) {
+                <td>{{ 'LOGIC_EDIT.GROUP' | translate }}</td>
+                <td colspan="3">
+                  <input
+                    [(ngModel)]="logic.group"
+                    (keyup)="this.logicChanged = hasLogicChanged()"
+                    type="text"
+                    pInputText
+                    placeholder=""
+                    pInputText
+                    name="group"
+                    style="width: 400px"
+                    [ngStyle]="{ width: 50 }"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td width="15%">{{ 'LOGIC_EDIT.STATUS' | translate }}</td>
+                @if (logic && logic.enabled) {
+                  <td width="35%">
+                    <span style="color: var(--shng-green); vertical-align: middle" class="fas fa-play-circle"></span>
+                    {{ 'LOGIC_EDIT.ACTIVE' | translate }}
+                  </td>
+                }
+                @if (logic && !logic.enabled) {
+                  <td width="35%">
+                    <span style="color: var(--shng-red); vertical-align: middle" class="fas fa-play-circle"></span>
+                    {{ 'LOGIC_EDIT.INACTIVE' | translate }}
+                  </td>
+                }
+                <td width="20%"></td>
+                <td width="30%"></td>
+              </tr>
+              <tr>
+                <td>{{ 'LOGIC_EDIT.LAST_EXEC' | translate }}</td>
                 <td>
-
-                  @if (col.field === 'value') {
-                    <app-dynamic-field [row]="rowData" [col]="col" (changed)="this.logicChanged = hasLogicChanged()"></app-dynamic-field>
+                  @if (logic) {
+                    {{ logic.last_run }}
                   }
+                </td>
+                <td>{{ 'LOGIC_EDIT.NEXT_EXEC' | translate }}</td>
+                <td>
+                  @if (logic) {
+                    {{ logic.next_exec }}
+                  }
+                </td>
+              </tr>
 
-                  @if (col.field !== 'value') {
-                    @if (col.field !== 'desc') {
-                      {{rowData[col.field]}}
+              <tr>
+                <td colspan="4"></td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>{{ 'LOGIC_EDIT.PARAMETER' | translate }}</strong>
+                </td>
+                <td colspan="3">
+                  <strong>{{ 'LOGIC_EDIT.VALUE' | translate }}</strong>
+                </td>
+              </tr>
+              <tr>
+                <td>Cycle</td>
+                <td colspan="3">
+                  <input
+                    [(ngModel)]="logic.cycle"
+                    (keyup)="this.logicChanged = hasLogicChanged()"
+                    type="number"
+                    min="1"
+                    max="65535"
+                    pInputText
+                    placeholder=""
+                    pInputText
+                    name="cycle"
+                    style="width: 150px"
+                    [ngStyle]="{ width: 6 }"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>Crontab(s)</td>
+                <td colspan="3">
+                  <input
+                    [(ngModel)]="logic.crontab"
+                    (keyup)="this.logicChanged = hasLogicChanged()"
+                    type="text"
+                    pInputText
+                    placeholder=""
+                    pInputText
+                    name="crontab"
+                    style="width: 400px"
+                    [ngStyle]="{ width: 50 }"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Watch Item(s)
+                  @if (this.logic.watch_item !== undefined) {
+                    : {{ this.logic.watch_item.length }}
+                  }
+                </td>
+                <td colspan="3">
+                  @if (this.logic.watch_item !== undefined) {
+                    @for (watch_item of this.logic.watch_item; track $index) {
+                      <button
+                        pButton
+                        label="{{ watch_item }}"
+                        type="button"
+                        id="{{ watch_item }}"
+                        icon="fa fa-times"
+                        (click)="removeItem(watch_item)"
+                        class="float-sm-left ui-button-secondary mr-2 mb-2"
+                      ></button>
                     }
-                    @if (col.field === 'desc') {
-                      @for (bl of rowData[col.field].split('\n'); track $index) {
-                        {{ bl }}<br>
+                    @if (this.logic.watch_item.length > 0) {
+                      <br style="clear: both" />
+                    }
+                  }
+                  @if (this.wrongWatchItem) {
+                    <p-message
+                      severity="error"
+                      [text]="'LOGIC_EDIT.ITEM_INVALID' | translate"
+                      [closable]="true"
+                      (onClose)="this.wrongWatchItem = false"
+                    ></p-message>
+                  }
+                  <div>
+                    <div style="float: left">
+                      <ngx-codemirror
+                        #watchitems
+                        (keyup)="watchItemKeyUp($event)"
+                        (keyup.enter)="addItem()"
+                        name="cmWatchItems"
+                        [options]="cmOptionsWatchItems"
+                        [(ngModel)]="myTextareaWatchItems"
+                        [autoFocus]="false"
+                      ></ngx-codemirror>
+                    </div>
+                    <div style="float: left" class="ml-2">
+                      <button
+                        pButton
+                        label="{{ 'LOGIC_EDIT.ADD_ITEM' | translate }}"
+                        class="ui-button-success"
+                        (click)="addItem()"
+                      ></button>
+                    </div>
+                    <br style="clear: both" />
+                  </div>
+                </td>
+              </tr>
+            </table>
+
+            <div style="margin-left: 10px; padding-top: 20px; padding-bottom: 10px">
+              <strong>{{ 'LOGIC_EDIT.PLUGIN_SPECIFIC' | translate }}</strong>
+            </div>
+
+            <p-table [columns]="parameter_cols" [value]="parameters" selectionMode="single">
+              <ng-template pTemplate="header" let-columns>
+                <tr>
+                  @for (col of columns; track $index) {
+                    <th [pSortableColumn]="col.field" [ngStyle]="{ width: col.width }">
+                      {{ col.header | translate }}
+                      @if (col.field !== '') {
+                        <p-sortIcon
+                          [field]="col.field"
+                          ariaLabel="Activate to sort"
+                          ariaLabelDesc="Activate to sort in descending order"
+                          ariaLabelAsc="Activate to sort in ascending order"
+                        ></p-sortIcon>
                       }
-                    }
-                    <!--
+                    </th>
+                  }
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-rowData let-columns="columns">
+                <tr>
+                  @for (col of columns; track $index) {
+                    <td>
+                      @if (col.field === 'value') {
+                        <app-dynamic-field
+                          [row]="rowData"
+                          [col]="col"
+                          (changed)="this.logicChanged = hasLogicChanged()"
+                        ></app-dynamic-field>
+                      }
+
+                      @if (col.field !== 'value') {
+                        @if (col.field !== 'desc') {
+                          {{ rowData[col.field] }}
+                        }
+                        @if (col.field === 'desc') {
+                          @for (bl of rowData[col.field].split('\n'); track $index) {
+                            {{ bl }}<br />
+                          }
+                        }
+                        <!--
                                   @if (typeof rowData[col.field]  !== 'string') {
                                     @for (bl of col.field; track $index) {
                                       {{ bl }}}
                                     }
                                   }
                     -->
+                      }
+                    </td>
                   }
-                </td>
-                }
-              </tr>
-            </ng-template>
-
-          </p-table>
-
-        </div>
-      </p-tabpanel>
-
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabpanel>
       </p-tabpanels>
     </p-tabs>
   </div>
 </div>
-
 
 <!--
     -- Display help dialog
   -->
 <p-dialog header="" [(visible)]="editorHelp_display" [closable]="true" [modal]="true" dynamic="true" blockScroll="true">
   <ng-template pTemplate="header">
-    {{'HELP.EDITOR-KEYS'|translate}}
+    {{ 'HELP.EDITOR-KEYS' | translate }}
   </ng-template>
-  <br>
+  <br />
   <table>
     <thead>
-    <th><u>{{'HELP.KEY'|translate}}</u></th>
-    <th style="width: 20px;"></th>
-    <th><u>{{'HELP.DESCRIPTION'|translate}}</u></th>
+      <th>
+        <u>{{ 'HELP.KEY' | translate }}</u>
+      </th>
+      <th style="width: 20px"></th>
+      <th>
+        <u>{{ 'HELP.DESCRIPTION' | translate }}</u>
+      </th>
     </thead>
     <tbody>
-    <tr><td>Tab</td>          <td></td> <td>{{'HELP.TAB'|translate}}</td></tr>
-    <tr><td>Shift-Tab</td>    <td></td> <td>{{'HELP.SHIFT-TAB'|translate}}</td></tr>
-    <tr><td>F11</td>          <td></td> <td>{{'HELP.F11'|translate}}</td></tr>
-    <tr><td>Esc</td>          <td></td> <td>{{'HELP.ESC'|translate}}</td></tr>
-    <tr><td>Ctrl-L</td>       <td></td> <td>{{'HELP.CTRL-L'|translate}}</td></tr>
-    <tr><td>Ctrl-Q</td>       <td></td> <td>{{'HELP.CTRL-Q'|translate}}</td></tr>
-    <tr><td>Shift-Ctrl-Q</td> <td></td> <td>{{'HELP.SHIFT-CTRL-Q'|translate}}</td></tr>
-    <tr><td>Ctrl-F</td>       <td></td> <td>{{'HELP.CTRL-F'|translate}}</td></tr>
-    <tr><td>Shift-Ctrl-F</td> <td></td> <td>{{'HELP.SHIFT-CTRL-F'|translate}}</td></tr>
-    <tr><td>Alt-G</td>        <td></td> <td>{{'HELP.ALT-G'|translate}}</td></tr>
+      <tr>
+        <td>Tab</td>
+        <td></td>
+        <td>{{ 'HELP.TAB' | translate }}</td>
+      </tr>
+      <tr>
+        <td>Shift-Tab</td>
+        <td></td>
+        <td>{{ 'HELP.SHIFT-TAB' | translate }}</td>
+      </tr>
+      <tr>
+        <td>F11</td>
+        <td></td>
+        <td>{{ 'HELP.F11' | translate }}</td>
+      </tr>
+      <tr>
+        <td>Esc</td>
+        <td></td>
+        <td>{{ 'HELP.ESC' | translate }}</td>
+      </tr>
+      <tr>
+        <td>Ctrl-L</td>
+        <td></td>
+        <td>{{ 'HELP.CTRL-L' | translate }}</td>
+      </tr>
+      <tr>
+        <td>Ctrl-Q</td>
+        <td></td>
+        <td>{{ 'HELP.CTRL-Q' | translate }}</td>
+      </tr>
+      <tr>
+        <td>Shift-Ctrl-Q</td>
+        <td></td>
+        <td>{{ 'HELP.SHIFT-CTRL-Q' | translate }}</td>
+      </tr>
+      <tr>
+        <td>Ctrl-F</td>
+        <td></td>
+        <td>{{ 'HELP.CTRL-F' | translate }}</td>
+      </tr>
+      <tr>
+        <td>Shift-Ctrl-F</td>
+        <td></td>
+        <td>{{ 'HELP.SHIFT-CTRL-F' | translate }}</td>
+      </tr>
+      <tr>
+        <td>Alt-G</td>
+        <td></td>
+        <td>{{ 'HELP.ALT-G' | translate }}</td>
+      </tr>
     </tbody>
   </table>
-  <br>
+  <br />
   <ng-template pTemplate="footer">
-    <button pButton type="button" (click)="editorHelp_display = false;" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
+    <button
+      pButton
+      type="button"
+      (click)="editorHelp_display = false"
+      label="{{ 'BUTTON.CLOSE' | translate }}"
+      class="ui-button-success"
+    ></button>
   </ng-template>
 </p-dialog>
-
 
 <!--
     -- Display help dialog
   -->
-<p-dialog header="" [(visible)]="parameterHelp_display" [closable]="true" [modal]="true" [style]="{'max-width':'600px'}" dynamic="true" blockScroll="true">
+<p-dialog
+  header=""
+  [(visible)]="parameterHelp_display"
+  [closable]="true"
+  [modal]="true"
+  [style]="{ 'max-width': '600px' }"
+  dynamic="true"
+  blockScroll="true"
+>
   <ng-template pTemplate="header">
-    {{ 'BUTTON.HELP'|translate }} {{ 'LOGIC_EDIT.PARAMETERS'|translate }}
+    {{ 'BUTTON.HELP' | translate }} {{ 'LOGIC_EDIT.PARAMETERS' | translate }}
   </ng-template>
-  <br>
-  <strong>Crontab(s)</strong>: {{ 'HELP.CRONTAB'|translate }}
-  <br><br>
-  <strong>Watch Item(s)</strong>: {{ 'HELP.AUTOCOMPLETE'|translate }}
-  <br><br>
+  <br />
+  <strong>Crontab(s)</strong>: {{ 'HELP.CRONTAB' | translate }} <br /><br />
+  <strong>Watch Item(s)</strong>: {{ 'HELP.AUTOCOMPLETE' | translate }} <br /><br />
   <table>
     <thead>
-    <th><u>{{'HELP.KEY'|translate}}</u></th>
-    <th style="width: 20px;"></th>
-    <th><u>{{'HELP.DESCRIPTION'|translate}}</u></th>
+      <th>
+        <u>{{ 'HELP.KEY' | translate }}</u>
+      </th>
+      <th style="width: 20px"></th>
+      <th>
+        <u>{{ 'HELP.DESCRIPTION' | translate }}</u>
+      </th>
     </thead>
     <tbody>
-    <tr><td>Tab</td>          <td></td> <td>{{'HELP.WATCHITEM_TAB'|translate}}</td></tr>
-    <tr><td>{{'HELP.KEY_UP'|translate}}</td>       <td></td> <td>{{'HELP.UP'|translate}}</td></tr>
-    <tr><td>{{'HELP.KEY_DOWN'|translate}}</td>       <td></td> <td>{{'HELP.DOWN'|translate}}</td></tr>
-    <tr><td>Enter</td> <td></td> <td>{{'HELP.WATCHITEM_ENTER'|translate}}</td></tr>
+      <tr>
+        <td>Tab</td>
+        <td></td>
+        <td>{{ 'HELP.WATCHITEM_TAB' | translate }}</td>
+      </tr>
+      <tr>
+        <td>{{ 'HELP.KEY_UP' | translate }}</td>
+        <td></td>
+        <td>{{ 'HELP.UP' | translate }}</td>
+      </tr>
+      <tr>
+        <td>{{ 'HELP.KEY_DOWN' | translate }}</td>
+        <td></td>
+        <td>{{ 'HELP.DOWN' | translate }}</td>
+      </tr>
+      <tr>
+        <td>Enter</td>
+        <td></td>
+        <td>{{ 'HELP.WATCHITEM_ENTER' | translate }}</td>
+      </tr>
     </tbody>
   </table>
-  <br>
+  <br />
   <ng-template pTemplate="footer">
-    <button pButton type="button" (click)="parameterHelp_display = false;" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
+    <button
+      pButton
+      type="button"
+      (click)="parameterHelp_display = false"
+      label="{{ 'BUTTON.CLOSE' | translate }}"
+      class="ui-button-success"
+    ></button>
   </ng-template>
 </p-dialog>

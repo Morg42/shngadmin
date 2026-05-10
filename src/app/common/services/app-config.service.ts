@@ -55,10 +55,9 @@ const DEFAULT_CONFIG: AppConfig = {
 };
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AppConfigService {
-
   private readonly userPrefs = inject(UserPreferencesService);
 
   /**
@@ -92,7 +91,7 @@ export class AppConfigService {
    */
   get ready$(): Observable<AppConfig> {
     return this._config$.pipe(
-      filter(cfg => cfg.apiUrl !== DEFAULT_CONFIG.apiUrl || cfg.hostIp !== '')
+      filter((cfg) => cfg.apiUrl !== DEFAULT_CONFIG.apiUrl || cfg.hostIp !== ''),
     );
   }
 
@@ -100,18 +99,42 @@ export class AppConfigService {
   // Typed getters for the most-used individual values
   // ----------------------------------------------------------------
 
-  get apiUrl(): string        { return this.snapshot.apiUrl; }
-  get hostIp(): string        { return this.snapshot.hostIp; }
-  get wsHost(): string        { return this.snapshot.wsHost; }
-  get wsPort(): string        { return this.snapshot.wsPort; }
-  get defaultLanguage(): string { return this.snapshot.defaultLanguage; }
-  get developerMode(): boolean  { return this.snapshot.developerMode; }
-  get clickDropdownHeader(): boolean { return this.snapshot.clickDropdownHeader; }
-  get itemtreeSearchstart(): number  { return this.snapshot.itemtreeSearchstart; }
-  get itemtreeFullpath(): boolean    { return this.snapshot.itemtreeFullpath; }
-  get fallbackLanguageOrder(): string[] { return this.snapshot.fallbackLanguageOrder; }
-  get tzname(): string    { return this.snapshot.tzname; }
-  get tznameDST(): string { return this.snapshot.tznameDST; }
+  get apiUrl(): string {
+    return this.snapshot.apiUrl;
+  }
+  get hostIp(): string {
+    return this.snapshot.hostIp;
+  }
+  get wsHost(): string {
+    return this.snapshot.wsHost;
+  }
+  get wsPort(): string {
+    return this.snapshot.wsPort;
+  }
+  get defaultLanguage(): string {
+    return this.snapshot.defaultLanguage;
+  }
+  get developerMode(): boolean {
+    return this.snapshot.developerMode;
+  }
+  get clickDropdownHeader(): boolean {
+    return this.snapshot.clickDropdownHeader;
+  }
+  get itemtreeSearchstart(): number {
+    return this.snapshot.itemtreeSearchstart;
+  }
+  get itemtreeFullpath(): boolean {
+    return this.snapshot.itemtreeFullpath;
+  }
+  get fallbackLanguageOrder(): string[] {
+    return this.snapshot.fallbackLanguageOrder;
+  }
+  get tzname(): string {
+    return this.snapshot.tzname;
+  }
+  get tznameDST(): string {
+    return this.snapshot.tznameDST;
+  }
 
   // ----------------------------------------------------------------
   // Mutation

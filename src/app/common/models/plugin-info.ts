@@ -1,7 +1,6 @@
-
-import {PluginMetadata} from './plugin-metadata';
-import {PluginItemAttribute} from './plugin-item-attribute';
-import {PluginParameter} from './plugin-parameter';
+import { PluginItemAttribute } from './plugin-item-attribute';
+import { PluginMetadata } from './plugin-metadata';
+import { PluginParameter } from './plugin-parameter';
 
 //
 // Datatype for <shng-server>:<port>/api/plugins/info
@@ -26,4 +25,3 @@ export interface PlugininfoType {
   stopped: boolean;
   triggers: string[];
 }
-

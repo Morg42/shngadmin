@@ -1,9 +1,9 @@
-import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
-import { ItemsApiService } from './items-api.service';
-import { AppConfigService } from './app-config.service';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { createMockAppConfigService } from '../../../testing/test-helpers';
+import { AppConfigService } from './app-config.service';
+import { ItemsApiService } from './items-api.service';
 
 describe('ItemsApiService', () => {
   let service: ItemsApiService;

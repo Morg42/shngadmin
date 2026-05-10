@@ -1,4 +1,3 @@
-
 export interface ItemTreeNode {
   path: string;
   name: string;
@@ -9,4 +8,3 @@ export interface ItemTreeNode {
 export interface ItemTree {
   [index: number]: ItemTreeNode;
 }
-

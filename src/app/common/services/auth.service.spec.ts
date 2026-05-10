@@ -1,11 +1,11 @@
-import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { JwtModule } from '@auth0/angular-jwt';
-import { AuthService } from './auth.service';
-import { AppConfigService } from './app-config.service';
-import { UserPreferencesService } from './user-preferences.service';
 import { createMockAppConfigService } from '../../../testing/test-helpers';
+import { AppConfigService } from './app-config.service';
+import { AuthService } from './auth.service';
+import { UserPreferencesService } from './user-preferences.service';
 
 function tokenFactory(): string | null {
   return localStorage.getItem('token');

@@ -1,12 +1,10 @@
-
 import { Injectable, inject } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
 
 import { APP_NAME, APP_VERSION } from '../../app.component';
-import { WebsocketService } from './websocket.service';
 import { AppConfigService } from './app-config.service';
 import { SharedService } from './shared.service';
-
+import { WebsocketService } from './websocket.service';
 
 export interface Message {
   cmd: string;
@@ -25,118 +23,111 @@ export interface Message {
   rawdata: any;
 }
 
-
-type SeriesCallback = ( series: any ) => void;
-
+type SeriesCallback = (series: any) => void;
 
 // ------------------------------------------------------------------
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-
 export class WebsocketPluginService {
-
   private appConfig = inject(AppConfigService);
   private websocketService = inject(WebsocketService);
   private shared = inject(SharedService);
   monitorCallbackFunction = undefined;
 
-  private msgMonitorItems = <Message> {
-    'cmd': 'monitor',
-    'items': []
+  private msgMonitorItems = <Message>{
+    cmd: 'monitor',
+    items: [],
   };
 
-  private msgListenSeriesLoad = <Message> {
-    'cmd': 'series',
-    'item': 'env.system.load',
-    'series': 'avg',
-    'start': '48h',
-    'end': 'now',
-    'count': 10
+  private msgListenSeriesLoad = <Message>{
+    cmd: 'series',
+    item: 'env.system.load',
+    series: 'avg',
+    start: '48h',
+    end: 'now',
+    count: 10,
   };
-  private msgListenSeriesSystemMemory = <Message> {
-    'cmd': 'series',
-    'item': 'env.system.memory.used',
-    'series': 'avg',
-    'start': '48h',
-    'end': 'now',
-    'count': 10
+  private msgListenSeriesSystemMemory = <Message>{
+    cmd: 'series',
+    item: 'env.system.memory.used',
+    series: 'avg',
+    start: '48h',
+    end: 'now',
+    count: 10,
   };
-  private msgListenSeriesSwap = <Message> {
-    'cmd': 'series',
-    'item': 'env.system.swap',
-    'series': 'avg',
-    'start': '48h',
-    'end': 'now',
-    'count': 10
+  private msgListenSeriesSwap = <Message>{
+    cmd: 'series',
+    item: 'env.system.swap',
+    series: 'avg',
+    start: '48h',
+    end: 'now',
+    count: 10,
   };
-  private msgListenSeriesMemory = <Message> {
-    'cmd': 'series',
-    'item': 'env.core.memory',
-    'series': 'avg',
-    'start': '48h',
-    'end': 'now',
-    'count': 10
+  private msgListenSeriesMemory = <Message>{
+    cmd: 'series',
+    item: 'env.core.memory',
+    series: 'avg',
+    start: '48h',
+    end: 'now',
+    count: 10,
   };
-  private msgListenSeriesThreads = <Message> {
-    'cmd': 'series',
-    'item': 'env.core.threads',
-    'series': 'avg',
-    'start': '48h',
-    'end': 'now',
-    'count': 20
+  private msgListenSeriesThreads = <Message>{
+    cmd: 'series',
+    item: 'env.core.threads',
+    series: 'avg',
+    start: '48h',
+    end: 'now',
+    count: 20,
   };
-  private msgListenSeriesWorkerThreads = <Message> {
-    'cmd': 'series',
-    'item': 'env.core.scheduler.worker_threads',
-    'series': 'avg',
-    'start': '48h',
-    'end': 'now',
-    'count': 20
+  private msgListenSeriesWorkerThreads = <Message>{
+    cmd: 'series',
+    item: 'env.core.scheduler.worker_threads',
+    series: 'avg',
+    start: '48h',
+    end: 'now',
+    count: 20,
   };
-  private msgListenSeriesIdleWorkerThreads = <Message> {
-    'cmd': 'series',
-    'item': 'env.core.scheduler.idle_threads',
-    'series': 'avg',
-    'start': '48h',
-    'end': 'now',
-    'count': 20
+  private msgListenSeriesIdleWorkerThreads = <Message>{
+    cmd: 'series',
+    item: 'env.core.scheduler.idle_threads',
+    series: 'avg',
+    start: '48h',
+    end: 'now',
+    count: 20,
   };
-  private msgListenSeriesActiveWorkerThreads = <Message> {
-    'cmd': 'series',
-    'item': 'env.core.scheduler.active_threads',
-    'series': 'avg',
-    'start': '48h',
-    'end': 'now',
-    'count': 20
+  private msgListenSeriesActiveWorkerThreads = <Message>{
+    cmd: 'series',
+    item: 'env.core.scheduler.active_threads',
+    series: 'avg',
+    start: '48h',
+    end: 'now',
+    count: 20,
   };
-  private msgListenSeriesDisk = <Message> {
-    'cmd': 'series',
-    'item': 'env.system.diskusagepercent',
-    'series': 'avg',
-    'start': '48h',
-    'end': 'now',
-    'count': 10
+  private msgListenSeriesDisk = <Message>{
+    cmd: 'series',
+    item: 'env.system.diskusagepercent',
+    series: 'avg',
+    start: '48h',
+    end: 'now',
+    count: 10,
   };
-
 
   monitor = {
-    'items': [['x', false]],
-    'cmd': 'item'
+    items: [['x', false]],
+    cmd: 'item',
   };
 
-
-  systemload = { 'series': [], 'tsdiff': 0 };
-  systemmemory = { 'series': [], 'tsdiff': 0 };
-  systemswap = { 'series': [], 'tsdiff': 0 };
-  memory = { 'series': [], 'tsdiff': 0 };
-  threads = { 'series': [], 'tsdiff': 0 };
-  workerThreads = { 'series': [], 'tsdiff': 0 };
-  idleWorkerThreads = { 'series': [], 'tsdiff': 0 };
-  activeWorkerThreads = { 'series': [], 'tsdiff': 0 };
-  disk = { 'series': [], 'tsdiff': 0 };
-
+  systemload = { series: [], tsdiff: 0 };
+  systemmemory = { series: [], tsdiff: 0 };
+  systemswap = { series: [], tsdiff: 0 };
+  memory = { series: [], tsdiff: 0 };
+  threads = { series: [], tsdiff: 0 };
+  workerThreads = { series: [], tsdiff: 0 };
+  idleWorkerThreads = { series: [], tsdiff: 0 };
+  activeWorkerThreads = { series: [], tsdiff: 0 };
+  disk = { series: [], tsdiff: 0 };
 
   private monitoredItems = new Subject<void>();
   public monitoredItemsUpdate$ = this.monitoredItems.asObservable();
@@ -171,28 +162,28 @@ export class WebsocketPluginService {
   private msgSubscription: Subscription;
   private openSubscription: Subscription;
 
-  private msgIdentity = <Message> {
+  private msgIdentity = <Message>{
     cmd: 'identity',
     sw: APP_NAME,
     ver: 'v' + APP_VERSION,
     browser: '',
-    bver: ''
+    bver: '',
   };
-
-
-
 
   connect() {
     const adm_url = 'ws://' + this.appConfig.wsHost + ':' + this.appConfig.wsPort + '/adm';
 
     if (this.appConfig.hostIp === null) {
-      console.log({adm_url}, 'Für mockup Environment ip und port in \'testdata/api/server/info/default.json\' anpassen');
+      console.log(
+        { adm_url },
+        "Für mockup Environment ip und port in 'testdata/api/server/info/default.json' anpassen",
+      );
     }
 
     this.websocketService.connect(adm_url);
 
     this.msgSubscription = this.websocketService.messages$.subscribe(
-      msg => {
+      (msg) => {
         const data = JSON.parse(msg.data);
         if (data.cmd === 'item') {
           this.handleResponseItem(data);
@@ -211,18 +202,16 @@ export class WebsocketPluginService {
       this.websocketService.sendMessage({
         ...this.msgIdentity,
         browser: browser.name,
-        bver: browser.version
+        bver: browser.version,
       });
     });
   }
-
 
   disconnect() {
     this.msgSubscription?.unsubscribe();
     this.openSubscription?.unsubscribe();
     this.websocketService.close();
   }
-
 
   handleResponseItem(data) {
     if (this.monitorCallbackFunction) {
@@ -231,12 +220,9 @@ export class WebsocketPluginService {
     this.monitoredItems.next();
   }
 
-
   sendMessage(message: any) {
     this.websocketService.sendMessage(message);
   }
-
-
 
   // ------------------------------------------------------------------
   // requests monitoring of items
@@ -246,10 +232,9 @@ export class WebsocketPluginService {
     this.monitorCallbackFunction = callback;
     this.sendMessage({
       ...this.msgMonitorItems,
-      items: itemList.map(item => item[0])
+      items: itemList.map((item) => item[0]),
     });
   }
-
 
   // ------------------------------------------------------------------
   // requests series for load, memory and threads
@@ -284,7 +269,6 @@ export class WebsocketPluginService {
     this.sendMessage({ ...this.msgListenSeriesDisk, start: period, count });
   }
 
-
   // ------------------------------------------------------------------
   // Handle responses to series requests
   //
@@ -295,13 +279,11 @@ export class WebsocketPluginService {
     }
   }
 
-
   convertMemorysize(data) {
     for (let i = 0; i < data.series.length; i++) {
       data.series[i][1] = data.series[i][1] / 1000 / 1000;
     }
   }
-
 
   updateSeries(graphdata, data) {
     if (graphdata.series.length === 0) {
@@ -316,7 +298,6 @@ export class WebsocketPluginService {
     }
     graphdata.series.push(...data.series);
   }
-
 
   handleResponseSeries(data) {
     if (data.sid.startsWith(this.msgListenSeriesMemory.item)) {
@@ -361,5 +342,4 @@ export class WebsocketPluginService {
       console.warn('message received (UNKNOWN series):', data);
     }
   }
-
 }

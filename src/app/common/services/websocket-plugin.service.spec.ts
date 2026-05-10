@@ -1,14 +1,14 @@
 import { TestBed } from '@angular/core/testing';
-import { WebsocketPluginService } from './websocket-plugin.service';
-import { WebsocketService } from './websocket.service';
+import {
+  createMockAppConfigService,
+  createMockWebsocketService,
+  translateTestingModule,
+} from '../../../testing/test-helpers';
 import { AppConfigService } from './app-config.service';
 import { SharedService } from './shared.service';
 import { UserPreferencesService } from './user-preferences.service';
-import {
-  translateTestingModule,
-  createMockAppConfigService,
-  createMockWebsocketService,
-} from '../../../testing/test-helpers';
+import { WebsocketPluginService } from './websocket-plugin.service';
+import { WebsocketService } from './websocket.service';
 
 describe('WebsocketPluginService', () => {
   let service: WebsocketPluginService;

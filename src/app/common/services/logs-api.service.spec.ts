@@ -1,10 +1,13 @@
-import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
-import { LogsApiService } from './logs-api.service';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import {
+  createMockAppConfigService,
+  createMockServerApiService,
+} from '../../../testing/test-helpers';
 import { AppConfigService } from './app-config.service';
+import { LogsApiService } from './logs-api.service';
 import { ServerApiService } from './server-api.service';
-import { createMockAppConfigService, createMockServerApiService } from '../../../testing/test-helpers';
 
 describe('LogsApiService', () => {
   let service: LogsApiService;

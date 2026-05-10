@@ -1,49 +1,86 @@
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  inject,
+  OnDestroy,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef,
+  ViewRef,
+} from '@angular/core';
+import { AppConfigService } from '../../common/services/app-config.service';
 
-import {Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy, ViewChild, ViewRef, TemplateRef, ViewContainerRef, DestroyRef, inject} from '@angular/core';
-import {AppConfigService} from '../../common/services/app-config.service';
-import { HttpClient } from '@angular/common/http';
+import { TranslateDirective, TranslatePipe, TranslateService } from '@ngx-translate/core';
 
-import { TranslateService, TranslateDirective, TranslatePipe } from '@ngx-translate/core';
+import {
+  faCircleNotch,
+  faFolder,
+  faFolderOpen,
+  faList,
+  faSearch,
+  faStop,
+  faSync,
+  faThumbtack,
+  faTrashAlt,
+} from '@fortawesome/free-solid-svg-icons';
 
-import { faSearch, faCircleNotch, faFolder, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
-import { faSync, faList, faStop, faTrashAlt, faThumbtack } from '@fortawesome/free-solid-svg-icons';
+import { PrimeTemplate, TreeNode } from 'primeng/api';
 
-import { TreeNode, PrimeTemplate } from 'primeng/api';
-
-
-import { OlddataService } from '../../common/services/olddata.service';
+import { ItemDetails } from '../../common/models/item-details';
 import { ItemTree } from '../../common/models/item-tree';
-import { WebsocketService } from '../../common/services/websocket.service';
-import { WebsocketPluginService } from '../../common/services/websocket-plugin.service';
+import { OlddataService } from '../../common/services/olddata.service';
+import { ServerApiService } from '../../common/services/server-api.service';
 import { SharedService } from '../../common/services/shared.service';
-import {ItemDetails} from '../../common/models/item-details';
-import {ServerApiService} from '../../common/services/server-api.service';
+import { WebsocketPluginService } from '../../common/services/websocket-plugin.service';
+import { WebsocketService } from '../../common/services/websocket.service';
 
-import {Title} from '@angular/platform-browser';
-import {Subscription} from 'rxjs';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import { Bind } from 'primeng/bind';
-import { Tabs, TabList, Tab, TabPanels, TabPanel } from 'primeng/tabs';
-import { Ripple } from 'primeng/ripple';
-import { Dialog } from 'primeng/dialog';
-import { Tooltip } from 'primeng/tooltip';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { Tree } from 'primeng/tree';
-import { ToggleSwitch } from 'primeng/toggleswitch';
-import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { NgTemplateOutlet } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
+import { Title } from '@angular/platform-browser';
+import { RouterLink } from '@angular/router';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { Bind } from 'primeng/bind';
+import { Dialog } from 'primeng/dialog';
+import { Ripple } from 'primeng/ripple';
+import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
+import { ToggleSwitch } from 'primeng/toggleswitch';
+import { Tooltip } from 'primeng/tooltip';
+import { Tree } from 'primeng/tree';
+import { Subscription } from 'rxjs';
 
 type MonitoredItem = [string, Record<string, unknown>];
 
-
 @Component({
-    selector: 'app-items',
-    templateUrl: 'item-tree.component.html',
-    styleUrls: ['item-tree.component.css'],
-    providers: [WebsocketService, WebsocketPluginService],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [Bind, Tabs, TabList, Ripple, Tab, TabPanels, TabPanel, Dialog, TranslateDirective, Tooltip, FaIconComponent, Tree, PrimeTemplate, ToggleSwitch, FormsModule, RouterLink, NgTemplateOutlet, TranslatePipe]
+  selector: 'app-items',
+  templateUrl: 'item-tree.component.html',
+  styleUrls: ['item-tree.component.css'],
+  providers: [WebsocketService, WebsocketPluginService],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    Bind,
+    Tabs,
+    TabList,
+    Ripple,
+    Tab,
+    TabPanels,
+    TabPanel,
+    Dialog,
+    TranslateDirective,
+    Tooltip,
+    FaIconComponent,
+    Tree,
+    PrimeTemplate,
+    ToggleSwitch,
+    FormsModule,
+    RouterLink,
+    NgTemplateOutlet,
+    TranslatePipe,
+  ],
 })
 export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   @ViewChild('vc', { read: ViewContainerRef, static: true }) vc: ViewContainerRef;
@@ -103,8 +140,6 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
 
   showItemAlert = false;
 
-
-
   static resizeItemTree() {
     const browserHeight = window.innerHeight;
     const tree = document.getElementById('tree');
@@ -113,8 +148,8 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     // initially offsetTop is off by a number of pixels — correction via fixed offset
     const offsetTop = 167;
     const offsetTopDetail = 200;
-    const height = String(Math.round((-1) * (offsetTop) - 35 + browserHeight) + 'px');
-    const heightDetail = String(Math.round((-1) * (offsetTopDetail) - 35 + browserHeight) + 'px');
+    const height = String(Math.round(-1 * offsetTop - 35 + browserHeight) + 'px');
+    const heightDetail = String(Math.round(-1 * offsetTopDetail - 35 + browserHeight) + 'px');
     if (tree && treeDetail) {
       tree.style.height = height;
       tree.style.maxHeight = height;
@@ -129,30 +164,26 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     return e.childNodes.length === 0 ? '' : e.childNodes[0].nodeValue;
   }
 
-
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);
   }
 
-
   ngOnInit() {
     console.log('ItemTreeComponent.ngOnInit:');
 
-    this.dataServiceServer.getServerinfo()
+    this.dataServiceServer
+      .getServerinfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response) => {
-          this.setTitle(this.translate.instant('ITEMS.ITEMS'));
-          this.getItemtree();
-        }
-      );
+      .subscribe((response) => {
+        this.setTitle(this.translate.instant('ITEMS.ITEMS'));
+        this.getItemtree();
+      });
 
     window.addEventListener('resize', ItemTreeComponent.resizeItemTree, false);
     ItemTreeComponent.resizeItemTree();
 
     this.websocketPluginService.connect();
   }
-
 
   ngAfterViewInit() {
     this.childViewRef = this.tpl.createEmbeddedView(null);
@@ -166,21 +197,17 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     this.vc.detach();
   }
 
-
   reloadChildView() {
     this.removeChildView();
-    setTimeout(() =>{
+    setTimeout(() => {
       this.insertChildView();
     }, 3000);
   }
-
-
 
   closeAlert(item_oldvalue) {
     this.item_val.value = item_oldvalue;
     this.showItemAlert = false;
   }
-
 
   ngOnDestroy(): void {
     window.removeEventListener('resize', ItemTreeComponent.resizeItemTree, false);
@@ -188,32 +215,30 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     this.websocketPluginService.disconnect();
   }
 
-
   getItemtree() {
-    this.dataService.getItemtree()
+    this.dataService
+      .getItemtree()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         (response: [number, ItemTree]) => {
           this.itemcount = response[0];
           this.filesTree0 = response[1] as unknown as {}[];
           this.filterNodes('');
-          this.searchStart_param = {'number': String(this.appConfig.itemtreeSearchstart)};
+          this.searchStart_param = { number: String(this.appConfig.itemtreeSearchstart) };
           this.cdr.markForCheck();
         },
         (error) => {
           console.log('ERROR: ItemsComponent: dataService.getItemtree():');
           console.log(error);
-        }
+        },
       );
   }
 
-
   updateValue(item_path, item_value, item_type, item_oldvalue) {
-
     console.log('ItemTreeComponent.updateValue:');
-    console.log({item_path}, {item_value});
+    console.log({ item_path }, { item_value });
 
-    if (typeof(item_value) === 'boolean') {
+    if (typeof item_value === 'boolean') {
       item_value = item_value.toString();
       console.log('--> updateValue (bool): ' + item_value);
       this.dataService.changeItemValue(item_path, item_value);
@@ -238,36 +263,31 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     this.dataService.changeItemValue(item_path, item_value.value);
   }
 
-
   sortMonitoredItems() {
     this.monitoredItems.sort(function (a, b) {
-      return (a[0].toLowerCase() > b[0].toLowerCase()) ? 1 :
-        ((b[0].toLowerCase() > a[0].toLowerCase()) ? -1 :
-            0
-        );
+      return a[0].toLowerCase() > b[0].toLowerCase()
+        ? 1
+        : b[0].toLowerCase() > a[0].toLowerCase()
+          ? -1
+          : 0;
     });
   }
 
-
   updateMonitoredItem(itempath, itemdata) {
-
     for (let i = 0; i < this.monitoredItems.length; i++) {
       if (this.monitoredItems[i][0] === itempath) {
         this.monitoredItems[i][1] = itemdata;
       }
     }
-
   }
-
 
   remove_none(caller) {
     const caller_array = caller.split(':');
-    if ((caller_array.length === 1) || (caller_array[1].toLowerCase() === 'none')) {
+    if (caller_array.length === 1 || caller_array[1].toLowerCase() === 'none') {
       return caller_array[0];
     }
     return caller;
   }
-
 
   monitoredDataFunction(data) {
     // Callback function that receives the data from the websocket session
@@ -279,7 +299,6 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
       self.updateMonitoredItem(data.items[i][0], data.items[i][1]);
     }
   }
-
 
   monitorItem(path: string, monitorIt: boolean) {
     // path = 'wohnung.buero.schreibtischleuchte.onoff';
@@ -315,7 +334,6 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     }
   }
 
-
   isItemMonitored(path: string) {
     for (let i = this.monitoredItems.length - 1; i >= 0; i--) {
       if (this.monitoredItems[i][0] === path) {
@@ -325,21 +343,23 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     return false;
   }
 
-
   getMonitoredValues() {
     console.log('getMonitoredValues()');
     this.monitoredItemsUpdateSubscription?.unsubscribe();
-    this.monitoredItemsUpdateSubscription = this.websocketPluginService.monitoredItemsUpdate$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      console.error('monitoredItemsUpdate$');
-      console.log(this.websocketPluginService.monitor.items);
-    });
+    this.monitoredItemsUpdateSubscription = this.websocketPluginService.monitoredItemsUpdate$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        console.error('monitoredItemsUpdate$');
+        console.log(this.websocketPluginService.monitor.items);
+      });
   }
 
   getDetails(path: string) {
     console.log('ItemTreeComponent.getDetails: ' + path);
     console.warn('- this', this);
-    if ((path !== undefined)) {
-      this.dataService.getItemDetails(path)
+    if (path !== undefined) {
+      this.dataService
+        .getItemDetails(path)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(
           (response: ItemDetails[]) => {
@@ -351,15 +371,19 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
             details.eval = ItemTreeComponent.htmlDecode(details.eval);
 
             details.hysteresis_input = ItemTreeComponent.htmlDecode(details.hysteresis_input);
-            details.hysteresis_upper_threshold = ItemTreeComponent.htmlDecode(details.hysteresis_upper_threshold);
-            details.hysteresis_lower_threshold = ItemTreeComponent.htmlDecode(details.hysteresis_lower_threshold);
+            details.hysteresis_upper_threshold = ItemTreeComponent.htmlDecode(
+              details.hysteresis_upper_threshold,
+            );
+            details.hysteresis_lower_threshold = ItemTreeComponent.htmlDecode(
+              details.hysteresis_lower_threshold,
+            );
 
             details.on_change = ItemTreeComponent.htmlDecode(details.on_change);
             details.on_update = ItemTreeComponent.htmlDecode(details.on_update);
             details.crontab = ItemTreeComponent.htmlDecode(details.crontab);
 
             if (details.type === 'bool') {
-              details.value = (details.value.toLowerCase() === 'true');
+              details.value = details.value.toLowerCase() === 'true';
             }
             this.showDetails(details);
 
@@ -369,18 +393,16 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
           (error) => {
             console.log('ERROR: ItemsComponent: dataService.getItemDetails():');
             console.log(error);
-          }
-          );
-
+          },
+        );
     } else {
       this.showDetails();
     }
   }
 
-
   showDetails(response?) {
     console.log('showDetails:');
-    console.log({response});
+    console.log({ response });
 
     if (response === undefined) {
       this.itemdetails = <ItemDetails>{};
@@ -400,11 +422,9 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     this.itemdetailsloaded = true;
   }
 
-
-
-/* ----------------------------------------------
-  * For PrimeNG Tree:
-*/
+  /* ----------------------------------------------
+   * For PrimeNG Tree:
+   */
 
   filterTree(treeModel, value) {
     if (value.length >= String(this.appConfig.itemtreeSearchstart)) {
@@ -424,7 +444,6 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
       this.expandAll();
     }
   }
-
 
   clearFilter(event, filter) {
     filter.value = '';
@@ -451,34 +470,30 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     }
   }
 
-
   nodeSelect(event) {
     console.log('Node Selected: ' + event.node.label);
     this.itemdetailsloaded = false;
     this.getDetails(event.node.path);
-
-    }
+  }
 
   expandAll() {
-    this.filteredTree.forEach( node => {
+    this.filteredTree.forEach((node) => {
       this.expandRecursive(node, true);
-    } );
+    });
   }
 
   collapseAll() {
-    this.filteredTree.forEach( node => {
+    this.filteredTree.forEach((node) => {
       this.expandRecursive(node, false);
-    } );
+    });
   }
 
   private expandRecursive(node: TreeNode, isExpand: boolean) {
     node.expanded = isExpand;
     if (node.children) {
-      node.children.forEach( childNode => {
+      node.children.forEach((childNode) => {
         this.expandRecursive(childNode, isExpand);
-      } );
+      });
     }
   }
-
 }
-

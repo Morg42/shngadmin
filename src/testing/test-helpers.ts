@@ -4,7 +4,7 @@
  */
 
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { Observable, of, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 
 // ---------------------------------------------------------------------------
 // Translate helpers

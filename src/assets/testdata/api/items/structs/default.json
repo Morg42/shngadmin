@@ -203,10 +203,7 @@
       "lock": {
         "name": "gesperrt",
         "on_leave": {
-          "se_action_lock": [
-            "function: set",
-            "to: False"
-          ]
+          "se_action_lock": ["function: set", "to: False"]
         },
         "enter": {
           "se_value_lock": true
@@ -232,9 +229,7 @@
       "name": "manuell",
       "se_manual_invert": true,
       "remark": "Adapt the se_manual_exclude the way you need it",
-      "se_manual_exclude": [
-        "database:*"
-      ]
+      "se_manual_exclude": ["database:*"]
     },
     "settings": {
       "remark": "Use these settings for your condition values",
@@ -284,14 +279,8 @@
           ]
         },
         "on_leave": {
-          "se_action_suspend": [
-            "function: set",
-            "to: False"
-          ],
-          "se_action_suspend_end": [
-            "function: set",
-            "to: "
-          ]
+          "se_action_suspend": ["function: set", "to: False"],
+          "se_action_suspend_end": ["function: set", "to: "]
         },
         "enter_manuell": {
           "se_value_trigger_source": "eval:stateengine_eval.get_relative_itemid('..manuell')",
@@ -324,26 +313,10 @@
       "release": {
         "name": "release",
         "on_enter_or_stay": {
-          "se_action_suspend": [
-            "function: set",
-            "to: False",
-            "order: 1"
-          ],
-          "se_action_lock": [
-            "function: set",
-            "to: False",
-            "order: 2"
-          ],
-          "se_action_release": [
-            "function: set",
-            "to: False",
-            "order: 3"
-          ],
-          "se_action_suspend_end": [
-            "function: set",
-            "to: ",
-            "order: 4"
-          ],
+          "se_action_suspend": ["function: set", "to: False", "order: 1"],
+          "se_action_lock": ["function: set", "to: False", "order: 2"],
+          "se_action_release": ["function: set", "to: False", "order: 3"],
+          "se_action_suspend_end": ["function: set", "to: ", "order: 4"],
           "se_action_retrigger": [
             "function: set",
             "to: True",

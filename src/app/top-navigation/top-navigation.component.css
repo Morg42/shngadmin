@@ -1,7 +1,6 @@
-
 body {
-  margin:0;
-/*font-family:Arial;*/
+  margin: 0;
+  /*font-family:Arial;*/
 }
 
 /* Global styles for the navbar */
@@ -13,10 +12,10 @@ body {
   --menu-background-color-hover: #777;
 
   display: inline-flex;
-  align-items:flex-start;
+  align-items: flex-start;
   flex-wrap: unset;
   padding: 0;
-  margin-bottom: 5px;   /* leave a bit space to the data body of the page */
+  margin-bottom: 5px; /* leave a bit space to the data body of the page */
   height: 55px;
   width: 100%;
   background-color: var(--menu-background-color);
@@ -32,19 +31,25 @@ body {
   margin-right: 5px;
 }
 
-.navbar .logo       { width: 125px; height: 29px; }
-.navbar .logo-small { width: 32px;  height: 32px; }
+.navbar .logo {
+  width: 125px;
+  height: 29px;
+}
+.navbar .logo-small {
+  width: 32px;
+  height: 32px;
+}
 
 .topnav {
   overflow: hidden;
-/*height: 52px;*/
-/*border-bottom: 1px solid #ddd;*/
+  /*height: 52px;*/
+  /*border-bottom: 1px solid #ddd;*/
   background-color: var(--menu-background-color);
   width: 100%;
 }
 
 .dropdown .show-caret {
-  display: none;    /* set to 'inherit' to display caret if dropdown menu exist, otherwise set to 'none' */
+  display: none; /* set to 'inherit' to display caret if dropdown menu exist, otherwise set to 'none' */
 }
 
 .topnav a {
@@ -83,8 +88,8 @@ body {
   position: absolute;
   background-color: #f9f9f9;
   min-width: 160px;
-  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-  z-index: 5;    /* 4 instead of 1 to stay on top of codemirror linenumbers */
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+  z-index: 5; /* 4 instead of 1 to stay on top of codemirror linenumbers */
   margin-left: 15px;
 }
 
@@ -105,7 +110,8 @@ body {
   display: block;
 }
 
-.topnav a:hover, .dropdown:hover .dropbtn {
+.topnav a:hover,
+.dropdown:hover .dropbtn {
   background-color: var(--menu-background-color-hover);
   color: var(--menu-textcolor-hover);
   /*
@@ -146,7 +152,7 @@ body {
   position: absolute;
   background-color: #f9f9f9;
   min-width: 160px;
-  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
   z-index: 1;
   margin-top: -30px;
   margin-left: 170px;
@@ -161,7 +167,8 @@ body {
   text-align: left;
 }
 
-.topnav a:hover, .dropright:hover .droprightbtn {
+.topnav a:hover,
+.dropright:hover .droprightbtn {
   background-color: var(--menu-background-color-hover);
   color: var(--menu-textcolor-hover);
   /*
@@ -178,7 +185,7 @@ body {
   display: block;
 }
 
-.topnav .active{
+.topnav .active {
   background-color: #ccc;
   /*
       border-radius: 5px;
@@ -216,44 +223,46 @@ body {
 
 /* Width less than 885px -> switch logo to small */
 @media screen and (max-width: 885px) {
-  .navbar  .logo {
+  .navbar .logo {
     display: none;
   }
-  .navbar  .logo-small {
+  .navbar .logo-small {
     display: initial;
   }
 }
 
 /* Width less than 790px -> switch logout to button without text */
 @media screen and (max-width: 790px) {
-  .topnav  .logout {
+  .topnav .logout {
     display: none;
   }
-  .topnav  .logout-small {
+  .topnav .logout-small {
     display: initial;
   }
 }
 
 /* Width less than 720px -> switch to mobile mode with long logo and logout with text */
 @media screen and (max-width: 720px) {
-  .navbar  .logo {
+  .navbar .logo {
     display: initial;
   }
-  .navbar  .logo-small {
+  .navbar .logo-small {
     display: none;
   }
 
-  .topnav  .logout {
+  .topnav .logout {
     display: none;
   }
-  .topnav  .logout-small {
+  .topnav .logout-small {
     display: initial;
   }
 
-  .topnav a:not(:first-child), .dropdown .dropbtn {
+  .topnav a:not(:first-child),
+  .dropdown .dropbtn {
     display: none;
   }
-  .topnav a:not(:first-child), .dropright .droprightbtn {
+  .topnav a:not(:first-child),
+  .dropright .droprightbtn {
     display: none;
   }
   .topnav a.icon {
@@ -263,9 +272,8 @@ body {
 
   .topnav.responsive {
     position: relative;
-    z-index: 4;    /* 4 to stay on top of item tree, scene list, etc. */
+    z-index: 4; /* 4 to stay on top of item tree, scene list, etc. */
     overflow: hidden;
-
   }
   .topnav.responsive .icon {
     position: absolute;
@@ -298,7 +306,9 @@ body {
     padding-top: 8px;
   }
 
-  .topnav.responsive .dropright {float: none;}
+  .topnav.responsive .dropright {
+    float: none;
+  }
   .topnav.responsive .dropright-content {
     position: relative;
     margin: 0;
@@ -309,6 +319,4 @@ body {
     width: 100%;
     text-align: left;
   }
-
 }
-

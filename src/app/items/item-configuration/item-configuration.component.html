@@ -1,44 +1,83 @@
-
 <div class="shngbody">
-
   <div class="button-row">
-    <button pButton label="{{ 'BUTTON.SAVE'|translate }}" type="button" [disabled]="(myEditFilename === '') || (myTextarea === myTextareaOrig)" icon="fa fa-check" style="margin-right: 0;" (click)="saveConfig()" class="float-sm-right ui-button-success"></button>
-    <button pButton label="{{ 'BUTTON.DISCARD'|translate }}" type="button" [disabled]="(myEditFilename === '') || (myTextarea === myTextareaOrig)" icon="fa fa-times" style="margin-right: 10px;" (click)="this.myTextarea = this.myTextareaOrig;" class="float-sm-right ui-button-secondary"></button>
-    <button pButton label="{{ 'BUTTON.HELP'|translate }}" type="button" [disabled]="false" icon="fa fa-info" style="margin-right: 10px;" (click)="this.editorHelp_display = true;" class="float-sm-right ui-button-success"></button>
+    <button
+      pButton
+      label="{{ 'BUTTON.SAVE' | translate }}"
+      type="button"
+      [disabled]="myEditFilename === '' || myTextarea === myTextareaOrig"
+      icon="fa fa-check"
+      style="margin-right: 0"
+      (click)="saveConfig()"
+      class="float-sm-right ui-button-success"
+    ></button>
+    <button
+      pButton
+      label="{{ 'BUTTON.DISCARD' | translate }}"
+      type="button"
+      [disabled]="myEditFilename === '' || myTextarea === myTextareaOrig"
+      icon="fa fa-times"
+      style="margin-right: 10px"
+      (click)="this.myTextarea = this.myTextareaOrig"
+      class="float-sm-right ui-button-secondary"
+    ></button>
+    <button
+      pButton
+      label="{{ 'BUTTON.HELP' | translate }}"
+      type="button"
+      [disabled]="false"
+      icon="fa fa-info"
+      style="margin-right: 10px"
+      (click)="this.editorHelp_display = true"
+      class="float-sm-right ui-button-success"
+    ></button>
     @if (myEditFilename !== '') {
-      {{ 'ITEM_CONFIG.CONFIG_FILE'|translate }}: <strong>../items/{{ myEditFilename }}.yaml</strong>
+      {{ 'ITEM_CONFIG.CONFIG_FILE' | translate }}: <strong>../items/{{ myEditFilename }}.yaml</strong>
     }
   </div>
 
   <div class="items-filelist">
-    <button pButton label="{{ 'BUTTON.NEW_DEFINITION_FILE'|translate }}" type="button" [disabled]="!((myEditFilename === '') || (myTextarea === myTextareaOrig))" icon="far fa-file" style="margin-right: 10px;" (click)="newConfig()" class="float-sm-left ui-button-success"></button>
-    <button pButton type="button" [disabled]="myEditFilename === ''" icon="far fa-trash-alt" style="margin-right: 0; width: 25px;" (click)="deleteConfig()" class="float-sm-left ui-button-danger"></button>
-    <br>
-    <br>
+    <button
+      pButton
+      label="{{ 'BUTTON.NEW_DEFINITION_FILE' | translate }}"
+      type="button"
+      [disabled]="!(myEditFilename === '' || myTextarea === myTextareaOrig)"
+      icon="far fa-file"
+      style="margin-right: 10px"
+      (click)="newConfig()"
+      class="float-sm-left ui-button-success"
+    ></button>
+    <button
+      pButton
+      type="button"
+      [disabled]="myEditFilename === ''"
+      icon="far fa-trash-alt"
+      style="margin-right: 0; width: 25px"
+      (click)="deleteConfig()"
+      class="float-sm-left ui-button-danger"
+    ></button>
+    <br />
+    <br />
 
     <i class="fa fa-sitemap" style="margin-left: 5px; color: #a2a2a2"></i>
-    <a style="margin-left: 5px; color: #727272">{{ 'ITEM_CONFIG.DEFINITION_FILES'|translate }}</a>
+    <a style="margin-left: 5px; color: #727272">{{ 'ITEM_CONFIG.DEFINITION_FILES' | translate }}</a>
 
-    <p-listbox [options]="itemFiles"
-               [(ngModel)]="selectedItemfile"
-               [disabled]="!((myEditFilename === '') || (myTextarea === myTextareaOrig))"
-               (onChange)="itemFileSelected()" optionLabel="label"
-               [style]="{'width':'100%'}"
-               [listStyle]="{'height': 'calc(100vh - 253px)', 'min-height':'200px', 'max-height': 'none'}">
+    <p-listbox
+      [options]="itemFiles"
+      [(ngModel)]="selectedItemfile"
+      [disabled]="!(myEditFilename === '' || myTextarea === myTextareaOrig)"
+      (onChange)="itemFileSelected()"
+      optionLabel="label"
+      [style]="{ width: '100%' }"
+      [listStyle]="{ height: 'calc(100vh - 253px)', 'min-height': '200px', 'max-height': 'none' }"
+    >
     </p-listbox>
   </div>
 
   <div class="items-fileeditor">
-    <ngx-codemirror #codeeditor
-                    [options]="cmOptions"
-                    [(ngModel)]="myTextarea"
-                    [autoFocus]="true"
-    ></ngx-codemirror>
-    <a style="font-size: small">{{ 'RESTART FOR CHANGES'|translate }}</a>
+    <ngx-codemirror #codeeditor [options]="cmOptions" [(ngModel)]="myTextarea" [autoFocus]="true"></ngx-codemirror>
+    <a style="font-size: small">{{ 'RESTART FOR CHANGES' | translate }}</a>
   </div>
-
 </div>
-
 
 <!--
   -- Dialog for setting the name of the new item configuration file
@@ -52,93 +91,164 @@
   [closable]="false"
   [maximizable]="false"
   [minY]="100"
-  [style]="{'minWidth':'600px', 'minHeight':'200px'}"
+  [style]="{ minWidth: '600px', minHeight: '200px' }"
 >
-
   <ng-template pTemplate="header">
-    {{'ITEM_CONFIG.NAME_CONFIGURATION'|translate}}
+    {{ 'ITEM_CONFIG.NAME_CONFIGURATION' | translate }}
   </ng-template>
 
-  <br>
-  {{ 'ITEM_CONFIG.UNIQUE_NAME'|translate }}&nbsp;
-  <input [(ngModel)]="newFilename" type="text" (input)="checkInput();" pInputText placeholder="" [ngStyle]="{'width': 20}" autofocus/>
+  <br />
+  {{ 'ITEM_CONFIG.UNIQUE_NAME' | translate }}&nbsp;
+  <input
+    [(ngModel)]="newFilename"
+    type="text"
+    (input)="checkInput()"
+    pInputText
+    placeholder=""
+    [ngStyle]="{ width: 20 }"
+    autofocus
+  />
 
-  <br>
-  <br>
+  <br />
+  <br />
   <ng-template pTemplate="footer">
-    <button pButton type="button" icon="pi pi-check" (click)="this.addFile()" [disabled]="!this.add_enabled" (disabledChange)="this.add_enabled = $event" label="{{'BUTTON.ADD'|translate}}" class="ui-button-success" autofocus></button>
-    <button pButton type="button" icon="pi pi-times" (click)="newconfig_display=false" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
+    <button
+      pButton
+      type="button"
+      icon="pi pi-check"
+      (click)="this.addFile()"
+      [disabled]="!this.add_enabled"
+      (disabledChange)="this.add_enabled = $event"
+      label="{{ 'BUTTON.ADD' | translate }}"
+      class="ui-button-success"
+      autofocus
+    ></button>
+    <button
+      pButton
+      type="button"
+      icon="pi pi-times"
+      (click)="newconfig_display = false"
+      label="{{ 'BUTTON.ABORT' | translate }}"
+      class="ui-button-secondary"
+    ></button>
   </ng-template>
 </p-dialog>
-
-
-
 
 <!--
   -- Confirm dialog vor configuration deletion
   -->
 <p-dialog header="" [(visible)]="error_display" [closable]="false" [modal]="true" blockScroll="true">
   <ng-template pTemplate="header">
-    {{'ITEM_CONFIG.CONFIG_ERROR'|translate}}
+    {{ 'ITEM_CONFIG.CONFIG_ERROR' | translate }}
   </ng-template>
-  <br>
-  <pre>
-{{'ITEM_CONFIG.CONFIG_ERROR_TEXT'|translate}}
+  <br />
+  <pre
+    >{{ 'ITEM_CONFIG.CONFIG_ERROR_TEXT' | translate }}
 
     {{ myTextOutput }}
   </pre>
-  <br>
+  <br />
   <ng-template pTemplate="footer">
-    <button pButton type="button" (click)="error_display = false;" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
+    <button
+      pButton
+      type="button"
+      (click)="error_display = false"
+      label="{{ 'BUTTON.CLOSE' | translate }}"
+      class="ui-button-success"
+    ></button>
   </ng-template>
 </p-dialog>
-
 
 <!--
   -- Confirm dialog vor configuration deletion
   -->
 <p-dialog header="" [(visible)]="confirmdelete_display" [modal]="true" blockScroll="true">
   <ng-template pTemplate="header">
-    {{'ITEM_CONFIG.DELETE_CONFIG'|translate}}
+    {{ 'ITEM_CONFIG.DELETE_CONFIG' | translate }}
   </ng-template>
-  <br>
-  {{'ITEM_CONFIG.DELETE_CONFIG_FILE'|translate:delete_param}}
-  <br>
-  <br>
+  <br />
+  {{ 'ITEM_CONFIG.DELETE_CONFIG_FILE' | translate: delete_param }}
+  <br />
+  <br />
   <ng-template pTemplate="footer">
-    <button pButton type="button" icon="fa fa-trash-alt" (click)="DeleteConfigConfirm()" label="{{'BUTTON.DELETE'|translate}}" class="ui-button-danger"></button>
-    <button pButton type="button" icon="fa fa-times" (click)="confirmdelete_display = false" label="{{'BUTTON.ABORT'|translate}}" class="ui-button-secondary"></button>
+    <button
+      pButton
+      type="button"
+      icon="fa fa-trash-alt"
+      (click)="DeleteConfigConfirm()"
+      label="{{ 'BUTTON.DELETE' | translate }}"
+      class="ui-button-danger"
+    ></button>
+    <button
+      pButton
+      type="button"
+      icon="fa fa-times"
+      (click)="confirmdelete_display = false"
+      label="{{ 'BUTTON.ABORT' | translate }}"
+      class="ui-button-secondary"
+    ></button>
   </ng-template>
 </p-dialog>
-
-
 
 <!--
     -- Display help dialog
   -->
 <p-dialog header="" [(visible)]="editorHelp_display" [closable]="true" [modal]="true" dynamic="true" blockScroll="true">
   <ng-template pTemplate="header">
-    {{'HELP.EDITOR-KEYS'|translate}}
+    {{ 'HELP.EDITOR-KEYS' | translate }}
   </ng-template>
-  <br>
+  <br />
   <table>
     <thead>
-    <th><u>{{'HELP.KEY'|translate}}</u></th>
-    <th style="width: 20px;"></th>
-    <th><u>{{'HELP.DESCRIPTION'|translate}}</u></th>
+      <th>
+        <u>{{ 'HELP.KEY' | translate }}</u>
+      </th>
+      <th style="width: 20px"></th>
+      <th>
+        <u>{{ 'HELP.DESCRIPTION' | translate }}</u>
+      </th>
     </thead>
     <tbody>
-    <tr><td>Tab</td>          <td></td> <td>{{'HELP.TAB'|translate}}</td></tr>
-    <tr><td>Shift-Tab</td>    <td></td> <td>{{'HELP.SHIFT-TAB'|translate}}</td></tr>
-    <tr><td>F11</td>          <td></td> <td>{{'HELP.F11'|translate}}</td></tr>
-    <tr><td>Esc</td>          <td></td> <td>{{'HELP.ESC'|translate}}</td></tr>
-    <tr><td>Ctrl-Q</td>       <td></td> <td>{{'HELP.CTRL-Q'|translate}}</td></tr>
-    <tr><td>Shift-Ctrl-Q</td> <td></td> <td>{{'HELP.SHIFT-CTRL-Q'|translate}}</td></tr>
+      <tr>
+        <td>Tab</td>
+        <td></td>
+        <td>{{ 'HELP.TAB' | translate }}</td>
+      </tr>
+      <tr>
+        <td>Shift-Tab</td>
+        <td></td>
+        <td>{{ 'HELP.SHIFT-TAB' | translate }}</td>
+      </tr>
+      <tr>
+        <td>F11</td>
+        <td></td>
+        <td>{{ 'HELP.F11' | translate }}</td>
+      </tr>
+      <tr>
+        <td>Esc</td>
+        <td></td>
+        <td>{{ 'HELP.ESC' | translate }}</td>
+      </tr>
+      <tr>
+        <td>Ctrl-Q</td>
+        <td></td>
+        <td>{{ 'HELP.CTRL-Q' | translate }}</td>
+      </tr>
+      <tr>
+        <td>Shift-Ctrl-Q</td>
+        <td></td>
+        <td>{{ 'HELP.SHIFT-CTRL-Q' | translate }}</td>
+      </tr>
     </tbody>
   </table>
-  <br>
+  <br />
   <ng-template pTemplate="footer">
-    <button pButton type="button" (click)="editorHelp_display = false;" label="{{'BUTTON.CLOSE'|translate}}" class="ui-button-success"></button>
+    <button
+      pButton
+      type="button"
+      (click)="editorHelp_display = false"
+      label="{{ 'BUTTON.CLOSE' | translate }}"
+      class="ui-button-success"
+    ></button>
   </ng-template>
 </p-dialog>
-

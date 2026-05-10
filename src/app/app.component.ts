@@ -9,6 +9,8 @@ import {ServerApiService} from './common/services/server-api.service';
 import {AuthService} from './common/services/auth.service';
 import {ServerInfo} from './common/models/server-info';
 import {SharedService} from './common/services/shared.service';
+import { TopNavigationComponent } from './top-navigation/top-navigation.component';
+import { RouterOutlet } from '@angular/router';
 
 
 // Allow ngx-translate to find translation files on other path than /assets/i18n/...
@@ -26,7 +28,7 @@ export const APP_VERSION = '0.9.18';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [TopNavigationComponent, RouterOutlet]
 })
 
 export class AppComponent implements OnInit {

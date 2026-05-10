@@ -73,48 +73,4 @@ export function jwtOptionsFactory(injector: Injector) {
   };
 }
 
-@NgModule({
-    declarations: [AppComponent],
-    bootstrap: [AppComponent],
-    imports: [
-        BrowserModule,
-        FormsModule,
-        AppRoutingModule,
-        JwtModule.forRoot({
-            config: { throwNoTokenError: false },
-            jwtOptionsProvider: {
-                provide: JWT_OPTIONS,
-                useFactory: jwtOptionsFactory,
-                deps: [Injector],
-            },
-        }),
-        FontAwesomeModule,
-        MenubarModule,
-        ButtonModule,
-        MessageModule,
-        NgOptimizedImage,
-        TranslateModule.forRoot({
-            loader: {
-                provide: TranslateLoader,
-                useFactory: HttpLoaderFactory,
-                deps: [HttpClient],
-            },
-        }),
-        HeaderComponent,
-        TopNavigationComponent,
-        LoginComponent,
-        NotFoundComponent,
-        NoAccessComponent,
-    ],
-    providers: [
-        { provide: 'BASE_URL', useFactory: getBaseUrl },
-        OlddataService,
-        WebsocketPluginService,
-        TranslateService,
-        JwtModule,
-        provideAnimationsAsync(),
-        provideHttpClient(withInterceptorsFromDi()),
-        providePrimeNG({ theme: { preset: ShngPreset, options: { darkModeSelector: false } } }),
-    ],
-})
-export class AppModule {}
+

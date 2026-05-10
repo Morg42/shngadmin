@@ -1,21 +1,62 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { provideRouter, ActivatedRoute } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { of } from 'rxjs';
 import { LogDisplayComponent } from './log-display.component';
+import { ServerApiService } from '../../common/services/server-api.service';
+import { AuthService } from '../../common/services/auth.service';
+import { AppConfigService } from '../../common/services/app-config.service';
+import { TranslatePipe } from '@ngx-translate/core';
+import {translateTestingModule, 
+  createMockAuthService,
+  createMockAppConfigService} from '../../../testing/test-helpers';
 
 describe('LogDisplayComponent', () => {
   let component: LogDisplayComponent;
   let fixture: ComponentFixture<LogDisplayComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-    imports: [LogDisplayComponent]
-})
-    .compileComponents();
-  }));
+  beforeEach(async () => {
+    const mockServerApi = {
+      getServerBasicinfo: () => of({}),
+      getServerinfo: () => of({}),
+      shng_serverinfo: {},
+    };
 
-  beforeEach(() => {
+    await TestBed.configureTestingModule({
+      imports: [
+        LogDisplayComponent,
+        translateTestingModule,
+      ],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: ServerApiService, useValue: mockServerApi },
+        { provide: AuthService, useValue: createMockAuthService() },
+        { provide: AppConfigService, useValue: createMockAppConfigService() },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              paramMap: {
+                params: { logname: undefined },
+                get: (_key: string) => null,
+              },
+            },
+            params: of({}),
+          },
+        },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    })
+    .overrideComponent(LogDisplayComponent, { set: { imports: [TranslatePipe] } })
+    .compileComponents();
+
     fixture = TestBed.createComponent(LogDisplayComponent);
     component = fixture.componentInstance;
+    (component as any).codeEditor = { codeMirror: { getOption: jest.fn(() => false), setSize: jest.fn(), refresh: jest.fn(), state: { completionActive: false } } };
     fixture.detectChanges();
   });
 

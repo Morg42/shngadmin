@@ -1,19 +1,47 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { of } from 'rxjs';
 import { LogicsGroupsComponent } from './logics-groups.component';
+import { ServerApiService } from '../../common/services/server-api.service';
+import { AuthService } from '../../common/services/auth.service';
+import { AppConfigService } from '../../common/services/app-config.service';
+import { TranslatePipe } from '@ngx-translate/core';
+import {translateTestingModule, 
+  createMockAuthService,
+  createMockAppConfigService} from '../../../testing/test-helpers';
 
 describe('LogicsGroupsComponent', () => {
   let component: LogicsGroupsComponent;
   let fixture: ComponentFixture<LogicsGroupsComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-    imports: [LogicsGroupsComponent]
-})
-    .compileComponents();
-  }));
+  beforeEach(async () => {
+    const mockServerApi = {
+      getServerBasicinfo: () => of({}),
+      getServerinfo: () => of({}),
+      shng_serverinfo: {},
+    };
 
-  beforeEach(() => {
+    await TestBed.configureTestingModule({
+      imports: [
+        LogicsGroupsComponent,
+        translateTestingModule,
+      ],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: ServerApiService, useValue: mockServerApi },
+        { provide: AuthService, useValue: createMockAuthService() },
+        { provide: AppConfigService, useValue: createMockAppConfigService() },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    })
+    .overrideComponent(LogicsGroupsComponent, { set: { imports: [TranslatePipe] } })
+    .compileComponents();
+
     fixture = TestBed.createComponent(LogicsGroupsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

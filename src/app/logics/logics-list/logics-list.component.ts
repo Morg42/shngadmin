@@ -13,6 +13,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 
 import { LogicsGroupType, LogicsinfoType } from '../../common/models/logics-info';
+import { LogicsWatchItem } from '../../common/models/logics-watch-item';
 import { LogicsApiService } from '../../common/services/logics-api.service';
 import { OlddataService } from '../../common/services/olddata.service';
 // //// import {Log} from '@angular/core/testing/src/logger';
@@ -84,7 +85,7 @@ export class LogicsListComponent implements OnInit {
   newlogics: LogicsinfoType[];
 
   showLogicDetails = false;
-  selectedLogicWatchItems: string[] = [];
+  selectedLogicWatchItems: LogicsWatchItem[] = [];
 
   newlogic_display: boolean = false;
   newlogic_name: string = '';

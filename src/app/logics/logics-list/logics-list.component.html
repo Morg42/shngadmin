@@ -119,7 +119,8 @@
                                         <td
                                           style="cursor: pointer"
                                           (click)="
-                                            selectedLogicWatchItems = logic.watch_item_list; showLogicDetails = true
+                                            selectedLogicWatchItems = logic.watch_item_list ?? [];
+                                            showLogicDetails = true
                                           "
                                         >
                                           @if (logic.enabled) {
@@ -406,7 +407,7 @@
                           @if ((logic.watch_item_list?.length ?? 0) > 0) {
                             <td
                               style="cursor: pointer"
-                              (click)="selectedLogicWatchItems = logic.watch_item_list; showLogicDetails = true"
+                              (click)="selectedLogicWatchItems = logic.watch_item_list ?? []; showLogicDetails = true"
                             >
                               @if (logic.enabled) {
                                 <span>
@@ -659,7 +660,7 @@
   <div class="card" style="margin-bottom: 5px">
     <div class="card-body p-1">
       @for (watch_item of selectedLogicWatchItems; track $index) {
-        <div class="item-box m-1 p-1">{{ watch_item }}</div>
+        <div class="item-box m-1 p-1">{{ watch_item.path }}</div>
       }
     </div>
   </div>

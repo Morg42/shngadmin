@@ -11,7 +11,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { distinctUntilChanged, map } from 'rxjs/operators';
 import { AppConfigService } from '../common/services/app-config.service';
 import { AuthService } from '../common/services/auth.service';
 import { ServerApiService } from '../common/services/server-api.service';
@@ -97,17 +96,14 @@ export class TopNavigationComponent implements OnInit {
           });
       });
 
-    // Rebuild menu whenever the active language changes.
-    this.appConfig.config$
-      .pipe(
-        map((cfg) => cfg.defaultLanguage),
-        distinctUntilChanged(),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe(() => {
-        this.buildMenu();
-        this.cdr.markForCheck();
-      });
+    // Rebuild menu after the translation file for the new language has loaded.
+    // Using onLangChange (not appConfig.config$) because translate.use() is
+    // async — config$ fires before the new translations are available, causing
+    // translate.instant() to return keys from the previous language.
+    this.translate.onLangChange.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.buildMenu();
+      this.cdr.markForCheck();
+    });
 
     // Sync loggedIn / loginRequired whenever auth state changes.
     this.authService.loggedIn$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((loggedIn) => {

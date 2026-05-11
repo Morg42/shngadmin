@@ -14,4 +14,5 @@ export interface PluginMetadata {
   classname: string;
   sh_minversion: string;
   sh_maxversion: string;
+  state?: string;
 }

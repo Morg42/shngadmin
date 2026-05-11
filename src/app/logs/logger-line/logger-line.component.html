@@ -241,7 +241,6 @@
       icon="pi pi-check"
       (click)="this.doModifyHandlers()"
       [disabled]="!handlersChangeEnabled"
-      (disabledChange)="handlersChangeEnabled = $event"
       label="{{ 'BUTTON.CHANGE' | translate }}"
       class="ui-button-success"
       autofocus

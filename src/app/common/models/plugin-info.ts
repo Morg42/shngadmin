@@ -18,6 +18,7 @@ export interface PlugininfoType {
   blog_url: string;
   parameters: PluginParameter[];
   arttibutes: PluginItemAttribute[];
+  attributes?: PluginItemAttribute[];
   metadata: PluginMetadata;
   documentation_config_doc: string;
   documentation_user_doc: string;

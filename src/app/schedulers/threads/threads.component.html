@@ -16,7 +16,7 @@
             <td class="py-1">{{ thread.name }}</td>
             <td class="py-1">{{ thread.id }}</td>
             <td class="py-1">{{ thread.native_id }}</td>
-            <td class="py-1">{{ thread.alive | translate }}</td>
+            <td class="py-1">{{ $any(thread.alive) | translate }}</td>
             <td class="py-1" width="200px"></td>
           </tr>
         }

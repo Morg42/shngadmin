@@ -13,6 +13,8 @@ export interface LogicsinfoType {
   group?: any;
   name: string;
   logic_description?: string;
+  description?: string;
+  watch_item_list?: LogicsWatchItem[];
   next_exec: string;
   pathname: string;
   userlogic: boolean;

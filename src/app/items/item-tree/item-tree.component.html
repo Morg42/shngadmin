@@ -558,9 +558,9 @@
         <tr>
           <td class="py-1">{{ itemdata[0] }}</td>
           <td class="py-1">{{ itemdata[1].value }}</td>
-          <td class="py-1">{{ shared.displayDateTime(itemdata[1].last_change) }}</td>
+          <td class="py-1">{{ shared.displayDateTime($any(itemdata[1]).last_change) }}</td>
           <td class="py-1">{{ itemdata[1].last_change_by }}</td>
-          <td class="py-1">{{ shared.displayDateTime(itemdata[1].last_update) }}</td>
+          <td class="py-1">{{ shared.displayDateTime($any(itemdata[1]).last_update) }}</td>
           <td class="py-1">{{ itemdata[1].last_update_by }}</td>
           <td class="py-1">
             <button

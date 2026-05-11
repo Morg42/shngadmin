@@ -63,7 +63,7 @@ export class LoggerListComponent implements OnInit {
   active_plugins: string[];
   active_logics: string[];
   loggersList: string[] = [];
-  definedHandlers: {};
+  definedHandlers: string[] = [];
 
   loggerOptions: {}[] = [];
 

@@ -346,7 +346,6 @@
       icon="pi pi-check"
       (click)="this.createLogger()"
       [disabled]="!newlogger_add_enabled"
-      (disabledChange)="newlogger_add_enabled = $event"
       label="{{ 'BUTTON.CREATE' | translate }}"
       class="ui-button-success"
       autofocus

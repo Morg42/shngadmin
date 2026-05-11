@@ -540,7 +540,6 @@
       icon="pi pi-check"
       (click)="this.addPlugin()"
       [disabled]="!this.add_enabled"
-      (disabledChange)="this.add_enabled = $event"
       label="{{ 'BUTTON.ADD' | translate }}"
       class="ui-button-success"
       autofocus

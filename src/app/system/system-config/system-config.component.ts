@@ -480,7 +480,7 @@ export class SystemConfigComponent implements OnInit {
     this.check_values();
   }
 
-  check_values() {
+  check_values(_type?: string) {
     this.data_changed = false;
     for (const p in this.common_parameters) {
       if (this.common_parameters.hasOwnProperty(p)) {

@@ -63,14 +63,14 @@
               }
             </span>
 
-            @if (['debian', 'raspbian'].includes(systeminfo.osflavor)) {
+            @if (['debian', 'raspbian'].includes(systeminfo.osflavor ?? '')) {
               <span><img ngSrc="assets/img/{{ systeminfo.osflavor }}.svg" /></span>
             }
-            @if (!['debian', 'raspbian'].includes(systeminfo.osflavor)) {
-              @if (['linux', 'macos', 'windows'].includes(systeminfo.ostype)) {
+            @if (!['debian', 'raspbian'].includes(systeminfo.osflavor ?? '')) {
+              @if (['linux', 'macos', 'windows'].includes(systeminfo.ostype ?? '')) {
                 <span><img ngSrc="assets/img/{{ systeminfo.ostype }}.svg" /></span>
               }
-              @if (!['linux', 'macos', 'windows'].includes(systeminfo.ostype)) {
+              @if (!['linux', 'macos', 'windows'].includes(systeminfo.ostype ?? '')) {
                 <span><img ngSrc="assets/img/os.png" height="224" width="224" /></span>
               }
             }

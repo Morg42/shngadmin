@@ -78,7 +78,7 @@
                           </thead>
 
                           <tbody>
-                            @if (userlogics?.length > 0) {
+                            @if ((userlogics?.length ?? 0) > 0) {
                               @for (logic of userlogics; track $index) {
                                 @if (logic.userlogic === true) {
                                   @if (logic.group.indexOf(group.name) > -1) {
@@ -115,7 +115,7 @@
                                         <td class="p-1" style="color: var(--shng-disabled)">{{ logic.crontab }}</td>
                                       }
 
-                                      @if (logic.watch_item_list?.length > 0) {
+                                      @if ((logic.watch_item_list?.length ?? 0) > 0) {
                                         <td
                                           style="cursor: pointer"
                                           (click)="
@@ -248,7 +248,7 @@
             <table id="1" class="table table-striped table-hover">
               <div class="tab-header"></div>
               <div>
-                @if (newlogics?.length > 0) {
+                @if ((newlogics?.length ?? 0) > 0) {
                   <thead>
                     <tr class="shng_heading">
                       <th style="width: 30px; border-top: 0"></th>
@@ -270,7 +270,7 @@
                     </tr>
                   }
 
-                  @if (newlogics?.length > 0) {
+                  @if ((newlogics?.length ?? 0) > 0) {
                     <tr></tr>
                     <tr>
                       <th colspan="8">{{ 'LOGICS.NEW_LOGICS' | translate }}</th>
@@ -343,7 +343,7 @@
               <div class="tab-header"></div>
               <div class="tab-content">
                 <thead>
-                  @if (userlogics?.length > 0) {
+                  @if ((userlogics?.length ?? 0) > 0) {
                     <tr class="shng_heading">
                       <th style="width: 30px; border-top: 0"></th>
                       <th class="p-1" style="width: 320px; border-top: 0">{{ 'LOGICS.LOGIC' | translate }}</th>
@@ -373,7 +373,7 @@
                 </thead>
 
                 <tbody>
-                  @if (userlogics?.length > 0) {
+                  @if ((userlogics?.length ?? 0) > 0) {
                     @for (logic of userlogics; track $index) {
                       @if (logic.userlogic === true) {
                         <tr>
@@ -403,7 +403,7 @@
                             <td class="p-1" style="color: var(--shng-disabled)">{{ logic.crontab }}</td>
                           }
 
-                          @if (logic.watch_item_list?.length > 0) {
+                          @if ((logic.watch_item_list?.length ?? 0) > 0) {
                             <td
                               style="cursor: pointer"
                               (click)="selectedLogicWatchItems = logic.watch_item_list; showLogicDetails = true"
@@ -518,7 +518,7 @@
                     </tr>
                   }
 
-                  @if (newlogics?.length > 0) {
+                  @if ((newlogics?.length ?? 0) > 0) {
                     <tr>
                       <th colspan="8">{{ 'LOGICS.NEW_LOGICS' | translate }}</th>
                     </tr>
@@ -599,7 +599,7 @@
                 </tr>
               </thead>
               <tbody>
-                @if (systemlogics?.length > 0) {
+                @if ((systemlogics?.length ?? 0) > 0) {
                   @for (logic of systemlogics; track $index) {
                     @if (logic.userlogic === false) {
                       <tr>
@@ -782,7 +782,6 @@
       icon="pi pi-check"
       (click)="this.wrongNewLogicName = ''; this.createLogic()"
       [disabled]="!newlogic_add_enabled"
-      (disabledChange)="newlogic_add_enabled = $event"
       label="{{ 'BUTTON.CREATE' | translate }}"
       class="ui-button-success"
     ></button>

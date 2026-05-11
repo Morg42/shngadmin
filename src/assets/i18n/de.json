@@ -358,7 +358,7 @@
     "NAME_CONFIGURATION": "Konfiguration des Plugins '{{selected_plugin}}' benennen",
     "UNIQUE_NAME": "Eindeutiger Name",
     "DELETE_CONFIG": "Löschen der Konfiguration bestätigen",
-    "DELETE_CONFIG_TEXT": "Soll die Konfiguration '{{config}}' wirklich gelöscht werden?",
+    "DELETE_CONFIG_TEXT": "Soll die Konfiguration '{{config}}' wirklich gelöscht und das Plugin entladen werden?",
     "CONFIGURATION_ERRORS": "Konfigurationsfehler",
     "DEFINED_MIN": "Definierter Minimalwert ist",
     "DEFINED_MAX": "Definierter Maximalwert ist",

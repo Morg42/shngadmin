@@ -353,7 +353,7 @@
     "NAME_CONFIGURATION": "Nommer configuration de l'extension '{{selected_plugin}}'",
     "UNIQUE_NAME": "Nom unique",
     "DELETE_CONFIG": "Confirmat la suppression de la configuration",
-    "DELETE_CONFIG_TEXT": "Vraiment supprimer la configuration '{{config}}' ?",
+    "DELETE_CONFIG_TEXT": "Vraiment supprimer la configuration '{{config}}' et décharger l'extension?",
     "CONFIGURATION_ERRORS": "Erreur de configuration",
     "DEFINED_MIN": "La valeur minimale définie est",
     "DEFINED_MAX": "La valeur maximale définie est",

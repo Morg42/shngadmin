@@ -356,7 +356,7 @@
     "NAME_CONFIGURATION": "Name the configuration of '{{selected_plugin}}' plugin and add to the configured plugins",
     "UNIQUE_NAME": "Unique name",
     "DELETE_CONFIG": "Confirm delete configuration",
-    "DELETE_CONFIG_TEXT": "Please confirm, that you want to delete the plugin configuration '{{config}}'",
+    "DELETE_CONFIG_TEXT": "Please confirm that you want to delete the plugin configuration '{{config}}' and unload the plugin",
     "CONFIGURATION_ERRORS": "Configuration error(s)",
     "DEFINED_MIN": "Defined minimum is",
     "DEFINED_MAX": "Defined maximum is",
@@ -399,7 +399,7 @@
     "NAME_CONFIGURATION": "Select a name for the new configuration file",
     "UNIQUE_NAME": "Unique filename (without extension)",
     "DELETE_CONFIG": "Confirm delete scene",
-    "DELETE_CONFIG_FILE": "Please confirm, that you want to delete the scene configuration file '{{config}}'"
+    "DELETE_CONFIG_FILE": "Please confirm that you want to delete the scene configuration file '{{config}}'"
   },
   "FUNCTION_CONFIG": {
     "DEFINITION_FILES": "Function Libraries",

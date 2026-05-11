@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { BehaviorSubject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 
 import { sha512 } from 'js-sha512';
 import { AppConfigService } from './app-config.service';
@@ -197,23 +197,26 @@ export class AuthService {
 
     let newToken: string = oldToken;
     this.isRenewing = true;
-    this.getNewToken().subscribe((response) => {
-      newToken = response;
-      const decodedNewToken = this.jwtHelper.decodeToken(newToken);
-      const newttl =
-        Math.round(((decodedNewToken.exp - decodedNewToken.iat) / 60 / 60) * 100) / 100;
-      // console.log('authService.renewToken', {decodedNewToken});
+    this.getNewToken()
+      .pipe(take(1))
+      .subscribe((response) => {
+        newToken = response;
+        const decodedNewToken = this.jwtHelper.decodeToken(newToken);
+        const newttl =
+          Math.round(((decodedNewToken.exp - decodedNewToken.iat) / 60 / 60) * 100) / 100;
+        // console.log('authService.renewToken', {decodedNewToken});
 
-      if (oldToken === newToken) {
-        console.warn('- Token renewal is disabled');
-        this.tokenRenewal = false;
-      } else {
-        localStorage.setItem('token', newToken);
-        this.ttl = Math.round(((decodedNewToken.exp - decodedNewToken.iat) / 60 / 60) * 100) / 100;
-        this.renewAfter = decodedNewToken.iat + (this.ttl * 60 * 60) / 2;
-      }
-      this.isRenewing = false;
-    });
+        if (oldToken === newToken) {
+          console.warn('- Token renewal is disabled');
+          this.tokenRenewal = false;
+        } else {
+          localStorage.setItem('token', newToken);
+          this.ttl =
+            Math.round(((decodedNewToken.exp - decodedNewToken.iat) / 60 / 60) * 100) / 100;
+          this.renewAfter = decodedNewToken.iat + (this.ttl * 60 * 60) / 2;
+        }
+        this.isRenewing = false;
+      });
   }
 
   isLoggedIn(): boolean {

@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { finalize } from 'rxjs/operators';
+import { finalize, switchMap } from 'rxjs/operators';
 import { AppConfigService } from '../../common/services/app-config.service';
 
 import {
@@ -880,26 +880,32 @@ export class PluginConfigComponent implements OnInit {
   }
 
   DeleteConfigConfirm() {
-    console.log('PluginConfigComponent.DeleteConfigConfirm:');
-    console.warn(this.dialog_configname);
-
     this.confirmdelete_display = false;
 
-    this.pluginsdataService
-      .deletePluginConfig(this.dialog_configname)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((response) => {
-        if (response) {
-          this.dialog_display = false;
-          this.spinner_display = true;
-          this.spinner_header = this.translate.instant('PLUGIN.LOADCONFIG');
-          this.reloadPluginList();
-          this.restart_core_button = true;
-          this.cdr.markForCheck();
-        } else {
-          console.error('PluginConfigComponent.DeleteConfigConfirm: delete failed');
-        }
-      });
+    const configname = this.dialog_configname;
+    const delete$ = this.pluginsdataService
+      .deletePluginConfig(configname)
+      .pipe(takeUntilDestroyed(this.destroyRef));
+
+    const action$ = this.rowclicked_foredit.loaded
+      ? this.pluginsdataService.setPluginState(configname, 'unload').pipe(
+          takeUntilDestroyed(this.destroyRef),
+          switchMap(() => delete$),
+        )
+      : delete$;
+
+    action$.subscribe((response) => {
+      if (response) {
+        this.dialog_display = false;
+        this.spinner_display = true;
+        this.spinner_header = this.translate.instant('PLUGIN.LOADCONFIG');
+        this.reloadPluginList();
+        this.restart_core_button = true;
+        this.cdr.markForCheck();
+      } else {
+        console.error('PluginConfigComponent.DeleteConfigConfirm: delete failed');
+      }
+    });
 
     return true;
   }

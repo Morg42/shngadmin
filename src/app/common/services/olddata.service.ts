@@ -2,6 +2,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, OnInit, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { take } from 'rxjs/operators';
 //import {SystemInfo} from '../models/system-info';
 // import {ServerInfo} from '../models/server-info';
 
@@ -80,16 +81,19 @@ export class OlddataService implements OnInit {
       '&value=' +
       encodeURIComponent(value);
     console.log('OlddataService.changeItemValue: url: ' + url);
-    this.http.get(url).subscribe(
-      (response: unknown) => {
-        console.log('updateValue:');
-        console.log({ response });
-      },
-      (error) => {
-        console.log('ERROR: OlddataServicechangeItemValue(', { itempath }, ',', { value }, ')');
-        console.log(error);
-      },
-    );
+    this.http
+      .get(url)
+      .pipe(take(1))
+      .subscribe(
+        (response: unknown) => {
+          console.log('updateValue:');
+          console.log({ response });
+        },
+        (error) => {
+          console.log('ERROR: OlddataServicechangeItemValue(', { itempath }, ',', { value }, ')');
+          console.log(error);
+        },
+      );
   }
 
   /*

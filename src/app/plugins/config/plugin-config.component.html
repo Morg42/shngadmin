@@ -412,7 +412,12 @@
       <p-accordion-panel [value]="i">
         <p-accordion-header (click)="pluginadd.maximize()">
           <span style="font-size: larger"
-            ><img ngSrc="assets/img/plugin_{{ plugintype }}.svg" style="width: 30px; cursor: pointer" />
+            ><img
+              ngSrc="assets/img/plugin_{{ plugintype }}.svg"
+              style="width: 30px; cursor: pointer"
+              width="30"
+              height="30"
+            />
             {{ plugintype.charAt(0).toUpperCase() + plugintype.substring(1) }} Plugins</span
           >
         </p-accordion-header>

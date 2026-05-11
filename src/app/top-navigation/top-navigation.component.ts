@@ -69,19 +69,6 @@ export class TopNavigationComponent implements OnInit {
         this.developerMode = this.appConfig.developerMode;
         this.isTouchDevice = !this.appConfig.clickDropdownHeader;
 
-        console.log('TopNavigationComponent.ngOnInit: getLangs()', this.translate.getLangs());
-        console.log(
-          'TopNavigationComponent.ngOnInit: getDefaultLang()',
-          this.translate.getDefaultLang(),
-        );
-        this.translate.use(this.appConfig.defaultLanguage);
-        this.translate.setDefaultLang(this.appConfig.defaultLanguage);
-        this.shared.setGuiLanguage();
-        console.log(
-          'TopNavigationComponent.ngOnInit: getDefaultLang() =',
-          this.translate.getDefaultLang(),
-        );
-
         this.setTitle(this.translate.instant('SmartHomeNG'));
 
         const credentials = { username: '', password: '' };
@@ -106,10 +93,14 @@ export class TopNavigationComponent implements OnInit {
     });
 
     // Sync loggedIn / loginRequired whenever auth state changes.
+    // Only rebuild the menu if translations are already loaded; if not,
+    // onLangChange will call buildMenu() once they arrive.
     this.authService.loggedIn$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((loggedIn) => {
       this.loggedIn = loggedIn;
       this.loginRequired = this.authService.loginRequired();
-      this.buildMenu();
+      if (this.translate.currentLang) {
+        this.buildMenu();
+      }
       this.cdr.markForCheck();
     });
 

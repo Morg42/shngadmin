@@ -707,7 +707,9 @@ export class PluginConfigComponent implements OnInit {
 
         for (let p in this.plugins_installed) {
           if (p in this.plugins_installed) {
-            this.plugins_installed[p]['disp_description'] = this.plugins_installed[p].description;
+            this.plugins_installed[p]['disp_description'] = this.shared.getDescription(
+              this.plugins_installed[p].description as Record<string, string>,
+            );
           }
         }
         for (let i = 0; i < this.plugintypes.length; i++) {

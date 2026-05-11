@@ -3,7 +3,7 @@
 //
 export interface PluginInstalled {
   type: string;
-  description: string;
+  description: Record<string, string> | string;
   version: string;
   state: string;
   documentation: string;

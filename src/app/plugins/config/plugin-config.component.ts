@@ -432,24 +432,41 @@ export class PluginConfigComponent implements OnInit {
             paramdata['type'] = 'hide' + '-' + meta['parameters'][param]['type'];
           }
 
+          const initial_unset = conf[param] === undefined || conf[param] === null;
+          paramdata['initial_unset'] = initial_unset;
+
           if (paramdata.type === 'bool') {
-            if (conf[param] === undefined) {
-              paramdata.value = null;
+            if (conf[param] === undefined || conf[param] === null) {
+              if (initial_unset && paramdata.default != null) {
+                paramdata.value =
+                  typeof paramdata.default === 'boolean'
+                    ? paramdata.default
+                    : String(paramdata.default).toLowerCase() === 'true';
+              } else {
+                paramdata.value = null;
+              }
             } else if (typeof conf[param] === 'boolean') {
               paramdata.value = conf[param];
             } else {
-              if (conf[param] === null) {
-                paramdata.value = null;
-              } else {
-                paramdata.value = conf[param].toLowerCase() === 'true';
-              }
+              paramdata.value = conf[param].toLowerCase() === 'true';
             }
           } else if (paramdata.type === 'list') {
-            paramdata.value = this.listToString(<string>conf[param]);
+            paramdata.value =
+              initial_unset && paramdata.default != null
+                ? paramdata.default
+                : this.listToString(<string>conf[param]);
           } else if (paramdata.type === 'int') {
-            paramdata.value = parseInt(conf[param], 10);
+            paramdata.value =
+              initial_unset && paramdata.default != null
+                ? typeof paramdata.default === 'number'
+                  ? paramdata.default
+                  : parseInt(String(paramdata.default), 10)
+                : parseInt(conf[param], 10);
           } else {
-            paramdata.value = <string>conf[param];
+            paramdata.value =
+              initial_unset && paramdata.default != null
+                ? String(paramdata.default)
+                : <string>conf[param];
           }
 
           this.parameters.push(paramdata);
@@ -468,7 +485,16 @@ export class PluginConfigComponent implements OnInit {
     for (let i = 0; i < this.parameters.length; i++) {
       let error_found = false;
       let error_text = '';
-      if (this.parameters[i]['value'] === '') {
+      const isUnchangedDefault =
+        this.parameters[i]['initial_unset'] &&
+        this.parameters[i]['default'] != null &&
+        String(this.parameters[i]['value']) === String(this.parameters[i]['default']);
+
+      if (
+        this.parameters[i]['value'] === '' ||
+        this.parameters[i]['value'] === null ||
+        isUnchangedDefault
+      ) {
         conf[this.parameters[i]['name']] = undefined;
       } else {
         conf[this.parameters[i]['name']] = this.parameters[i]['value'];
@@ -579,7 +605,8 @@ export class PluginConfigComponent implements OnInit {
         if (
           this.pluginconflist.plugin_config[this.dialog_configname]._meta.parameters[param][
             'type'
-          ] === 'list'
+          ] === 'list' &&
+          this.pluginconflist.plugin_config[this.dialog_configname][param] !== undefined
         ) {
           this.pluginconflist.plugin_config[this.dialog_configname][param] = this.stringToList(
             this.pluginconflist.plugin_config[this.dialog_configname][param],

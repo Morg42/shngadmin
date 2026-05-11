@@ -48,8 +48,8 @@
       </thead>
       <tbody>
         @for (row of configuredplugins; track $index) {
-          <tr style="cursor: pointer" [style.opacity]="row.loaded ? '1' : '0.5'" (click)="rowClicked($event, row)">
-            <td>
+          <tr style="cursor: pointer" (click)="rowClicked($event, row)">
+            <td [style.opacity]="row.loaded ? '1' : '0.5'">
               @if (row['enabled'] === 'true') {
                 <i style="color: var(--shng-blue)" class="fa fa-toggle-on"></i>
               }
@@ -57,7 +57,7 @@
                 <i style="color: var(--shng-toggle-off)" class="fa fa-toggle-off"></i>
               }
             </td>
-            <td>
+            <td [style.opacity]="row.loaded ? '1' : '0.5'">
               @if (['web', 'protocol', 'interface', 'gateway', 'system'].includes(row['type'])) {
                 <img ngSrc="assets/img/plugin_{{ row['type'] }}.svg" style="width: 25px" width="25" height="25" />
               } @else if (row['type'] === 'classic') {
@@ -66,8 +66,8 @@
                 <img ngSrc="assets/img/plugin_defaultlogo.png" style="width: 25px" height="300" width="300" />
               }
             </td>
-            <td>{{ row['confname'] }}</td>
-            <td>
+            <td [style.opacity]="row.loaded ? '1' : '0.5'">{{ row['confname'] }}</td>
+            <td [style.opacity]="row.loaded ? '1' : '0.5'">
               {{ row['plugin'].substr(1) }}
               @if (row['plugin'].charAt(0) === '+') {
                 &nbsp;<fa-icon
@@ -84,8 +84,8 @@
                 ></fa-icon>
               }
             </td>
-            <td>{{ row['instance'] }}</td>
-            <td><div [innerHTML]="row['desc']"></div></td>
+            <td [style.opacity]="row.loaded ? '1' : '0.5'">{{ row['instance'] }}</td>
+            <td [style.opacity]="row.loaded ? '1' : '0.5'"><div [innerHTML]="row['desc']"></div></td>
             <td style="text-align: center; white-space: nowrap" (click)="$event.stopPropagation()">
               @if (!row.loaded) {
                 <button

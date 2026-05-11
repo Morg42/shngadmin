@@ -80,10 +80,10 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   logic: LogicsinfoType = <any>{};
   wrongWatchItem: boolean;
   logicChanged: boolean;
-  logicDescriptionOrig: string;
-  logicGroupOrig: string;
-  logicCycleOrig: string;
-  logicCrontabOrig: string;
+  logicDescriptionOrig: string | undefined;
+  logicGroupOrig: string | null;
+  logicCycleOrig: string | null;
+  logicCrontabOrig: string | null;
   logicWatchitemOrig: LogicsWatchItem[];
 
   parameters: ConfigParameter[] = [];
@@ -93,7 +93,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   // -----------------------------------------------------------------
   //  Vars for the codemirror components
   //
-  rulers = [];
+  rulers: { color: string; column: number; lineStyle: string }[] = [];
 
   // -----------------------------------------------------
   //  Vars for the YAML syntax checker
@@ -285,7 +285,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
           if (param in this.pluginParameters) {
             const paramdef = this.pluginParameters[param];
 
-            const vl = [];
+            const vl: { label: string; value: unknown }[] = [];
             const validList = paramdef['valid_list'] as unknown[];
             if (validList !== undefined) {
               for (let i = 0; i < validList.length; i++) {
@@ -297,11 +297,8 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
             // generate a valid_list for bool parameters
             if (paramdef['type'] === 'bool') {
               if (vl.length === 0) {
-                let wrk = {};
-                wrk = { label: 'true', value: true };
-                vl.push(wrk);
-                wrk = { label: 'false', value: false };
-                vl.push(wrk);
+                vl.push({ label: 'true', value: true });
+                vl.push({ label: 'false', value: false });
               }
             }
 
@@ -310,7 +307,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
               paramdef['description'] as Record<string, string>,
             );
 
-            let val = null;
+            let val: unknown = null;
             val = this.logic[param];
             // console.log({param}, {val});
             if (val === undefined || val === null) {
@@ -352,13 +349,13 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
                 if (val === null) {
                   paramdata.value = null;
                 } else {
-                  paramdata.value = val.toLowerCase() === 'true';
+                  paramdata.value = String(val).toLowerCase() === 'true';
                 }
               }
             } else if (paramdata.type === 'list') {
-              paramdata.value = this.listToString(<string>val);
+              paramdata.value = this.listToString(val as string);
             } else {
-              paramdata.value = <string>val;
+              paramdata.value = val as string;
             }
 
             // add to the table of configured plugins
@@ -369,8 +366,8 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
       });
   }
 
-  listToString(list) {
-    let result = '';
+  listToString(list): string | null {
+    let result: string | null = '';
     if (list === null) {
       result = null;
     } else if (typeof list === 'string') {
@@ -771,7 +768,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
 
     const params = {};
 
-    if (!(parseInt(this.logic.cycle, 10) > 0)) {
+    if (!(parseInt(this.logic.cycle ?? '', 10) > 0)) {
       this.logic.cycle = null;
     }
     params['logic_description'] = this.logic.logic_description;

@@ -26,7 +26,7 @@ export class AuthService {
   /** Emits whenever the login state changes (login success / logout). */
   readonly loggedIn$ = new BehaviorSubject<boolean>(!!localStorage.getItem('token'));
 
-  currentUser: DecodedJwtToken;
+  currentUser: DecodedJwtToken | null;
   isLoginRequired: boolean;
   isLoginRequiredCount = 0;
   expiredLogin: boolean;
@@ -135,11 +135,11 @@ export class AuthService {
 
             const jwt = new JwtHelperService();
             // this.currentUser = jwt.decodeToken(localStorage.getItem('token'));
-            this.currentUser = this.jwtHelper.decodeToken(localStorage.getItem('token'));
+            this.currentUser = this.jwtHelper.decodeToken(localStorage.getItem('token')!);
             // if (this.currentUser.ttl !== undefined) {
             //   this.ttl = this.currentUser.ttl;
             // }
-            const decodedToken = this.currentUser;
+            const decodedToken = this.currentUser!;
             this.ttl = Math.round(((decodedToken.exp - decodedToken.iat) / 60 / 60) * 100) / 100;
             this.renewAfter = decodedToken.iat + (this.ttl * 60 * 60) / 2;
             this.tokenRenewal = true;
@@ -192,7 +192,7 @@ export class AuthService {
     }
 
     this.logTimestamp = this.getTimestamp();
-    const oldToken: string = localStorage.getItem('token');
+    const oldToken: string = localStorage.getItem('token') ?? '';
     const hostip: string = this.appConfig.hostIp;
 
     let newToken: string = oldToken;
@@ -234,8 +234,10 @@ export class AuthService {
       this.renewAfter = decodedToken.iat + (this.ttl * 60 * 60) / 2;
     }
 
-    const expirationDate = this.jwtHelper.getTokenExpirationDate(localStorage.getItem('token'));
-    const loggedIn = !this.jwtHelper.isTokenExpired(localStorage.getItem('token'));
+    const expirationDate = this.jwtHelper.getTokenExpirationDate(
+      localStorage.getItem('token') ?? undefined,
+    );
+    const loggedIn = !this.jwtHelper.isTokenExpired(localStorage.getItem('token') ?? undefined);
 
     if (loggedIn && this.logTimestamp < timestamp) {
       console.log(
@@ -254,7 +256,9 @@ export class AuthService {
     if (decodedToken.exp !== null) {
       const hostip = this.appConfig.hostIp;
       if (!this.expiredLogin) {
-        this.expiredLogin = this.jwtHelper.isTokenExpired(localStorage.getItem('token'));
+        this.expiredLogin = this.jwtHelper.isTokenExpired(
+          localStorage.getItem('token') ?? undefined,
+        );
         if (this.expiredLogin) {
           console.warn('Token expired', { decodedToken });
         }
@@ -279,7 +283,7 @@ export class AuthService {
     return true;
   }
 
-  getToken(): string {
+  getToken(): string | null {
     return localStorage.getItem('token');
   }
 

@@ -7,7 +7,7 @@
     "outDir": "./dist/out-tsc",
     "strict": false,
     "noImplicitOverride": false,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "noPropertyAccessFromIndexSignature": false,
     "strictPropertyInitialization": false,
     "noImplicitReturns": false,
@@ -40,7 +40,7 @@
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": false,
     "strictInputAccessModifiers": false,
-    "strictTemplates": false
+    "strictTemplates": true
   }
 
 }

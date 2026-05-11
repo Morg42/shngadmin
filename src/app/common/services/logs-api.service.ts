@@ -32,13 +32,13 @@ export class LogsApiService {
     );
   }
 
-  readLogfile(filename: string, chunk = null) {
+  readLogfile(filename: string, chunk: number | null = null) {
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'logs/' + filename;
     let part = 0;
     if (apiUrl === null) {
       console.error('readLogfile for ' + filename + ' had an empty apiUrl');
-      return;
+      return of({} as object);
     }
 
     if (chunk === null) {

@@ -71,10 +71,10 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
   default_log = '';
 
   logs: DropDownEntry[] = [];
-  selectedLog: string = null;
+  selectedLog: string | null = null;
 
   files: DropDownEntry[] = [];
-  selectedFile: string = null;
+  selectedFile: string | null = null;
 
   displayLogfile = '';
   text_filter = '';

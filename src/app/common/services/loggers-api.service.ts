@@ -44,6 +44,7 @@ export class LoggersApiService {
           return result;
         } else {
           console.log('LoggersApiService.setLoggerLevel', 'fail: undefined result');
+          return {};
         }
       }),
       catchError((err: HttpErrorResponse) => {
@@ -69,6 +70,7 @@ export class LoggersApiService {
           return result;
         } else {
           console.log('LoggersApiService.setHandlers', 'fail: undefined result');
+          return {};
         }
       }),
       catchError((err: HttpErrorResponse) => {

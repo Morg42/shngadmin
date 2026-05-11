@@ -66,12 +66,12 @@ export class LoggerLineComponent implements OnInit {
   delete_param: {};
 
   header_param: {};
-  handlers = [];
+  handlers: { name: string; key: string }[] = [];
   chooseHandlers_display: boolean = false;
   // loggerToModify: string = '';
-  choosableHandlers = [];
-  choosableHandlers1 = [];
-  choosableHandlers2 = [];
+  choosableHandlers: { name: string; key: string; value: boolean[]; disabled: boolean }[] = [];
+  choosableHandlers1: { name: string; key: string; value: boolean[]; disabled: boolean }[] = [];
+  choosableHandlers2: { name: string; key: string; value: boolean[]; disabled: boolean }[] = [];
   handlersChangeEnabled = false;
 
   private readonly cdr = inject(ChangeDetectorRef);
@@ -162,7 +162,7 @@ export class LoggerLineComponent implements OnInit {
         if (this.logger.handlers !== undefined) {
           found = this.logger.handlers.includes(key);
         }
-        let val = [];
+        let val: boolean[] = [];
         if (!parentFound || this.logger.propagate === false) {
           if (found) {
             val = [true];
@@ -178,9 +178,7 @@ export class LoggerLineComponent implements OnInit {
       if (a.name === b.name) {
         return 0;
       }
-      if (a.name < b.name) {
-        return -1;
-      }
+      return -1;
     });
 
     this.choosableHandlers1 = [];
@@ -201,7 +199,7 @@ export class LoggerLineComponent implements OnInit {
   doModifyHandlers() {
     this.chooseHandlers_display = false;
 
-    const selectedHandlers = [];
+    const selectedHandlers: string[] = [];
     for (let i = 0; i < this.choosableHandlers.length; i++) {
       if (this.choosableHandlers[i].value.length > 0) {
         selectedHandlers.push(this.choosableHandlers[i].key);

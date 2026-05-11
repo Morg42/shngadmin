@@ -34,11 +34,12 @@ export class WebsocketPluginService {
   private appConfig = inject(AppConfigService);
   private websocketService = inject(WebsocketService);
   private shared = inject(SharedService);
-  monitorCallbackFunction = undefined;
+  monitorCallbackFunction: ((data: unknown) => void) | undefined = undefined;
 
-  private msgMonitorItems = <Message>{
+  private msgMonitorItems: Message = {
     cmd: 'monitor',
     items: [],
+    rawdata: null,
   };
 
   private msgListenSeriesLoad = <Message>{
@@ -228,7 +229,7 @@ export class WebsocketPluginService {
   // requests monitoring of items
   //
 
-  getMonitoredItems(itemList = [], callback) {
+  getMonitoredItems(itemList: [string, unknown][] = [], callback: (data: unknown) => void) {
     this.monitorCallbackFunction = callback;
     this.sendMessage({
       ...this.msgMonitorItems,

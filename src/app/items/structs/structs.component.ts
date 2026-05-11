@@ -145,7 +145,7 @@ export class StructsComponent implements OnInit {
   // build a display tree for the PrimeNG component from the itemtree received from the backend
   //
   buildDisplayTree(subtree) {
-    const displayTreeList = [];
+    const displayTreeList: Record<string, unknown>[] = [];
     for (const key in subtree) {
       if (key in subtree) {
         const displayNode = {};
@@ -189,7 +189,7 @@ export class StructsComponent implements OnInit {
   }
 
   getStructListByGroup(group) {
-    const structSublist = [];
+    const structSublist: string[] = [];
     // eslint-disable-next-line guard-for-in
     for (const entry in this.structsList) {
       if (group === 'my' && this.structsList[entry].split('.').length === 1) {

@@ -200,11 +200,11 @@ export class HeaderComponent implements OnInit {
     ];
 
     for (let i = 0; i < 4; i++) {
-      this.items[2].items.push({ label: '--dev--', routerLink: [''] });
+      this.items[2].items!.push({ label: '--dev--', routerLink: [''] });
     }
     if (this.developerMode) {
       // Add another menu item if in developer mode
-      this.items[2].items.push({ label: '--dev--', routerLink: [''] });
+      this.items[2].items!.push({ label: '--dev--', routerLink: [''] });
     }
 
     this.menuInitialized = true;
@@ -236,45 +236,46 @@ export class HeaderComponent implements OnInit {
       this.items[8].visible = !isLoggedIn;
 
       this.items[0].label = this.translate.instant('MENU.SYSTEM');
-      this.items[0].items[0].label = this.translate.instant('MENU.SYSTEM_PROPERTIES');
-      this.items[0].items[1].label = this.translate.instant('MENU.CONFIGURATION');
+      this.items[0].items![0].label = this.translate.instant('MENU.SYSTEM_PROPERTIES');
+      this.items[0].items![1].label = this.translate.instant('MENU.CONFIGURATION');
       this.items[1].label = this.translate.instant('MENU.SERVICES');
 
       this.items[2].label = this.translate.instant('MENU.ITEMS');
-      this.items[2].items[0].label = this.translate.instant('MENU.ITEM_TREE');
-      this.items[2].items[0].routerLink = ['/item_tree'];
-      this.items[2].items[1].label = this.translate.instant('MENU.ITEM_CONFIGURATION');
-      this.items[2].items[1].routerLink = ['/items/config'];
-      if (this.items[2].items.length < 5) {
-        this.items[2].items[2].label = this.translate.instant('MENU.ITEM_STRUCTS');
-        this.items[2].items[2].routerLink = ['/items/structs'];
-        this.items[2].items[3].label = this.translate.instant('MENU.ITEM_STRUCT_CONFIGURATION');
-        this.items[2].items[3].routerLink = ['/items/struct_config'];
+      this.items[2].items![0].label = this.translate.instant('MENU.ITEM_TREE');
+      this.items[2].items![0].routerLink = ['/item_tree'];
+      this.items[2].items![1].label = this.translate.instant('MENU.ITEM_CONFIGURATION');
+      this.items[2].items![1].routerLink = ['/items/config'];
+      if (this.items[2].items!.length < 5) {
+        this.items[2].items![2].label = this.translate.instant('MENU.ITEM_STRUCTS');
+        this.items[2].items![2].routerLink = ['/items/structs'];
+        this.items[2].items![3].label = this.translate.instant('MENU.ITEM_STRUCT_CONFIGURATION');
+        this.items[2].items![3].routerLink = ['/items/struct_config'];
       } else {
-        this.items[2].items[2].label = this.translate.instant('MENU.ITEM_CONFIGURATION') + ' (dev)';
-        this.items[2].items[2].routerLink = ['/items/config2'];
-        this.items[2].items[3].label = this.translate.instant('MENU.ITEM_STRUCTS');
-        this.items[2].items[3].routerLink = ['/items/structs'];
-        this.items[2].items[4].label = this.translate.instant('MENU.ITEM_STRUCT_CONFIGURATION');
-        this.items[2].items[4].routerLink = ['/items/struct_config'];
+        this.items[2].items![2].label =
+          this.translate.instant('MENU.ITEM_CONFIGURATION') + ' (dev)';
+        this.items[2].items![2].routerLink = ['/items/config2'];
+        this.items[2].items![3].label = this.translate.instant('MENU.ITEM_STRUCTS');
+        this.items[2].items![3].routerLink = ['/items/structs'];
+        this.items[2].items![4].label = this.translate.instant('MENU.ITEM_STRUCT_CONFIGURATION');
+        this.items[2].items![4].routerLink = ['/items/struct_config'];
       }
 
       this.items[3].label = this.translate.instant('MENU.LOGICS');
       //      this.items[4].label = this.translate.instant('MENU.SCHEDULERS');
       this.items[4].label = this.translate.instant('MENU.PLUGINS');
-      this.items[4].items[0].label = this.translate.instant('MENU.PLUGINS_LIST');
-      this.items[4].items[1].label = this.translate.instant('MENU.CONFIGURATION');
+      this.items[4].items![0].label = this.translate.instant('MENU.PLUGINS_LIST');
+      this.items[4].items![1].label = this.translate.instant('MENU.CONFIGURATION');
 
       this.items[5].label = this.translate.instant('MENU.SCENES');
-      this.items[5].items[0].label = this.translate.instant('MENU.SCENE_LIST');
-      this.items[5].items[1].label = this.translate.instant('MENU.SCENE_CONFIGURATION');
+      this.items[5].items![0].label = this.translate.instant('MENU.SCENE_LIST');
+      this.items[5].items![1].label = this.translate.instant('MENU.SCENE_CONFIGURATION');
       this.items[6].label = this.translate.instant('MENU.SCHEDULERS');
-      this.items[6].items[0].label = this.translate.instant('MENU.SCHEDULERS');
-      this.items[6].items[1].label = this.translate.instant('MENU.THREADS');
+      this.items[6].items![0].label = this.translate.instant('MENU.SCHEDULERS');
+      this.items[6].items![1].label = this.translate.instant('MENU.THREADS');
       this.items[7].label = this.translate.instant('MENU.LOGS');
-      this.items[7].items[0].label = this.translate.instant('MENU.LOGS_DISPLAY');
-      this.items[7].items[1].label = this.translate.instant('MENU.LOGGER_LIST');
-      this.items[7].items[2].label = this.translate.instant('MENU.CONFIGURATION');
+      this.items[7].items![0].label = this.translate.instant('MENU.LOGS_DISPLAY');
+      this.items[7].items![1].label = this.translate.instant('MENU.LOGGER_LIST');
+      this.items[7].items![2].label = this.translate.instant('MENU.CONFIGURATION');
 
       this.items[8].label = this.translate.instant('MENU.LOGIN');
     }

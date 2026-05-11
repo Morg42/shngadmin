@@ -370,7 +370,7 @@ export class PluginConfigComponent implements OnInit {
     if (meta != null && meta !== undefined && meta['parameters'] !== 'NONE') {
       for (const param in meta['parameters']) {
         if (meta['parameters'].hasOwnProperty(param)) {
-          const vl = [];
+          const vl: { label: string; value: any }[] = [];
           if (meta['parameters'][param]['valid_list'] !== undefined) {
             for (let i = 0; i < meta['parameters'][param]['valid_list'].length; i++) {
               const wrk = {
@@ -382,11 +382,8 @@ export class PluginConfigComponent implements OnInit {
           }
 
           if (meta['parameters'][param]['type'] === 'bool') {
-            let wrk = {};
-            wrk = { label: 'true', value: true };
-            vl.push(wrk);
-            wrk = { label: 'false', value: false };
-            vl.push(wrk);
+            vl.push({ label: 'true', value: true });
+            vl.push({ label: 'false', value: false });
           }
 
           let paramdesc = '';
@@ -402,7 +399,7 @@ export class PluginConfigComponent implements OnInit {
             }
           }
 
-          const paramdescBlocks = [];
+          const paramdescBlocks: string[] = [];
           paramdescBlocks.push(paramdesc);
 
           paramdesc = paramdesc.replace(new RegExp('\n', 'g'), '<br>');
@@ -538,7 +535,7 @@ export class PluginConfigComponent implements OnInit {
 
       if (
         this.parameters[i]['value'] !== null &&
-        this.parameters[i]['value'] < this.parameters[i]['valid_min']
+        (this.parameters[i]['value'] as number) < (this.parameters[i]['valid_min'] as number)
       ) {
         error_found = true;
         error_text =
@@ -555,7 +552,7 @@ export class PluginConfigComponent implements OnInit {
       }
       if (
         this.parameters[i]['value'] !== null &&
-        this.parameters[i]['value'] > this.parameters[i]['valid_max']
+        (this.parameters[i]['value'] as number) > (this.parameters[i]['valid_max'] as number)
       ) {
         error_found = true;
         error_text =

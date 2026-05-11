@@ -96,10 +96,10 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
   shng_status: string;
   status_errorcount = 0;
 
-  valid_languagelist = [];
+  valid_languagelist: { label: string; value: string }[] = [];
 
   valid_default_language = '          ';
-  selected_language = null;
+  selected_language: string | null = null;
   shng_statuscode = 0;
 
   pwd_clear = '';
@@ -114,7 +114,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
   // -----------------------------------------------------------------
   //  Vars for the codemirror components
   //
-  rulers = [];
+  rulers: { color: string; column: number; lineStyle: string }[] = [];
 
   // -----------------------------------------------------
   //  Vars for the EVAL syntax checker
@@ -313,7 +313,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
   }
 
   deleteCacheSelected() {
-    const filelist = [];
+    const filelist: string[] = [];
     for (let i = 0; i < this.cacheInfo.length; i++) {
       if (this.cacheInfo[i].checked) {
         filelist.push(this.cacheInfo[i].filename);
@@ -416,8 +416,8 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
 
   setLanguage() {
     console.log('setLanguage', this.selected_language);
-    this.appConfig.setDefaultLanguage(this.selected_language);
-    this.userPrefs.setLanguage(this.selected_language); // persist across reloads
+    this.appConfig.setDefaultLanguage(this.selected_language!);
+    this.userPrefs.setLanguage(this.selected_language!); // persist across reloads
     this.shared.setGuiLanguage();
     this.default_language = this.appConfig.defaultLanguage;
   }

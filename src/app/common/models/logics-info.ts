@@ -5,7 +5,7 @@ import { LogicsWatchItem } from './logics-watch-item';
 //
 export interface LogicsinfoType {
   crontab: any;
-  cycle: string;
+  cycle: string | null;
   enabled: boolean;
   filename: string;
   last_run: string;

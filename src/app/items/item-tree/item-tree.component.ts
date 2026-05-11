@@ -136,7 +136,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   private titleService = inject(Title);
   private appConfig = inject(AppConfigService);
 
-  monitoredItemsUpdateSubscription: Subscription = null;
+  monitoredItemsUpdateSubscription: Subscription | null = null;
 
   showItemAlert = false;
 
@@ -158,10 +158,10 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     }
   }
 
-  static htmlDecode(input) {
+  static htmlDecode(input): string {
     const e = document.createElement('div');
     e.innerHTML = input;
-    return e.childNodes.length === 0 ? '' : e.childNodes[0].nodeValue;
+    return e.childNodes.length === 0 ? '' : (e.childNodes[0].nodeValue ?? '');
   }
 
   public setTitle(newTitle: string) {
@@ -383,7 +383,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
             details.crontab = ItemTreeComponent.htmlDecode(details.crontab);
 
             if (details.type === 'bool') {
-              details.value = details.value.toLowerCase() === 'true';
+              details.value = String(details.value).toLowerCase() === 'true';
             }
             this.showDetails(details);
 

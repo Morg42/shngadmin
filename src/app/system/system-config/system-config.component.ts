@@ -104,11 +104,11 @@ export class SystemConfigComponent implements OnInit {
   pwd_rowData: ConfigParameter | null = null;
   pwd_col: string | null = null;
 
-  pwd_old: string = null;
-  pwd_new1: string = null;
-  pwd_new2: string = null;
-  pwd_hash_old: string = null;
-  pwd_hash_new: string = null;
+  pwd_old: string | null = null;
+  pwd_new1: string | null = null;
+  pwd_new2: string | null = null;
+  pwd_hash_old: string | null = null;
+  pwd_hash_new: string | null = null;
   pwd_show: boolean;
 
   pwd_old_is_empty: boolean;
@@ -187,25 +187,20 @@ export class SystemConfigComponent implements OnInit {
   //
   fillParamData(meta, param, data) {
     // fill valuelist
-    const vl = [];
+    const vl: { label: string; value: unknown }[] = [];
     if (meta['parameters'][param]['valid_list'] !== undefined) {
-      let wrk = {};
       for (let i = 0; i < meta['parameters'][param]['valid_list'].length; i++) {
-        wrk = {
+        vl.push({
           label: String(meta['parameters'][param]['valid_list'][i]),
           value: meta['parameters'][param]['valid_list'][i],
-        };
-        vl.push(wrk);
+        });
       }
     }
 
     // generate a valid_list for bool parameters
     if (meta['parameters'][param]['type'] === 'bool') {
-      let wrk: {};
-      wrk = { label: 'true', value: true };
-      vl.push(wrk);
-      wrk = { label: 'false', value: false };
-      vl.push(wrk);
+      vl.push({ label: 'true', value: true });
+      vl.push({ label: 'false', value: false });
     }
 
     // fill description with active language
@@ -480,7 +475,7 @@ export class SystemConfigComponent implements OnInit {
     }
     console.log('pwd_hash_new', this.pwd_hash_new);
 
-    this.pwd_rowData[this.pwd_col] = this.pwd_hash_new;
+    this.pwd_rowData![this.pwd_col!] = this.pwd_hash_new;
     this.pwd_change_dialog_display = false;
     this.check_values();
   }

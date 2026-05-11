@@ -178,9 +178,9 @@ export class LogicsListComponent implements OnInit {
 
   sortGroupList() {
     this.groupList.sort(function (a, b) {
-      return a.name.toLowerCase() > b.name.toLowerCase()
+      return (a.name ?? '').toLowerCase() > (b.name ?? '').toLowerCase()
         ? 1
-        : b.name.toLowerCase() > a.name.toLowerCase()
+        : (b.name ?? '').toLowerCase() > (a.name ?? '').toLowerCase()
           ? -1
           : 0;
     });

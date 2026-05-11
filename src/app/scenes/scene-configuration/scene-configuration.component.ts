@@ -58,7 +58,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
   // -----------------------------------------------------------------
   //  Vars for the codemirror components
   //
-  rulers = [];
+  rulers: { color: string; column: number; lineStyle: string }[] = [];
 
   // -----------------------------------------------------
   //  Vars for the YAML syntax checker

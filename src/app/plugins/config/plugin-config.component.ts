@@ -823,7 +823,7 @@ export class PluginConfigComponent implements OnInit {
     this.setconfig_display = false;
     this.add_display = false;
 
-    const config = { plugin_name: pluginname, plugin_enabled: false };
+    const config = { plugin_name: pluginname, plugin_enabled: true };
 
     this.spinner_display = true;
     this.spinner_header = this.translate.instant('PLUGIN.ADDING');

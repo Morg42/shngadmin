@@ -98,8 +98,6 @@ export class PluginConfigComponent implements OnInit {
   configuredplugins: ConfiguredPlugin[];
   cols: TableColumn[];
   pluginconflist: PluginsConfig;
-  restart_core_button: boolean;
-
   server_info: ServerInfo;
   lang: string;
 
@@ -647,7 +645,6 @@ export class PluginConfigComponent implements OnInit {
             if (wasNewPlugin) {
               this.loadNewPlugin(configname);
             } else {
-              this.restart_core_button = true;
               this.cdr.markForCheck();
             }
           } else {
@@ -683,7 +680,6 @@ export class PluginConfigComponent implements OnInit {
           this.reloadPluginList();
         } else {
           this.load_error = this.translate.instant('PLUGIN.LOAD_FAILED');
-          this.restart_core_button = true;
           this.dialog_display = true;
         }
       });
@@ -754,17 +750,6 @@ export class PluginConfigComponent implements OnInit {
     const fromDialog = confname === undefined;
     this.dialog_display = false;
     this._runLifecycleAction(confname ?? this.dialog_configname, 'reload', fromDialog);
-  }
-
-  restartShng() {
-    this.serverdataService
-      .restartShngServer()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((response) => {
-        const res = response as { result?: string };
-        console.log('restartShng', res.result);
-      });
-    this.restart_core_button = false;
   }
 
   // -------------------------------------------------------------------
@@ -900,7 +885,6 @@ export class PluginConfigComponent implements OnInit {
         this.spinner_display = true;
         this.spinner_header = this.translate.instant('PLUGIN.LOADCONFIG');
         this.reloadPluginList();
-        this.restart_core_button = true;
         this.cdr.markForCheck();
       } else {
         console.error('PluginConfigComponent.DeleteConfigConfirm: delete failed');

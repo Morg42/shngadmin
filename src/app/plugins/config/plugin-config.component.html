@@ -127,26 +127,6 @@
         }
       </tbody>
     </table>
-
-    @if (dialog_readonly === false && restart_core_button) {
-      <a style="font-size: small">{{ 'RESTART FOR CHANGES' | translate }}</a>
-    }
-    @if (dialog_readonly === false && !restart_core_button) {
-      <a style="font-size: small">&nbsp;</a>
-    }
-  </div>
-  <div class="body-footer">
-    <br />
-    <button
-      pButton
-      type="button"
-      class="float-sm-left btn-shng btn btn-sm ui-button-success"
-      style="float: left"
-      [disabled]="!restart_core_button"
-      (click)="restartShng()"
-      icon="fa fa-circle-notch"
-      label="{{ 'BUTTON.RESTART_SHNG' | translate }}"
-    ></button>
   </div>
 </div>
 

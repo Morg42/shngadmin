@@ -373,9 +373,13 @@
     "OPEN_BLOGS": "Open blogs articles",
     "ADDING": "Adding plugin configuration",
     "LOADING": "Loading plugin",
+    "UNLOADING": "Unloading plugin",
+    "RELOADING": "Reloading plugin",
     "CONFIGURE_AND_LOAD": "Configure and load",
     "SAVE_FAILED": "Failed to save configuration. Please check the values and try again.",
     "LOAD_FAILED": "Configuration saved, but the plugin could not be loaded. Check the parameters and use 'Restart Core' if the problem persists.",
+    "UNLOAD_FAILED": "The plugin could not be unloaded.",
+    "RELOAD_FAILED": "The plugin could not be reloaded.",
     "INVALID_HOSTNAME": "is not a valid hostname or IP address"
   },
   "SCENES": {
@@ -478,6 +482,9 @@
     "LOGOUT": "Logout",
     "CREATE_HASH": "Create Hash",
     "ADD_PLUGIN": "Add Plugin",
+    "LOAD": "Load",
+    "UNLOAD": "Unload",
+    "RELOAD": "Reload",
     "RELOAD_LOG": "Reload Log",
     "RESTART_SHNG": "Restart Core",
     "SAVE_SETTINGS": "Save Settings",

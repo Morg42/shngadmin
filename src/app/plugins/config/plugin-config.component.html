@@ -128,10 +128,12 @@
   <ng-template pTemplate="header">
     @if (is_new_plugin) {
       {{ 'PLUGIN.CONFIGURE_AND_LOAD' | translate }} <strong>{{ this.dialog_configname }}</strong> &nbsp; (Plugin
-      <strong>{{ this.dialog_pluginname }}</strong>)
+      <strong>{{ this.dialog_pluginname }}</strong
+      >)
     } @else {
       {{ 'CONFIGURATION' | translate }} <strong>{{ this.dialog_configname }}</strong> &nbsp; (Plugin
-      <strong>{{ this.dialog_pluginname }}</strong>)
+      <strong>{{ this.dialog_pluginname }}</strong
+      >)
       @if (plugin_enabled === false) {
         &nbsp; - &nbsp;<strong>{{ 'PLUGIN.PLUGIN_DISABLED' | translate }}</strong>
       }
@@ -259,6 +261,34 @@
           label="{{ 'BUTTON.DELETE' | translate }}"
           class="ui-button-danger float-sm-left"
         ></button>
+        @if (!rowclicked_foredit.loaded) {
+          <button
+            pButton
+            type="button"
+            icon="fa fa-upload"
+            (click)="loadPlugin()"
+            label="{{ 'BUTTON.LOAD' | translate }}"
+            class="ui-button-success float-sm-left"
+          ></button>
+        }
+        @if (rowclicked_foredit.loaded) {
+          <button
+            pButton
+            type="button"
+            icon="fa fa-sync"
+            (click)="reloadPlugin()"
+            label="{{ 'BUTTON.RELOAD' | translate }}"
+            class="ui-button-warning float-sm-left"
+          ></button>
+          <button
+            pButton
+            type="button"
+            icon="fa fa-eject"
+            (click)="unloadPlugin()"
+            label="{{ 'BUTTON.UNLOAD' | translate }}"
+            class="ui-button-secondary float-sm-left"
+          ></button>
+        }
       }
       <button
         pButton

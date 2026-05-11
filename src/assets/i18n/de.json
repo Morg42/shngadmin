@@ -375,9 +375,13 @@
     "OPEN_BLOGS": "Blog Artikel öffnen",
     "ADDING": "Plugin-Konfiguration wird hinzugefügt",
     "LOADING": "Plugin wird geladen",
+    "UNLOADING": "Plugin wird entladen",
+    "RELOADING": "Plugin wird neu geladen",
     "CONFIGURE_AND_LOAD": "Konfigurieren und laden",
     "SAVE_FAILED": "Konfiguration konnte nicht gespeichert werden. Bitte Werte prüfen und erneut versuchen.",
     "LOAD_FAILED": "Konfiguration wurde gespeichert, aber das Plugin konnte nicht geladen werden. Parameter prüfen und bei anhaltenden Problemen 'Core neu starten' verwenden.",
+    "UNLOAD_FAILED": "Das Plugin konnte nicht entladen werden.",
+    "RELOAD_FAILED": "Das Plugin konnte nicht neu geladen werden.",
     "INVALID_HOSTNAME": "ist kein gültiger Hostname oder eine gültige IP-Adresse"
   },
   "SCENES": {
@@ -481,6 +485,9 @@
     "LOGOUT": "Abmelden",
     "CREATE_HASH": "Hash erzeugen",
     "ADD_PLUGIN": "Plugin hinzufügen",
+    "LOAD": "Laden",
+    "UNLOAD": "Entladen",
+    "RELOAD": "Neu laden",
     "RELOAD_LOG": "Log aktualisieren",
     "RESTART_SHNG": "Core neu starten",
     "SAVE_SETTINGS": "Einstellungen sichern",

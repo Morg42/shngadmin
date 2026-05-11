@@ -47,6 +47,7 @@ export interface ConfiguredPlugin {
   instance: string;
   plugin: string;
   desc: string;
+  loaded: boolean;
 }
 
 @Component({
@@ -229,6 +230,7 @@ export class PluginConfigComponent implements OnInit {
           instance: instance,
           plugin: deprecated + plgname,
           desc: '',
+          loaded: !!this.pluginconflist.plugin_config[plg]['_loaded'],
         };
 
         let enabled = 'true';
@@ -695,6 +697,87 @@ export class PluginConfigComponent implements OnInit {
     this.is_new_plugin = false;
     this.load_error = null;
     this.save_error = null;
+  }
+
+  loadPlugin(): void {
+    const configname = this.dialog_configname;
+    this.dialog_display = false;
+    this.spinner_display = true;
+    this.spinner_header = this.translate.instant('PLUGIN.LOADING');
+
+    this.pluginsdataService
+      .setPluginState(configname, 'load')
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.spinner_display = false;
+          this.cdr.markForCheck();
+        }),
+      )
+      .subscribe((result) => {
+        if (result === true) {
+          this.load_error = null;
+          this.reloadPluginList();
+        } else {
+          this.load_error = this.translate.instant('PLUGIN.LOAD_FAILED');
+          this.dialog_display = true;
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  unloadPlugin(): void {
+    const configname = this.dialog_configname;
+    this.dialog_display = false;
+    this.spinner_display = true;
+    this.spinner_header = this.translate.instant('PLUGIN.UNLOADING');
+
+    this.pluginsdataService
+      .setPluginState(configname, 'unload')
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.spinner_display = false;
+          this.cdr.markForCheck();
+        }),
+      )
+      .subscribe((result) => {
+        if (result === true) {
+          this.load_error = null;
+          this.reloadPluginList();
+        } else {
+          this.load_error = this.translate.instant('PLUGIN.UNLOAD_FAILED');
+          this.dialog_display = true;
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  reloadPlugin(): void {
+    const configname = this.dialog_configname;
+    this.dialog_display = false;
+    this.spinner_display = true;
+    this.spinner_header = this.translate.instant('PLUGIN.RELOADING');
+
+    this.pluginsdataService
+      .setPluginState(configname, 'reload')
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.spinner_display = false;
+          this.cdr.markForCheck();
+        }),
+      )
+      .subscribe((result) => {
+        if (result === true) {
+          this.load_error = null;
+          this.reloadPluginList();
+        } else {
+          this.load_error = this.translate.instant('PLUGIN.RELOAD_FAILED');
+          this.dialog_display = true;
+          this.cdr.markForCheck();
+        }
+      });
   }
 
   restartShng() {

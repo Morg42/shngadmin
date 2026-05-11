@@ -699,14 +699,27 @@ export class PluginConfigComponent implements OnInit {
     this.save_error = null;
   }
 
-  loadPlugin(): void {
-    const configname = this.dialog_configname;
-    this.dialog_display = false;
+  private _runLifecycleAction(
+    configname: string,
+    action: 'load' | 'unload' | 'reload',
+    fromDialog: boolean,
+  ): void {
+    const spinnerKey = {
+      load: 'PLUGIN.LOADING',
+      unload: 'PLUGIN.UNLOADING',
+      reload: 'PLUGIN.RELOADING',
+    };
+    const errorKey = {
+      load: 'PLUGIN.LOAD_FAILED',
+      unload: 'PLUGIN.UNLOAD_FAILED',
+      reload: 'PLUGIN.RELOAD_FAILED',
+    };
+
     this.spinner_display = true;
-    this.spinner_header = this.translate.instant('PLUGIN.LOADING');
+    this.spinner_header = this.translate.instant(spinnerKey[action]);
 
     this.pluginsdataService
-      .setPluginState(configname, 'load')
+      .setPluginState(configname, action)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => {
@@ -719,65 +732,31 @@ export class PluginConfigComponent implements OnInit {
           this.load_error = null;
           this.reloadPluginList();
         } else {
-          this.load_error = this.translate.instant('PLUGIN.LOAD_FAILED');
-          this.dialog_display = true;
+          this.load_error = this.translate.instant(errorKey[action]);
+          if (fromDialog) {
+            this.dialog_display = true;
+          }
           this.cdr.markForCheck();
         }
       });
   }
 
-  unloadPlugin(): void {
-    const configname = this.dialog_configname;
+  loadPlugin(confname?: string): void {
+    const fromDialog = confname === undefined;
     this.dialog_display = false;
-    this.spinner_display = true;
-    this.spinner_header = this.translate.instant('PLUGIN.UNLOADING');
-
-    this.pluginsdataService
-      .setPluginState(configname, 'unload')
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        finalize(() => {
-          this.spinner_display = false;
-          this.cdr.markForCheck();
-        }),
-      )
-      .subscribe((result) => {
-        if (result === true) {
-          this.load_error = null;
-          this.reloadPluginList();
-        } else {
-          this.load_error = this.translate.instant('PLUGIN.UNLOAD_FAILED');
-          this.dialog_display = true;
-          this.cdr.markForCheck();
-        }
-      });
+    this._runLifecycleAction(confname ?? this.dialog_configname, 'load', fromDialog);
   }
 
-  reloadPlugin(): void {
-    const configname = this.dialog_configname;
+  unloadPlugin(confname?: string): void {
+    const fromDialog = confname === undefined;
     this.dialog_display = false;
-    this.spinner_display = true;
-    this.spinner_header = this.translate.instant('PLUGIN.RELOADING');
+    this._runLifecycleAction(confname ?? this.dialog_configname, 'unload', fromDialog);
+  }
 
-    this.pluginsdataService
-      .setPluginState(configname, 'reload')
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        finalize(() => {
-          this.spinner_display = false;
-          this.cdr.markForCheck();
-        }),
-      )
-      .subscribe((result) => {
-        if (result === true) {
-          this.load_error = null;
-          this.reloadPluginList();
-        } else {
-          this.load_error = this.translate.instant('PLUGIN.RELOAD_FAILED');
-          this.dialog_display = true;
-          this.cdr.markForCheck();
-        }
-      });
+  reloadPlugin(confname?: string): void {
+    const fromDialog = confname === undefined;
+    this.dialog_display = false;
+    this._runLifecycleAction(confname ?? this.dialog_configname, 'reload', fromDialog);
   }
 
   restartShng() {

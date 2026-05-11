@@ -5,7 +5,6 @@ import {
   EventEmitter,
   inject,
   Input,
-  OnInit,
   Output,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -21,7 +20,7 @@ import { Select } from 'primeng/select';
 import { LoggersType } from '../../common/models/loggers-info';
 
 @Component({
-  selector: 'logger-line',
+  selector: 'app-logger-line',
   templateUrl: './logger-line.component.html',
   styleUrls: ['./logger-line.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,7 +37,7 @@ import { LoggersType } from '../../common/models/loggers-info';
     TranslatePipe,
   ],
 })
-export class LoggerLineComponent implements OnInit {
+export class LoggerLineComponent {
   @Input() loggerName: string;
   @Input() logger: LoggersType;
   @Input() loggerActive: boolean;
@@ -75,8 +74,6 @@ export class LoggerLineComponent implements OnInit {
   handlersChangeEnabled = false;
 
   private readonly cdr = inject(ChangeDetectorRef);
-
-  ngOnInit() {}
 
   getParent(logger) {
     const parts = logger.split('.');

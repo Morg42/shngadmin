@@ -42,7 +42,7 @@
                   @if (l.startsWith('logics.') || l === 'logics') {
                     @if (loggers[l].level !== undefined) {
                       <tr>
-                        <logger-line
+                        <app-logger-line
                           [loggerName]="l"
                           [logger]="loggers[l]"
                           [loggerActive]="logic_loaded(l)"
@@ -50,7 +50,7 @@
                           (levelChange)="levelChanged(l, $event)"
                           (loggerDelete)="loggerDelete(l)"
                           (modifyHandlers)="modifyHandlers(l, $event)"
-                        ></logger-line>
+                        ></app-logger-line>
                       </tr>
                     }
                   }
@@ -92,14 +92,14 @@
                   @if (l.startsWith('plugins.') || l === 'plugins') {
                     @if (loggers[l].level !== undefined) {
                       <tr>
-                        <logger-line
+                        <app-logger-line
                           [loggerName]="l"
                           [logger]="loggers[l]"
                           [loggerActive]="plugin_loaded(l)"
                           [definedHandlers]="definedHandlers"
                           (levelChange)="levelChanged(l, $event)"
                           (loggerDelete)="loggerDelete(l)"
-                        ></logger-line>
+                        ></app-logger-line>
                       </tr>
                     }
                   }
@@ -141,14 +141,14 @@
                   @if (l.startsWith('items.') || l === 'items') {
                     @if (loggers[l].level !== undefined) {
                       <tr>
-                        <logger-line
+                        <app-logger-line
                           [loggerName]="l"
                           [logger]="loggers[l]"
                           [loggerActive]="true"
                           [definedHandlers]="definedHandlers"
                           (levelChange)="levelChanged(l, $event)"
                           (loggerDelete)="loggerDelete(l)"
-                        ></logger-line>
+                        ></app-logger-line>
                       </tr>
                     }
                   }
@@ -188,14 +188,14 @@
               <tbody>
                 @if (loggers !== undefined) {
                   <tr>
-                    <logger-line
+                    <app-logger-line
                       [loggerName]="'root'"
                       [logger]="loggers['root']"
                       [loggerActive]="true"
                       [definedHandlers]="definedHandlers"
                       (levelChange)="levelChanged('root', $event)"
                       (loggerDelete)="loggerDelete('root')"
-                    ></logger-line>
+                    ></app-logger-line>
                   </tr>
                 }
 
@@ -211,14 +211,14 @@
                   ) {
                     @if (loggers[l].level !== undefined) {
                       <tr>
-                        <logger-line
+                        <app-logger-line
                           [loggerName]="l"
                           [logger]="loggers[l]"
                           [loggerActive]="true"
                           [definedHandlers]="definedHandlers"
                           (levelChange)="levelChanged(l, $event)"
                           (loggerDelete)="loggerDelete(l)"
-                        ></logger-line>
+                        ></app-logger-line>
                       </tr>
                     }
                   }
@@ -265,14 +265,14 @@
                   ) {
                     @if (loggers[l].level !== undefined) {
                       <tr>
-                        <logger-line
+                        <app-logger-line
                           [loggerName]="l"
                           [logger]="loggers[l]"
                           [loggerActive]="true"
                           [definedHandlers]="definedHandlers"
                           (levelChange)="levelChanged(l, $event)"
                           (loggerDelete)="loggerDelete(l)"
-                        ></logger-line>
+                        ></app-logger-line>
                       </tr>
                     }
                   }

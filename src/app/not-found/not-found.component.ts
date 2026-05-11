@@ -1,11 +1,5 @@
 import { NgOptimizedImage } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  inject,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
@@ -15,8 +9,4 @@ import { TranslatePipe } from '@ngx-translate/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgOptimizedImage, TranslatePipe],
 })
-export class NotFoundComponent implements OnInit {
-  private readonly cdr = inject(ChangeDetectorRef);
-
-  ngOnInit() {}
-}
+export class NotFoundComponent {}

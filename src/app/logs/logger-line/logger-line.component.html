@@ -93,7 +93,7 @@
   }
   @for (fn of logger.active.logfiles; track i; let i = $index) {
     <a class="text-shng" [routerLink]="['/logs/display', this.baseName(fn)]">{{ this.baseName(fn) }}</a>
-    @if (fn !== '' && i < logger.active.logfiles.length - 1 && logger.active.logfiles[i + 1] != '') {
+    @if (fn !== '' && i < logger.active.logfiles.length - 1 && logger.active.logfiles[i + 1] !== '') {
       ,<br />
     }
   }

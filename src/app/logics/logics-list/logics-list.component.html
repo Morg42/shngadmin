@@ -232,7 +232,7 @@
                                 }
                               }
                             }
-                            @if (userlogics.length == 0) {
+                            @if (userlogics.length === 0) {
                               <tr>
                                 <td colspan="8">{{ 'LOGICS.NO_DATA' | translate }}</td>
                               </tr>
@@ -265,7 +265,7 @@
                 }
 
                 <tbody>
-                  @if (userlogics.length == 0) {
+                  @if (userlogics.length === 0) {
                     <tr>
                       <td colspan="8">{{ 'LOGICS.NO_DATA' | translate }}</td>
                     </tr>
@@ -311,7 +311,7 @@
                           }
                         </td>
                         <td class="p-1">
-                          @if (logic.filename != '') {
+                          @if (logic.filename !== '') {
                             <button
                               name="add"
                               title="{{ 'LOGICS.ADD' | translate }}"
@@ -513,7 +513,7 @@
                       }
                     }
                   }
-                  @if (userlogics.length == 0) {
+                  @if (userlogics.length === 0) {
                     <tr>
                       <td colspan="8">{{ 'LOGICS.NO_DATA' | translate }}</td>
                     </tr>
@@ -555,7 +555,7 @@
                           }
                         </td>
                         <td class="p-1">
-                          @if (logic.filename != '') {
+                          @if (logic.filename !== '') {
                             <button
                               name="add"
                               title="{{ 'LOGICS.ADD' | translate }}"
@@ -633,7 +633,7 @@
                     }
                   }
                 }
-                @if (systemlogics.length == 0) {
+                @if (systemlogics.length === 0) {
                   <tr>
                     <td colspan="8">{{ 'LOGICS.NO_DATA' | translate }}</td>
                   </tr>

@@ -32,7 +32,6 @@ import { TableModule } from 'primeng/table';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { DynamicFieldComponent } from '../../common/components/dynamic-field/dynamic-field.component';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SystemConfig = any;
 
 @Component({
@@ -96,7 +95,6 @@ export class SystemConfigComponent implements OnInit {
   data_changed = false;
   restart_core_button = false;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   rowclicked_foredit: any = false;
   dialog_readonly = false;
 

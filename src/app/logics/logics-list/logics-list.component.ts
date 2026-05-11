@@ -80,9 +80,9 @@ export class LogicsListComponent implements OnInit {
   groupExpanded: number[] = [];
   nogroups: boolean;
   logics: LogicsinfoType[];
-  userlogics: LogicsinfoType[];
-  systemlogics: LogicsinfoType[];
-  newlogics: LogicsinfoType[];
+  userlogics: LogicsinfoType[] = [];
+  systemlogics: LogicsinfoType[] = [];
+  newlogics: LogicsinfoType[] = [];
 
   showLogicDetails = false;
   selectedLogicWatchItems: LogicsWatchItem[] = [];

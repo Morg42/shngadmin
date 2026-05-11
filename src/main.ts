@@ -61,6 +61,8 @@ const ShngPreset = definePreset(Aura, {
 
 if (environment.production) {
   enableProdMode();
+  console.log = () => {};
+  console.debug = () => {};
 }
 
 bootstrapApplication(AppComponent, {

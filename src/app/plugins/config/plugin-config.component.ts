@@ -722,9 +722,9 @@ export class PluginConfigComponent implements OnInit {
   selectPlugin(iplugin) {
     console.warn({ iplugin });
     this.selected_plugin = iplugin;
-    this.pluginconfig_name = '';
+    this.pluginconfig_name = iplugin;
     this.translate_params = { selected_plugin: this.selected_plugin };
-    this.add_enabled = false;
+    this.checkInput();
 
     this.setconfig_display = true;
   }

@@ -834,17 +834,7 @@ export class PluginConfigComponent implements OnInit {
       .subscribe((response) => {
         if (response === true) {
           this.spinner_header = this.translate.instant('PLUGIN.LOADCONFIG');
-          this.reloadPluginList(() => {
-            const newEntry = this.configuredplugins.find((p) => p.confname === configname);
-            if (newEntry) {
-              this.is_new_plugin = true;
-              this.load_error = null;
-              this.save_error = null;
-              this.rowClicked(null, newEntry);
-              // enable by default for new plugins so "Save & Load" works immediately
-              this.plugin_enabled = true;
-            }
-          });
+          this.reloadPluginList();
         } else {
           this.spinner_display = false;
           this.cdr.markForCheck();

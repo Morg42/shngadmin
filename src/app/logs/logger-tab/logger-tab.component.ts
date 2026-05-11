@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  inject,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'app-logger-tab',
@@ -13,8 +7,4 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [],
 })
-export class LoggerTabComponent implements OnInit {
-  private readonly cdr = inject(ChangeDetectorRef);
-
-  ngOnInit() {}
-}
+export class LoggerTabComponent {}

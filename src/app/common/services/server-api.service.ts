@@ -1,5 +1,5 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Inject, Injectable, inject } from '@angular/core';
+import { Injectable, InjectionToken, inject } from '@angular/core';
 
 import { of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
@@ -20,17 +20,17 @@ export class ServerApiService {
   private appConfig = inject(AppConfigService);
   private userPrefs = inject(UserPreferencesService);
 
+  private baseUrl = inject<string>('BASE_URL' as unknown as InjectionToken<string>);
+
   shng_serverinfo: ServerInfo = <ServerInfo>{ itemtree_fullpath: true };
 
-  constructor(@Inject('BASE_URL') baseUrl: string) {
-    console.log('ServerApiService.constructor für baseUrl', baseUrl);
-
-    const hostIp = new URL(baseUrl).hostname;
+  constructor() {
+    const hostIp = new URL(this.baseUrl).hostname;
     const apiUrl = '/api/';
 
     this.appConfig.patch({
       apiUrl,
-      dataUrl: baseUrl,
+      dataUrl: this.baseUrl,
       hostIp,
     });
 

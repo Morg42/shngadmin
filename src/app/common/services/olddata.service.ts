@@ -1,6 +1,6 @@
 //import {APP_BASE_HREF} from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Inject, Injectable, OnInit, inject } from '@angular/core';
+import { Injectable, InjectionToken, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { take } from 'rxjs/operators';
 //import {SystemInfo} from '../models/system-info';
@@ -13,32 +13,20 @@ let host_ip: string = '';
 @Injectable({
   providedIn: 'root',
 })
-export class OlddataService implements OnInit {
+export class OlddataService {
   private http = inject(HttpClient);
   private translate = inject(TranslateService);
-
-  baseUrl: string;
+  baseUrl = inject<string>('BASE_URL' as unknown as InjectionToken<string>);
 
   href = '';
 
-  constructor(@Inject('BASE_URL') baseUrl: string) {
-    console.log('OlddataService.constructor:');
-
-    // this language will be used as a fallback when a translation isn't found in the current language
+  constructor() {
     this.translate.setDefaultLang('en');
-
-    console.log('OlddataService.constructor using ', { baseUrl });
-    this.baseUrl = baseUrl;
 
     if (host_ip === '') {
       host_ip = location.host;
-      url_start = (baseUrl.endsWith('/') ? baseUrl : baseUrl + '/') + 'admin/';
-      console.log('OlddataService.constructor ', { url_start }, { host_ip });
+      url_start = (this.baseUrl.endsWith('/') ? this.baseUrl : this.baseUrl + '/') + 'admin/';
     }
-  }
-
-  ngOnInit() {
-    console.log('OlddataService.ngOnInit:');
   }
   getSysteminfo() {
     const url = url_start + 'systeminfo.json\\';

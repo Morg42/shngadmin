@@ -25,7 +25,7 @@ export class OlddataService {
 
     if (host_ip === '') {
       host_ip = location.host;
-      url_start = (this.baseUrl.endsWith('/') ? this.baseUrl : this.baseUrl + '/') + 'admin/';
+      url_start = this.baseUrl.endsWith('/') ? this.baseUrl : this.baseUrl + '/'; // + 'admin/';
     }
   }
   getSysteminfo() {

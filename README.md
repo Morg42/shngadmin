@@ -1,17 +1,15 @@
 # shngadmin
-Admin interface for SmartHomeNG - EXPERIMENTAL - Source code for the Angular App which is included in the admin-module of SmartHomeNG
 
+Admin interface for SmartHomeNG — Angular app included in the admin module of SmartHomeNG.
 
 ---
 
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 20.x.
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.0.1.
+### Node.js requirement
 
-### --> The installed/used version of node.js is v12.20.0 (check with 'nvm current' command)
-
-If the actually used version of node does not match the requirements, change it
-with the 'nvm use <version>' command -> 'nvm use 12'
-
+Node.js 22 or later is required. Check the active version with `node --version`.
+If needed, switch versions with `nvm use 22`.
 
 ## Development server
 
@@ -23,39 +21,22 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. 
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-Use the `--prod` flag for a production build.
+For a production build targeting the admin module:
 
-### --> ng build --prod --aot --base-href /admin/
+```
+ng build --configuration production --base-href /admin/
+```
 
-afterwards copy the content (files and subdirectories) of shngadmin/dist (the directory **static**) to the admin module of SmartHomeNG in the directory **webif**. Clear all existing files and 
-folders within modules/admin/webif/static and copy the files that were just created by ng build to the modules/admin/webif/static folder.
+Afterwards copy the content of `dist/` (the directory **static**) to the admin module of SmartHomeNG at `modules/admin/webif/static`. Clear all existing files and folders there before copying.
 
-Afterwards commint and push the changes you just made to the admin module to the smarthome repository.
+Then commit and push the changes to the smarthome repository.
 
 ## Running unit tests
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).\
-Run `npm run e2e` to execute the tests via [Cypress](https://www.cypress.io/.)
-
-## Create a component
-
-Run 'ng generate component new_comp' to create a new component
-
-### --> ng generate component logics/logics-new-comp
-
-
-## Hints
-
-### Re-Render
-
-https://stackoverflow.com/questions/50383003/how-to-re-render-a-component-manually-angular-5
+Run `ng test` to execute the unit tests via [Jest](https://jestjs.io/).
 
 ## Further help
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+To get more help on the Angular CLI use `ng help` or check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

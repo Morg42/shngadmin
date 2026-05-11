@@ -370,7 +370,13 @@
     "OPEN_DOC": "Open plugin documentation",
     "OPEN_ADDITIONAL": "Open additional plugin dokumentation",
     "OPEN_SUPPORT_THREAD": "Open support thread",
-    "OPEN_BLOGS": "Open blogs articles"
+    "OPEN_BLOGS": "Open blogs articles",
+    "ADDING": "Adding plugin configuration",
+    "LOADING": "Loading plugin",
+    "CONFIGURE_AND_LOAD": "Configure and load",
+    "SAVE_FAILED": "Failed to save configuration. Please check the values and try again.",
+    "LOAD_FAILED": "Configuration saved, but the plugin could not be loaded. Check the parameters and use 'Restart Core' if the problem persists.",
+    "INVALID_HOSTNAME": "is not a valid hostname or IP address"
   },
   "SCENES": {
     "SCENE": "Scene",

@@ -367,7 +367,13 @@
     "OPEN_DOC": "Ouvrir documentation de l'extension",
     "OPEN_ADDITIONAL": "Ouvrir la documentation supplémentaire du plugin",
     "OPEN_SUPPORT_THREAD": "Ouvrir fil de support",
-    "OPEN_BLOGS": "Ouvrir Articles de blogs"
+    "OPEN_BLOGS": "Ouvrir Articles de blogs",
+    "ADDING": "Ajout de la configuration du plugin",
+    "LOADING": "Chargement du plugin",
+    "CONFIGURE_AND_LOAD": "Configurer et charger",
+    "SAVE_FAILED": "Échec de l'enregistrement de la configuration. Vérifiez les valeurs et réessayez.",
+    "LOAD_FAILED": "Configuration enregistrée, mais le plugin n'a pas pu être chargé. Vérifiez les paramètres et utilisez 'Redémarrer le core' si le problème persiste.",
+    "INVALID_HOSTNAME": "n'est pas un nom d'hôte ou une adresse IP valide"
   },
   "SCENES": {
     "SCENE": "Scène",

@@ -156,13 +156,9 @@ export class PluginsApiService {
         if (result) {
           // console.log('PluginsApiService.setPluginConfig', '- config', config, '\nresult', {result});
           if (result.result === 'ok') {
-            // console.log('PluginsApiService.setPluginConfig', 'success');
             return true;
           } else {
-            console.log('PluginsApiService.setPluginConfig', 'fail');
-            alert(
-              'PluginsApiService.setPluginConfig:\n' + result.result + '\n' + result.description,
-            );
+            console.error('PluginsApiService.setPluginConfig failed:', result.result, result.description);
             return false;
           }
         } else {
@@ -197,16 +193,10 @@ export class PluginsApiService {
             result,
           });
           if (result.result === 'ok') {
-            console.log('PluginsApiService.addPluginConfig', 'success');
             return true;
-            //              return result;
           } else {
-            console.log('PluginsApiService.addPluginConfig', 'fail');
-            alert(
-              'PluginsApiService.addPluginConfig:\n' + result.result + '\n' + result.description,
-            );
+            console.error('PluginsApiService.addPluginConfig failed:', result.result, result.description);
             return false;
-            //              return result;
           }
         } else {
           console.log('PluginsApiService.addPluginConfig', 'fail: undefined result');
@@ -244,16 +234,10 @@ export class PluginsApiService {
             { result },
           );
           if (result.result === 'ok') {
-            console.log('PluginsApiService.deletePluginConfig', 'success');
             return true;
-            //              return result;
           } else {
-            console.log('PluginsApiService.deletePluginConfig', 'fail');
-            alert(
-              'PluginsApiService.addPluginConfig:\n' + result.result + '\n' + result.description,
-            );
+            console.error('PluginsApiService.deletePluginConfig failed:', result.result, result.description);
             return false;
-            //              return result;
           }
         } else {
           console.log('PluginsApiService.deletePluginConfig', 'fail: undefined result');
@@ -290,13 +274,9 @@ export class PluginsApiService {
         if (result) {
           // console.log('PluginsApiService.setPluginState', '- config', config, '\nresult', {result});
           if (result.result === 'ok') {
-            // console.log('PluginsApiService.setPluginState', 'success');
             return true;
           } else {
-            console.log('PluginsApiService.setPluginState', 'fail');
-            alert(
-              'PluginsApiService.setPluginState:\n' + result.result + '\n' + result.description,
-            );
+            console.error('PluginsApiService.setPluginState failed:', result.result, result.description);
             return false;
           }
         } else {

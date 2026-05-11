@@ -108,9 +108,6 @@
       icon="fa fa-circle-notch"
       label="{{ 'BUTTON.RESTART_SHNG' | translate }}"
     ></button>
-    <!--
-    <button pButton type="button" class="float-sm-right btn-shng btn btn-sm" style="float: left; margin-left: 0px; margin-top: 5px; margin-bottom: 10px; font-size: medium;" [disabled]="!restart_core_button" (click)="restartShng()" icon="fa fa-circle-notch" label="{{'BUTTON.RESTART_SHNG'|translate}}" class="ui-button-success"></button>
--->
   </div>
 </div>
 
@@ -129,11 +126,15 @@
   [style]="{ minWidth: '600px', minHeight: '300px', maxHeight: '98%' }"
 >
   <ng-template pTemplate="header">
-    {{ 'CONFIGURATION' | translate }} <strong>{{ this.dialog_configname }}</strong> &nbsp; (Plugin
-    <strong>{{ this.dialog_pluginname }}</strong
-    >)
-    @if (plugin_enabled === false) {
-      &nbsp; - &nbsp;<strong>{{ 'PLUGIN.PLUGIN_DISABLED' | translate }}</strong>
+    @if (is_new_plugin) {
+      {{ 'PLUGIN.CONFIGURE_AND_LOAD' | translate }} <strong>{{ this.dialog_configname }}</strong> &nbsp; (Plugin
+      <strong>{{ this.dialog_pluginname }}</strong>)
+    } @else {
+      {{ 'CONFIGURATION' | translate }} <strong>{{ this.dialog_configname }}</strong> &nbsp; (Plugin
+      <strong>{{ this.dialog_pluginname }}</strong>)
+      @if (plugin_enabled === false) {
+        &nbsp; - &nbsp;<strong>{{ 'PLUGIN.PLUGIN_DISABLED' | translate }}</strong>
+      }
     }
   </ng-template>
 
@@ -220,13 +221,6 @@
                     </div>
                   }
                 }
-                <!--
-              @if (typeof rowData[col.field]  !== 'string') {
-                @for (bl of col.field; track $index) {
-                  {{ bl }}}
-                }
-              }
--->
               }
             </td>
           }
@@ -243,31 +237,42 @@
 
   <ng-template pTemplate="footer">
     @if (dialog_readonly === false) {
-      <a style="font-size: small">{{ 'RESTART FOR CHANGES' | translate }}&nbsp; &nbsp; &nbsp;</a>
-      <!--
-      <button pButton type="button" icon="fa fa-trash-alt" (click)="deleteConfigComponent.delete(dialog_configname)" label="{{'BUTTON.DELETE'|translate}}" class="ui-button-danger float-sm-left"></button>
--->
-      <button
-        pButton
-        type="button"
-        icon="fa fa-trash-alt"
-        (click)="DeleteConfig()"
-        label="{{ 'BUTTON.DELETE' | translate }}"
-        class="ui-button-danger float-sm-left"
-      ></button>
+      @if (save_error) {
+        <span style="color: var(--shng-danger); font-size: small; margin-right: 1rem">
+          <i class="fa fa-exclamation-triangle"></i>&nbsp;{{ save_error }}
+        </span>
+      }
+      @if (load_error) {
+        <span style="color: var(--shng-danger); font-size: small; margin-right: 1rem">
+          <i class="fa fa-exclamation-triangle"></i>&nbsp;{{ load_error }}
+        </span>
+      }
+      @if (!is_new_plugin && !load_error) {
+        <a style="font-size: small">&nbsp; &nbsp; &nbsp;</a>
+      }
+      @if (!is_new_plugin) {
+        <button
+          pButton
+          type="button"
+          icon="fa fa-trash-alt"
+          (click)="DeleteConfig()"
+          label="{{ 'BUTTON.DELETE' | translate }}"
+          class="ui-button-danger float-sm-left"
+        ></button>
+      }
       <button
         pButton
         type="button"
         icon="fa fa-check"
         (click)="saveConfig()"
-        label="{{ 'BUTTON.SAVE' | translate }}"
+        label="{{ (is_new_plugin ? 'BUTTON.SAVE_LOAD' : 'BUTTON.SAVE') | translate }}"
         class="ui-button-success"
       ></button>
       <button
         pButton
         type="button"
         icon="fa fa-times"
-        (click)="dialog_display = false"
+        (click)="closeDialog()"
         label="{{ 'BUTTON.ABORT' | translate }}"
         class="ui-button-secondary"
       ></button>
@@ -331,9 +336,6 @@
 >
   <ng-template pTemplate="header">
     {{ 'PLUGIN.ADD' | translate }}
-    @if (plugin_enabled === false) {
-      &nbsp; - &nbsp;<strong>{{ 'PLUGIN.PLUGIN_DISABLED' | translate }}</strong>
-    }
   </ng-template>
 
   <p-accordion [multiple]="true">
@@ -346,9 +348,6 @@
           >
         </p-accordion-header>
         <p-accordion-content>
-          <!--
-          <table class="table table-striped table-hover" [columns]="cols" [value]="configuredplugins" selectionMode="single">
-        -->
           <table class="table table-striped table-hover">
             <colgroup>
               <col minwidth="200px" />
@@ -409,24 +408,15 @@
     }
   </p-accordion>
 
-  @if (dialog_readonly === false) {
-    <a style="font-size: small">{{ 'RESTART FOR CHANGES' | translate }}</a>
-  }
-
   <ng-template pTemplate="footer">
-    @if (dialog_readonly === false) {
-      <!--
-      <button pButton type="button" icon="pi pi-check" (click)="this.saveConfig()" label="{{'BUTTON.SAVE'|translate}}" class="ui-button-success"></button>
--->
-      <button
-        pButton
-        type="button"
-        icon="pi pi-times"
-        (click)="add_display = false"
-        label="{{ 'BUTTON.CLOSE' | translate }}"
-        class="ui-button-secondary"
-      ></button>
-    }
+    <button
+      pButton
+      type="button"
+      icon="pi pi-times"
+      (click)="add_display = false"
+      label="{{ 'BUTTON.CLOSE' | translate }}"
+      class="ui-button-secondary"
+    ></button>
   </ng-template>
 </p-dialog>
 
@@ -452,9 +442,6 @@
 >
   <ng-template pTemplate="header">
     {{ 'PLUGIN.NAME_CONFIGURATION' | translate: translate_params }}
-    @if (plugin_enabled === false) {
-      &nbsp; - &nbsp;<strong>{{ 'PLUGIN.PLUGIN_DISABLED' | translate }}</strong>
-    }
   </ng-template>
 
   <br />
@@ -472,31 +459,26 @@
 
   <br />
   <br />
-  @if (dialog_readonly === false) {
-    <a style="font-size: small">{{ 'RESTART FOR CHANGES' | translate }}</a>
-  }
   <ng-template pTemplate="footer">
-    @if (dialog_readonly === false) {
-      <button
-        pButton
-        type="button"
-        icon="pi pi-check"
-        (click)="this.addPlugin()"
-        [disabled]="!this.add_enabled"
-        (disabledChange)="this.add_enabled = $event"
-        label="{{ 'BUTTON.ADD' | translate }}"
-        class="ui-button-success"
-        autofocus
-      ></button>
-      <button
-        pButton
-        type="button"
-        icon="pi pi-times"
-        (click)="setconfig_display = false"
-        label="{{ 'BUTTON.ABORT' | translate }}"
-        class="ui-button-secondary"
-      ></button>
-    }
+    <button
+      pButton
+      type="button"
+      icon="pi pi-check"
+      (click)="this.addPlugin()"
+      [disabled]="!this.add_enabled"
+      (disabledChange)="this.add_enabled = $event"
+      label="{{ 'BUTTON.ADD' | translate }}"
+      class="ui-button-success"
+      autofocus
+    ></button>
+    <button
+      pButton
+      type="button"
+      icon="pi pi-times"
+      (click)="setconfig_display = false"
+      label="{{ 'BUTTON.ABORT' | translate }}"
+      class="ui-button-secondary"
+    ></button>
   </ng-template>
 </p-dialog>
 

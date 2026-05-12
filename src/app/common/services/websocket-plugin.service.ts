@@ -185,7 +185,13 @@ export class WebsocketPluginService {
 
     this.msgSubscription = this.websocketService.messages$.subscribe({
       next: (msg) => {
-        const data = JSON.parse(msg.data);
+        let data: Message;
+        try {
+          data = JSON.parse(msg.data);
+        } catch (e) {
+          console.warn('WebsocketPluginService: failed to parse message', msg.data, e);
+          return;
+        }
         if (data.cmd === 'item') {
           this.handleResponseItem(data);
         } else if (data.cmd === 'series') {

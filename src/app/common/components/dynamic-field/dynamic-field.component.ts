@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Bind } from 'primeng/bind';
 import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
+import { ConfigParameter, TableColumn } from '../../models/interfaces';
 
 @Component({
   selector: 'app-dynamic-field',
@@ -11,16 +12,16 @@ import { Select } from 'primeng/select';
   imports: [Bind, Select, FormsModule, InputText, NgStyle],
 })
 export class DynamicFieldComponent {
-  @Input() row: any;
-  @Input() col: any;
+  @Input() row: ConfigParameter;
+  @Input() col: TableColumn;
   @Output() changed = new EventEmitter<void>();
 
   readonly NUM_TYPES = ['int', 'num', 'float', 'scene', 'hide-int'];
 
   get inputKind(): string {
     const { type, gui_type, valid_list } = this.row;
-    if (valid_list?.length > 0) return 'select';
-    if (this.NUM_TYPES.includes(type)) return 'number';
+    if ((valid_list?.length ?? 0) > 0) return 'select';
+    if (type && this.NUM_TYPES.includes(type)) return 'number';
     if (type === 'hide-str') return 'password';
     if (type === 'bool' || type === 'password') return 'none';
     if (gui_type === 'readonly') return 'text-readonly';

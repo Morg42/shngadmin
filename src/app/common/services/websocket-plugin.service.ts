@@ -20,10 +20,10 @@ export interface Message {
   ver?: string;
   browser?: string;
   bver?: string;
-  rawdata: any;
+  rawdata: unknown;
 }
 
-type SeriesCallback = (series: any) => void;
+type SeriesCallback = (series: unknown) => void;
 
 // ------------------------------------------------------------------
 
@@ -227,7 +227,7 @@ export class WebsocketPluginService {
     this.monitoredItems.next();
   }
 
-  sendMessage(message: any) {
+  sendMessage(message: unknown) {
     this.websocketService.sendMessage(message);
   }
 

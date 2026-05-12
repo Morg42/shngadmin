@@ -2,7 +2,7 @@
 // PrimeNG
 //
 export interface TreeNode {
-  data?: any;
+  data?: unknown;
   children?: TreeNode[];
   leaf?: boolean;
   expanded?: boolean;
@@ -19,6 +19,8 @@ export interface ConfigParameter {
   value: unknown;
   default?: unknown;
   type?: string;
+  gui_type?: string;
+  valid_list?: unknown[];
   description?: string;
   [key: string]: unknown;
 }

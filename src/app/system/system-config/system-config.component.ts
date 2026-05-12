@@ -117,7 +117,6 @@ export class SystemConfigComponent implements OnInit {
   data_changed = false;
   restart_core_button = false;
 
-  rowclicked_foredit: any = false;
   dialog_readonly = false;
 
   pwd_change_dialog_display = false;

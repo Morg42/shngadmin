@@ -9,7 +9,7 @@ export interface SchedulerInfo {
   cron: string;
   prio: number;
   active: boolean;
-  value: any;
+  value: unknown;
   by: string;
   task_type: string;
   task_name: string;

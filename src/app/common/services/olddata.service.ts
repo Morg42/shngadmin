@@ -1,74 +1,32 @@
-//import {APP_BASE_HREF} from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Injectable, InjectionToken, inject } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { Injectable, inject } from '@angular/core';
 import { take } from 'rxjs/operators';
-//import {SystemInfo} from '../models/system-info';
-// import {ServerInfo} from '../models/server-info';
-
-let url_start: string = 'http://';
-let host_ip: string = '';
-// let shng_serverinfo: ServerInfo = <ServerInfo>{'itemtree_fullpath': true};
 
 @Injectable({
   providedIn: 'root',
 })
 export class OlddataService {
   private http = inject(HttpClient);
-  private translate = inject(TranslateService);
-  baseUrl = inject<string>('BASE_URL' as unknown as InjectionToken<string>);
 
-  href = '';
-
-  constructor() {
-    this.translate.setDefaultLang('en');
-
-    if (host_ip === '') {
-      host_ip = location.host;
-      url_start = this.baseUrl.endsWith('/') ? this.baseUrl : this.baseUrl + '/'; // + 'admin/';
-    }
-  }
   getSysteminfo() {
-    const url = url_start + 'systeminfo.json\\';
-    console.log('OlddataService.getSysteminfo: url: ' + url);
-    return this.http.get(url);
+    return this.http.get('/admin/systeminfo.json');
   }
 
   getPypiinfo() {
-    const url = url_start + 'pypi.json\\';
-    console.log('OlddataService.getPypiinfo: url: ' + url);
-    return this.http.get(url);
+    return this.http.get('/admin/pypi.json');
   }
 
-  // --------------------------------------------------------------------------
-
   getItemtree() {
-    const url = url_start + 'items.json\\';
-    console.log('OlddataService.getItemtree: url: ' + url);
-    return this.http.get(url);
+    return this.http.get('/admin/items.json');
   }
 
   getItemDetails(itempath: string) {
-    //    const url = this.url_start + 'item_detail_json.html?item_path=';
-    //    const url = 'http://10.0.0.174:1234/admin/item_detail_json.html?item_path=beoremote';
-
-    const url = url_start + 'item_detail_json.html?item_path=' + itempath;
-    console.log('OlddataService.getItemDetails: url: ' + url);
-    console.log('OlddataService.getItemDetails: itempath: ' + itempath);
-    return this.http.get(url);
+    return this.http.get('/admin/item_detail_json.html?item_path=' + itempath);
   }
 
-  // --------------------------------
-  //  Change value of specified item
-  //
   changeItemValue(itempath: string, value: string | number | boolean) {
     const url =
-      url_start +
-      'item_change_value.html?item_path=' +
-      itempath +
-      '&value=' +
-      encodeURIComponent(value);
-    console.log('OlddataService.changeItemValue: url: ' + url);
+      '/admin/item_change_value.html?item_path=' + itempath + '&value=' + encodeURIComponent(value);
     this.http
       .get(url)
       .pipe(take(1))

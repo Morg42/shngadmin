@@ -86,13 +86,19 @@ export class AppConfigService {
   }
 
   /**
-   * Emits once as soon as apiUrl is set (i.e. the service is bootstrapped).
+   * Emits once as soon as apiUrl is set (ServerApiService constructor ran).
    * Callers can await this before making their first HTTP call.
    */
   get ready$(): Observable<AppConfig> {
-    return this._config$.pipe(
-      filter((cfg) => cfg.apiUrl !== DEFAULT_CONFIG.apiUrl || cfg.hostIp !== ''),
-    );
+    return this._config$.pipe(filter((cfg) => cfg.apiUrl !== ''));
+  }
+
+  /**
+   * Emits once after the first /api/server response has patched wsPort.
+   * Use in route guards to delay navigation until full server config is known.
+   */
+  get serverReady$(): Observable<AppConfig> {
+    return this._config$.pipe(filter((cfg) => cfg.wsPort !== ''));
   }
 
   // ----------------------------------------------------------------

@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { Subject, Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { APP_NAME, APP_VERSION } from '../../app.component';
 import { AppConfigService } from './app-config.service';
@@ -160,8 +161,7 @@ export class WebsocketPluginService {
   private diskSource = new Subject<void>();
   public diskUpdate$ = this.diskSource.asObservable();
 
-  private msgSubscription: Subscription;
-  private openSubscription: Subscription;
+  private readonly stop$ = new Subject<void>();
 
   private msgIdentity = <Message>{
     cmd: 'identity',
@@ -183,7 +183,7 @@ export class WebsocketPluginService {
 
     this.websocketService.connect(adm_url);
 
-    this.msgSubscription = this.websocketService.messages$.subscribe({
+    this.websocketService.messages$.pipe(takeUntil(this.stop$)).subscribe({
       next: (msg) => {
         let data: Message;
         try {
@@ -204,7 +204,7 @@ export class WebsocketPluginService {
     });
 
     // Send identity on every (re)connect
-    this.openSubscription = this.websocketService.open$.subscribe(() => {
+    this.websocketService.open$.pipe(takeUntil(this.stop$)).subscribe(() => {
       const browser = this.shared.getBrowser();
       this.websocketService.sendMessage({
         ...this.msgIdentity,
@@ -215,8 +215,7 @@ export class WebsocketPluginService {
   }
 
   disconnect() {
-    this.msgSubscription?.unsubscribe();
-    this.openSubscription?.unsubscribe();
+    this.stop$.next();
     this.websocketService.close();
   }
 

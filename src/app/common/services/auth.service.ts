@@ -23,8 +23,13 @@ export class AuthService {
   public jwtHelper = inject(JwtHelperService);
   private appConfig = inject(AppConfigService);
 
+  // Token is kept in memory only — never written to localStorage/sessionStorage.
+  // This eliminates the XSS risk of persistent token storage. The trade-off is
+  // that a page refresh requires re-login.
+  private _token: string | null = null;
+
   /** Emits whenever the login state changes (login success / logout). */
-  readonly loggedIn$ = new BehaviorSubject<boolean>(!!localStorage.getItem('token'));
+  readonly loggedIn$ = new BehaviorSubject<boolean>(false);
 
   currentUser: DecodedJwtToken | null;
   isLoginRequired: boolean;
@@ -78,8 +83,8 @@ export class AuthService {
             anon = 'anonymous ';
           }
           if (result && result.token) {
-            localStorage.setItem('token', result.token);
-            this.currentUser = this.jwtHelper.decodeToken(localStorage.getItem('token')!);
+            this._token = result.token;
+            this.currentUser = this.jwtHelper.decodeToken(this._token);
             const decodedToken = this.currentUser!;
             this.ttl = Math.round(((decodedToken.exp - decodedToken.iat) / 60 / 60) * 100) / 100;
             this.renewAfter = decodedToken.iat + (this.ttl * 60 * 60) / 2;
@@ -98,7 +103,7 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.removeItem('token');
+    this._token = null;
     this.currentUser = null;
     this.loggedIn$.next(false);
   }
@@ -124,7 +129,7 @@ export class AuthService {
     }
 
     this.logTimestamp = this.getTimestamp();
-    const oldToken: string = localStorage.getItem('token') ?? '';
+    const oldToken = this._token ?? '';
     let newToken: string = oldToken;
     this.isRenewing = true;
     this.getNewToken()
@@ -136,7 +141,7 @@ export class AuthService {
           console.warn('- Token renewal is disabled');
           this.tokenRenewal = false;
         } else {
-          localStorage.setItem('token', newToken);
+          this._token = newToken;
           this.ttl =
             Math.round(((decodedNewToken.exp - decodedNewToken.iat) / 60 / 60) * 100) / 100;
           this.renewAfter = decodedNewToken.iat + (this.ttl * 60 * 60) / 2;
@@ -147,7 +152,7 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     console.log('AuthService.isLoggedIn() entered');
-    const token = localStorage.getItem('token');
+    const token = this._token;
     if (token === null) {
       console.log('AuthService.isLoggedIn() no token --> leaving');
       return false;
@@ -198,7 +203,7 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return localStorage.getItem('token');
+    return this._token;
   }
 
   isSecuredByLogin(): boolean {

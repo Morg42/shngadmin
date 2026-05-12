@@ -158,10 +158,11 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     }
   }
 
-  static htmlDecode(input): string {
-    const e = document.createElement('div');
-    e.innerHTML = input;
-    return e.childNodes.length === 0 ? '' : (e.childNodes[0].nodeValue ?? '');
+  static htmlDecode(input: string): string {
+    if (!input) return '';
+    // DOMParser creates an inert document — scripts are not executed and
+    // resources are not loaded. textContent extracts plain text only.
+    return new DOMParser().parseFromString(input, 'text/html').documentElement.textContent ?? '';
   }
 
   public setTitle(newTitle: string) {

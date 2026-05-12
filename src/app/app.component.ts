@@ -63,23 +63,6 @@ export class AppComponent implements OnInit {
     const initialLang = this.userPrefs.language ?? 'en';
     this.translate.setDefaultLang(initialLang);
     this.translate.use(initialLang);
-
-    console.log('AppComponent.constructor getServerBasicInfo:');
-    //    this.dataService.getServerBasicinfo()
-    this.dataService
-      .getServerBasicinfo()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (response: ServerInfo) => {
-          this.dataService.shng_serverinfo = response;
-
-          this.shared.setGuiLanguage();
-          this.cdr.markForCheck();
-        },
-        error: (error) => {
-          console.warn('DataService: getServerBasicinfo():', { error });
-        },
-      });
   }
 
   public setTitle(newTitle: string) {
@@ -88,5 +71,19 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     console.log('AppComponent was loaded');
+
+    this.dataService
+      .getServerBasicinfo()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response: ServerInfo) => {
+          this.dataService.shng_serverinfo = response;
+          this.shared.setGuiLanguage();
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          console.warn('DataService: getServerBasicinfo():', { error });
+        },
+      });
   }
 }

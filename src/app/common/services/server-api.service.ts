@@ -33,15 +33,6 @@ export class ServerApiService {
       dataUrl: this.baseUrl,
       hostIp,
     });
-
-    this.getServerBasicinfo().subscribe({
-      next: (response: ServerInfo) => {
-        this.shng_serverinfo = response;
-      },
-      error: (error) => {
-        console.warn('DataService: getShngServerinfo():', { error });
-      },
-    });
   }
 
   getServerBasicinfo() {

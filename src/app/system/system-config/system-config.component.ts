@@ -32,7 +32,29 @@ import { TableModule } from 'primeng/table';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { DynamicFieldComponent } from '../../common/components/dynamic-field/dynamic-field.component';
 
-type SystemConfig = any;
+interface ParameterMeta {
+  type: string;
+  gui_type?: string;
+  valid_list?: unknown[];
+  valid_min?: unknown;
+  valid_max?: unknown;
+  default?: unknown;
+  mandatory?: boolean;
+  description?: Record<string, string>;
+}
+
+interface ConfigSection {
+  meta: { parameters: Record<string, ParameterMeta> };
+  data: Record<string, unknown>;
+}
+
+interface SystemConfig {
+  common: ConfigSection;
+  http: ConfigSection;
+  websocket: ConfigSection;
+  admin: ConfigSection;
+  mqtt: ConfigSection;
+}
 
 @Component({
   selector: 'app-system-config',
@@ -134,7 +156,7 @@ export class SystemConfigComponent implements OnInit {
           .getConfig()
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe((configResponse) => {
-            this.config = configResponse;
+            this.config = configResponse as SystemConfig;
             // console.log({response}, {configResponse});
             this.fillDialogData();
             this.cdr.markForCheck();

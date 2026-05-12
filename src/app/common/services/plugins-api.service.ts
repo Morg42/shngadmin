@@ -158,7 +158,11 @@ export class PluginsApiService {
           if (result.result === 'ok') {
             return true;
           } else {
-            console.error('PluginsApiService.setPluginConfig failed:', result.result, result.description);
+            console.error(
+              'PluginsApiService.setPluginConfig failed:',
+              result.result,
+              result.description,
+            );
             return false;
           }
         } else {
@@ -195,7 +199,11 @@ export class PluginsApiService {
           if (result.result === 'ok') {
             return true;
           } else {
-            console.error('PluginsApiService.addPluginConfig failed:', result.result, result.description);
+            console.error(
+              'PluginsApiService.addPluginConfig failed:',
+              result.result,
+              result.description,
+            );
             return false;
           }
         } else {
@@ -236,7 +244,11 @@ export class PluginsApiService {
           if (result.result === 'ok') {
             return true;
           } else {
-            console.error('PluginsApiService.deletePluginConfig failed:', result.result, result.description);
+            console.error(
+              'PluginsApiService.deletePluginConfig failed:',
+              result.result,
+              result.description,
+            );
             return false;
           }
         } else {
@@ -276,7 +288,11 @@ export class PluginsApiService {
           if (result.result === 'ok') {
             return true;
           } else {
-            console.error('PluginsApiService.setPluginState failed:', result.result, result.description);
+            console.error(
+              'PluginsApiService.setPluginState failed:',
+              result.result,
+              result.description,
+            );
             return false;
           }
         } else {

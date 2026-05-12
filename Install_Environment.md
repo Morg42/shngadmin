@@ -16,7 +16,7 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 nvm install 25
 
 # Verify the Node.js version:
-node -v # Should print "v15.6.0".
+node -v # Should print "v25.6.0".
 nvm current # Should print "v25.6.0".
 
 # Verify npm version:

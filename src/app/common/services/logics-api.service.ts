@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AppConfigService } from './app-config.service';
 
@@ -17,9 +17,16 @@ export class LogicsApiService {
   private http = inject(HttpClient);
   private appConfig = inject(AppConfigService);
 
-  // Das Array groupExpanded dient dazu, den Auf-/Zuklapp Zustand des Accordeon-Tabs zu speichern,
-  // während im Browser auf andere Komponenten gewechselt wird.
-  groupExpanded: number[] = [];
+  private readonly _groupExpanded = new BehaviorSubject<number[]>([]);
+  readonly groupExpanded$ = this._groupExpanded.asObservable();
+
+  get groupExpanded(): number[] {
+    return this._groupExpanded.value;
+  }
+
+  set groupExpanded(value: number[]) {
+    this._groupExpanded.next(value);
+  }
 
   getGroupsInfo() {
     const apiUrl = this.appConfig.apiUrl;

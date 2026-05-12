@@ -4,6 +4,7 @@ import {
   ChangeDetectorRef,
   Component,
   DestroyRef,
+  ElementRef,
   inject,
   OnDestroy,
   OnInit,
@@ -85,6 +86,8 @@ type MonitoredItem = [string, Record<string, unknown>];
 export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   @ViewChild('vc', { read: ViewContainerRef, static: true }) vc: ViewContainerRef;
   @ViewChild('tpl', { read: TemplateRef, static: true }) tpl: TemplateRef<any>;
+  @ViewChild('treeEl') private treeEl: ElementRef<HTMLElement>;
+  @ViewChild('treeDetailEl') private treeDetailEl: ElementRef<HTMLElement>;
 
   childViewRef: ViewRef;
 
@@ -140,10 +143,12 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
 
   showItemAlert = false;
 
-  static resizeItemTree() {
+  private readonly resizeHandler = () => this.resizeItemTree();
+
+  resizeItemTree() {
     const browserHeight = window.innerHeight;
-    const tree = document.getElementById('tree');
-    const treeDetail = document.getElementById('tree_detail');
+    const tree = this.treeEl?.nativeElement;
+    const treeDetail = this.treeDetailEl?.nativeElement;
 
     // initially offsetTop is off by a number of pixels — correction via fixed offset
     const offsetTop = 167;
@@ -180,8 +185,8 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
         this.getItemtree();
       });
 
-    window.addEventListener('resize', ItemTreeComponent.resizeItemTree, false);
-    ItemTreeComponent.resizeItemTree();
+    window.addEventListener('resize', this.resizeHandler, false);
+    this.resizeItemTree();
 
     this.websocketPluginService.connect();
   }
@@ -211,7 +216,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   }
 
   ngOnDestroy(): void {
-    window.removeEventListener('resize', ItemTreeComponent.resizeItemTree, false);
+    window.removeEventListener('resize', this.resizeHandler, false);
     this.monitoredItemsUpdateSubscription?.unsubscribe();
     this.websocketPluginService.disconnect();
   }

@@ -96,7 +96,7 @@
             <div class="col" style="max-width: 50%">
               <div class="card">
                 <div class="card-body p-1">
-                  <div id="tree" style="overflow-y: scroll">
+                  <div #treeEl id="tree" style="overflow-y: scroll">
                     <div class="col-sm-12">
                       <p-tree
                         [value]="filteredTree"
@@ -163,7 +163,12 @@
                     <div id="cardOverlay" class="cardOverlay" style="position: relative; top: 45%; left: 45%">
                       <span id="reload-element" class="fas fa-sync fa-4x"></span>
                     </div>
-                    <div id="tree_detail" class="data-container refresh-data pre-scrollable" style="overflow-x: auto">
+                    <div
+                      #treeDetailEl
+                      id="tree_detail"
+                      class="data-container refresh-data pre-scrollable"
+                      style="overflow-x: auto"
+                    >
                       @if (itemdetailsloaded === false) {
                         <span> {{ 'ITEMS.CHOOSE ITEM IN TREE' | translate }}<br /> </span>
                       }

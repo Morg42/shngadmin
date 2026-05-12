@@ -4,6 +4,7 @@ import {
   ChangeDetectorRef,
   Component,
   DestroyRef,
+  ElementRef,
   inject,
   OnInit,
   ViewChild,
@@ -56,6 +57,7 @@ export class LogicsGroupsComponent implements OnInit {
   //  Vars for the YAML syntax checker
   //
   @ViewChild('codeeditor') private codeEditor;
+  @ViewChild('groupDesc') private groupDescEl: ElementRef<HTMLElement>;
 
   logicGroups: LogicsGroupType[]; // filelist: string[];
   groupList: string[];
@@ -82,7 +84,7 @@ export class LogicsGroupsComponent implements OnInit {
 
   ngOnInit() {
     this.group = { title: '', description: '' };
-    const groupDesc = document.getElementById('group-desc');
+    const groupDesc = this.groupDescEl?.nativeElement;
     if (groupDesc) {
       groupDesc.textContent = this.group.description;
     }
@@ -110,8 +112,8 @@ export class LogicsGroupsComponent implements OnInit {
   }
 
   hasGroupChanged() {
-    const desc = document.getElementById('group-desc')?.textContent || '';
-    const descHtml = document.getElementById('group-desc')?.innerHTML || '';
+    const desc = this.groupDescEl?.nativeElement?.textContent || '';
+    const descHtml = this.groupDescEl?.nativeElement?.innerHTML || '';
     console.log('hasGroupChanged: descHtml', descHtml);
 
     if (this.groupTitleOrig !== this.group['title']) {
@@ -162,7 +164,7 @@ export class LogicsGroupsComponent implements OnInit {
 
           this.myEditGroup = '';
           this.group = { title: '', description: '' };
-          const groupDesc = document.getElementById('group-desc');
+          const groupDesc = this.groupDescEl?.nativeElement;
           if (groupDesc) {
             groupDesc.textContent = this.group.description;
           }
@@ -199,7 +201,7 @@ export class LogicsGroupsComponent implements OnInit {
     this.add_enabled = false;
     this.newgroup_display = false;
 
-    const groupDesc = document.getElementById('group-desc');
+    const groupDesc = this.groupDescEl?.nativeElement;
     if (groupDesc) {
       groupDesc.textContent = this.group.description;
     }
@@ -226,7 +228,7 @@ export class LogicsGroupsComponent implements OnInit {
         if (this.myEditGroup !== '') {
           this.logicGroups[this.myEditGroup] = newGroup;
           this.group = this.logicGroups[this.myEditGroup];
-          const groupDesc = document.getElementById('group-desc');
+          const groupDesc = this.groupDescEl?.nativeElement;
           if (groupDesc) {
             groupDesc.innerHTML = this.group.description + '<br><br><br>';
           }
@@ -255,7 +257,7 @@ export class LogicsGroupsComponent implements OnInit {
     if (group === '') {
       this.myEditGroup = '';
       this.group = { title: '', description: '' };
-      const groupDesc = document.getElementById('group-desc');
+      const groupDesc = this.groupDescEl?.nativeElement;
       if (groupDesc) {
         groupDesc.textContent = this.group.description;
       }
@@ -268,7 +270,7 @@ export class LogicsGroupsComponent implements OnInit {
       if (this.group.description === undefined) {
         this.group.description = '';
       }
-      const groupDesc = document.getElementById('group-desc');
+      const groupDesc = this.groupDescEl?.nativeElement;
       if (groupDesc) {
         groupDesc.innerHTML = this.group.description + '<br><br><br>';
       }
@@ -280,12 +282,12 @@ export class LogicsGroupsComponent implements OnInit {
   }
 
   discardChanges() {
-    const desc = document.getElementById('group-desc')?.textContent || '';
+    const desc = this.groupDescEl?.nativeElement?.textContent || '';
     console.log('discardChanges', { desc });
 
     this.group.title = this.groupTitleOrig;
     this.group.description = this.groupDescriptionOrig;
-    const groupDesc = document.getElementById('group-desc');
+    const groupDesc = this.groupDescEl?.nativeElement;
     if (groupDesc) {
       groupDesc.textContent = this.group.description;
     }
@@ -296,7 +298,7 @@ export class LogicsGroupsComponent implements OnInit {
   saveGroup() {
     console.log('LoggingConfigurationComponent.saveGroup');
 
-    const desc = document.getElementById('group-desc')?.textContent || '';
+    const desc = this.groupDescEl?.nativeElement?.textContent || '';
     console.log('saveGroup', { desc });
     this.group['description'] = desc.trim();
 
@@ -308,7 +310,7 @@ export class LogicsGroupsComponent implements OnInit {
         this.groupDescriptionOrig = this.group['description'];
 
         this.logicGroups[this.myEditGroup] = this.group;
-        const groupDesc = document.getElementById('group-desc');
+        const groupDesc = this.groupDescEl?.nativeElement;
         if (groupDesc) {
           groupDesc.textContent = this.group.description;
         }

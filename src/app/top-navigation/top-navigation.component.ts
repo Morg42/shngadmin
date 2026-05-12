@@ -4,8 +4,10 @@ import {
   ChangeDetectorRef,
   Component,
   DestroyRef,
+  ElementRef,
   inject,
   OnInit,
+  ViewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
@@ -44,6 +46,8 @@ export class TopNavigationComponent implements OnInit {
   public authService = inject(AuthService);
   private titleService = inject(Title);
   private appConfig = inject(AppConfigService);
+
+  @ViewChild('topnav') private topnavEl: ElementRef<HTMLElement>;
 
   labels: string[] = [];
   menu: MenuItem[] = [];
@@ -116,8 +120,8 @@ export class TopNavigationComponent implements OnInit {
 
   toggleResponsiveMenu() {
     console.log('TopNavigationComponent.toggleResponsiveMenu');
-    const x = document.getElementById('myTopnav');
-    if (x === null) return;
+    const x = this.topnavEl?.nativeElement;
+    if (!x) return;
 
     if (x.className === 'topnav') {
       x.className += ' responsive';
@@ -137,8 +141,8 @@ export class TopNavigationComponent implements OnInit {
     this.closeTouchDropdown();
 
     // disable dropped down menu if in mobile mode
-    const m = document.getElementById('myTopnav');
-    if (m === null) return;
+    const m = this.topnavEl?.nativeElement;
+    if (!m) return;
 
     m.className = 'topnav';
 

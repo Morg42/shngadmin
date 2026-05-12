@@ -370,7 +370,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
         .subscribe({
           next: (response: ItemDetails[]) => {
             const details = response[0];
-            details.value = ItemTreeComponent.htmlDecode(details.value);
+            details.value = ItemTreeComponent.htmlDecode(String(details.value));
             details.last_value = ItemTreeComponent.htmlDecode(details.last_value);
             details.previous_value = ItemTreeComponent.htmlDecode(details.previous_value);
 

@@ -34,14 +34,14 @@ export class ServerApiService {
       hostIp,
     });
 
-    this.getServerBasicinfo().subscribe(
-      (response: ServerInfo) => {
+    this.getServerBasicinfo().subscribe({
+      next: (response: ServerInfo) => {
         this.shng_serverinfo = response;
       },
-      (error) => {
+      error: (error) => {
         console.warn('DataService: getShngServerinfo():', { error });
       },
-    );
+    });
   }
 
   getServerBasicinfo() {

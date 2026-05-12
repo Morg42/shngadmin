@@ -69,17 +69,17 @@ export class AppComponent implements OnInit {
     this.dataService
       .getServerBasicinfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response: ServerInfo) => {
+      .subscribe({
+        next: (response: ServerInfo) => {
           this.dataService.shng_serverinfo = response;
 
           this.shared.setGuiLanguage();
           this.cdr.markForCheck();
         },
-        (error) => {
+        error: (error) => {
           console.warn('DataService: getServerBasicinfo():', { error });
         },
-      );
+      });
   }
 
   public setTitle(newTitle: string) {

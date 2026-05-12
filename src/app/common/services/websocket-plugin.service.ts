@@ -183,8 +183,8 @@ export class WebsocketPluginService {
 
     this.websocketService.connect(adm_url);
 
-    this.msgSubscription = this.websocketService.messages$.subscribe(
-      (msg) => {
+    this.msgSubscription = this.websocketService.messages$.subscribe({
+      next: (msg) => {
         const data = JSON.parse(msg.data);
         if (data.cmd === 'item') {
           this.handleResponseItem(data);
@@ -194,8 +194,8 @@ export class WebsocketPluginService {
           console.log('message received:', data);
         }
       },
-      (err) => console.log(err),
-    );
+      error: (err) => console.log(err),
+    });
 
     // Send identity on every (re)connect
     this.openSubscription = this.websocketService.open$.subscribe(() => {

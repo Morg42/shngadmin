@@ -219,19 +219,19 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     this.dataService
       .getItemtree()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response: [number, ItemTree]) => {
+      .subscribe({
+        next: (response: [number, ItemTree]) => {
           this.itemcount = response[0];
           this.filesTree0 = response[1] as unknown as {}[];
           this.filterNodes('');
           this.searchStart_param = { number: String(this.appConfig.itemtreeSearchstart) };
           this.cdr.markForCheck();
         },
-        (error) => {
+        error: (error) => {
           console.log('ERROR: ItemsComponent: dataService.getItemtree():');
           console.log(error);
         },
-      );
+      });
   }
 
   updateValue(item_path, item_value, item_type, item_oldvalue) {
@@ -361,8 +361,8 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
       this.dataService
         .getItemDetails(path)
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(
-          (response: ItemDetails[]) => {
+        .subscribe({
+          next: (response: ItemDetails[]) => {
             const details = response[0];
             details.value = ItemTreeComponent.htmlDecode(details.value);
             details.last_value = ItemTreeComponent.htmlDecode(details.last_value);
@@ -390,11 +390,11 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
             console.warn('getDetails', details.logics);
             this.cdr.markForCheck();
           },
-          (error) => {
+          error: (error) => {
             console.log('ERROR: ItemsComponent: dataService.getItemDetails():');
             console.log(error);
           },
-        );
+        });
     } else {
       this.showDetails();
     }

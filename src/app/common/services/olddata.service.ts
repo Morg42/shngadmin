@@ -72,16 +72,16 @@ export class OlddataService {
     this.http
       .get(url)
       .pipe(take(1))
-      .subscribe(
-        (response: unknown) => {
+      .subscribe({
+        next: (response: unknown) => {
           console.log('updateValue:');
           console.log({ response });
         },
-        (error) => {
+        error: (error) => {
           console.log('ERROR: OlddataServicechangeItemValue(', { itempath }, ',', { value }, ')');
           console.log(error);
         },
-      );
+      });
   }
 
   /*

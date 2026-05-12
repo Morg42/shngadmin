@@ -178,19 +178,19 @@ export class SystemComponent implements OnDestroy, OnInit {
     this.dataService
       .getSysteminfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response: SystemInfo) => {
+      .subscribe({
+        next: (response: SystemInfo) => {
           this.systeminfo = response;
 
           this.os_uptime = this.shared.ageToString(this.systeminfo.uptime);
           this.sh_uptime = this.shared.ageToString(this.systeminfo.sh_uptime);
           this.cdr.markForCheck();
         },
-        (error) => {
+        error: (error) => {
           console.log('SystemComponent: dataService.getSysteminfo():');
           console.log(error);
         },
-      );
+      });
 
     // -----------------------------------
     // Initialize Pypi info
@@ -198,8 +198,8 @@ export class SystemComponent implements OnDestroy, OnInit {
     this.dataService
       .getPypiinfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response: PypiInfo[]) => {
+      .subscribe({
+        next: (response: PypiInfo[]) => {
           this.pypiinfo = response;
           this.loading = false;
 
@@ -245,8 +245,8 @@ export class SystemComponent implements OnDestroy, OnInit {
           }
           this.cdr.markForCheck();
         },
-        (error) => console.log('SystemComponent: dataService.getPypiinfo():' + error),
-      );
+        error: (error) => console.log('SystemComponent: dataService.getPypiinfo():' + error),
+      });
 
     // -----------------------------------
     // Initialize info for the graph-tab
@@ -261,20 +261,20 @@ export class SystemComponent implements OnDestroy, OnInit {
     this.http
       .get(filepath, { responseType: 'text' })
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        (response) => {
+      .subscribe({
+        next: (response) => {
           const message = response.toString();
           if (disclosureText) {
             disclosureText.textContent = message;
           }
         },
-        (error) => {
+        error: (error) => {
           if (disclosureText) {
             disclosureText.textContent =
               '\nERROR ' + error.status + ':\n\n    ' + error.url + '   ' + error.statusText;
           }
         },
-      );
+      });
   }
 
   // ===================================

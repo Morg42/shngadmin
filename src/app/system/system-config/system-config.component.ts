@@ -308,7 +308,7 @@ export class SystemConfigComponent implements OnInit {
           data.hashed_password === null ||
           data.hashed_password === ''
         ) {
-          data.hashed_password = sha512(data.password);
+          data.hashed_password = sha512(data.password as string);
           data.password = null;
         }
       }
@@ -322,7 +322,7 @@ export class SystemConfigComponent implements OnInit {
           data.service_hashed_password === null ||
           data.service_hashed_password === ''
         ) {
-          data.service_hashed_password = sha512(data.service_password);
+          data.service_hashed_password = sha512(data.service_password as string);
           data.service_password = null;
         }
       }
@@ -363,7 +363,7 @@ export class SystemConfigComponent implements OnInit {
           data.hashed_password === null ||
           data.hashed_password === ''
         ) {
-          data.hashed_password = sha512(data.password);
+          data.hashed_password = sha512(data.password as string);
           data.password = null;
         }
       }
@@ -377,7 +377,7 @@ export class SystemConfigComponent implements OnInit {
           data.service_hashed_password === null ||
           data.service_hashed_password === ''
         ) {
-          data.service_hashed_password = sha512(data.service_password);
+          data.service_hashed_password = sha512(data.service_password as string);
           data.service_password = null;
         }
       }

@@ -25,9 +25,8 @@ export class AuthService {
   private appConfig = inject(AppConfigService);
   private readonly log = inject(LogService);
 
-  // Token is kept in memory only — never written to localStorage/sessionStorage.
-  // This eliminates the XSS risk of persistent token storage. The trade-off is
-  // that a page refresh requires re-login.
+  // Token is stored in sessionStorage so it survives page reloads within the
+  // same browser tab but is discarded when the tab is closed.
   private _token: string | null = null;
 
   /** Emits whenever the login state changes (login success / logout). */
@@ -49,6 +48,14 @@ export class AuthService {
     this.isLoginRequired = true;
     this.tokenRenewal = true;
     this.isRenewing = false;
+
+    const stored = sessionStorage.getItem('token');
+    if (stored && !this.jwtHelper.isTokenExpired(stored)) {
+      this._token = stored;
+      this.currentUser = this.jwtHelper.decodeToken(stored);
+      this.isLoginRequired = false;
+      this.loggedIn$.next(true);
+    }
   }
 
   getTimestamp() {
@@ -86,6 +93,7 @@ export class AuthService {
           }
           if (result && result.token) {
             this._token = result.token;
+            sessionStorage.setItem('token', this._token);
             this.currentUser = this.jwtHelper.decodeToken(this._token);
             const decodedToken = this.currentUser!;
             this.ttl = Math.round(((decodedToken.exp - decodedToken.iat) / 60 / 60) * 100) / 100;
@@ -106,6 +114,7 @@ export class AuthService {
 
   logout() {
     this._token = null;
+    sessionStorage.removeItem('token');
     this.currentUser = null;
     this.loggedIn$.next(false);
   }
@@ -144,6 +153,7 @@ export class AuthService {
           this.tokenRenewal = false;
         } else {
           this._token = newToken;
+          sessionStorage.setItem('token', newToken);
           this.ttl =
             Math.round(((decodedNewToken.exp - decodedNewToken.iat) / 60 / 60) * 100) / 100;
           this.renewAfter = decodedNewToken.iat + (this.ttl * 60 * 60) / 2;

@@ -108,9 +108,7 @@ export class PluginsComponent implements OnInit {
       .getPluginsInfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        this.plugininfo = (response as PlugininfoType[]).filter(
-          (p) => p.pluginname && p.metadata != null,
-        );
+        this.plugininfo = response as PlugininfoType[];
         this.plugininfo.sort(function (a, b) {
           return a.pluginname + a.configname.toLowerCase() >
             b.pluginname + b.configname.toLowerCase()

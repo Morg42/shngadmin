@@ -102,6 +102,8 @@ export class PluginsComponent implements OnInit {
   }
 
   getPlugins() {
+    this.loading = true;
+    this.cdr.markForCheck();
     this.pluginsDataService
       .getPluginsInfo()
       .pipe(takeUntilDestroyed(this.destroyRef))

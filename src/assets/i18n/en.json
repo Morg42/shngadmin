@@ -351,6 +351,7 @@
     "PLUGIN_CONFIGURATION": "Plugin Configuration",
     "PLUGIN_DISABLED": "Plugin will not be loaded at restart!",
     "LOADCONFIG": "Loading infos about configured plugins",
+    "LOADINFO": "Loading plugin information",
     "LOADLIST": "Loading list of installed plugins",
     "CLASSIC_NOT_CONFIGURABLE": "Classic plugins can't be configured here!",
     "NAME_CONFIGURATION": "Name the configuration of '{{selected_plugin}}' plugin and add to the configured plugins",

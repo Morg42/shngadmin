@@ -348,6 +348,7 @@
     "PLUGIN_CONFIGURATION": "Configuration de l'extension",
     "PLUGIN_DISABLED": "Extension ne sera pas chargée lors d'un redémarragen!",
     "LOADCONFIG": "Chargement des informations sur les plugins configurés",
+    "LOADINFO": "Chargement des informations sur les plugins",
     "LOADLIST": "Chargement de la liste des extensions installées",
     "CLASSIC_NOT_CONFIGURABLE": "Le extensions classiques ne peuvent pas être configurées à cet endroit!",
     "NAME_CONFIGURATION": "Nommer configuration de l'extension '{{selected_plugin}}'",

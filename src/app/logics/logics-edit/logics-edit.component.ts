@@ -649,7 +649,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
     // the loop also regards items with a path that starts with "sh." (itemname sh!)
     if (!this.checkItemWithValidItems()) {
       if (this.myTextareaWatchItems.startsWith('sh.')) {
-        this.myTextareaWatchItems = this.myTextareaWatchItems.substr(3);
+        this.myTextareaWatchItems = this.myTextareaWatchItems.slice(3);
         if (!this.checkItemWithValidItems()) {
           this.wrongWatchItem = true;
           return;

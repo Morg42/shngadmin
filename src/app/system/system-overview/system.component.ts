@@ -535,7 +535,7 @@ export class SystemComponent implements OnDestroy, OnInit {
     const data1: number[] = [];
 
     for (let i = 0; i < dataseries.length; i++) {
-      labels.push(String(dataseries[i][2].time.substr(0, 5)));
+      labels.push(String(dataseries[i][2].time.slice(0, 5)));
       data0.push(dataseries[i][1]);
       if (dataseries2 != null) {
         data1.push(dataseries2[i][1]);

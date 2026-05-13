@@ -306,7 +306,7 @@ export class PluginConfigComponent implements OnInit {
   //
   rowClicked(event, rowdata) {
     this.dialog_configname = rowdata.confname;
-    this.dialog_pluginname = rowdata.plugin.substr(1);
+    this.dialog_pluginname = rowdata.plugin.slice(1);
     this.rowclicked_foredit = rowdata;
 
     const conf = this.pluginconflist.plugin_config[rowdata.confname];

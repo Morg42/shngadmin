@@ -226,7 +226,7 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
           tfunit = 'MB';
         }
         const wrk = {
-          label: tf.substr(1) + ' (' + tfsize + tfunit + ')',
+          label: tf.slice(1) + ' (' + tfsize + tfunit + ')',
           value: this.logs_info[this.selectedLog][i][0],
         };
 

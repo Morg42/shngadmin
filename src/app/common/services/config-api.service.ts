@@ -4,6 +4,7 @@ import { Injectable, inject } from '@angular/core';
 import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AppConfigService } from './app-config.service';
+import { LogService } from './log.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,9 +12,10 @@ import { AppConfigService } from './app-config.service';
 export class ConfigApiService {
   private http = inject(HttpClient);
   private appConfig = inject(AppConfigService);
+  private readonly log = inject(LogService);
 
   getConfig() {
-    // console.log('ConfigApiService.getConfig');
+    // this.log.log('ConfigApiService.getConfig');
 
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'config/';
@@ -23,7 +25,7 @@ export class ConfigApiService {
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'ConfigApiService (getConfig): Could not read schedulers data' + ' - ' + err.error.error,
         );
         return of({});
@@ -32,7 +34,7 @@ export class ConfigApiService {
   }
 
   saveConfig(data) {
-    // console.log('ConfigApiService.saveConfig');
+    // this.log.log('ConfigApiService.saveConfig');
 
     const apiUrl = this.appConfig.apiUrl;
     const url = apiUrl + 'config/core/';
@@ -41,10 +43,10 @@ export class ConfigApiService {
         const result = response;
 
         if (result) {
-          console.log('ConfigApiService.saveConfig', 'success', { result });
+          this.log.log('ConfigApiService.saveConfig', 'success', { result });
           return true;
         } else {
-          console.log('ConfigApiService.saveConfig', 'fail');
+          this.log.log('ConfigApiService.saveConfig', 'fail');
           return false;
         }
       }),

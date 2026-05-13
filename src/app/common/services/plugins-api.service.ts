@@ -4,6 +4,7 @@ import { Injectable, inject } from '@angular/core';
 import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AppConfigService } from './app-config.service';
+import { LogService } from './log.service';
 
 interface ApiResult {
   result: string;
@@ -16,12 +17,13 @@ interface ApiResult {
 export class PluginsApiService {
   private http = inject(HttpClient);
   private appConfig = inject(AppConfigService);
+  private readonly log = inject(LogService);
 
   // ---------------------------------------------------------------------
   //  Get information about the plugins installed in ../plugins directory
   //
   getInstalledPlugins() {
-    // console.log('PluginsApiService.getInstalledPlugins');
+    // this.log.log('PluginsApiService.getInstalledPlugins');
 
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'plugins/installed/';
@@ -31,7 +33,7 @@ export class PluginsApiService {
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'PluginsApiService (getInstalledPlugins): Could not read plugins data' +
             ' - ' +
             err.error.error,
@@ -46,7 +48,7 @@ export class PluginsApiService {
   //  - for plugins-config.component
   //
   getPluginsConfig() {
-    // console.log('PluginsApiService.getPluginsConfig');
+    // this.log.log('PluginsApiService.getPluginsConfig');
 
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'plugins/config/';
@@ -56,7 +58,7 @@ export class PluginsApiService {
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'PluginsApiService (getPluginsConfig): Could not read plugins data' +
             ' - ' +
             err.error.error,
@@ -71,7 +73,7 @@ export class PluginsApiService {
   //  - for plugins.component
   //
   getPluginsInfo() {
-    // console.log('PluginsApiService.getPluginsInfo');
+    // this.log.log('PluginsApiService.getPluginsInfo');
 
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'plugins/info/';
@@ -81,7 +83,7 @@ export class PluginsApiService {
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'PluginsApiService (getPluginsInfo): Could not read plugins data' +
             ' - ' +
             err.error.error,
@@ -96,7 +98,7 @@ export class PluginsApiService {
   //  all configured plugins for logic editor
   //
   getPluginsLogicParameters() {
-    // console.log('PluginsApiService.getPluginsInfo');
+    // this.log.log('PluginsApiService.getPluginsInfo');
 
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'plugins/logicparams/';
@@ -106,7 +108,7 @@ export class PluginsApiService {
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'PluginsApiService (getPluginsLogicParameters): Could not read plugins data' +
             ' - ' +
             err.error.error,
@@ -121,7 +123,7 @@ export class PluginsApiService {
   //  - for plugins.component
   //
   getPluginsAPI() {
-    // console.log('PluginsApiService.getPluginsApi');
+    // this.log.log('PluginsApiService.getPluginsApi');
 
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'plugins/api/';
@@ -131,7 +133,7 @@ export class PluginsApiService {
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'PluginsApiService (getPluginsInfo): Could not read plugins data' +
             ' - ' +
             err.error.error,
@@ -145,7 +147,7 @@ export class PluginsApiService {
   //  Update config of one plugin in etc/plugin.yaml on backend
   //
   setPluginConfig(pluginsection, config) {
-    // console.log('PluginsApiService.setPluginConfig');
+    // this.log.log('PluginsApiService.setPluginConfig');
 
     const apiUrl = this.appConfig.apiUrl;
     const url = apiUrl + 'plugin/' + pluginsection + '/';
@@ -154,11 +156,11 @@ export class PluginsApiService {
         const result = response as ApiResult;
 
         if (result) {
-          // console.log('PluginsApiService.setPluginConfig', '- config', config, '\nresult', {result});
+          // this.log.log('PluginsApiService.setPluginConfig', '- config', config, '\nresult', {result});
           if (result.result === 'ok') {
             return true;
           } else {
-            console.error(
+            this.log.error(
               'PluginsApiService.setPluginConfig failed:',
               result.result,
               result.description,
@@ -166,11 +168,11 @@ export class PluginsApiService {
             return false;
           }
         } else {
-          console.log('PluginsApiService.setPluginConfig', 'fail: undefined result');
+          this.log.log('PluginsApiService.setPluginConfig', 'fail: undefined result');
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'PluginsApiService (setPluginConfig): Could not set plugin config data' +
             ' - ' +
             err.error.error,
@@ -184,7 +186,7 @@ export class PluginsApiService {
   //  add a new config of one plugin in etc/plugin.yaml on backend
   //
   addPluginConfig(pluginsection, config) {
-    // console.log('PluginsApiService.addPluginConfig');
+    // this.log.log('PluginsApiService.addPluginConfig');
 
     const apiUrl = this.appConfig.apiUrl;
     const url = apiUrl + 'plugin/' + pluginsection + '/';
@@ -193,13 +195,13 @@ export class PluginsApiService {
         const result = response as ApiResult;
 
         if (result) {
-          console.log('PluginsApiService.addPluginConfig', '- config', config, '\nresult', {
+          this.log.log('PluginsApiService.addPluginConfig', '- config', config, '\nresult', {
             result,
           });
           if (result.result === 'ok') {
             return true;
           } else {
-            console.error(
+            this.log.error(
               'PluginsApiService.addPluginConfig failed:',
               result.result,
               result.description,
@@ -207,11 +209,11 @@ export class PluginsApiService {
             return false;
           }
         } else {
-          console.log('PluginsApiService.addPluginConfig', 'fail: undefined result');
+          this.log.log('PluginsApiService.addPluginConfig', 'fail: undefined result');
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'PluginsApiService (addPluginConfig): Could not set plugin config data' +
             ' - ' +
             err.error.error,
@@ -225,7 +227,7 @@ export class PluginsApiService {
   //  add a new config of one plugin in etc/plugin.yaml on backend
   //
   deletePluginConfig(pluginsection) {
-    // console.log('PluginsApiService.deletePluginConfig\n', {pluginsection});
+    // this.log.log('PluginsApiService.deletePluginConfig\n', {pluginsection});
 
     const apiUrl = this.appConfig.apiUrl;
     const url = apiUrl + 'plugin/' + pluginsection + '/';
@@ -234,7 +236,7 @@ export class PluginsApiService {
         const result = response as ApiResult;
 
         if (result) {
-          console.log(
+          this.log.log(
             'PluginsApiService.deletePluginConfig',
             '- section',
             pluginsection,
@@ -244,7 +246,7 @@ export class PluginsApiService {
           if (result.result === 'ok') {
             return true;
           } else {
-            console.error(
+            this.log.error(
               'PluginsApiService.deletePluginConfig failed:',
               result.result,
               result.description,
@@ -252,11 +254,11 @@ export class PluginsApiService {
             return false;
           }
         } else {
-          console.log('PluginsApiService.deletePluginConfig', 'fail: undefined result');
+          this.log.log('PluginsApiService.deletePluginConfig', 'fail: undefined result');
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'PluginsApiService (deletePluginConfig): Could not set plugin config data' +
             ' - ' +
             err.error.error,
@@ -272,7 +274,7 @@ export class PluginsApiService {
   setPluginState(pluginConfigName, action, filename = '') {
     // valid actions are: 'trigger', 'enable', 'disable', 'load', 'unload', 'reload', 'delete', 'create'
     action = action.toLowerCase();
-    console.warn('PluginsApiService.setPluginState', { pluginConfigName }, { action });
+    this.log.warn('PluginsApiService.setPluginState', { pluginConfigName }, { action });
 
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'plugin/' + pluginConfigName + '?action=' + action;
@@ -284,11 +286,11 @@ export class PluginsApiService {
         const result = response as ApiResult;
 
         if (result) {
-          // console.log('PluginsApiService.setPluginState', '- config', config, '\nresult', {result});
+          // this.log.log('PluginsApiService.setPluginState', '- config', config, '\nresult', {result});
           if (result.result === 'ok') {
             return true;
           } else {
-            console.error(
+            this.log.error(
               'PluginsApiService.setPluginState failed:',
               result.result,
               result.description,
@@ -296,11 +298,11 @@ export class PluginsApiService {
             return false;
           }
         } else {
-          console.log('PluginsApiService.setPluginState', 'fail: undefined result');
+          this.log.log('PluginsApiService.setPluginState', 'fail: undefined result');
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'PluginsApiService.setPluginState: Could not set logic state' + ' - ' + err.error.error,
         );
         return of({});

@@ -18,6 +18,7 @@ import { Dialog } from 'primeng/dialog';
 import { Message } from 'primeng/message';
 import { Select } from 'primeng/select';
 import { LoggersType } from '../../common/models/loggers-info';
+import { LogService } from '../../common/services/log.service';
 
 @Component({
   selector: 'app-logger-line',
@@ -74,6 +75,7 @@ export class LoggerLineComponent {
   handlersChangeEnabled = false;
 
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly log = inject(LogService);
 
   getParent(logger) {
     const parts = logger.split('.');
@@ -146,7 +148,7 @@ export class LoggerLineComponent {
     ];
 
     this.choosableHandlers = [];
-    console.log('definedHandlers', this.definedHandlers);
+    this.log.log('definedHandlers', this.definedHandlers);
     for (const key in this.definedHandlers) {
       if (this.definedHandlers.hasOwnProperty(key)) {
         let found = false;
@@ -187,8 +189,8 @@ export class LoggerLineComponent {
         this.choosableHandlers2.push(this.choosableHandlers[i]);
       }
     }
-    console.log('choosableHandlers1', this.choosableHandlers1);
-    console.log('choosableHandlers2', this.choosableHandlers2);
+    this.log.log('choosableHandlers1', this.choosableHandlers1);
+    this.log.log('choosableHandlers2', this.choosableHandlers2);
 
     this.chooseHandlers_display = true;
   }

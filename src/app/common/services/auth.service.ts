@@ -6,6 +6,7 @@ import { map, take } from 'rxjs/operators';
 
 import { sha512 } from 'js-sha512';
 import { AppConfigService } from './app-config.service';
+import { LogService } from './log.service';
 
 interface DecodedJwtToken {
   exp: number;
@@ -22,6 +23,7 @@ export class AuthService {
   private http = inject(HttpClient);
   public jwtHelper = inject(JwtHelperService);
   private appConfig = inject(AppConfigService);
+  private readonly log = inject(LogService);
 
   // Token is kept in memory only — never written to localStorage/sessionStorage.
   // This eliminates the XSS risk of persistent token storage. The trade-off is
@@ -54,7 +56,7 @@ export class AuthService {
   }
 
   login(credentials) {
-    console.log('authService.login() entering');
+    this.log.log('authService.login() entering');
     this.logTimestamp = this.getTimestamp();
 
     const send_hash = 'shNG0160$';
@@ -71,7 +73,7 @@ export class AuthService {
     }
 
     const apiUrl = '/api/';
-    console.log('login', apiUrl + 'authenticate/user', { send_credentials });
+    this.log.log('login', apiUrl + 'authenticate/user', { send_credentials });
     return this.http
       .post<{ token?: string }>(apiUrl + 'authenticate/user', JSON.stringify(send_credentials))
       .pipe(
@@ -90,12 +92,12 @@ export class AuthService {
             this.renewAfter = decodedToken.iat + (this.ttl * 60 * 60) / 2;
             this.tokenRenewal = true;
             this.isLoginRequired = !(credentials.username === '');
-            console.log(anon + 'login:', 'success');
+            this.log.log(anon + 'login:', 'success');
             this.expiredLogin = false;
             this.loggedIn$.next(true);
             return true;
           } else {
-            console.log(anon + 'login:', 'fail');
+            this.log.log(anon + 'login:', 'fail');
             return false;
           }
         }),
@@ -114,17 +116,17 @@ export class AuthService {
 
   getNewToken() {
     const apiUrl = '/api/';
-    console.log('getNewToken', apiUrl + 'authenticate/renew');
+    this.log.log('getNewToken', apiUrl + 'authenticate/renew');
     return this.http
       .put<{ token: string }>(apiUrl + 'authenticate/renew', '')
       .pipe(map((response) => response.token));
   }
 
   renewToken() {
-    console.warn('authService.renewToken()');
+    this.log.warn('authService.renewToken()');
 
     if (this.isRenewing) {
-      console.warn('renewToken: Already renewing');
+      this.log.warn('renewToken: Already renewing');
       return;
     }
 
@@ -138,7 +140,7 @@ export class AuthService {
         newToken = response;
         const decodedNewToken = this.jwtHelper.decodeToken(newToken);
         if (oldToken === newToken) {
-          console.warn('- Token renewal is disabled');
+          this.log.warn('- Token renewal is disabled');
           this.tokenRenewal = false;
         } else {
           this._token = newToken;
@@ -151,10 +153,10 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    console.log('AuthService.isLoggedIn() entered');
+    this.log.log('AuthService.isLoggedIn() entered');
     const token = this._token;
     if (token === null) {
-      console.log('AuthService.isLoggedIn() no token --> leaving');
+      this.log.log('AuthService.isLoggedIn() no token --> leaving');
       return false;
     }
 
@@ -171,11 +173,11 @@ export class AuthService {
     const loggedIn = !this.jwtHelper.isTokenExpired(token);
 
     if (loggedIn && this.logTimestamp < timestamp) {
-      console.log(
+      this.log.log(
         'Login expires in ' + Math.round((decodedToken.exp - timestamp) / 6) / 10 + ' Min',
       );
       if (this.tokenRenewal) {
-        console.log(
+        this.log.log(
           'Login renew in ' + Math.round((this.renewAfter - timestamp) / 6) / 10 + ' Min',
         );
       }
@@ -186,16 +188,16 @@ export class AuthService {
       if (!this.expiredLogin) {
         this.expiredLogin = this.jwtHelper.isTokenExpired(token);
         if (this.expiredLogin) {
-          console.warn('Token expired', { decodedToken });
+          this.log.warn('Token expired', { decodedToken });
         }
       } else {
-        console.warn('Token already expired');
+        this.log.warn('Token already expired');
       }
 
       if (this.tokenRenewal && loggedIn && this.renewAfter < timestamp) {
         this.renewToken();
       }
-      console.log('AuthService.isLoggedIn() return ', { loggedIn });
+      this.log.log('AuthService.isLoggedIn() return ', { loggedIn });
       return loggedIn;
     }
 

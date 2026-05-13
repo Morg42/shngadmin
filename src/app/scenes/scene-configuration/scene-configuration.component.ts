@@ -23,6 +23,7 @@ import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { Listbox } from 'primeng/listbox';
 import { FilesApiService } from '../../common/services/files-api.service';
+import { LogService } from '../../common/services/log.service';
 import { ScenesApiService } from '../../common/services/scenes-api.service';
 import { ServerApiService } from '../../common/services/server-api.service';
 import { ServicesApiService } from '../../common/services/services-api.service';
@@ -54,6 +55,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
   private sceneApiService = inject(ScenesApiService);
   private dataService = inject(ServicesApiService);
   private titleService = inject(Title);
+  private readonly log = inject(LogService);
 
   // -----------------------------------------------------------------
   //  Vars for the codemirror components
@@ -129,7 +131,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
   }
 
   ngOnInit() {
-    // console.log('LoggingConfigurationComponent.ngOnInit');
+    // this.log.log('LoggingConfigurationComponent.ngOnInit');
 
     for (let i = 1; i <= 100; i++) {
       this.rulers.push({ color: '#eee', column: i * 4, lineStyle: 'dashed' });
@@ -193,7 +195,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
   }
 
   DeleteConfigConfirm() {
-    // console.log('SceneConfigurationComponent.DeleteConfigConfirm:');
+    // this.log.log('SceneConfigurationComponent.DeleteConfigConfirm:');
 
     // close confirm dialog
     this.confirmdelete_display = false;
@@ -206,7 +208,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
         if (response) {
           // close configuration dialog
           this.confirmdelete_display = false;
-          console.log('SceneConfigurationComponent.DeleteConfigConfirm(): call ngOnInit()');
+          this.log.log('SceneConfigurationComponent.DeleteConfigConfirm(): call ngOnInit()');
           this.ngOnInit();
           //            this.restart_core_button = true;
           this.cdr.markForCheck();
@@ -267,7 +269,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
     let filename = this.selectedScenefile.value;
     if (filename.toLowerCase().endsWith('.yaml')) {
       filename = filename.slice(0, -5);
-      // console.log('sceneFileSelected()' , {filename});
+      // this.log.log('sceneFileSelected()' , {filename});
       this.getSceneFile(filename);
     } else {
       this.myEditFilename = '';
@@ -302,7 +304,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
   }
 
   saveConfig() {
-    // console.log('SceneConfigurationComponent.saveConfig');
+    // this.log.log('SceneConfigurationComponent.saveConfig');
 
     this.dataService
       .CheckYamlText(this.myTextarea)
@@ -329,25 +331,25 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
   }
 
   reloadScene() {
-    // console.log('reloadPlugin', {pluginConfigName});
+    // this.log.log('reloadPlugin', {pluginConfigName});
 
     this.sceneApiService
       .reloadScene(name)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        console.log('reloadScene', '\nresponse', { response });
+        this.log.log('reloadScene', '\nresponse', { response });
       });
   }
 
   reloadScenes() {
-    // console.log('reloadPlugin', {pluginConfigName});
+    // this.log.log('reloadPlugin', {pluginConfigName});
 
     this.reloadScenesButtonDisabled = true;
     this.sceneApiService
       .reloadScenes()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        console.log('reloadScenes', '\nresponse', { response });
+        this.log.log('reloadScenes', '\nresponse', { response });
         setTimeout(() => {
           this.reloadScenesButtonDisabled = false;
         }, 200);

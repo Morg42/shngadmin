@@ -22,6 +22,7 @@ import { Ripple } from 'primeng/ripple';
 import { Select } from 'primeng/select';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { LoggersType } from '../../common/models/loggers-info';
+import { LogService } from '../../common/services/log.service';
 import { LoggersApiService } from '../../common/services/loggers-api.service';
 import { ServerApiService } from '../../common/services/server-api.service';
 import { LoggerLineComponent } from '../logger-line/logger-line.component';
@@ -58,6 +59,7 @@ export class LoggerListComponent implements OnInit {
   protected router = inject(Router);
   private translate = inject(TranslateService);
   private titleService = inject(Title);
+  private readonly log = inject(LogService);
 
   loggers: LoggersType;
   active_plugins: string[];
@@ -82,7 +84,7 @@ export class LoggerListComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('LoggerListComponent.ngOnInit');
+    this.log.log('LoggerListComponent.ngOnInit');
 
     this.dataServiceServer
       .getServerinfo()
@@ -100,7 +102,7 @@ export class LoggerListComponent implements OnInit {
             this.loggersList = Object.keys(response2['loggers']);
             this.loggersList = this.loggersList.sort();
             this.definedHandlers = response2['defined_handlers'];
-            console.log('ngOnInit: response2', response2);
+            this.log.log('ngOnInit: response2', response2);
             this.cdr.markForCheck();
           });
       });
@@ -119,7 +121,7 @@ export class LoggerListComponent implements OnInit {
     if (level === null) {
       this.loggers[logger].active.level = this.levelDefault;
     }
-    console.log(
+    this.log.log(
       "levelChanged: Logger '" + logger + "' from ",
       this.loggers[logger].level + ' to ' + level,
     );
@@ -132,7 +134,7 @@ export class LoggerListComponent implements OnInit {
         const result = response['result'];
         const description = response['description'];
         if (result === 'error') {
-          console.warn('dataService.setLoggerLevel ERROR', { description });
+          this.log.warn('dataService.setLoggerLevel ERROR', { description });
         }
       });
 
@@ -218,7 +220,7 @@ export class LoggerListComponent implements OnInit {
   // ------------------------------------------------------------------------------
 
   newItemLogger() {
-    console.log('newItemLogger');
+    this.log.log('newItemLogger');
 
     this.loggerOptions = [{ label: '', value: '' }];
     for (let i = 0; i < this.loggersList.length; i++) {
@@ -285,7 +287,7 @@ export class LoggerListComponent implements OnInit {
         const result = response['result'];
         const description = response['description'];
         if (result === 'error') {
-          console.warn('dataService.addLogger ERROR', { description });
+          this.log.warn('dataService.addLogger ERROR', { description });
         }
 
         if (result === 'ok') {
@@ -305,7 +307,7 @@ export class LoggerListComponent implements OnInit {
   }
 
   loggerDelete(loggerName) {
-    // console.log('list: loggerDelete', loggerName);
+    // this.log.log('list: loggerDelete', loggerName);
 
     this.dataService
       .deleteLogger(loggerName)
@@ -314,7 +316,7 @@ export class LoggerListComponent implements OnInit {
         const result = response['result'];
         const description = response['description'];
         if (result === 'error') {
-          console.warn('dataService.deleteLogger ERROR', { description });
+          this.log.warn('dataService.deleteLogger ERROR', { description });
         }
 
         if (result === 'ok') {
@@ -328,7 +330,7 @@ export class LoggerListComponent implements OnInit {
               this.loggersList = Object.keys(response2['loggers']);
               this.loggersList = this.loggersList.sort();
               this.definedHandlers = response2['defined_handlers'];
-              console.log('loggerDelete: response2', response2);
+              this.log.log('loggerDelete: response2', response2);
               this.cdr.markForCheck();
             });
         }
@@ -336,7 +338,7 @@ export class LoggerListComponent implements OnInit {
   }
 
   modifyHandlers(logger, handlers) {
-    console.log("modifyHandlers: Logger '" + logger + "' " + " to '" + handlers + "'");
+    this.log.log("modifyHandlers: Logger '" + logger + "' " + " to '" + handlers + "'");
 
     this.dataService
       .setHandlers(logger, handlers)
@@ -345,7 +347,7 @@ export class LoggerListComponent implements OnInit {
         const result = response['result'];
         const description = response['description'];
         if (result === 'error') {
-          console.warn('dataService.setHandlers ERROR', { description });
+          this.log.warn('dataService.setHandlers ERROR', { description });
         }
 
         if (result === 'ok') {
@@ -359,7 +361,7 @@ export class LoggerListComponent implements OnInit {
               this.loggersList = Object.keys(response2['loggers']);
               this.loggersList = this.loggersList.sort();
               this.definedHandlers = response2['defined_handlers'];
-              console.log('loggerDelete: response2', response2);
+              this.log.log('loggerDelete: response2', response2);
               this.cdr.markForCheck();
             });
         }

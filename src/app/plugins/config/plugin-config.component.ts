@@ -15,6 +15,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 // import { DeleteConfigComponent } from './delete-config/delete-config.component';
 
+import { LogService } from '../../common/services/log.service';
 import { OlddataService } from '../../common/services/olddata.service';
 import { PluginsApiService } from '../../common/services/plugins-api.service';
 import { ServerApiService } from '../../common/services/server-api.service';
@@ -88,6 +89,7 @@ export class PluginConfigComponent implements OnInit {
   private router = inject(Router);
   private titleService = inject(Title);
   private appConfig = inject(AppConfigService);
+  private readonly log = inject(LogService);
 
   faPlus = faPlus;
   faPlusCircle = faPlusCircle;
@@ -308,7 +310,7 @@ export class PluginConfigComponent implements OnInit {
     this.rowclicked_foredit = rowdata;
 
     const conf = this.pluginconflist.plugin_config[rowdata.confname];
-    console.log({ conf });
+    this.log.log({ conf });
     const meta = this.pluginconflist.plugin_config[rowdata.confname]['_meta'];
     let desc = null;
     this.classic = true;
@@ -327,7 +329,7 @@ export class PluginConfigComponent implements OnInit {
 
     this.plugin_enabled = true;
     if (conf.plugin_enabled !== undefined) {
-      console.log('typeof conf.plugin_enabled', typeof conf.plugin_enabled);
+      this.log.log('typeof conf.plugin_enabled', typeof conf.plugin_enabled);
       if (typeof conf.plugin_enabled === 'boolean') {
         this.plugin_enabled = conf.plugin_enabled;
       } else if (
@@ -756,7 +758,7 @@ export class PluginConfigComponent implements OnInit {
   //  Add configuration
   //
   addPluginDialog() {
-    console.log('PluginConfigComponent.addPluginDialog:');
+    this.log.log('PluginConfigComponent.addPluginDialog:');
 
     for (let i = 0; i < this.plugintypes.length; i++) {
       this.plugintypes_expanded[i] = !this.add_firstrun;
@@ -771,7 +773,7 @@ export class PluginConfigComponent implements OnInit {
       .subscribe((response) => {
         this.plugins_installed = <PluginsInstalled>response;
         this.plugins_installed_list = Object.keys(<PluginsInstalled>response);
-        console.log('addPluginDialog', { response });
+        this.log.log('addPluginDialog', { response });
 
         this.spinner_display = false;
         this.add_display = true;
@@ -791,7 +793,7 @@ export class PluginConfigComponent implements OnInit {
   }
 
   selectPlugin(iplugin) {
-    console.warn({ iplugin });
+    this.log.warn({ iplugin });
     this.selected_plugin = iplugin;
     this.pluginconfig_name = iplugin;
     this.translate_params = { selected_plugin: this.selected_plugin };
@@ -810,7 +812,7 @@ export class PluginConfigComponent implements OnInit {
         }
       }
     }
-    console.warn(this.add_enabled);
+    this.log.warn(this.add_enabled);
     return this.add_enabled;
   }
 
@@ -846,8 +848,8 @@ export class PluginConfigComponent implements OnInit {
   //  Delete configuration
   //
   DeleteConfig() {
-    console.log('PluginConfigComponent.DeleteConfig:');
-    console.warn(this.dialog_configname);
+    this.log.log('PluginConfigComponent.DeleteConfig:');
+    this.log.warn(this.dialog_configname);
 
     this.delete_param = { config: this.dialog_configname };
 
@@ -877,7 +879,7 @@ export class PluginConfigComponent implements OnInit {
         this.reloadPluginList();
         this.cdr.markForCheck();
       } else {
-        console.error('PluginConfigComponent.DeleteConfigConfirm: delete failed');
+        this.log.error('PluginConfigComponent.DeleteConfigConfirm: delete failed');
       }
     });
 
@@ -885,7 +887,7 @@ export class PluginConfigComponent implements OnInit {
   }
 
   DeleteConfigAbort() {
-    console.log('PluginConfigComponent.DeleteConfigAbort:');
+    this.log.log('PluginConfigComponent.DeleteConfigAbort:');
 
     this.confirmdelete_display = false;
 

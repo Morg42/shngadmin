@@ -22,6 +22,7 @@ import { TranslateDirective, TranslatePipe, TranslateService } from '@ngx-transl
 import { Bind } from 'primeng/bind';
 import { Dialog } from 'primeng/dialog';
 import { PlugininfoType } from '../../common/models/plugin-info';
+import { LogService } from '../../common/services/log.service';
 import { PluginsApiService } from '../../common/services/plugins-api.service';
 import { ServerApiService } from '../../common/services/server-api.service';
 
@@ -49,6 +50,7 @@ export class PluginsComponent implements OnInit {
   private translate = inject(TranslateService);
   private titleService = inject(Title);
   private appConfig = inject(AppConfigService);
+  private readonly log = inject(LogService);
 
   faPlayCircle = faPlayCircle;
   faPauseCircle = faPauseCircle;
@@ -66,7 +68,7 @@ export class PluginsComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('PluginsComponent.ngOnInit');
+    this.log.log('PluginsComponent.ngOnInit');
 
     this.dataServiceServer
       .getServerinfo()
@@ -139,7 +141,7 @@ export class PluginsComponent implements OnInit {
   }
 
   stopPlugin(pluginConfigName) {
-    // console.log('stopPlugin', {pluginConfigName});
+    // this.log.log('stopPlugin', {pluginConfigName});
 
     this.pluginsDataService
       .setPluginState(pluginConfigName, 'stop')
@@ -150,7 +152,7 @@ export class PluginsComponent implements OnInit {
   }
 
   startPlugin(pluginConfigName) {
-    // console.log('startPlugin', {pluginConfigName});
+    // this.log.log('startPlugin', {pluginConfigName});
 
     this.pluginsDataService
       .setPluginState(pluginConfigName, 'start')
@@ -161,7 +163,7 @@ export class PluginsComponent implements OnInit {
   }
 
   reloadPlugin(pluginConfigName) {
-    // console.log('reloadPlugin', {pluginConfigName});
+    // this.log.log('reloadPlugin', {pluginConfigName});
 
     this.pluginsDataService
       .setPluginState(pluginConfigName, 'reload')

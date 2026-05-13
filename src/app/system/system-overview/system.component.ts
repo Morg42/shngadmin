@@ -27,6 +27,7 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { APP_NAME, APP_VERSION } from '../../app.component';
 import { PypiInfo } from '../../common/models/pypi-info';
 import { SystemInfo } from '../../common/models/system-info';
+import { LogService } from '../../common/services/log.service';
 import { OlddataService } from '../../common/services/olddata.service';
 import { ServerApiService } from '../../common/services/server-api.service';
 import { SharedService } from '../../common/services/shared.service';
@@ -64,6 +65,7 @@ export class SystemComponent implements OnDestroy, OnInit {
   public shared = inject(SharedService);
   private titleService = inject(Title);
   private appConfig = inject(AppConfigService);
+  private readonly log = inject(LogService);
 
   faCheckCircle = faCheckCircle;
 
@@ -156,7 +158,7 @@ export class SystemComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
-    console.log('SystemComponent.ngOnInit:');
+    this.log.log('SystemComponent.ngOnInit:');
 
     this.dataServiceServer!.getServerinfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -187,8 +189,8 @@ export class SystemComponent implements OnDestroy, OnInit {
           this.cdr.markForCheck();
         },
         error: (error) => {
-          console.log('SystemComponent: dataService.getSysteminfo():');
-          console.log(error);
+          this.log.log('SystemComponent: dataService.getSysteminfo():');
+          this.log.log(error);
         },
       });
 
@@ -245,7 +247,7 @@ export class SystemComponent implements OnDestroy, OnInit {
           }
           this.cdr.markForCheck();
         },
-        error: (error) => console.log('SystemComponent: dataService.getPypiinfo():' + error),
+        error: (error) => this.log.log('SystemComponent: dataService.getPypiinfo():' + error),
       });
 
     // -----------------------------------
@@ -322,7 +324,7 @@ export class SystemComponent implements OnDestroy, OnInit {
   // -----------------------------------
   //
   initCharts() {
-    console.log('initCharts()');
+    this.log.log('initCharts()');
 
     this.chartdataLoad = {
       labels: [],
@@ -442,7 +444,7 @@ export class SystemComponent implements OnDestroy, OnInit {
   }
 
   drawCharts() {
-    console.log('DrawCharts()');
+    this.log.log('DrawCharts()');
     this.websocketPluginService.systemloadUpdate$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {

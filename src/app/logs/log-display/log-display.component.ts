@@ -14,6 +14,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { LogsInfoDict, LogsType } from '../../common/models/logfiles-info';
+import { LogService } from '../../common/services/log.service';
 import { LogsApiService } from '../../common/services/logs-api.service';
 
 import { NgStyle } from '@angular/common';
@@ -62,6 +63,7 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
   private dataService = inject(LogsApiService);
   private translate = inject(TranslateService);
   private titleService = inject(Title);
+  private readonly log = inject(LogService);
 
   @ViewChild('codeeditor', { static: true }) private codeEditor;
 
@@ -133,7 +135,7 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
         logParam = logParam.slice(0, -4);
       }
     }
-    console.log({ logParam });
+    this.log.log({ logParam });
 
     this.loglevels.push({ label: 'ALL', value: 'ALL' });
     this.loglevels.push({ label: 'DEBUG', value: ' DEBUG ' });
@@ -288,7 +290,7 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
         .readLogfile(this.displayLogfile, chunk)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe((response: string) => {
-          // console.log({response});
+          // this.log.log({response});
           this.logfile_chunk = <any>response;
           this.first_chunk = this.logfile_chunk['lines'][0] === 1;
           this.last_chunk = this.logfile_chunk['lastchunk'];

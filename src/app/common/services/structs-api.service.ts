@@ -4,6 +4,7 @@ import { Injectable, inject } from '@angular/core';
 import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AppConfigService } from './app-config.service';
+import { LogService } from './log.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,6 +12,7 @@ import { AppConfigService } from './app-config.service';
 export class StructsApiService {
   private http = inject(HttpClient);
   private appConfig = inject(AppConfigService);
+  private readonly log = inject(LogService);
 
   getStructs() {
     const apiUrl = this.appConfig.apiUrl;
@@ -21,7 +23,7 @@ export class StructsApiService {
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'StructsApiService (getStructs): Could not read structs data' + ' - ' + err.error.error,
         );
         return of({});

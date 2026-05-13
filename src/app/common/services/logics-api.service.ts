@@ -4,6 +4,7 @@ import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AppConfigService } from './app-config.service';
+import { LogService } from './log.service';
 
 interface ApiResult {
   result: string;
@@ -16,6 +17,7 @@ interface ApiResult {
 export class LogicsApiService {
   private http = inject(HttpClient);
   private appConfig = inject(AppConfigService);
+  private readonly log = inject(LogService);
 
   private readonly _groupExpanded = new BehaviorSubject<number[]>([]);
   readonly groupExpanded$ = this._groupExpanded.asObservable();
@@ -34,11 +36,11 @@ export class LogicsApiService {
     return this.http.get(url).pipe(
       map((response) => {
         const result = response;
-        // console.warn('LogicsApiService.getGroupsInfo(): ', result);
+        // this.log.warn('LogicsApiService.getGroupsInfo(): ', result);
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'LogicsApiService.getGroupsInfo(): Could not read groups data' + ' - ' + err.error.error,
         );
         return of({});
@@ -55,7 +57,7 @@ export class LogicsApiService {
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'LogicsApiService.getLogics(): Could not read logics data' + ' - ' + err.error.error,
         );
         return of({});
@@ -72,7 +74,7 @@ export class LogicsApiService {
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'LogicsApiService.getLogic(' +
             logicname +
             '): Could not read logics data' +
@@ -90,11 +92,11 @@ export class LogicsApiService {
     return this.http.get(url).pipe(
       map((response) => {
         const result = response;
-        // console.warn('LogicsApiService.getLogicState(' + logicname + '): ', result);
+        // this.log.warn('LogicsApiService.getLogicState(' + logicname + '): ', result);
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'LogicsApiService.getLogicState(' +
             logicname +
             '): Could not read logics data' +
@@ -109,7 +111,7 @@ export class LogicsApiService {
   setLogicState(logicName, action, filename = '') {
     // valid actions are: 'trigger', 'enable', 'disable', 'load', 'unload', 'reload', 'delete', 'create'
     action = action.toLowerCase();
-    // console.warn('LogicsApiService.setLogicState', {logicName}, {action});
+    // this.log.warn('LogicsApiService.setLogicState', {logicName}, {action});
 
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'logics/' + logicName + '?action=' + action;
@@ -121,23 +123,23 @@ export class LogicsApiService {
         const result = response as ApiResult;
 
         if (result) {
-          // console.log('LogicsApiService.setLogicState', '- config', config, '\nresult', {result});
+          // this.log.log('LogicsApiService.setLogicState', '- config', config, '\nresult', {result});
           if (result.result === 'ok') {
-            // console.log('LogicsApiService.setLogicState', 'success');
+            // this.log.log('LogicsApiService.setLogicState', 'success');
             return true;
           } else {
-            console.log('LogicsApiService.setLogicState', 'failed');
+            this.log.log('LogicsApiService.setLogicState', 'failed');
             alert(
               'LogicsApiService.setLogicState:\n\n' + result.result + ': ' + result.description,
             );
             return false;
           }
         } else {
-          console.log('LogicsApiService.setLogicState', 'failed: Undefined result');
+          this.log.log('LogicsApiService.setLogicState', 'failed: Undefined result');
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'LogicsApiService.setLogicState: Could not set logic state' + ' - ' + err.error.error,
         );
         return of({});
@@ -148,7 +150,7 @@ export class LogicsApiService {
   saveLogicParameters(logicName, paramObj) {
     // paramObj is a dict containing the entries of the parameter section in etc/logic.yamls
     // parameters to be deleted must be included with an empty string as value!
-    // console.warn('LogicsApiService.saveLogicParameters', {logicName}, {paramObj});
+    // this.log.warn('LogicsApiService.saveLogicParameters', {logicName}, {paramObj});
 
     const apiUrl = this.appConfig.apiUrl;
     const url = apiUrl + 'logics/' + logicName + '?action=' + 'saveparameters';
@@ -157,23 +159,23 @@ export class LogicsApiService {
         const result = response as ApiResult;
 
         if (result) {
-          // console.log('LogicsApiService.setLogicState', '- config', config, '\nresult', {result});
+          // this.log.log('LogicsApiService.setLogicState', '- config', config, '\nresult', {result});
           if (result.result === 'ok') {
-            // console.log('LogicsApiService.setLogicState', 'success');
+            // this.log.log('LogicsApiService.setLogicState', 'success');
             return true;
           } else {
-            console.log('LogicsApiService.saveLogicParameters', 'fail');
+            this.log.log('LogicsApiService.saveLogicParameters', 'fail');
             alert(
               'LogicsApiService.saveLogicParameters:\n' + result.result + '\n' + result.description,
             );
             return false;
           }
         } else {
-          console.log('LogicsApiService.setLogicState', 'fail: undefined result');
+          this.log.log('LogicsApiService.setLogicState', 'fail: undefined result');
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'LogicsApiService.saveLogicParameters: Could not save logic parameters' +
             ' - ' +
             err.error.error,
@@ -191,23 +193,23 @@ export class LogicsApiService {
         const result = response as ApiResult;
 
         if (result) {
-          console.log('LogicsApiService.saveLogicGroup', '- group', groupName, '\nresult', {
+          this.log.log('LogicsApiService.saveLogicGroup', '- group', groupName, '\nresult', {
             result,
           });
           if (result.result === 'ok') {
-            console.log('LogicsApiService.saveLogicGroup', 'success');
+            this.log.log('LogicsApiService.saveLogicGroup', 'success');
             return true;
           } else {
-            console.log('LogicsApiService.saveLogicGroup', 'fail');
+            this.log.log('LogicsApiService.saveLogicGroup', 'fail');
             alert('LogicsApiService.saveLogicGroup:\n' + result.result + '\n' + result.description);
             return false;
           }
         } else {
-          console.log('LogicsApiService.saveLogicGroup', 'fail: undefined result');
+          this.log.log('LogicsApiService.saveLogicGroup', 'fail: undefined result');
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'LogicsApiService.saveLogicGroup: Could not save logic group' + ' - ' + err.error.error,
         );
         return of({});
@@ -223,25 +225,25 @@ export class LogicsApiService {
         const result = response as ApiResult;
 
         if (result) {
-          console.log('LogicsApiService.deleteLogicGroup', '- group', groupName, '\nresult', {
+          this.log.log('LogicsApiService.deleteLogicGroup', '- group', groupName, '\nresult', {
             result,
           });
           if (result.result === 'ok') {
-            console.log('LogicsApiService.deleteLogicGroup', 'success');
+            this.log.log('LogicsApiService.deleteLogicGroup', 'success');
             return true;
           } else {
-            console.log('LogicsApiService.deleteLogicGroup', 'fail');
+            this.log.log('LogicsApiService.deleteLogicGroup', 'fail');
             alert(
               'LogicsApiService.deleteLogicGroup:\n' + result.result + '\n' + result.description,
             );
             return false;
           }
         } else {
-          console.log('LogicsApiService.deleteLogicGroup', 'fail: undefined result');
+          this.log.log('LogicsApiService.deleteLogicGroup', 'fail: undefined result');
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'LogicsApiService.deleteLogicGroup: Could not delete logic group' +
             ' - ' +
             err.error.error,

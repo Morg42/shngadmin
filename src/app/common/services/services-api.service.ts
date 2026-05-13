@@ -4,6 +4,7 @@ import { Injectable, inject } from '@angular/core';
 import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AppConfigService } from './app-config.service';
+import { LogService } from './log.service';
 
 interface EvalResult {
   expression: string;
@@ -17,6 +18,7 @@ interface EvalResult {
 export class ServicesApiService {
   private http = inject(HttpClient);
   private appConfig = inject(AppConfigService);
+  private readonly log = inject(LogService);
 
   // -----------------------------------------------------------
   //  Send eval data to check if it is conform to Python specification
@@ -29,14 +31,14 @@ export class ServicesApiService {
         const result = response;
 
         if (result) {
-          // console.log('ServicesApiService.CheckEvalData', '- config:', evalData, '\nresult', {result});
+          // this.log.log('ServicesApiService.CheckEvalData', '- config:', evalData, '\nresult', {result});
           return result;
         } else {
-          console.log('ServicesApiService.CheckEvalData', 'fail: undefined result');
+          this.log.log('ServicesApiService.CheckEvalData', 'fail: undefined result');
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'ServicesApiService.CheckEvalData: Could not set plugin config data' +
             ' - ' +
             err.error.error,
@@ -50,7 +52,7 @@ export class ServicesApiService {
   //  Send yaml text to check if it is conform to specification
   //
   CheckYamlText(yamlText) {
-    // console.log('ServicesApiService.CheckYamlText');
+    // this.log.log('ServicesApiService.CheckYamlText');
 
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'services/yamlcheck/';
@@ -59,15 +61,15 @@ export class ServicesApiService {
         const result = response;
 
         if (result) {
-          // console.log('ServicesApiService.CheckYamlText', '- config:', yamlText, '\nresult', {result});
+          // this.log.log('ServicesApiService.CheckYamlText', '- config:', yamlText, '\nresult', {result});
           return result;
         } else {
-          console.log('ServicesApiService.CheckYamlText', 'fail: undefined result');
+          this.log.log('ServicesApiService.CheckYamlText', 'fail: undefined result');
           return '';
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'ServicesApiService.CheckYamlText: Could not set plugin config data' +
             ' - ' +
             err.error.error,
@@ -81,7 +83,7 @@ export class ServicesApiService {
   //  Send yaml text to check if it is conform to specification
   //
   ConvertToYamlText(confText) {
-    // console.log('ServicesApiService.CheckYamlText');
+    // this.log.log('ServicesApiService.CheckYamlText');
 
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'services/yamlconvert/';
@@ -90,14 +92,14 @@ export class ServicesApiService {
         const result = response;
 
         if (result) {
-          // console.log('ServicesApiService.ConvertToYamlText', '- config:', confText, '\nresult', {result});
+          // this.log.log('ServicesApiService.ConvertToYamlText', '- config:', confText, '\nresult', {result});
           return result;
         } else {
-          console.log('ServicesApiService.ConvertToYamlText', 'fail: undefined result');
+          this.log.log('ServicesApiService.ConvertToYamlText', 'fail: undefined result');
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'ServicesApiService.ConvertToYamlText: Could not set plugin config data' +
             ' - ' +
             err.error.error,
@@ -116,7 +118,7 @@ export class ServicesApiService {
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'ServicesApiService (getCacheOrphans): Could not read cache orphans data' +
             ' - ' +
             err.error.error,
@@ -127,7 +129,7 @@ export class ServicesApiService {
   }
 
   deleteCacheFile(filename) {
-    // console.log('ServicesApiService.deleteCacheFile');
+    // this.log.log('ServicesApiService.deleteCacheFile');
 
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'services/cachefile_delete?filename=' + filename;
@@ -136,14 +138,14 @@ export class ServicesApiService {
         const result = response;
 
         if (result) {
-          // console.log('ServicesApiService.ConvertToYamlText', '- config:', confText, '\nresult', {result});
+          // this.log.log('ServicesApiService.ConvertToYamlText', '- config:', confText, '\nresult', {result});
           return result;
         } else {
-          console.log('ServicesApiService.deleteCacheFile', 'fail: undefined result');
+          this.log.log('ServicesApiService.deleteCacheFile', 'fail: undefined result');
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'ServicesApiService.deleteCacheFile: Could not set plugin config data' +
             ' - ' +
             err.error.error,

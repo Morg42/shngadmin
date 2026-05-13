@@ -7,6 +7,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { ServerInfo } from '../models/server-info';
 import { AppConfigService } from './app-config.service';
+import { LogService } from './log.service';
 import { SharedService } from './shared.service';
 import { UserPreferencesService } from './user-preferences.service';
 
@@ -19,6 +20,7 @@ export class ServerApiService {
   private shared = inject(SharedService);
   private appConfig = inject(AppConfigService);
   private userPrefs = inject(UserPreferencesService);
+  private readonly log = inject(LogService);
 
   private baseUrl = inject<string>('BASE_URL' as unknown as InjectionToken<string>);
 
@@ -37,9 +39,9 @@ export class ServerApiService {
 
   getServerBasicinfo() {
     const url = this.appConfig.apiUrl + 'server/';
-    console.log('ServerApiService.getServerBasicinfo() using url', url);
+    this.log.log('ServerApiService.getServerBasicinfo() using url', url);
     return this.http.get(url).pipe(
-      tap((response) => console.log('getServerBasicinfo response:', response)),
+      tap((response) => this.log.log('getServerBasicinfo response:', response)),
       map((response) => {
         this.shng_serverinfo = response as ServerInfo;
         const result = response as ServerInfo;
@@ -62,7 +64,7 @@ export class ServerApiService {
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'ServerApiService.getServerBasicinfo(): Could not read serverinfo data - ',
           err?.error?.error || err.message || err,
         );
@@ -72,11 +74,11 @@ export class ServerApiService {
   }
 
   getServerinfo() {
-    console.log('ServerApiService.getServerinfo() called');
+    this.log.log('ServerApiService.getServerinfo() called');
     const url = this.appConfig.apiUrl + 'server/info';
-    console.log('ServerApiService.getServerinfo() using url', url);
+    this.log.log('ServerApiService.getServerinfo() using url', url);
     return this.http.get(url).pipe(
-      tap((response) => console.log('ServerApiService.getServerinfo() response:', response)),
+      tap((response) => this.log.log('ServerApiService.getServerinfo() response:', response)),
       map((response) => {
         this.shng_serverinfo = <ServerInfo>response;
         const result = response;
@@ -111,11 +113,11 @@ export class ServerApiService {
         this.translate.setDefaultLang(fallbackLang);
         this.shared.setGuiLanguage();
 
-        console.log('ServerApiService.getServerinfo(): config updated');
+        this.log.log('ServerApiService.getServerinfo(): config updated');
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'ServerApiService.getServerinfo(): Could not read serverinfo data - ',
           err?.error?.error || err.message || err,
         );
@@ -125,12 +127,12 @@ export class ServerApiService {
   }
 
   getShngServerStatus() {
-    console.log('getShngServerStatus');
+    this.log.log('getShngServerStatus');
     const url = this.appConfig.apiUrl + 'server/status/';
     return this.http.get(url).pipe(
       map((response) => response),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'ServerApiService (getShngServerStatus): Could not read server status - ',
           err?.error?.error || err.message || err,
         );
@@ -140,12 +142,12 @@ export class ServerApiService {
   }
 
   restartShngServer() {
-    console.log('restartShngServer');
+    this.log.log('restartShngServer');
     const url = this.appConfig.apiUrl + 'server/restart/';
     return this.http.put(url, JSON.stringify('')).pipe(
       map((response) => response),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'ServerApiService (restartShngServer): Could not restart server - ',
           err?.error?.error || err.message || err,
         );
@@ -155,12 +157,12 @@ export class ServerApiService {
   }
 
   downloadConfigBackup() {
-    console.log('downloadConfigBackup');
+    this.log.log('downloadConfigBackup');
     const url = this.appConfig.apiUrl + 'files/backup/';
     return this.http.get(url, { responseType: 'blob' }).pipe(
       map((response) => response),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'ServerApiService (downloadConfigBackup): Could not download backup data - ',
           err?.error?.error || err.message || err,
         );

@@ -24,6 +24,7 @@ import { ButtonDirective } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { Listbox } from 'primeng/listbox';
+import { LogService } from '../../common/services/log.service';
 import { ServerApiService } from '../../common/services/server-api.service';
 import { ServicesApiService } from '../../common/services/services-api.service';
 
@@ -53,6 +54,7 @@ export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
   private fileService = inject(FilesApiService);
   private dataService = inject(ServicesApiService);
   private titleService = inject(Title);
+  private readonly log = inject(LogService);
 
   // -----------------------------------------------------------------
   //  Vars for the codemirror components
@@ -127,7 +129,7 @@ export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
   }
 
   ngOnInit() {
-    // console.log('LoggingConfigurationComponent.ngOnInit');
+    // this.log.log('LoggingConfigurationComponent.ngOnInit');
 
     for (let i = 1; i <= 100; i++) {
       this.rulers.push({ color: '#eee', column: i * 4, lineStyle: 'dashed' });
@@ -191,7 +193,7 @@ export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
   }
 
   DeleteConfigConfirm() {
-    // console.log('ItemConfigurationComponent.DeleteConfigConfirm:');
+    // this.log.log('ItemConfigurationComponent.DeleteConfigConfirm:');
 
     // close confirm dialog
     this.confirmdelete_display = false;
@@ -204,7 +206,7 @@ export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
         if (response) {
           // close configuration dialog
           this.confirmdelete_display = false;
-          console.log('ItemConfigurationComponent.DeleteConfigConfirm(): call ngOnInit()');
+          this.log.log('ItemConfigurationComponent.DeleteConfigConfirm(): call ngOnInit()');
           this.ngOnInit();
           //            this.restart_core_button = true;
           this.cdr.markForCheck();
@@ -265,7 +267,7 @@ export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
     let filename = this.selectedItemfile.value;
     if (filename.toLowerCase().endsWith('.yaml')) {
       filename = filename.slice(0, -5);
-      // console.log('itemFileSelected()' , {filename});
+      // this.log.log('itemFileSelected()' , {filename});
       this.getItemFile(filename);
     } else {
       this.myEditFilename = '';
@@ -300,7 +302,7 @@ export class ItemConfigurationComponent implements AfterViewChecked, OnInit {
   }
 
   saveConfig() {
-    // console.log('LoggingConfigurationComponent.saveConfig');
+    // this.log.log('LoggingConfigurationComponent.saveConfig');
 
     this.dataService
       .CheckYamlText(this.myTextarea)

@@ -16,6 +16,7 @@ import { Bind } from 'primeng/bind';
 import { Ripple } from 'primeng/ripple';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { SchedulerInfo } from '../../common/models/scheduler-info';
+import { LogService } from '../../common/services/log.service';
 import { SchedulersApiService } from '../../common/services/schedulers-api.service';
 import { ServerApiService } from '../../common/services/server-api.service';
 
@@ -35,6 +36,7 @@ export class SchedulersComponent implements OnInit {
   private translate = inject(TranslateService);
   private titleService = inject(Title);
   private appConfig = inject(AppConfigService);
+  private readonly log = inject(LogService);
 
   schedulerinfo: SchedulerInfo[];
   developerMode: boolean;
@@ -44,7 +46,7 @@ export class SchedulersComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('SchedulersComponent.ngOnInit');
+    this.log.log('SchedulersComponent.ngOnInit');
 
     this.dataServiceServer
       .getServerinfo()
@@ -60,7 +62,7 @@ export class SchedulersComponent implements OnInit {
             //          this.schedulerinfo.sort(function (a, b) {return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)});
             this.developerMode = this.appConfig.developerMode;
 
-            console.log('getSchedulers', { response2 });
+            this.log.log('getSchedulers', { response2 });
             this.cdr.markForCheck();
           });
       });

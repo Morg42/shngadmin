@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { LoggersType } from '../models/loggers-info';
 import { AppConfigService } from './app-config.service';
+import { LogService } from './log.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +13,7 @@ import { AppConfigService } from './app-config.service';
 export class LoggersApiService {
   private http = inject(HttpClient);
   private appConfig = inject(AppConfigService);
+  private readonly log = inject(LogService);
 
   getLoggers() {
     const apiUrl = this.appConfig.apiUrl;
@@ -22,7 +24,7 @@ export class LoggersApiService {
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'LoggersApiService (getLogs): Could not read logs data' + ' - ' + err.error.error,
         );
         return of({});
@@ -31,7 +33,7 @@ export class LoggersApiService {
   }
 
   setLoggerLevel(logger, level) {
-    // console.log('LoggersApiService.setLoggerLevel');
+    // this.log.log('LoggersApiService.setLoggerLevel');
 
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'loggers/' + logger + '?level=' + level;
@@ -40,15 +42,15 @@ export class LoggersApiService {
         const result = response;
 
         if (result) {
-          // console.log('ServicesApiService.ConvertToYamlText', '- config:', confText, '\nresult', {result});
+          // this.log.log('ServicesApiService.ConvertToYamlText', '- config:', confText, '\nresult', {result});
           return result;
         } else {
-          console.log('LoggersApiService.setLoggerLevel', 'fail: undefined result');
+          this.log.log('LoggersApiService.setLoggerLevel', 'fail: undefined result');
           return {};
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'LoggersApiService.setLoggerLevel: Could not set logger level' + ' - ' + err.error.error,
         );
         return of({});
@@ -57,7 +59,7 @@ export class LoggersApiService {
   }
 
   setHandlers(logger, handlerList) {
-    // console.log('LoggersApiService.setHandlers');
+    // this.log.log('LoggersApiService.setHandlers');
 
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'loggers/' + logger + '?handlers=' + handlerList;
@@ -66,15 +68,15 @@ export class LoggersApiService {
         const result = response;
 
         if (result) {
-          // console.log('ServicesApiService.ConvertToYamlText', '- config:', confText, '\nresult', {result});
+          // this.log.log('ServicesApiService.ConvertToYamlText', '- config:', confText, '\nresult', {result});
           return result;
         } else {
-          console.log('LoggersApiService.setHandlers', 'fail: undefined result');
+          this.log.log('LoggersApiService.setHandlers', 'fail: undefined result');
           return {};
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'LoggersApiService.setHandlers: Could not set logger level' + ' - ' + err.error.error,
         );
         return of({});
@@ -91,7 +93,7 @@ export class LoggersApiService {
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           "LoggersApiService.addLogger(): Could not add logger '" +
             logger +
             "' - " +
@@ -111,7 +113,7 @@ export class LoggersApiService {
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           "LoggersApiService.deleteLogger(): Could not delete logger '" +
             logger +
             "' - " +

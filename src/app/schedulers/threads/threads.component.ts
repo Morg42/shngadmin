@@ -11,6 +11,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ThreadInfo } from '../../common/models/thread-info';
+import { LogService } from '../../common/services/log.service';
 import { ServerApiService } from '../../common/services/server-api.service';
 import { ThreadsApiService } from '../../common/services/threads-api.service';
 
@@ -28,6 +29,7 @@ export class ThreadsComponent implements OnInit {
   private dataServiceServer = inject(ServerApiService);
   private translate = inject(TranslateService);
   private titleService = inject(Title);
+  private readonly log = inject(LogService);
 
   threadsList: ThreadInfo[];
   threads_count: number;
@@ -38,7 +40,7 @@ export class ThreadsComponent implements OnInit {
   }
 
   ngOnInit() {
-    // console.log('ThreadsComponent.ngOnInit');
+    // this.log.log('ThreadsComponent.ngOnInit');
 
     this.dataServiceServer
       .getServerinfo()
@@ -53,7 +55,7 @@ export class ThreadsComponent implements OnInit {
             this.threadsList = response2[1];
             this.threads_count = response2[0];
             //          this.schedulerinfo.sort(function (a, b) {return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)});
-            console.log('getThreads', { response2 });
+            this.log.log('getThreads', { response2 });
             this.cdr.markForCheck();
           });
       });

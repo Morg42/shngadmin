@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { LogsType } from '../models/logfiles-info';
 import { AppConfigService } from './app-config.service';
+import { LogService } from './log.service';
 import { ServerApiService } from './server-api.service';
 
 @Injectable({
@@ -14,6 +15,7 @@ export class LogsApiService {
   private http = inject(HttpClient);
   private dataService = inject(ServerApiService);
   private appConfig = inject(AppConfigService);
+  private readonly log = inject(LogService);
 
   getLogs() {
     const apiUrl = this.appConfig.apiUrl;
@@ -24,7 +26,7 @@ export class LogsApiService {
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'LogsApiService (getLogs): Could not read logs data' + ' - ' + err.error.error,
         );
         return of({});
@@ -37,7 +39,7 @@ export class LogsApiService {
     let url = apiUrl + 'logs/' + filename;
     let part = 0;
     if (apiUrl === null) {
-      console.error('readLogfile for ' + filename + ' had an empty apiUrl');
+      this.log.error('readLogfile for ' + filename + ' had an empty apiUrl');
       return of({} as object);
     }
 
@@ -53,8 +55,8 @@ export class LogsApiService {
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error({ err });
-        console.error(
+        this.log.error({ err });
+        this.log.error(
           'LogsApiService (readLogfile): Could not read logfile ' +
             filename +
             ' - ' +

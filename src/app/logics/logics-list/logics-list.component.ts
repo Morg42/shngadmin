@@ -31,6 +31,7 @@ import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { Ripple } from 'primeng/ripple';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
+import { LogService } from '../../common/services/log.service';
 import { ServerApiService } from '../../common/services/server-api.service';
 
 @Component({
@@ -73,6 +74,7 @@ export class LogicsListComponent implements OnInit {
   private translate = inject(TranslateService);
   private titleService = inject(Title);
   private renderer = inject(Renderer2);
+  private readonly log = inject(LogService);
 
   groupdefinitions = {};
   groupList: LogicsGroupType[];
@@ -107,9 +109,9 @@ export class LogicsListComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('LogicsListComponent.ngOnInit');
+    this.log.log('LogicsListComponent.ngOnInit');
 
-    console.warn('logics-list:ngOnInit');
+    this.log.warn('logics-list:ngOnInit');
     this.groupExpandedOnStart = this.dataService.groupExpanded;
     this.groupExpanded = this.dataService.groupExpanded;
 
@@ -150,31 +152,31 @@ export class LogicsListComponent implements OnInit {
 
   groupOpened(event) {
     const index = event['index'];
-    console.warn('groupOpened', { index });
+    this.log.warn('groupOpened', { index });
 
-    console.log('this.groupExpanded', this.groupExpanded);
-    console.log('this.groupExpandedOnStart', this.groupExpandedOnStart);
+    this.log.log('this.groupExpanded', this.groupExpanded);
+    this.log.log('this.groupExpandedOnStart', this.groupExpandedOnStart);
 
     if (this.groupExpanded.indexOf(index) === -1) {
       this.groupExpanded.push(index);
       this.dataService.groupExpanded = this.groupExpanded;
     }
-    console.log('this.groupExpanded', this.groupExpanded);
+    this.log.log('this.groupExpanded', this.groupExpanded);
   }
 
   groupClosed(event) {
     const index = event['index'];
-    console.warn('groupClosed', { index });
+    this.log.warn('groupClosed', { index });
     if (this.groupExpanded === undefined) {
       this.groupExpanded = [];
     }
-    console.log('this.groupExpanded', this.groupExpanded);
+    this.log.log('this.groupExpanded', this.groupExpanded);
 
     if (this.groupExpanded.indexOf(index) > -1) {
       this.groupExpanded.splice(this.groupExpanded.indexOf(index), 1);
       this.dataService.groupExpanded = this.groupExpanded;
     }
-    console.log('this.groupExpanded', this.groupExpanded);
+    this.log.log('this.groupExpanded', this.groupExpanded);
   }
 
   sortGroupList() {
@@ -247,7 +249,7 @@ export class LogicsListComponent implements OnInit {
   }
 
   triggerLogic(logicName) {
-    // console.log('triggerLogic', {logicName});
+    // this.log.log('triggerLogic', {logicName});
     this.dataService
       .setLogicState(logicName, 'trigger')
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -257,7 +259,7 @@ export class LogicsListComponent implements OnInit {
   }
 
   disableLogic(logicName) {
-    // console.log('disableLogic', {logicName});
+    // this.log.log('disableLogic', {logicName});
     this.dataService
       .setLogicState(logicName, 'disable')
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -267,7 +269,7 @@ export class LogicsListComponent implements OnInit {
   }
 
   enableLogic(logicName) {
-    // console.log('enableLogic', {logicName});
+    // this.log.log('enableLogic', {logicName});
     this.dataService
       .setLogicState(logicName, 'enable')
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -277,7 +279,7 @@ export class LogicsListComponent implements OnInit {
   }
 
   unloadLogic(logicName) {
-    // console.log('unloadLogic', {logicName});
+    // this.log.log('unloadLogic', {logicName});
     this.dataService
       .setLogicState(logicName, 'unload')
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -287,7 +289,7 @@ export class LogicsListComponent implements OnInit {
   }
 
   reloadLogic(logicName) {
-    // console.log('reloadLogic', {logicName});
+    // this.log.log('reloadLogic', {logicName});
     this.dataService
       .setLogicState(logicName, 'reload')
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -297,7 +299,7 @@ export class LogicsListComponent implements OnInit {
   }
 
   loadLogic(logicName) {
-    // console.log('loadLogic', {logicName});
+    // this.log.log('loadLogic', {logicName});
     this.dataService
       .setLogicState(logicName, 'load')
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -307,7 +309,7 @@ export class LogicsListComponent implements OnInit {
   }
 
   newLogic() {
-    console.log('newLogic');
+    this.log.log('newLogic');
     this.newlogic_name = '';
     this.newlogic_filename = '';
     this.newlogic_add_enabled = false;
@@ -316,15 +318,15 @@ export class LogicsListComponent implements OnInit {
   }
 
   onShow() {
-    console.warn('onShow');
+    this.log.warn('onShow');
   }
 
   onBlur() {
-    console.warn('onBlur');
+    this.log.warn('onBlur');
   }
 
   onFocus() {
-    console.warn('onFocus');
+    this.log.warn('onFocus');
     if (this.newlogic_filename === '') {
       this.newlogic_filename = this.newlogic_name;
       if (this.newlogic_name !== '') {
@@ -343,7 +345,7 @@ export class LogicsListComponent implements OnInit {
     }
 
     for (let i = 0; i < this.logics.length; i++) {
-      // console.log({i}, this.logics[i].name);
+      // this.log.log({i}, this.logics[i].name);
       if (this.newlogic_name === this.logics[i].name) {
         this.newlogic_add_enabled = false;
         this.wrongNewLogicName = 'LOGICS.NAME_ALREADY_EXISTS';
@@ -352,7 +354,7 @@ export class LogicsListComponent implements OnInit {
     }
 
     for (let i = 0; i < this.logics.length; i++) {
-      // console.log({i}, this.baseName(this.logics[i].pathname, false));
+      // this.log.log({i}, this.baseName(this.logics[i].pathname, false));
       if (this.newlogic_filename === this.baseName(this.logics[i].pathname, false)) {
         this.newlogic_add_enabled = false;
         this.wrongNewLogicName = 'LOGICS.FILENAME_ALREADY_EXISTS';
@@ -370,7 +372,7 @@ export class LogicsListComponent implements OnInit {
   }
 
   createLogic() {
-    console.warn('createLogic', this.newlogic_name, this.newlogic_filename);
+    this.log.warn('createLogic', this.newlogic_name, this.newlogic_filename);
     this.newlogic_display = false;
     this.dataService
       .setLogicState(this.newlogic_name, 'create', this.newlogic_filename)
@@ -382,7 +384,7 @@ export class LogicsListComponent implements OnInit {
   }
 
   deleteLogic(logicName, fileName) {
-    // console.log('deleteLogic', {logicName});
+    // this.log.log('deleteLogic', {logicName});
 
     this.logicToDelete = logicName;
     this.delete_param = { config: logicName, filename: fileName };
@@ -390,7 +392,7 @@ export class LogicsListComponent implements OnInit {
   }
 
   deleteLogicConfirm(with_code) {
-    // console.log('deleteLogicConfirm', this.logicToDelete);
+    // this.log.log('deleteLogicConfirm', this.logicToDelete);
     this.confirmdelete_display = false;
 
     let action = 'delete';

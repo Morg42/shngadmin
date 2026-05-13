@@ -19,6 +19,7 @@ import { Bind } from 'primeng/bind';
 import { ButtonDirective } from 'primeng/button';
 import { Ripple } from 'primeng/ripple';
 import { Tree } from 'primeng/tree';
+import { LogService } from '../../common/services/log.service';
 import { ServerApiService } from '../../common/services/server-api.service';
 import { SharedService } from '../../common/services/shared.service';
 import { StructsApiService } from '../../common/services/structs-api.service';
@@ -65,6 +66,7 @@ export class StructsComponent implements OnInit {
   private dataService = inject(StructsApiService);
   public shared = inject(SharedService);
   private titleService = inject(Title);
+  private readonly log = inject(LogService);
 
   serverInfo = <ServerInfo>{};
 
@@ -73,7 +75,7 @@ export class StructsComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('StructsComponent.ngOnInit');
+    this.log.log('StructsComponent.ngOnInit');
 
     this.setTitle(this.translate.instant('ITEMS.STRUCT_CONFIGFILE'));
 
@@ -206,7 +208,7 @@ export class StructsComponent implements OnInit {
   }
 
   doConsoleLog(s) {
-    console.warn('doConsoleLog', s);
+    this.log.warn('doConsoleLog', s);
   }
 
   private expandRecursive(node: TreeNode, isExpand: boolean) {

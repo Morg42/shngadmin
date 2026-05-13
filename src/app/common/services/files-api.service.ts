@@ -4,6 +4,7 @@ import { Injectable, inject } from '@angular/core';
 import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AppConfigService } from './app-config.service';
+import { LogService } from './log.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,9 +12,10 @@ import { AppConfigService } from './app-config.service';
 export class FilesApiService {
   private http = inject(HttpClient);
   private appConfig = inject(AppConfigService);
+  private readonly log = inject(LogService);
 
   readFile(filetype, filename = '') {
-    // console.log('FilesApiService.readFile()', {filename});
+    // this.log.log('FilesApiService.readFile()', {filename});
 
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'files/' + filetype + '/';
@@ -26,16 +28,16 @@ export class FilesApiService {
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error({ err });
+        this.log.error({ err });
         if (filename === '') {
-          console.error(
+          this.log.error(
             "FilesApiService (readFile): Could not read filetype '" +
               filetype +
               "' - error: " +
               err.error.error,
           );
         } else {
-          console.error(
+          this.log.error(
             "FilesApiService (readFile): Could not read filetype '" +
               filetype +
               "', filename '" +
@@ -51,7 +53,7 @@ export class FilesApiService {
   }
 
   saveFile(filetype, filename = '', content = '') {
-    // console.log('FilesApiService.saveFile');
+    // this.log.log('FilesApiService.saveFile');
 
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'files/' + filetype + '/';
@@ -63,14 +65,14 @@ export class FilesApiService {
         const result = response;
 
         if (result) {
-          // console.log('ServicesApiService.CheckYamlText', '- config:', yamlText, '\nresult', {result});
+          // this.log.log('ServicesApiService.CheckYamlText', '- config:', yamlText, '\nresult', {result});
           return result;
         } else {
-          console.log('FilesApiService.saveFile', 'fail: undefined result');
+          this.log.log('FilesApiService.saveFile', 'fail: undefined result');
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'FilesApiService.saveFile: Could not save config data' + ' - ' + err.error.error,
         );
         return of({});
@@ -79,14 +81,14 @@ export class FilesApiService {
   }
 
   deleteFile(filetype, filename = '') {
-    console.log('FilesApiService.deleteFile()', { filename });
+    this.log.log('FilesApiService.deleteFile()', { filename });
 
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'files/' + filetype + '/';
     if (filename !== '') {
       url += '?filename=' + filename;
     }
-    console.log('FilesApiService.deleteFile()', { url });
+    this.log.log('FilesApiService.deleteFile()', { url });
 
     return this.http.delete(url, { responseType: 'text' }).pipe(
       map((response) => {
@@ -94,16 +96,16 @@ export class FilesApiService {
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error({ err });
+        this.log.error({ err });
         if (filename === '') {
-          console.error(
+          this.log.error(
             "FilesApiService.deleteFile(): Could not delete filetype '" +
               filetype +
               "' - error: " +
               err.error.error,
           );
         } else {
-          console.error(
+          this.log.error(
             "FilesApiService.deleteFile(): Could not delete filetype '" +
               filetype +
               "', filename '" +
@@ -119,7 +121,7 @@ export class FilesApiService {
   }
 
   getfileList(filetype) {
-    console.log('FilesApiService.getfileList()', { filetype });
+    this.log.log('FilesApiService.getfileList()', { filetype });
 
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'files/' + filetype + '/';
@@ -129,7 +131,7 @@ export class FilesApiService {
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'FilesApiService.getfileList: Could not read file list' + ' - ' + err.error.error,
         );
         return of({});

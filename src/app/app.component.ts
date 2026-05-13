@@ -15,6 +15,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { ServerInfo } from './common/models/server-info';
 import { AuthService } from './common/services/auth.service';
+import { LogService } from './common/services/log.service';
 import { ServerApiService } from './common/services/server-api.service';
 import { SharedService } from './common/services/shared.service';
 import { UserPreferencesService } from './common/services/user-preferences.service';
@@ -40,6 +41,7 @@ export const APP_VERSION = '1.0.0';
 export class AppComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly log = inject(LogService);
   private http = inject(HttpClient);
   private dataService = inject(ServerApiService);
   private translate = inject(TranslateService);
@@ -54,7 +56,7 @@ export class AppComponent implements OnInit {
   title = 'shngadmin';
 
   constructor() {
-    console.log('AppComponent.constructor:');
+    this.log.log('AppComponent.constructor:');
 
     this.translate.addLangs(['en', 'de', 'fr']);
 
@@ -70,7 +72,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('AppComponent was loaded');
+    this.log.log('AppComponent was loaded');
 
     this.dataService
       .getServerBasicinfo()
@@ -82,7 +84,7 @@ export class AppComponent implements OnInit {
           this.cdr.markForCheck();
         },
         error: (error) => {
-          console.warn('DataService: getServerBasicinfo():', { error });
+          this.log.warn('DataService: getServerBasicinfo():', { error });
         },
       });
   }

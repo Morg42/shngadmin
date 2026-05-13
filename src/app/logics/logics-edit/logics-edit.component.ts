@@ -31,6 +31,7 @@ import { LogicsinfoType } from '../../common/models/logics-info';
 import { LogicsWatchItem } from '../../common/models/logics-watch-item';
 import { FilesApiService } from '../../common/services/files-api.service';
 import { ItemsApiService } from '../../common/services/items-api.service';
+import { LogService } from '../../common/services/log.service';
 import { LogicsApiService } from '../../common/services/logics-api.service';
 import { PluginsApiService } from '../../common/services/plugins-api.service';
 import { ServerApiService } from '../../common/services/server-api.service';
@@ -74,6 +75,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   private itemsapiService = inject(ItemsApiService);
   private translate = inject(TranslateService);
   private titleService = inject(Title);
+  private readonly log = inject(LogService);
 
   logics: LogicsinfoType[];
   newlogics: LogicsinfoType[];
@@ -181,7 +183,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
     }
     this.myEditFilename = logic[1].trim();
     this.myLogicName = logic[0].trim();
-    console.log('LogicsEditComponent.ngOnInit()', { logic });
+    this.log.log('LogicsEditComponent.ngOnInit()', { logic });
 
     // let logicName = this.route.snapshot.paramMap['params']['logicname'];
     // if (logicName !== undefined) {
@@ -254,7 +256,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   }
 
   getPluginParameterDefinitions() {
-    // console.warn('getPluginParameterDefinitions', this.logic);
+    // this.log.warn('getPluginParameterDefinitions', this.logic);
     this.parameter_cols = [
       {
         field: 'name',
@@ -279,7 +281,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
         this.pluginParameters = response as Record<string, Record<string, unknown>>;
-        // console.log('ngOnInit: pluginParameters', this.pluginParameters);
+        // this.log.log('ngOnInit: pluginParameters', this.pluginParameters);
 
         for (const param in this.pluginParameters) {
           if (param in this.pluginParameters) {
@@ -309,7 +311,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
 
             let val: unknown = null;
             val = this.logic[param];
-            // console.log({param}, {val});
+            // this.log.log({param}, {val});
             if (val === undefined || val === null) {
               val = null;
             }
@@ -331,7 +333,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
             };
 
             if (paramdata['type'] === 'list') {
-              // console.log({paramdef});
+              // this.log.log({paramdef});
               if (paramdef['default'] !== undefined) {
                 paramdata['default'] = this.listToString(paramdef['default']);
               }
@@ -406,13 +408,13 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   }
 
   getLogicInfo(logicname) {
-    // console.warn({logicname});
+    // this.log.warn({logicname});
     this.dataService
       .getLogic(logicname)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
         this.logic = response as LogicsinfoType;
-        // console.warn('LogicsEditComponent.getLogicInfo() this.logic', this.logic);
+        // this.log.warn('LogicsEditComponent.getLogicInfo() this.logic', this.logic);
 
         if (this.logic.enabled === undefined) {
           this.logic.enabled = true;
@@ -424,9 +426,9 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
         if (this.logic.group === undefined) {
           this.logic.group = '';
         }
-        console.log('typeof this.logic.group', typeof this.logic.group, this.logic.group);
+        this.log.log('typeof this.logic.group', typeof this.logic.group, this.logic.group);
         this.logic.group = this.listToString(this.logic.group);
-        console.log('typeof this.logic.group', typeof this.logic.group, this.logic.group);
+        this.log.log('typeof this.logic.group', typeof this.logic.group, this.logic.group);
 
         if (this.logic.cycle === undefined) {
           this.logic.cycle = null;
@@ -434,9 +436,9 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
         if (this.logic.crontab === undefined) {
           this.logic.crontab = '';
         }
-        // console.log('typeof this.logic.crontab', typeof this.logic.crontab, this.logic.crontab);
+        // this.log.log('typeof this.logic.crontab', typeof this.logic.crontab, this.logic.crontab);
         this.logic.crontab = this.listToString(this.logic.crontab);
-        // console.log('typeof this.logic.crontab', typeof this.logic.crontab, this.logic.crontab);
+        // this.log.log('typeof this.logic.crontab', typeof this.logic.crontab, this.logic.crontab);
 
         if (this.myEditFilename === '') {
           if (
@@ -453,7 +455,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe((responseFile) => {
             this.myTextarea = responseFile;
-            // console.log('ngOnInit', 'read', {responseFile});
+            // this.log.log('ngOnInit', 'read', {responseFile});
             const editor = this.codeEditor.codeMirror;
             editor.setOption('lineSeparator', '\n');
             if (this.myTextarea.indexOf('\r\n') >= 0) {
@@ -476,7 +478,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
             this.logicWatchitemOrig = Array.from(this.logic.watch_item);
           } else {
             this.logicWatchitemOrig = Array.from(this.logic.watch_item);
-            // console.log('this.logic.watch_item', this.logic.watch_item);
+            // this.log.log('this.logic.watch_item', this.logic.watch_item);
           }
         } else {
           this.logic.watch_item = [];
@@ -484,7 +486,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
         }
       });
 
-    console.warn('getLogicInfo *3', this.logic);
+    this.log.warn('getLogicInfo *3', this.logic);
     this.dataService
       .getLogicState(logicname)
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -493,9 +495,9 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
           // assign only if valid data is returned (do not assigen in localhost test mode)
           this.logic = response as LogicsinfoType;
         }
-        console.warn('getLogicInfo *4', this.logic, response);
+        this.log.warn('getLogicInfo *4', this.logic, response);
         this.myLogicIsLoaded = response['is_loaded'];
-        // console.warn('LogicsEditComponent.getLogicInfo() state isLoaded', response['is_loaded']);
+        // this.log.warn('LogicsEditComponent.getLogicInfo() state isLoaded', response['is_loaded']);
         this.cdr.markForCheck();
       });
   }
@@ -520,19 +522,19 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   parametersChanged() {
     if (this.logic.cycle !== this.logicCycleOrig) {
       if (!(this.logic.cycle === null && this.logicCycleOrig === '')) {
-        // console.log('parametersChanged:', 'cycle', this.logic.cycle, ':' + this.logicCycleOrig + ':');
+        // this.log.log('parametersChanged:', 'cycle', this.logic.cycle, ':' + this.logicCycleOrig + ':');
         return true;
       }
     }
     if (this.logic.logic_description !== this.logicDescriptionOrig) {
       if (!(this.logic.logic_description === null && this.logicDescriptionOrig === '')) {
-        // console.log('parametersChanged:', 'logic_description');
+        // this.log.log('parametersChanged:', 'logic_description');
         return true;
       }
     }
     if (this.logic.group !== this.logicGroupOrig) {
       if (!(this.logic.group === null && this.logicGroupOrig === '')) {
-        // console.log('parametersChanged:', 'group');
+        // this.log.log('parametersChanged:', 'group');
         return true;
       }
     }
@@ -544,22 +546,22 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
 
     for (let i = 0; i < this.parameters.length; i++) {
       if (this.parameters[i].value !== this.parameters[i].value_orig) {
-        // console.log('parametersChanged:', this.parameters[i].name, this.parameters[i].value, ':' + this.parameters[i].value_orig + ':');
+        // this.log.log('parametersChanged:', this.parameters[i].name, this.parameters[i].value, ':' + this.parameters[i].value_orig + ':');
         return true;
       }
     }
 
     if (typeof this.logic.watch_item !== 'undefined') {
-      // console.log(this.logicWatchitemOrig, this.logic.watch_item);
+      // this.log.log(this.logicWatchitemOrig, this.logic.watch_item);
       let allIdenticalFlag = true;
       for (const watchItemOrig of this.logicWatchitemOrig) {
         if (!this.logic.watch_item.includes(watchItemOrig)) {
-          console.log('parametersChanged', { watchItemOrig });
+          this.log.log('parametersChanged', { watchItemOrig });
           allIdenticalFlag = false;
         }
       }
       if (this.logic.watch_item.length !== this.logicWatchitemOrig.length) {
-        // console.log('parametersChanged', 'length changed');
+        // this.log.log('parametersChanged', 'length changed');
         allIdenticalFlag = false;
       }
       return !allIdenticalFlag;
@@ -734,7 +736,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   }
 
   saveCode(reload = false) {
-    // console.log('LoggingConfigurationComponent.saveCode');
+    // this.log.log('LoggingConfigurationComponent.saveCode');
     this.fileService
       .saveFile('logics', this.myEditFilename, this.myTextarea)
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -764,7 +766,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   }
 
   saveParameters(reload) {
-    // console.log('LoggingConfigurationComponent.saveParameters');
+    // this.log.log('LoggingConfigurationComponent.saveParameters');
 
     const params = {};
 
@@ -836,7 +838,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   }
 
   triggerLogic() {
-    // console.log('triggerLogic', {logicName});
+    // this.log.log('triggerLogic', {logicName});
     this.dataService
       .setLogicState(this.logic.name, 'trigger')
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -846,7 +848,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   }
 
   reloadLogic(logicName) {
-    console.log('reloadLogic', { logicName });
+    this.log.log('reloadLogic', { logicName });
 
     if (logicName === undefined) {
       logicName = this.myLogicName;
@@ -855,7 +857,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
       .setLogicState(logicName, 'reload')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        // console.warn('reloadLogic: setLogicState response', response);
+        // this.log.warn('reloadLogic: setLogicState response', response);
         this.myLogicIsLoaded = response !== false;
         // this.getLogics();
         this.cdr.markForCheck();
@@ -863,8 +865,8 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   }
 
   loadLogic(logicName) {
-    console.log('loadLogic', { logicName });
-    // console.warn('myLogicName', this.myLogicName, 'myEditFilename', this.myEditFilename);
+    this.log.log('loadLogic', { logicName });
+    // this.log.warn('myLogicName', this.myLogicName, 'myEditFilename', this.myEditFilename);
 
     if (logicName === undefined) {
       logicName = this.myLogicName;
@@ -873,7 +875,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
       .setLogicState(logicName, 'load')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        // console.warn('loadLogic: setLogicState response', response);
+        // this.log.warn('loadLogic: setLogicState response', response);
         this.myLogicIsLoaded = response !== false;
         // this.getLogics();
         this.cdr.markForCheck();
@@ -881,7 +883,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   }
 
   disableLogic(logicName) {
-    // console.log('disableLogic', {logicName});
+    // this.log.log('disableLogic', {logicName});
     this.dataService
       .setLogicState(logicName, 'disable')
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -893,7 +895,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   }
 
   enableLogic(logicName) {
-    // console.log('enableLogic', {logicName});
+    // this.log.log('enableLogic', {logicName});
     this.dataService
       .setLogicState(logicName, 'enable')
       .pipe(takeUntilDestroyed(this.destroyRef))

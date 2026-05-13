@@ -4,6 +4,7 @@ import { Injectable, inject } from '@angular/core';
 import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AppConfigService } from './app-config.service';
+import { LogService } from './log.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,6 +12,7 @@ import { AppConfigService } from './app-config.service';
 export class ScenesApiService {
   private http = inject(HttpClient);
   private appConfig = inject(AppConfigService);
+  private readonly log = inject(LogService);
 
   getScenes() {
     const apiUrl = this.appConfig.apiUrl;
@@ -21,7 +23,7 @@ export class ScenesApiService {
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'ScenesApiService (getScenes): Could not read scenes data' + ' - ' + err.error.error,
         );
         return of({});
@@ -38,15 +40,15 @@ export class ScenesApiService {
         const result = response as string;
 
         if (result) {
-          console.log('ScenesApiService.reloadScene', '\nresult', { result });
+          this.log.log('ScenesApiService.reloadScene', '\nresult', { result });
           return result;
         } else {
-          console.log('ScenesApiService.reloadScene', 'fail: undefined result');
+          this.log.log('ScenesApiService.reloadScene', 'fail: undefined result');
           return '';
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'ScenesApiService.reloadScene: Could not set plugin config data' +
             ' - ' +
             err.error.error,
@@ -65,15 +67,15 @@ export class ScenesApiService {
         const result = response as string;
 
         if (result) {
-          console.log('ScenesApiService.reloadScenes', '\nresult', { result });
+          this.log.log('ScenesApiService.reloadScenes', '\nresult', { result });
           return result;
         } else {
-          console.log('ScenesApiService.reloadScenes', 'fail: undefined result');
+          this.log.log('ScenesApiService.reloadScenes', 'fail: undefined result');
           return '';
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'ScenesApiService.reloadScenes: Could not set plugin config data' +
             ' - ' +
             err.error.error,

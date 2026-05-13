@@ -18,6 +18,7 @@ import { Bind } from 'primeng/bind';
 import { Ripple } from 'primeng/ripple';
 import { SceneInfo } from '../../common/models/scene-info';
 import { SystemInfo } from '../../common/models/system-info';
+import { LogService } from '../../common/services/log.service';
 import { ScenesApiService } from '../../common/services/scenes-api.service';
 import { ServerApiService } from '../../common/services/server-api.service';
 
@@ -50,13 +51,14 @@ export class ScenesComponent implements OnInit {
   private messageService = inject(MessageService);
   private dataService = inject(ScenesApiService);
   private titleService = inject(Title);
+  private readonly log = inject(LogService);
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);
   }
 
   ngOnInit() {
-    console.log('ScenesComponent.ngOnInit');
+    this.log.log('ScenesComponent.ngOnInit');
 
     this.dataServiceServer
       .getServerinfo()
@@ -70,7 +72,7 @@ export class ScenesComponent implements OnInit {
           .subscribe((response2) => {
             this.sceneList = <SceneInfo[]>response2;
             //          this.schedulerinfo.sort(function (a, b) {return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)});
-            console.log('getScenes', { response2 });
+            this.log.log('getScenes', { response2 });
             this.cdr.markForCheck();
           });
       });

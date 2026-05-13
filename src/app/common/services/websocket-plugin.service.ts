@@ -4,6 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 
 import { APP_NAME, APP_VERSION } from '../../app.component';
 import { AppConfigService } from './app-config.service';
+import { LogService } from './log.service';
 import { SharedService } from './shared.service';
 import { WebsocketService } from './websocket.service';
 
@@ -35,6 +36,7 @@ export class WebsocketPluginService {
   private appConfig = inject(AppConfigService);
   private websocketService = inject(WebsocketService);
   private shared = inject(SharedService);
+  private readonly log = inject(LogService);
   monitorCallbackFunction: ((data: unknown) => void) | undefined = undefined;
 
   private msgMonitorItems: Message = {
@@ -175,7 +177,7 @@ export class WebsocketPluginService {
     const adm_url = 'ws://' + this.appConfig.wsHost + ':' + this.appConfig.wsPort + '/adm';
 
     if (this.appConfig.hostIp === null) {
-      console.log(
+      this.log.log(
         { adm_url },
         "Für mockup Environment ip und port in 'testdata/api/server/info/default.json' anpassen",
       );
@@ -189,7 +191,7 @@ export class WebsocketPluginService {
         try {
           data = JSON.parse(msg.data);
         } catch (e) {
-          console.warn('WebsocketPluginService: failed to parse message', msg.data, e);
+          this.log.warn('WebsocketPluginService: failed to parse message', msg.data, e);
           return;
         }
         if (data.cmd === 'item') {
@@ -197,10 +199,10 @@ export class WebsocketPluginService {
         } else if (data.cmd === 'series') {
           this.handleResponseSeries(data);
         } else {
-          console.log('message received:', data);
+          this.log.log('message received:', data);
         }
       },
-      error: (err) => console.log(err),
+      error: (err) => this.log.log(err),
     });
 
     // Send identity on every (re)connect
@@ -345,7 +347,7 @@ export class WebsocketPluginService {
       this.updateSeries(this.disk, data);
       this.diskSource.next();
     } else {
-      console.warn('message received (UNKNOWN series):', data);
+      this.log.warn('message received (UNKNOWN series):', data);
     }
   }
 }

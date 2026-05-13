@@ -9,6 +9,7 @@ import {
 import { Observable } from 'rxjs';
 
 import { AuthService } from './auth.service';
+import { LogService } from './log.service';
 
 @Injectable({
   providedIn: 'root',
@@ -16,9 +17,10 @@ import { AuthService } from './auth.service';
 export class AuthGuardService implements CanActivate {
   protected router = inject(Router);
   protected authService = inject(AuthService);
+  private readonly log = inject(LogService);
 
   constructor() {
-    console.log('AuthGuardService constructor called');
+    this.log.log('AuthGuardService constructor called');
   }
 
   canActivate(

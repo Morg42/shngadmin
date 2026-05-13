@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AppConfigService } from './app-config.service';
+import { LogService } from './log.service';
 
 @Injectable({
   providedIn: 'root',
@@ -8,9 +9,10 @@ import { AppConfigService } from './app-config.service';
 export class SharedService {
   private translate = inject(TranslateService);
   private appConfig = inject(AppConfigService);
+  private readonly log = inject(LogService);
 
   constructor() {
-    console.log('SharedService constructor called');
+    this.log.log('SharedService constructor called');
   }
 
   ageToString(age: number) {
@@ -78,7 +80,7 @@ export class SharedService {
       const time = datetime.split(' ')[1].split('.')[0];
       const tz = is_dst ? this.appConfig.tznameDST : this.appConfig.tzname;
       if (!tz) {
-        console.warn('SharedService.displayDateTime: tz could not be read from AppConfigService');
+        this.log.warn('SharedService.displayDateTime: tz could not be read from AppConfigService');
       }
       return date + ' ' + time + ' ' + (tz || 'unknown');
     } else {
@@ -206,7 +208,7 @@ export class SharedService {
     if (installed_languages.indexOf(lang) > -1) {
       this.translate.use(lang);
     } else {
-      console.warn(
+      this.log.warn(
         'SharedService.setGuiLanguage',
         'language ' + lang + ' not installed, using en instead',
       );
@@ -217,7 +219,7 @@ export class SharedService {
   getFallbackLanguage(index: number = 0): string {
     const order = this.appConfig.fallbackLanguageOrder;
     if (!order || order.length === 0) {
-      console.warn(
+      this.log.warn(
         'SharedService.getFallbackLanguage: fallbackLanguageOrder is empty, using defaults',
       );
       return ['en', 'de', 'xx'][index] ?? 'en';

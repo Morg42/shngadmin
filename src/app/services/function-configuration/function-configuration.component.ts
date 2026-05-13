@@ -24,6 +24,7 @@ import { InputText } from 'primeng/inputtext';
 import { Listbox } from 'primeng/listbox';
 import { FilesApiService } from '../../common/services/files-api.service';
 import { FunctionsApiService } from '../../common/services/functions-api.service';
+import { LogService } from '../../common/services/log.service';
 import { ServicesApiService } from '../../common/services/services-api.service';
 
 @Component({
@@ -52,6 +53,7 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
   private functionApiService = inject(FunctionsApiService);
   private dataService = inject(ServicesApiService);
   private titleService = inject(Title);
+  private readonly log = inject(LogService);
 
   // -----------------------------------------------------------------
   //  Vars for the codemirror components
@@ -128,7 +130,7 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
   }
 
   ngOnInit() {
-    // console.log('LoggingConfigurationComponent.ngOnInit');
+    // this.log.log('LoggingConfigurationComponent.ngOnInit');
 
     this.setTitle(this.translate.instant('MENU.FUNCTION_CONFIGURATION'));
 
@@ -186,7 +188,7 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
   }
 
   DeleteConfigConfirm() {
-    // console.log('FunctionConfigurationComponent.DeleteConfigConfirm:');
+    // this.log.log('FunctionConfigurationComponent.DeleteConfigConfirm:');
 
     // close confirm dialog
     this.confirmdelete_display = false;
@@ -199,7 +201,7 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
         if (response) {
           // close configuration dialog
           this.confirmdelete_display = false;
-          console.log('FunctionConfigurationComponent.DeleteConfigConfirm(): call ngOnInit()');
+          this.log.log('FunctionConfigurationComponent.DeleteConfigConfirm(): call ngOnInit()');
           this.ngOnInit();
           //            this.restart_core_button = true;
         }
@@ -277,7 +279,7 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
     let filename = this.selectedFunctionfile.value;
     if (filename.toLowerCase().endsWith('.py')) {
       filename = filename.slice(0, -3);
-      // console.log('functionFileSelected()' , {filename});
+      // this.log.log('functionFileSelected()' , {filename});
       this.getFunctionFile(filename);
     } else {
       this.myEditFilename = '';
@@ -315,7 +317,7 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
   }
 
   saveConfig() {
-    console.log('FunctionConfigurationComponent.saveConfig');
+    this.log.log('FunctionConfigurationComponent.saveConfig');
 
     this.myTextOutput = this.myTextarea;
     if (this.myTextOutput.startsWith('ERROR:')) {
@@ -336,15 +338,15 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
   }
 
   reloadFunction(name) {
-    // console.log('reloadPlugin', {pluginConfigName});
+    // this.log.log('reloadPlugin', {pluginConfigName});
 
-    console.log('reloadFunctions:', name);
+    this.log.log('reloadFunctions:', name);
     this.reloadButtonDisabled = true;
     this.functionApiService
       .reloadFunction(name)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        console.log('reloadFunction', '\nresponse', { response });
+        this.log.log('reloadFunction', '\nresponse', { response });
         setTimeout(() => {
           this.reloadButtonDisabled = false;
         }, 200);
@@ -352,15 +354,15 @@ export class FunctionConfigurationComponent implements AfterViewChecked, OnInit 
   }
 
   reloadFunctions() {
-    // console.log('reloadPlugin', {pluginConfigName});
+    // this.log.log('reloadPlugin', {pluginConfigName});
 
-    console.log('reloadFunctions: all');
+    this.log.log('reloadFunctions: all');
     this.reloadAllButtonDisabled = true;
     this.functionApiService
       .reloadFunctions()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        console.log('reloadFunctions', '\nresponse', { response });
+        this.log.log('reloadFunctions', '\nresponse', { response });
         setTimeout(() => {
           this.reloadAllButtonDisabled = false;
         }, 200);

@@ -4,6 +4,7 @@ import { Injectable, inject } from '@angular/core';
 import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AppConfigService } from './app-config.service';
+import { LogService } from './log.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,6 +12,7 @@ import { AppConfigService } from './app-config.service';
 export class FunctionsApiService {
   private http = inject(HttpClient);
   private appConfig = inject(AppConfigService);
+  private readonly log = inject(LogService);
 
   getFunctions() {
     const apiUrl = this.appConfig.apiUrl;
@@ -21,7 +23,7 @@ export class FunctionsApiService {
         return result;
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'FunctionsApiService (getFunctions): Could not read function data' +
             ' - ' +
             err.error.error,
@@ -40,15 +42,15 @@ export class FunctionsApiService {
         const result = response;
 
         if (result) {
-          // console.log('FunctionsApiService.reloadFunction', '\nresult', {result});
+          // this.log.log('FunctionsApiService.reloadFunction', '\nresult', {result});
           return result;
         } else {
-          // console.log('FunctionsApiService.reloadFunction', 'fail: undefined result');
+          // this.log.log('FunctionsApiService.reloadFunction', 'fail: undefined result');
           return '';
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'FunctionsApiService.reloadFunction: Could not set function config data' +
             ' - ' +
             err.error.error,
@@ -67,15 +69,15 @@ export class FunctionsApiService {
         const result = response;
 
         if (result) {
-          console.log('FunctionsApiService.reloadFunctions', '\nresult', { result });
+          this.log.log('FunctionsApiService.reloadFunctions', '\nresult', { result });
           return result;
         } else {
-          console.log('FunctionsApiService.reloadFunctions', 'fail: undefined result');
+          this.log.log('FunctionsApiService.reloadFunctions', 'fail: undefined result');
           return '';
         }
       }),
       catchError((err: HttpErrorResponse) => {
-        console.error(
+        this.log.error(
           'FunctionsApiService.reloadFunctions: Could not set function config data' +
             ' - ' +
             err.error.error,

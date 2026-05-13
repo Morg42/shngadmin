@@ -19,6 +19,7 @@ import { HttpClient } from '@angular/common/http';
 import { saveAs } from 'file-saver';
 
 import { FilesApiService } from '../common/services/files-api.service';
+import { LogService } from '../common/services/log.service';
 import { ServerApiService } from '../common/services/server-api.service';
 import { ServicesApiService } from '../common/services/services-api.service';
 
@@ -88,6 +89,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
   private titleService = inject(Title);
   private appConfig = inject(AppConfigService);
   private userPrefs = inject(UserPreferencesService);
+  private readonly log = inject(LogService);
 
   //  schedulerinfo: SchedulerInfo[];
 
@@ -255,7 +257,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
   }
 
   ngOnInit() {
-    // console.log('ServicesComponent.ngOnInit');
+    // this.log.log('ServicesComponent.ngOnInit');
 
     for (let i = 1; i <= 100; i++) {
       this.rulers.push({ color: '#eee', column: i * 4, lineStyle: 'dashed' });
@@ -297,13 +299,13 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
       .subscribe((response) => {
         this.cacheInfo = <CacheEntryType[]>response;
         this.cacheAllChecked = false;
-        // console.log('loadChacheOrphans', this.cacheInfo);
+        // this.log.log('loadChacheOrphans', this.cacheInfo);
         this.cdr.markForCheck();
       });
   }
 
   deleteCacheEntry(entryNr) {
-    // console.log('deleteCacheEntry', this.cacheInfo[entryNr].filename);
+    // this.log.log('deleteCacheEntry', this.cacheInfo[entryNr].filename);
     this.dataService
       .deleteCacheFile(this.cacheInfo[entryNr].filename)
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -355,7 +357,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
   }
 
   createPwdHash() {
-    console.log('createPwdHash');
+    this.log.log('createPwdHash');
     this.pwd_hash = sha512(this.pwd_clear);
   }
 
@@ -415,7 +417,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
   }
 
   setLanguage() {
-    console.log('setLanguage', this.selected_language);
+    this.log.log('setLanguage', this.selected_language);
     this.appConfig.setDefaultLanguage(this.selected_language!);
     this.userPrefs.setLanguage(this.selected_language!); // persist across reloads
     this.shared.setGuiLanguage();
@@ -449,10 +451,10 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
         if (res.code === undefined) {
           // shng is not running
           this.status_errorcount += 1;
-          console.log('getShngStatus', 'SmartHomeNG not running');
+          this.log.log('getShngStatus', 'SmartHomeNG not running');
           this.shng_status = this.translate_shngStatus('waiting') + '...';
         } else {
-          // console.log('getShngStatus', res.code, res.text);
+          // this.log.log('getShngStatus', res.code, res.text);
           this.shng_statuscode = res.code;
           this.shng_status = this.translate_shngStatus(res.text);
           if (res.details !== undefined) {
@@ -475,7 +477,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
             this.getShngStatus();
           });
         } else {
-          console.warn('getShngStatus', 'Statuspolling aborted');
+          this.log.warn('getShngStatus', 'Statuspolling aborted');
           this.shng_status = this.translate_shngStatus('not active');
           this.shng_statuscode = -1;
         }
@@ -497,7 +499,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
         const res = response as { result?: string };
-        console.log('restartShng', res.result);
+        this.log.log('restartShng', res.result);
         this.shng_status = this.translate_shngStatus('Restart clicked');
         this.shng_statuscode = -1;
         this.cdr.markForCheck();
@@ -549,23 +551,23 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
   }
 
   myUploader(event, form) {
-    console.log('myUploader', event.files);
-    console.log('myUploader', event.files[0].name);
+    this.log.log('myUploader', event.files);
+    this.log.log('myUploader', event.files[0].name);
 
     let filecontent: string;
 
     const reader = new FileReader();
 
     // file reading started
-    reader.addEventListener('loadstart', function () {
-      console.log('File reading started');
+    reader.addEventListener('loadstart', () => {
+      this.log.log('File reading started');
     });
 
     // file reading finished successfully
     reader.addEventListener('load', function () {
       // const text = this.result;
       // contents of the file
-      // console.log(text);
+      // this.log.log(text);
     });
 
     // file reading failed
@@ -574,15 +576,15 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     });
 
     // file read progress
-    reader.addEventListener('progress', function (e) {
+    reader.addEventListener('progress', (e) => {
       if (e.lengthComputable === true) {
         const percent_read = Math.floor((e.loaded / e.total) * 100);
-        console.log(percent_read + '% read');
+        this.log.log(percent_read + '% read');
       }
     });
 
     reader.onloadend = () => {
-      // console.warn(reader.result);
+      // this.log.warn(reader.result);
       filecontent = reader.result as string;
 
       this.fileService
@@ -603,7 +605,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
   }
 
   doUpload(form) {
-    console.log('doUpload');
+    this.log.log('doUpload');
 
     /*
     this.fileService.saveFile('restore', event.files[0].name, 'TEST test')

@@ -3,7 +3,7 @@
     <p-select
       [options]="row.valid_list"
       [showClear]="true"
-      [placeholder]="row.default"
+      [placeholder]="placeholder"
       [(ngModel)]="row[col.field]"
       (ngModelChange)="row[col.field] = $event; onChanged()"
     >
@@ -13,10 +13,10 @@
     <input
       [(ngModel)]="row[col.field]"
       type="number"
-      [min]="row.valid_min"
-      [max]="row.valid_max"
+      [min]="validMin"
+      [max]="validMax"
       pInputText
-      [placeholder]="row.default"
+      [placeholder]="placeholder"
       [name]="col.field"
       [ngStyle]="{ width: col.iwidth }"
       (ngModelChange)="onChanged()"
@@ -27,7 +27,7 @@
       [(ngModel)]="row[col.field]"
       type="password"
       pInputText
-      [placeholder]="row.default"
+      [placeholder]="placeholder"
       [name]="col.field"
       [ngStyle]="{ width: col.iwidth }"
       (ngModelChange)="onChanged()"
@@ -39,7 +39,7 @@
       type="text"
       readonly
       pInputText
-      [placeholder]="row.default"
+      [placeholder]="placeholder"
       [name]="col.field"
       [ngStyle]="{ width: col.iwidth, color: '#000077' }"
       (ngModelChange)="onChanged()"
@@ -50,7 +50,7 @@
       [(ngModel)]="row[col.field]"
       type="text"
       pInputText
-      [placeholder]="row.default"
+      [placeholder]="placeholder"
       [name]="col.field"
       [ngStyle]="{ width: col.iwidthwide }"
       (ngModelChange)="onChanged()"
@@ -61,7 +61,7 @@
       [(ngModel)]="row[col.field]"
       type="text"
       pInputText
-      [placeholder]="row.default"
+      [placeholder]="placeholder"
       [name]="col.field"
       [ngStyle]="{ width: col.iwidth }"
       (ngModelChange)="onChanged()"

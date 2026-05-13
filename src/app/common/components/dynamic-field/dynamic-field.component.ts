@@ -18,6 +18,18 @@ export class DynamicFieldComponent {
 
   readonly NUM_TYPES = ['int', 'num', 'float', 'scene', 'hide-int'];
 
+  get placeholder(): string | undefined {
+    return this.row.default as string | undefined;
+  }
+
+  get validMin(): string | number | null {
+    return (this.row.valid_min as string | number | null) ?? null;
+  }
+
+  get validMax(): string | number | null {
+    return (this.row.valid_max as string | number | null) ?? null;
+  }
+
   get inputKind(): string {
     const { type, gui_type, valid_list } = this.row;
     if ((valid_list?.length ?? 0) > 0) return 'select';

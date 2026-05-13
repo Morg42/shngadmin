@@ -3,7 +3,7 @@ import { AuthService } from './common/services/auth.service';
 
 /** Returns the <base href> value used as the API root URL. */
 export function getBaseUrl(): string {
-  return document.getElementsByTagName('base')[0].href;
+  return document.getElementsByTagName('base')[0]?.href ?? '/';
 }
 
 /**

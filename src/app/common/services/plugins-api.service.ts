@@ -75,8 +75,7 @@ export class PluginsApiService {
   getPluginsInfo() {
     // this.log.log('PluginsApiService.getPluginsInfo');
 
-    const apiUrl = this.appConfig.apiUrl;
-    let url = apiUrl + 'plugins/info/';
+    const url = '/admin/plugins/info';
     return this.http.get(url).pipe(
       map((response) => {
         const result = response;

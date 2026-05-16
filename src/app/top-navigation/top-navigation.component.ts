@@ -7,6 +7,7 @@ import {
   ElementRef,
   inject,
   OnInit,
+  Renderer2,
   ViewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -48,6 +49,8 @@ export class TopNavigationComponent implements OnInit {
   private titleService = inject(Title);
   private appConfig = inject(AppConfigService);
   private readonly log = inject(LogService);
+  private readonly renderer = inject(Renderer2);
+  private readonly el = inject(ElementRef);
 
   @ViewChild('topnav') private topnavEl: ElementRef<HTMLElement>;
 
@@ -125,34 +128,33 @@ export class TopNavigationComponent implements OnInit {
     const x = this.topnavEl?.nativeElement;
     if (!x) return;
 
-    if (x.className === 'topnav') {
-      x.className += ' responsive';
+    if (x.classList.contains('responsive')) {
+      this.renderer.removeClass(x, 'responsive');
     } else {
-      x.className = 'topnav';
+      this.renderer.addClass(x, 'responsive');
     }
   }
 
   enableDropdownMenu() {
-    const x = document.getElementsByClassName('dropdown-content-hidden');
-    for (let i = 0; i < x.length; i++) {
-      x[i].className = 'dropdown-content';
-    }
+    this.el.nativeElement.querySelectorAll('.dropdown-content-hidden').forEach((x: Element) => {
+      this.renderer.removeClass(x, 'dropdown-content-hidden');
+      this.renderer.addClass(x, 'dropdown-content');
+    });
   }
 
-  disableResponsiveMenu(menuEntry, hideDropdown: boolean = true) {
+  disableResponsiveMenu(menuEntry: MenuItem, hideDropdown = true) {
     this.closeTouchDropdown();
 
-    // disable dropped down menu if in mobile mode
     const m = this.topnavEl?.nativeElement;
     if (!m) return;
 
-    m.className = 'topnav';
+    this.renderer.removeClass(m, 'responsive');
 
-    // hide dropdown after clicking on it (for menu in desktop mode)
     if (hideDropdown) {
-      const x = document.getElementById('menu-' + menuEntry.label);
-      if (x === null) return;
-      x.className = 'dropdown-content-hidden';
+      const x: Element | null = this.el.nativeElement.querySelector('#menu-' + menuEntry.label);
+      if (!x) return;
+      this.renderer.removeClass(x, 'dropdown-content');
+      this.renderer.addClass(x, 'dropdown-content-hidden');
     }
   }
 
@@ -168,7 +170,8 @@ export class TopNavigationComponent implements OnInit {
       } else {
         // First tap → open this dropdown, close any other
         this.closeTouchDropdown();
-        document.getElementById('menu-' + menuEntry.label)?.classList.add('dropdown-touch-open');
+        const el: Element | null = this.el.nativeElement.querySelector('#menu-' + menuEntry.label);
+        if (el) this.renderer.addClass(el, 'dropdown-touch-open');
         this.openMenuLabel = menuEntry.label;
       }
     } else {
@@ -182,9 +185,9 @@ export class TopNavigationComponent implements OnInit {
   }
 
   private closeTouchDropdown() {
-    document
+    this.el.nativeElement
       .querySelectorAll('.dropdown-touch-open')
-      .forEach((el) => el.classList.remove('dropdown-touch-open'));
+      .forEach((x: Element) => this.renderer.removeClass(x, 'dropdown-touch-open'));
     this.openMenuLabel = null;
   }
 

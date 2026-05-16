@@ -232,7 +232,7 @@ export class LogicsGroupsComponent implements OnInit {
           this.group = this.logicGroups[this.myEditGroup];
           const groupDesc = this.groupDescEl?.nativeElement;
           if (groupDesc) {
-            groupDesc.innerHTML = this.group.description + '<br><br><br>';
+            groupDesc.textContent = this.group.description;
           }
         }
         this.groupChanged = false;
@@ -274,7 +274,7 @@ export class LogicsGroupsComponent implements OnInit {
       }
       const groupDesc = this.groupDescEl?.nativeElement;
       if (groupDesc) {
-        groupDesc.innerHTML = this.group.description + '<br><br><br>';
+        groupDesc.textContent = this.group.description;
       }
       this.groupTitleOrig = this.logicGroups[group]['title'];
       this.groupDescriptionOrig = this.logicGroups[group]['description'];

@@ -81,13 +81,7 @@ export class ConnectivityService {
 
   private heartbeat(): void {
     const url = this.appConfig.apiUrl + 'server/';
-    this.http.get(url, { observe: 'response' }).subscribe({
-      next: (response) => {
-        const ct = response.headers.get('Content-Type') ?? '';
-        if (ct.includes('text/html')) {
-          this.markOffline();
-        }
-      },
+    this.http.get(url).subscribe({
       error: () => this.markOffline(),
     });
   }

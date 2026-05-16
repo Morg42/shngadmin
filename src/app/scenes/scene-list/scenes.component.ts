@@ -8,6 +8,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { switchMap } from 'rxjs';
 
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
@@ -59,22 +60,19 @@ export class ScenesComponent implements OnInit {
 
   ngOnInit() {
     this.log.log('ScenesComponent.ngOnInit');
+    this.setTitle(this.translate.instant('MENU.SCENE_LIST'));
 
     this.dataServiceServer
       .getServerinfo()
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        switchMap(() => this.dataService.getScenes()),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe((response) => {
-        this.setTitle(this.translate.instant('MENU.SCENE_LIST'));
-
-        this.dataService
-          .getScenes()
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe((response2) => {
-            this.sceneList = <SceneInfo[]>response2;
-            //          this.schedulerinfo.sort(function (a, b) {return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)});
-            this.log.log('getScenes', { response2 });
-            this.cdr.markForCheck();
-          });
+        this.sceneList = response as SceneInfo[];
+        //          this.schedulerinfo.sort(function (a, b) {return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)});
+        this.log.log('getScenes', { response });
+        this.cdr.markForCheck();
       });
   }
 }

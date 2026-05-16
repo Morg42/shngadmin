@@ -23,6 +23,13 @@ export class ConnectivityService {
   private retryTimer: ReturnType<typeof setTimeout> | null = null;
   private countdownTimer: ReturnType<typeof setInterval> | null = null;
   private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
+  private offlineDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+  // A cancelled XHR (e.g. Angular destroying a component mid-request) also
+  // produces status 0, which is indistinguishable from a real network failure.
+  // The debounce gives the next page's requests a chance to succeed first; if
+  // they do, cancelOfflineDebounce() clears the timer and the banner never shows.
+  private readonly OFFLINE_DEBOUNCE_MS = 1500;
 
   constructor() {
     // Start heartbeat once the API URL is known (set by ServerApiService ctor)
@@ -31,9 +38,21 @@ export class ConnectivityService {
 
   markOffline(): void {
     if (!this._online$.getValue()) return;
-    this._online$.next(false);
-    this.stopHeartbeat();
-    this.scheduleRetry();
+    if (this.offlineDebounceTimer !== null) return;
+    this.offlineDebounceTimer = setTimeout(() => {
+      this.offlineDebounceTimer = null;
+      if (!this._online$.getValue()) return;
+      this._online$.next(false);
+      this.stopHeartbeat();
+      this.scheduleRetry();
+    }, this.OFFLINE_DEBOUNCE_MS);
+  }
+
+  cancelOfflineDebounce(): void {
+    if (this.offlineDebounceTimer !== null) {
+      clearTimeout(this.offlineDebounceTimer);
+      this.offlineDebounceTimer = null;
+    }
   }
 
   retryNow(): void {
@@ -105,5 +124,6 @@ export class ConnectivityService {
       clearInterval(this.countdownTimer);
       this.countdownTimer = null;
     }
+    this.cancelOfflineDebounce();
   }
 }

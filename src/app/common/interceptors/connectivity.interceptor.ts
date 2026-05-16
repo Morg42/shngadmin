@@ -10,8 +10,6 @@ export const connectivityInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     tap({
       next: (event) => {
-        // Proxy error pages (e.g. WebStorm dev proxy) return 200 with text/html
-        // instead of the expected JSON — treat that as backend unreachable.
         if (
           event instanceof HttpResponse &&
           req.url.includes('/api/') &&
@@ -19,7 +17,12 @@ export const connectivityInterceptor: HttpInterceptorFn = (req, next) => {
         ) {
           const ct = event.headers.get('Content-Type') ?? '';
           if (ct.includes('text/html')) {
+            // Proxy error page masquerading as 200 OK — treat as unreachable.
             connectivity.markOffline();
+          } else {
+            // Good response: cancel any pending offline debounce so that a
+            // navigation-cancelled request doesn't flip the banner on/off.
+            connectivity.cancelOfflineDebounce();
           }
         }
       },

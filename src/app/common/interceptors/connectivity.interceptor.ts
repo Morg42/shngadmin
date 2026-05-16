@@ -27,7 +27,11 @@ export const connectivityInterceptor: HttpInterceptorFn = (req, next) => {
         }
       },
       error: (err: unknown) => {
-        if (err instanceof HttpErrorResponse && OFFLINE_STATUSES.has(err.status)) {
+        if (
+          err instanceof HttpErrorResponse &&
+          OFFLINE_STATUSES.has(err.status) &&
+          req.url.includes('/api/')
+        ) {
           connectivity.markOffline();
         }
       },

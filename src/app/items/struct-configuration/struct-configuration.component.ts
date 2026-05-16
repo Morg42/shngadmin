@@ -145,7 +145,7 @@ export class StructConfigurationComponent implements AfterViewChecked, OnInit {
       .CheckYamlText(this.myTextarea)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        this.myTextOutput = <any>response;
+        this.myTextOutput = response as string;
         if (this.myTextarea !== '' && this.myTextOutput.startsWith('ERROR:')) {
           this.error_display = true;
         } else {

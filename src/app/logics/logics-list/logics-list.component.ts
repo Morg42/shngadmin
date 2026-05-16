@@ -214,14 +214,13 @@ export class LogicsListComponent implements OnInit {
         this.groupList = [];
         for (const logic of this.logics) {
           if (logic.userlogic === true) {
-            if (logic.group === undefined || logic.group.length === 0) {
+            if (logic.group == null || logic.group.length === 0) {
               logic.group = [''];
             }
             this.userlogics.push(logic);
-            for (const g in logic.group) {
-              if (logic.group.hasOwnProperty(g)) {
-                this.addGroup(logic.group[g]);
-              }
+            const groups = Array.isArray(logic.group) ? logic.group : [logic.group];
+            for (const g of groups) {
+              this.addGroup(g);
             }
           } else {
             this.systemlogics.push(logic);

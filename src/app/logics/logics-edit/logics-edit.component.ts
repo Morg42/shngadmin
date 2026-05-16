@@ -79,13 +79,13 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
 
   logics: LogicsinfoType[];
   newlogics: LogicsinfoType[];
-  logic: LogicsinfoType = <any>{};
+  logic: LogicsinfoType = {} as LogicsinfoType;
   wrongWatchItem: boolean;
   logicChanged: boolean;
   logicDescriptionOrig: string | undefined;
-  logicGroupOrig: string | null;
+  logicGroupOrig: string | string[] | null;
   logicCycleOrig: string | null;
-  logicCrontabOrig: string | null;
+  logicCrontabOrig: string | string[] | null;
   logicWatchitemOrig: LogicsWatchItem[];
 
   parameters: ConfigParameter[] = [];
@@ -469,9 +469,9 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
         this.cdr.markForCheck();
 
         this.logicDescriptionOrig = this.logic.logic_description;
-        this.logicGroupOrig = this.logic.group;
+        this.logicGroupOrig = this.logic.group ?? null;
         this.logicCycleOrig = this.logic.cycle;
-        this.logicCrontabOrig = this.logic.crontab;
+        this.logicCrontabOrig = this.logic.crontab ?? null;
         this.logicWatchitemOrig = [];
         if (this.logic.watch_item !== undefined) {
           if (typeof this.logic.watch_item === 'string') {
@@ -806,9 +806,9 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
       .subscribe((response) => {
         // after saving the parameters, set Orig vars to signal the editor shows "unchanged values"
         this.logicDescriptionOrig = this.logic.logic_description;
-        this.logicGroupOrig = this.logic.group;
+        this.logicGroupOrig = this.logic.group ?? null;
         this.logicCycleOrig = this.logic.cycle;
-        this.logicCrontabOrig = this.logic.crontab;
+        this.logicCrontabOrig = this.logic.crontab ?? null;
 
         // this.watchitemsFromList();
         // ? this.logicWatchitemOrig = Array.from(this.logic.watch_item_list);

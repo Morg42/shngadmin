@@ -17,6 +17,13 @@ import { LogsInfoDict, LogsType } from '../../common/models/logfiles-info';
 import { LogService } from '../../common/services/log.service';
 import { LogsApiService } from '../../common/services/logs-api.service';
 
+interface LogfileChunk {
+  lines: number[];
+  loglines: string[];
+  lastchunk: boolean;
+  chunk: number;
+}
+
 import { NgStyle } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
@@ -84,7 +91,7 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
 
   nbsp = String.fromCharCode(160);
 
-  logfile_chunk = {};
+  logfile_chunk: LogfileChunk | null = null;
   first_chunk = true;
   last_chunk = true;
   chunk_no = 1;
@@ -260,15 +267,16 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
   filterLogChunk() {
     this.logfile_content = '';
     this.cmOptions.lineNumbers = this.level_filter === 'ALL' && this.text_filter === '';
+    if (!this.logfile_chunk) return;
 
     const filter = this.text_filter;
-    for (let i = 0; i < this.logfile_chunk['loglines'].length; i++) {
+    for (let i = 0; i < this.logfile_chunk.loglines.length; i++) {
       if (
         this.level_filter === 'ALL' ||
-        this.logfile_chunk['loglines'][i].indexOf(this.level_filter) > -1
+        this.logfile_chunk.loglines[i].indexOf(this.level_filter) > -1
       ) {
-        if (filter === '' || this.logfile_chunk['loglines'][i].indexOf(filter) > -1) {
-          this.logfile_content += this.logfile_chunk['loglines'][i];
+        if (filter === '' || this.logfile_chunk.loglines[i].indexOf(filter) > -1) {
+          this.logfile_content += this.logfile_chunk.loglines[i];
         }
       }
     }
@@ -289,25 +297,25 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
       this.dataService
         .readLogfile(this.displayLogfile, chunk)
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((response: string) => {
+        .subscribe((response) => {
           // this.log.log({response});
-          this.logfile_chunk = <any>response;
-          this.first_chunk = this.logfile_chunk['lines'][0] === 1;
-          this.last_chunk = this.logfile_chunk['lastchunk'];
-          this.chunk_no = this.logfile_chunk['chunk'];
+          this.logfile_chunk = response as unknown as LogfileChunk;
+          this.first_chunk = this.logfile_chunk.lines[0] === 1;
+          this.last_chunk = this.logfile_chunk.lastchunk;
+          this.chunk_no = this.logfile_chunk.chunk;
           this.cmOptions.lineNumbers = true;
-          this.cmOptions.firstLineNumber = this.logfile_chunk['lines'][0];
+          this.cmOptions.firstLineNumber = this.logfile_chunk.lines[0];
           if (this.cmOptions.firstLineNumber !== undefined) {
-            for (let i = 0; i < this.logfile_chunk['loglines'].length; i++) {
+            for (let i = 0; i < this.logfile_chunk.loglines.length; i++) {
               let wrk2 = '';
-              for (let c = 0; c < this.logfile_chunk['loglines'][i].length; c++) {
-                if (this.logfile_chunk['loglines'][i][c].charCodeAt(0) === 160) {
+              for (let c = 0; c < this.logfile_chunk.loglines[i].length; c++) {
+                if (this.logfile_chunk.loglines[i][c].charCodeAt(0) === 160) {
                   wrk2 += ' ';
                 } else {
-                  wrk2 += this.logfile_chunk['loglines'][i][c];
+                  wrk2 += this.logfile_chunk.loglines[i][c];
                 }
               }
-              this.logfile_chunk['loglines'][i] = wrk2;
+              this.logfile_chunk.loglines[i] = wrk2;
             }
           }
 

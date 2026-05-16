@@ -499,7 +499,7 @@ export class SystemComponent implements OnDestroy, OnInit {
         const workerSeries = this.websocketPluginService.workerThreads.series;
         const idleSeries = this.websocketPluginService.idleWorkerThreads.series;
         const len = Math.min(workerSeries.length, idleSeries.length);
-        const activeSeries: number[][] = [];
+        const activeSeries: [number, number, { time: string }][] = [];
         for (let i = 0; i < len; i++) {
           activeSeries.push([
             workerSeries[i][0],
@@ -527,8 +527,8 @@ export class SystemComponent implements OnDestroy, OnInit {
 
   updateChartData(
     chartdata: ChartData,
-    dataseries: any[],
-    dataseries2: any[] | null = null,
+    dataseries: [number, number, { time: string }][],
+    dataseries2: [number, number, { time: string }][] | null = null,
   ): ChartData {
     const labels: string[] = [];
     const data0: number[] = [];

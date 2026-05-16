@@ -49,6 +49,8 @@ export interface ConfiguredPlugin {
   plugin: string;
   desc: string;
   loaded: boolean;
+  enabled: string;
+  type?: string;
 }
 
 @Component({
@@ -109,7 +111,7 @@ export class PluginConfigComponent implements OnInit {
   parameter_cols: TableColumn[];
   classic = false;
   state = '';
-  rowclicked_foredit: any = false;
+  rowclicked_foredit: ConfiguredPlugin | false = false;
 
   // for list of installed plugins dialog
   dialog_display = false;
@@ -225,29 +227,28 @@ export class PluginConfigComponent implements OnInit {
             deprecated = '-';
           }
         }
-        const conf = {
+        const conf: ConfiguredPlugin = {
           confname: confname,
           instance: instance,
           plugin: deprecated + plgname,
           desc: '',
           loaded: !!this.pluginconflist.plugin_config[plg]['_loaded'],
+          enabled: 'true',
         };
 
-        let enabled = 'true';
         if (this.pluginconflist.plugin_config[plg]['plugin_enabled'] === 'False') {
-          enabled = 'false';
+          conf.enabled = 'false';
         }
-        conf['enabled'] = enabled;
 
         if (meta == null || !meta.plugin) {
-          conf['type'] = 'classic';
+          conf.type = 'classic';
         } else {
-          conf['type'] = meta.plugin.type;
+          conf.type = meta.plugin.type;
         }
 
         let desc = this.pluginconflist.plugin_config[plg]['_description'];
-        if (conf['type'] === undefined || conf['type'] === 'classic') {
-          conf['type'] = 'classic';
+        if (conf.type === undefined || conf.type === 'classic') {
+          conf.type = 'classic';
           if (this.pluginconflist.plugin_config[plg]['_meta'] != null) {
             desc = this.pluginconflist.plugin_config[plg]['_meta']['plugin']['description'];
           }
@@ -258,7 +259,7 @@ export class PluginConfigComponent implements OnInit {
         plgdesc = plgdesc.replace(new RegExp('\\*\\* ', 'g'), '</mark></b> ');
         plgdesc = plgdesc.replace(new RegExp(' \\*', 'g'), ' <i><mark>');
         plgdesc = plgdesc.replace(new RegExp('\\* ', 'g'), '</mark></i> ');
-        conf['desc'] = plgdesc;
+        conf.desc = plgdesc;
 
         newPlugins.push(conf);
       }
@@ -370,7 +371,7 @@ export class PluginConfigComponent implements OnInit {
     if (meta != null && meta !== undefined && meta['parameters'] !== 'NONE') {
       for (const param in meta['parameters']) {
         if (meta['parameters'].hasOwnProperty(param)) {
-          const vl: { label: string; value: any }[] = [];
+          const vl: { label: string; value: unknown }[] = [];
           if (meta['parameters'][param]['valid_list'] !== undefined) {
             for (let i = 0; i < meta['parameters'][param]['valid_list'].length; i++) {
               const wrk = {
@@ -615,13 +616,14 @@ export class PluginConfigComponent implements OnInit {
 
       if (this.plugin_enabled === false) {
         this.pluginconflist.plugin_config[this.dialog_configname]['plugin_enabled'] = false;
-        this.rowclicked_foredit.enabled = 'false';
+        if (this.rowclicked_foredit) this.rowclicked_foredit.enabled = 'false';
       } else {
         this.pluginconflist.plugin_config[this.dialog_configname]['plugin_enabled'] = true;
-        this.rowclicked_foredit.enabled = 'true';
+        if (this.rowclicked_foredit) this.rowclicked_foredit.enabled = 'true';
       }
-      this.rowclicked_foredit.instance =
-        this.pluginconflist.plugin_config[this.dialog_configname]['instance'];
+      if (this.rowclicked_foredit)
+        this.rowclicked_foredit.instance =
+          this.pluginconflist.plugin_config[this.dialog_configname]['instance'];
 
       const config = JSON.parse(
         JSON.stringify(this.pluginconflist.plugin_config[this.dialog_configname]),
@@ -864,12 +866,13 @@ export class PluginConfigComponent implements OnInit {
       .deletePluginConfig(configname)
       .pipe(takeUntilDestroyed(this.destroyRef));
 
-    const action$ = this.rowclicked_foredit.loaded
-      ? this.pluginsdataService.setPluginState(configname, 'unload').pipe(
-          takeUntilDestroyed(this.destroyRef),
-          switchMap(() => delete$),
-        )
-      : delete$;
+    const action$ =
+      this.rowclicked_foredit && this.rowclicked_foredit.loaded
+        ? this.pluginsdataService.setPluginState(configname, 'unload').pipe(
+            takeUntilDestroyed(this.destroyRef),
+            switchMap(() => delete$),
+          )
+        : delete$;
 
     action$.subscribe((response) => {
       if (response) {

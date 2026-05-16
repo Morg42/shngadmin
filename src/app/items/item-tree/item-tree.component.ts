@@ -254,7 +254,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     }
 
     if (item_type === 'num' || item_type === 'scene') {
-      if (isNaN(item_value.value as any)) {
+      if (isNaN(Number(item_value.value))) {
         this.item_val = item_value;
         this.alertText = this.translate.instant('ITEMS.ALERT.NOT NUMERIC');
         this.showItemAlert = true;

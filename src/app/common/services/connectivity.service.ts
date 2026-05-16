@@ -1,4 +1,4 @@
-import { HttpBackend, HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -10,8 +10,7 @@ const HEARTBEAT_INTERVAL_MS = 10_000;
 @Injectable({ providedIn: 'root' })
 export class ConnectivityService {
   private readonly appConfig = inject(AppConfigService);
-  // HttpBackend bypasses interceptors so probes never trigger the interceptor
-  private readonly http = new HttpClient(inject(HttpBackend));
+  private readonly http = inject(HttpClient);
 
   private readonly _online$ = new BehaviorSubject<boolean>(true);
   private readonly _retryIn$ = new BehaviorSubject<number>(0);

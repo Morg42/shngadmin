@@ -7,19 +7,21 @@
       </p-tablist>
       <p-tabpanels>
         <p-tabpanel value="0">
-          <div style="height: 45px; width: 200px">
-            <button
-              pButton
-              type="button"
-              style="margin-left: 0; margin-left: 10px; margin-top: 10px; font-size: medium"
-              id="newLogicButton"
-              [disabled]="false"
-              (click)="newLogic()"
-              icon="fa fa-plus"
-              label="{{ 'BUTTON.NEW_LOGIC' | translate }}"
-              class="ui-button-success float-sm-left"
-            ></button>
-          </div>
+          @if (nogroups === false) {
+            <div style="height: 45px; width: 200px">
+              <button
+                pButton
+                type="button"
+                style="margin-left: 0; margin-left: 10px; margin-top: 10px; font-size: medium"
+                id="newLogicButton"
+                [disabled]="false"
+                (click)="newLogic()"
+                icon="fa fa-plus"
+                label="{{ 'BUTTON.NEW_LOGIC' | translate }}"
+                class="ui-button-success float-sm-left"
+              ></button>
+            </div>
+          }
 
           @if (nogroups === false) {
             <div style="max-width: 1425px">

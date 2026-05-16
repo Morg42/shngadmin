@@ -81,7 +81,7 @@ export class ConnectivityService {
 
   private heartbeat(): void {
     const url = this.appConfig.apiUrl + 'server/';
-    this.http.get(url).subscribe({
+    this.http.get(url, { responseType: 'text' }).subscribe({
       error: () => this.markOffline(),
     });
   }
@@ -102,7 +102,7 @@ export class ConnectivityService {
   private probe(): void {
     this.clearRetryTimers();
     const url = this.appConfig.apiUrl + 'server/';
-    this.http.get(url).subscribe({
+    this.http.get(url, { responseType: 'text' }).subscribe({
       next: () => this.markOnline(),
       error: () => this.scheduleRetry(),
     });

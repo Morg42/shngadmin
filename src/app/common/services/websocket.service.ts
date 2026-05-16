@@ -12,6 +12,8 @@ export class WebsocketService {
   private messageQueue: unknown[] = [];
   private reconnectUrl: string | null = null;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private reconnectAttempt = 0;
+  private readonly BACKOFF_SECONDS = [2, 4, 8, 16, 30];
 
   public messages$ = this.messageStream.asObservable();
   public open$ = this.openSubject.asObservable();
@@ -26,6 +28,7 @@ export class WebsocketService {
 
     this.ws.onopen = () => {
       this.ngZone.run(() => {
+        this.reconnectAttempt = 0;
         this.log.log('WebSocket connected: ' + url);
         this.openSubject.next(); // identity sent first via openSubscription handler
         this.messageQueue.forEach((msg) => this.ws!.send(JSON.stringify(msg)));
@@ -38,8 +41,14 @@ export class WebsocketService {
     this.ws.onclose = () => {
       this.ngZone.run(() => {
         if (this.reconnectUrl) {
-          this.log.log('WebSocket closed, reconnecting in 3s...');
-          this.reconnectTimer = setTimeout(() => this.openConnection(this.reconnectUrl!), 3000);
+          const delay =
+            this.BACKOFF_SECONDS[Math.min(this.reconnectAttempt, this.BACKOFF_SECONDS.length - 1)];
+          this.reconnectAttempt++;
+          this.log.log(`WebSocket closed, reconnecting in ${delay}s...`);
+          this.reconnectTimer = setTimeout(
+            () => this.openConnection(this.reconnectUrl!),
+            delay * 1000,
+          );
         }
       });
     };
@@ -55,6 +64,7 @@ export class WebsocketService {
 
   public close(): void {
     this.reconnectUrl = null;
+    this.reconnectAttempt = 0;
     if (this.reconnectTimer !== null) clearTimeout(this.reconnectTimer);
     if (this.ws) {
       this.ws.close();

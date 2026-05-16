@@ -936,3 +936,40 @@ a.text-shng:hover {
 .p-tree li.p-tree-node {
   padding: 0 !important;
 }
+
+/* Offline banner */
+.offline-banner {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: #7a3f00;
+  color: #fff;
+  font-size: 0.9rem;
+}
+.offline-icon {
+  font-size: 1.1rem;
+}
+.offline-message {
+  font-weight: bold;
+}
+.offline-countdown {
+  margin-left: 4px;
+  opacity: 0.85;
+}
+.offline-retry {
+  margin-left: auto;
+  padding: 3px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 4px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.offline-retry:hover {
+  background: rgba(255, 255, 255, 0.15);
+}

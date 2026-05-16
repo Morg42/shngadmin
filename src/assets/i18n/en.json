@@ -557,5 +557,12 @@
   "RESTART FOR CHANGES": "Restart SmartHomeNG for changes to take effect - Reload Admin GUI after restart",
   "RELOAD FOR CHANGES": "Reload file(s) or restart SmartHomeNG for changes to take effect.",
   "RESTART LOGIC FOR CHANGES": "Restart the logic for changes to take effect",
-  "LINEBREAK": "Line Break"
+  "LINEBREAK": "Line Break",
+  "CONNECTIVITY": {
+    "OFFLINE": "Backend unreachable",
+    "RETRY_IN": "Retrying in {{seconds}}s",
+    "RETRYING": "Retrying…",
+    "RETRY_NOW": "Retry now",
+    "BACK_ONLINE": "Reconnected"
+  }
 }

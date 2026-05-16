@@ -560,5 +560,12 @@
   "RESTART FOR CHANGES": "Änderungen werden erst nach einem Neustart von SmartHomeNG wirksam - Nach dem Neustart ein Reload der Admin GUI durchführen",
   "RELOAD FOR CHANGES": "Änderungen werden erst nach dem erneuten Laden der Datei(en) oder einem Neustart von SmartHomeNG wirksam",
   "RESTART LOGIC FOR CHANGES": "Änderungen werden erst nach einem Neustart der Logik wirksam",
-  "LINEBREAK": "Umbruch"
+  "LINEBREAK": "Umbruch",
+  "CONNECTIVITY": {
+    "OFFLINE": "Backend nicht erreichbar",
+    "RETRY_IN": "Neuer Versuch in {{seconds}}s",
+    "RETRYING": "Verbinde…",
+    "RETRY_NOW": "Jetzt versuchen",
+    "BACK_ONLINE": "Verbunden"
+  }
 }

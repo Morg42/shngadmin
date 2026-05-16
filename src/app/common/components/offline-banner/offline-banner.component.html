@@ -1,0 +1,18 @@
+@if (vm$ | async; as vm) {
+  @if (!vm.online) {
+    <div class="offline-banner">
+      <span class="offline-icon">⚠</span>
+      <span class="offline-message">{{ 'CONNECTIVITY.OFFLINE' | translate }}</span>
+      <span class="offline-countdown">
+        @if (vm.retrying) {
+          {{ 'CONNECTIVITY.RETRYING' | translate }}
+        } @else {
+          {{ 'CONNECTIVITY.RETRY_IN' | translate: { seconds: vm.retryIn } }}
+        }
+      </span>
+      <button class="offline-retry" (click)="retryNow()">
+        {{ 'CONNECTIVITY.RETRY_NOW' | translate }}
+      </button>
+    </div>
+  }
+}

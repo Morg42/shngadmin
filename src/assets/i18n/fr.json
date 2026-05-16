@@ -554,5 +554,12 @@
   "RESTART FOR CHANGES": "Les changements deviennent seulement actifs après un redémarrage de SmartHomeNG",
   "RELOAD FOR CHANGES": "Les modifications ne prennent effet qu'après rechargement du fichier ou redémarrage de SmartHomeNG",
   "RESTART LOGIC FOR CHANGES": "Les changements deviennent seulement actifs après un redémarrage de la logique",
-  "LINEBREAK": "Saut de ligne"
+  "LINEBREAK": "Saut de ligne",
+  "CONNECTIVITY": {
+    "OFFLINE": "Backend inaccessible",
+    "RETRY_IN": "Nouvelle tentative dans {{seconds}}s",
+    "RETRYING": "Reconnexion…",
+    "RETRY_NOW": "Réessayer",
+    "BACK_ONLINE": "Reconnecté"
+  }
 }

@@ -38,7 +38,7 @@
                 </tr>
               </thead>
               <tbody>
-                @for (l of loggersList; track $index) {
+                @for (l of loggersList; track l) {
                   @if (l.startsWith('logics.') || l === 'logics') {
                     @if (loggers[l].level !== undefined) {
                       <tr>
@@ -88,7 +88,7 @@
                 </tr>
               </thead>
               <tbody>
-                @for (l of loggersList; track $index) {
+                @for (l of loggersList; track l) {
                   @if (l.startsWith('plugins.') || l === 'plugins') {
                     @if (loggers[l].level !== undefined) {
                       <tr>
@@ -137,7 +137,7 @@
                 </tr>
               </thead>
               <tbody>
-                @for (l of loggersList; track $index) {
+                @for (l of loggersList; track l) {
                   @if (l.startsWith('items.') || l === 'items') {
                     @if (loggers[l].level !== undefined) {
                       <tr>
@@ -199,7 +199,7 @@
                   </tr>
                 }
 
-                @for (l of loggersList; track $index) {
+                @for (l of loggersList; track l) {
                   @if (
                     l.startsWith('functions.') ||
                     l.startsWith('lib.') ||
@@ -244,7 +244,7 @@
                 </tr>
               </thead>
               <tbody>
-                @for (l of loggersList; track $index) {
+                @for (l of loggersList; track l) {
                   @if (
                     !(
                       l === 'functions' ||

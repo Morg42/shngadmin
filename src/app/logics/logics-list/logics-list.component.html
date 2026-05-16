@@ -79,7 +79,7 @@
 
                           <tbody>
                             @if (userlogics.length > 0) {
-                              @for (logic of userlogics; track $index) {
+                              @for (logic of userlogics; track logic.name) {
                                 @if (logic.userlogic === true) {
                                   @if (logic.group.indexOf(group.name) > -1) {
                                     <tr>
@@ -278,7 +278,7 @@
                     </tr>
                     <tr></tr>
                   }
-                  @for (logic of newlogics; track $index) {
+                  @for (logic of newlogics; track logic.name) {
                     @if (logic.userlogic === true) {
                       <tr>
                         <td class="p-1 pl-2">
@@ -375,7 +375,7 @@
 
                 <tbody>
                   @if (userlogics.length > 0) {
-                    @for (logic of userlogics; track $index) {
+                    @for (logic of userlogics; track logic.name) {
                       @if (logic.userlogic === true) {
                         <tr>
                           @if (logic.enabled === true) {
@@ -525,7 +525,7 @@
                     </tr>
                     <tr></tr>
                   }
-                  @for (logic of newlogics; track $index) {
+                  @for (logic of newlogics; track logic.name) {
                     @if (logic.userlogic === true) {
                       <tr>
                         <td class="p-1 pl-2">
@@ -601,7 +601,7 @@
               </thead>
               <tbody>
                 @if (systemlogics.length > 0) {
-                  @for (logic of systemlogics; track $index) {
+                  @for (logic of systemlogics; track logic.name) {
                     @if (logic.userlogic === false) {
                       <tr>
                         <td class="p-1 pl-2">
@@ -659,7 +659,7 @@
 >
   <div class="card" style="margin-bottom: 5px">
     <div class="card-body p-1">
-      @for (watch_item of selectedLogicWatchItems; track $index) {
+      @for (watch_item of selectedLogicWatchItems; track watch_item.path) {
         <div class="item-box m-1 p-1">{{ watch_item.path }}</div>
       }
     </div>

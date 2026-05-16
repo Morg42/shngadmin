@@ -360,7 +360,7 @@
                 </thead>
 
                 <tbody>
-                  @for (cacheEntry of cacheInfo; track $index; let i = $index) {
+                  @for (cacheEntry of cacheInfo; track cacheEntry.filename; let i = $index) {
                     <tr>
                       <td><input [(ngModel)]="cacheEntry.checked" type="checkbox" /></td>
                       <td>{{ cacheEntry.filename }}</td>

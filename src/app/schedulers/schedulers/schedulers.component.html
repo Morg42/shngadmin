@@ -25,7 +25,7 @@
                 </tr>
               </thead>
               <tbody>
-                @for (scheduler of schedulerinfo; track $index) {
+                @for (scheduler of schedulerinfo; track scheduler.name) {
                   @if (scheduler.group === 'item') {
                     <tr>
                       <td class="py-1">{{ scheduler.name }}</td>
@@ -58,7 +58,7 @@
                 </tr>
               </thead>
               <tbody>
-                @for (scheduler of schedulerinfo; track $index) {
+                @for (scheduler of schedulerinfo; track scheduler.name) {
                   @if (scheduler.group === 'logic') {
                     <tr>
                       <td class="py-1">{{ scheduler.name }}</td>
@@ -98,7 +98,7 @@
                 </tr>
               </thead>
               <tbody>
-                @for (scheduler of schedulerinfo; track $index) {
+                @for (scheduler of schedulerinfo; track scheduler.name) {
                   @if (scheduler.group === 'plugin') {
                     <tr>
                       <td class="py-1">{{ scheduler.name }}</td>
@@ -142,7 +142,7 @@
                 </tr>
               </thead>
               <tbody>
-                @for (scheduler of schedulerinfo; track $index) {
+                @for (scheduler of schedulerinfo; track scheduler.name) {
                   @if (scheduler.group === 'other') {
                     <tr>
                       <td class="py-1">{{ scheduler.name }}</td>
@@ -184,7 +184,7 @@
                 </tr>
               </thead>
               <tbody>
-                @for (scheduler of schedulerinfo; track $index) {
+                @for (scheduler of schedulerinfo; track scheduler.name) {
                   @if (scheduler.group === 'trigger') {
                     <tr>
                       <td class="py-1">{{ scheduler.name }}</td>

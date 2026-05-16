@@ -30,7 +30,7 @@
           ><b>{{ 'LOGGERS.NO_PROPAGATION' | translate }}</b></a
         ><br />
       }
-      @for (h of logger.handlers; track i; let i = $index) {
+      @for (h of logger.handlers; track h; let i = $index) {
         <a>{{ h }}</a>
         @if (h !== '' && i < logger.handlers.length - 1) {
           ,<br />
@@ -43,7 +43,7 @@
           ><b>{{ 'LOGGERS.NO_PROPAGATION_2' | translate }}</b></a
         ><br />
       }
-      @for (ah of logger.active.handlers; track i; let i = $index) {
+      @for (ah of logger.active.handlers; track ah; let i = $index) {
         <a>{{ ah }}</a>
         @if (ah !== '' && i < logger.active.handlers.length - 1) {
           ,<br />
@@ -69,7 +69,7 @@
   }
   @if (!(logger.handlers === undefined || logger.handlers.length === 0)) {
     <td class="py-1" style="color: darkgrey">
-      @for (h of logger.handlers; track i; let i = $index) {
+      @for (h of logger.handlers; track h; let i = $index) {
         <a>{{ h }}</a>
         @if (h !== '' && i < logger.handlers.length - 1) {
           ,<br />
@@ -77,7 +77,7 @@
       }
     </td>
     <td class="py-1" style="color: darkgrey">
-      @for (ah of logger.active.handlers; track i; let i = $index) {
+      @for (ah of logger.active.handlers; track ah; let i = $index) {
         <a>{{ ah }}</a>
         @if (ah !== '' && i < logger.active.handlers.length - 1) {
           ,<br />
@@ -91,7 +91,7 @@
   @if (logger.propagate === false) {
     <br />
   }
-  @for (fn of logger.active.logfiles; track i; let i = $index) {
+  @for (fn of logger.active.logfiles; track fn; let i = $index) {
     <a class="text-shng" [routerLink]="['/logs/display', this.baseName(fn)]">{{ this.baseName(fn) }}</a>
     @if (fn !== '' && i < logger.active.logfiles.length - 1 && logger.active.logfiles[i + 1] !== '') {
       ,<br />
@@ -178,7 +178,7 @@
     <span style="display: inline-block; width: 120px">{{ 'LOGGERS.HANDLERS' | translate }}:</span>
     <label style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 10px">
       <div class="col1" style="border: 0.5px solid lightgrey">
-        @for (hndlr of choosableHandlers1; track $index) {
+        @for (hndlr of choosableHandlers1; track hndlr.key) {
           <div>
             @if (!hndlr.disabled || logger.propagate === false) {
               &nbsp;
@@ -200,7 +200,7 @@
         }
       </div>
       <div class="col2" style="border: 0.5px solid lightgrey">
-        @for (hndlr of choosableHandlers2; track $index) {
+        @for (hndlr of choosableHandlers2; track hndlr.key) {
           <div>
             @if (!hndlr.disabled || logger.propagate === false) {
               &nbsp;

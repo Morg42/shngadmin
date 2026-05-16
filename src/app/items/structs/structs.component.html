@@ -6,7 +6,7 @@
       (onOpen)="groupExpanded[structsGroups[$event.index]] = true"
       (onClose)="groupExpanded[structsGroups[$event.index]] = false"
     >
-      @for (group of structsGroups; track $index) {
+      @for (group of structsGroups; track group) {
         <p-accordion-panel [value]="$index">
           <p-accordion-header>
             @if (group === 'my') {
@@ -28,7 +28,7 @@
                 doConsoleLog(-1 * (1000 * structsGroups.indexOf(group) + $event.index))
               "
             >
-              @for (struct of getStructListByGroup(group); track $index) {
+              @for (struct of getStructListByGroup(group); track struct) {
                 @if (struct.indexOf(group + '.') === 0 || group === globalStructsID || group === 'my') {
                   <p-accordion-panel [value]="$index">
                     <p-accordion-header>
@@ -86,7 +86,7 @@
   <!--
   <h4 style="margin-left: 15px; margin-top: 5px;">{{ 'ITEMS.STRUCT_TEMPLATES'|translate }}</h4>
   <p-accordion [multiple]="true" (onOpen)="structExpanded[structsList[$event.index]]=true"  (onClose)="structExpanded[structsList[$event.index]]=false">
-    @for (struct of structsList; track $index) {
+    @for (struct of structsList; track struct) {
       <p-accordionTab>
         <ng-template pTemplate="header">
           @if (structsDict[struct]['name'] === undefined) {

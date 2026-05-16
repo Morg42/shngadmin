@@ -245,7 +245,7 @@
 
                 <!-- is required (BASE) -->
 
-                @for (pypipackage of pypiinfo; track $index) {
+                @for (pypipackage of pypiinfo; track pypipackage.name) {
                   @if (pypipackage.is_required === true) {
                     <tr>
                       @if (pypipackage.pypi_doc_url === '') {
@@ -355,7 +355,7 @@
                 </thead>
 
                 <tbody>
-                  @for (pypipackage of pypiinfo; track $index) {
+                  @for (pypipackage of pypiinfo; track pypipackage.name) {
                     @if (pypipackage.is_required_for_plugins === true) {
                       <tr>
                         @if (pypipackage.pypi_doc_url === '') {
@@ -446,7 +446,7 @@
                 </thead>
 
                 <tbody>
-                  @for (pypipackage of pypiinfo; track $index) {
+                  @for (pypipackage of pypiinfo; track pypipackage.name) {
                     @if (pypipackage.is_required_for_docbuild === true) {
                       <tr>
                         @if (pypipackage.pypi_doc_url === '') {
@@ -536,7 +536,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  @for (pypipackage of pypiinfo; track $index) {
+                  @for (pypipackage of pypiinfo; track pypipackage.name) {
                     @if (pypipackage.is_required_for_testsuite === true) {
                       <tr>
                         @if (pypipackage.pypi_doc_url === '') {
@@ -621,7 +621,7 @@
                 </thead>
 
                 <tbody>
-                  @for (pypipackage of pypiinfo; track $index) {
+                  @for (pypipackage of pypiinfo; track pypipackage.name) {
                     @if (
                       pypipackage.is_required === false &&
                       pypipackage.is_required_for_plugins === false &&

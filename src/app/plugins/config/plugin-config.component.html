@@ -47,7 +47,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (row of configuredplugins; track $index) {
+        @for (row of configuredplugins; track row.confname) {
           <tr style="cursor: pointer" (click)="rowClicked($event, row)">
             <td [style.opacity]="row.loaded ? '1' : '0.5'">
               @if (row['enabled'] === 'true') {
@@ -206,7 +206,7 @@
     >
       <ng-template pTemplate="header" let-columns>
         <tr>
-          @for (col of columns; track $index) {
+          @for (col of columns; track col.field) {
             <th [pSortableColumn]="col.field" [ngStyle]="{ width: col.width }">
               {{ col.header | translate }}
               @if (col.field !== '') {
@@ -223,7 +223,7 @@
       </ng-template>
       <ng-template pTemplate="body" let-rowData let-columns="columns">
         <tr>
-          @for (col of columns; track $index) {
+          @for (col of columns; track col.field) {
             <td>
               @if (dialog_readonly === false && col.field === 'value') {
                 <app-dynamic-field [row]="rowData" [col]="col"></app-dynamic-field>
@@ -388,7 +388,7 @@
   </ng-template>
 
   <p-accordion [multiple]="true">
-    @for (plugintype of plugintypes; track i; let i = $index) {
+    @for (plugintype of plugintypes; track plugintype; let i = $index) {
       <p-accordion-panel [value]="i">
         <p-accordion-header (click)="pluginadd.maximize()">
           <span style="font-size: larger"
@@ -413,7 +413,7 @@
               <th>{{ 'PLUGIN.MULTI INSTANCE' | translate }}</th>
               <th>{{ 'PLUGIN.DESCRIPTION' | translate }}</th>
             </thead>
-            @for (iplugin of plugins_installed_list; track $index) {
+            @for (iplugin of plugins_installed_list; track iplugin) {
               @if (
                 plugins_installed[iplugin].type === plugintype ||
                 (plugintype === 'unclassified' && plugintypes.indexOf(plugins_installed[iplugin].type) === -1)

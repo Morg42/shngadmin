@@ -11,7 +11,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (thread of threadsList; track $index) {
+        @for (thread of threadsList; track thread.id) {
           <tr>
             <td class="py-1">{{ thread.name }}</td>
             <td class="py-1">{{ thread.id }}</td>

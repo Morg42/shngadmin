@@ -469,7 +469,7 @@
                                   {{ 'ITEMS.PLUGIN SPECIFIC CONFIGURATION' | translate }}:
                                 </th>
                               </tr>
-                              @for (key of Object.keys(itemdetails.config); track $index) {
+                              @for (key of Object.keys(itemdetails.config); track key) {
                                 <tr>
                                   <td class="py-1">{{ key }}</td>
                                   <td class="py-1">{{ itemdetails.config[key] }}</td>
@@ -483,7 +483,7 @@
                                   {{ 'ITEMS.CONNECTED LOGICS' | translate }}:
                                 </th>
                               </tr>
-                              @for (logic of itemdetails.logics; track $index) {
+                              @for (logic of itemdetails.logics; track logic.name) {
                                 <tr>
                                   <td class="py-1">
                                     <a class="text-shng" [routerLink]="['/logics/edit', logic.name]">{{
@@ -559,7 +559,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (itemdata of monitoredItems; track $index) {
+      @for (itemdata of monitoredItems; track itemdata[0]) {
         <tr>
           <td class="py-1">{{ itemdata[0] }}</td>
           <td class="py-1">{{ itemdata[1].value }}</td>

@@ -28,7 +28,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (plugin of plugininfo; track $index) {
+          @for (plugin of plugininfo; track plugin.configname) {
             <tr (click)="selectedPlugin = plugin; showPluginDetails = true" style="cursor: pointer">
               <td class="py-1">
                 @if (plugin.stopped === true) {
@@ -280,7 +280,7 @@
           <td style="padding-left: 5px; padding-right: 5px; padding-bottom: 0">
             <table class="table">
               <tbody>
-                @for (param of selectedPlugin.parameters; track i; let i = $index) {
+                @for (param of selectedPlugin.parameters; track param.name; let i = $index) {
                   @if (i + 1 <= parameterLines(selectedPlugin.parameters.length)) {
                     <tr>
                       <td style="padding: 0">{{ param.name }} ( {{ param.type }} ):&nbsp;</td>
@@ -300,7 +300,7 @@
           <td style="padding-left: 5px; padding-right: 5px; padding-bottom: 0">
             <table class="table">
               <tbody>
-                @for (param of selectedPlugin.parameters; track i; let i = $index) {
+                @for (param of selectedPlugin.parameters; track param.name; let i = $index) {
                   @if (i + 1 > parameterLines(selectedPlugin.parameters.length)) {
                     <tr>
                       <td style="padding: 0">{{ param.name }} ( {{ param.type }} ):&nbsp;</td>
@@ -334,7 +334,7 @@
           <td style="padding-left: 5px; padding-right: 5px; padding-bottom: 0">
             <table class="table">
               <tbody>
-                @for (attr of selectedPlugin.attributes; track i; let i = $index) {
+                @for (attr of selectedPlugin.attributes; track attr.name; let i = $index) {
                   @if (i + 1 <= attributeLines(selectedPlugin.attributes.length)) {
                     <tr>
                       <td style="padding: 0">{{ attr.name }}:&nbsp;</td>
@@ -351,7 +351,7 @@
           <td style="padding-left: 5px; padding-right: 5px; padding-bottom: 0">
             <table class="table">
               <tbody>
-                @for (attr of selectedPlugin.attributes; track i; let i = $index) {
+                @for (attr of selectedPlugin.attributes; track attr.name; let i = $index) {
                   @if (
                     i + 1 > attributeLines(selectedPlugin.attributes.length) &&
                     i + 1 <= 2 * attributeLines(selectedPlugin.attributes.length)
@@ -371,7 +371,7 @@
           <td style="padding-left: 5px; padding-right: 5px; padding-bottom: 0">
             <table class="table">
               <tbody>
-                @for (attr of selectedPlugin.attributes; track i; let i = $index) {
+                @for (attr of selectedPlugin.attributes; track attr.name; let i = $index) {
                   @if (i + 1 > 2 * attributeLines(selectedPlugin.attributes.length)) {
                     <tr>
                       <td style="padding: 0">{{ attr.name }}:&nbsp;</td>

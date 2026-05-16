@@ -426,7 +426,7 @@
                 </td>
                 <td colspan="3">
                   @if (this.logic.watch_item !== undefined) {
-                    @for (watch_item of this.logic.watch_item; track $index) {
+                    @for (watch_item of this.logic.watch_item; track watch_item.path) {
                       <button
                         pButton
                         label="{{ watch_item }}"
@@ -482,7 +482,7 @@
             <p-table [columns]="parameter_cols" [value]="parameters" selectionMode="single">
               <ng-template pTemplate="header" let-columns>
                 <tr>
-                  @for (col of columns; track $index) {
+                  @for (col of columns; track col.field) {
                     <th [pSortableColumn]="col.field" [ngStyle]="{ width: col.width }">
                       {{ col.header | translate }}
                       @if (col.field !== '') {
@@ -499,7 +499,7 @@
               </ng-template>
               <ng-template pTemplate="body" let-rowData let-columns="columns">
                 <tr>
-                  @for (col of columns; track $index) {
+                  @for (col of columns; track col.field) {
                     <td>
                       @if (col.field === 'value') {
                         <app-dynamic-field

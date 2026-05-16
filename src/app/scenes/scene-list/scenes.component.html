@@ -4,7 +4,7 @@
       <p style="margin-left: 15px; margin-top: 15px; color: #888">{{ 'SCENES.NO_SCENES' | translate }}</p>
     }
     <p-accordion [multiple]="true">
-      @for (scene of sceneList; track $index) {
+      @for (scene of sceneList; track scene.path) {
         <p-accordion-panel [value]="$index">
           <p-accordion-header>
             <span style="font-size: large; font-weight: bold">{{ scene['path'] }}</span>

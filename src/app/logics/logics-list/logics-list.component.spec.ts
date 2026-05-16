@@ -1,6 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -43,7 +43,7 @@ describe('LogicsListComponent', () => {
           },
         },
       ],
-      schemas: [NO_ERRORS_SCHEMA],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     })
       .overrideComponent(LogicsListComponent, { set: { imports: [TranslatePipe] } })
       .compileComponents();

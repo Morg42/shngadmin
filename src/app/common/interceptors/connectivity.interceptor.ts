@@ -8,19 +8,10 @@ export const connectivityInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     tap({
       next: (event) => {
-        if (
-          event instanceof HttpResponse &&
-          req.url.includes('/api/') &&
-          !req.url.includes('/api/files/')
-        ) {
-          const ct = event.headers.get('Content-Type') ?? '';
-          if (ct.includes('text/html')) {
-            // Proxy error page masquerading as 200 OK — treat as unreachable.
-            connectivity.markOffline();
-          } else {
-            // Good response: cancel any pending offline debounce.
-            connectivity.cancelOfflineDebounce();
-          }
+        // Any successful /api/ response cancels a pending offline debounce,
+        // preventing navigation-cancelled requests from flipping the banner.
+        if (event instanceof HttpResponse && req.url.includes('/api/')) {
+          connectivity.cancelOfflineDebounce();
         }
       },
     }),

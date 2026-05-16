@@ -81,7 +81,7 @@
                             @if (userlogics.length > 0) {
                               @for (logic of userlogics; track logic.name) {
                                 @if (logic.userlogic === true) {
-                                  @if (logic.group.indexOf(group.name) > -1) {
+                                  @if (logic.group != null && logic.group.indexOf(group.name ?? '') > -1) {
                                     <tr>
                                       @if (logic.enabled === true) {
                                         <td class="p-1 pl-2">

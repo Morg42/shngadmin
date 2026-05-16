@@ -58,7 +58,7 @@
               }
             </td>
             <td [style.opacity]="row.loaded ? '1' : '0.5'">
-              @if (['web', 'protocol', 'interface', 'gateway', 'system'].includes(row['type'])) {
+              @if (row['type'] && ['web', 'protocol', 'interface', 'gateway', 'system'].includes(row['type'])) {
                 <img ngSrc="assets/img/plugin_{{ row['type'] }}.svg" style="width: 25px" width="25" height="25" />
               } @else if (row['type'] === 'classic') {
                 &nbsp;-
@@ -280,7 +280,7 @@
           label="{{ 'BUTTON.DELETE' | translate }}"
           class="ui-button-danger float-sm-left"
         ></button>
-        @if (!rowclicked_foredit.loaded) {
+        @if (rowclicked_foredit && !rowclicked_foredit.loaded) {
           <button
             pButton
             type="button"
@@ -290,7 +290,7 @@
             class="ui-button-success float-sm-left"
           ></button>
         }
-        @if (rowclicked_foredit.loaded) {
+        @if (rowclicked_foredit && rowclicked_foredit.loaded) {
           <button
             pButton
             type="button"

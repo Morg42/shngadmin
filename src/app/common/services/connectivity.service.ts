@@ -5,7 +5,7 @@ import { take } from 'rxjs/operators';
 import { AppConfigService } from './app-config.service';
 
 const BACKOFF_SECONDS = [2, 4, 8, 16, 30];
-const HEARTBEAT_INTERVAL_MS = 30_000;
+const HEARTBEAT_INTERVAL_MS = 10_000;
 
 @Injectable({ providedIn: 'root' })
 export class ConnectivityService {

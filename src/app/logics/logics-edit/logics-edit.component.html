@@ -159,14 +159,16 @@
                 <tr>
                   <td>
                     <div style="margin-top: 10px; padding-left: 10px; padding-right: 5px">
-                      <ngx-codemirror
+                      <app-code-editor
                         #codeeditor
-                        (keyup)="logicsCodeKeyUp($event)"
-                        [options]="cmOptions"
-                        name="cmLogics"
-                        [(ngModel)]="myTextarea"
-                        [autoFocus]="true"
-                      ></ngx-codemirror>
+                        [language]="'python'"
+                        [foldable]="true"
+                        [completionSource]="mainCompletionSource"
+                        [extraKeybindings]="editorExtraKeys"
+                        [(value)]="myTextarea"
+                        (valueChange)="logicChanged = hasLogicChanged()"
+                        style="height: calc(100vh - 200px)"
+                      ></app-code-editor>
                       <a style="font-size: small">{{ 'RESTART LOGIC FOR CHANGES' | translate }}</a>
                     </div>
                   </td>
@@ -451,15 +453,17 @@
                   }
                   <div>
                     <div style="float: left">
-                      <ngx-codemirror
+                      <app-code-editor
                         #watchitems
-                        (keyup)="watchItemKeyUp($event)"
-                        (keyup.enter)="addItem()"
-                        name="cmWatchItems"
-                        [options]="cmOptionsWatchItems"
-                        [(ngModel)]="myTextareaWatchItems"
-                        [autoFocus]="false"
-                      ></ngx-codemirror>
+                        [language]="'text'"
+                        [lineNums]="false"
+                        [foldable]="false"
+                        [completionSource]="watchItemCompletionSource"
+                        [allowedCharsPattern]="watchItemAllowedPattern"
+                        [extraKeybindings]="watchItemExtraKeys"
+                        [(value)]="myTextareaWatchItems"
+                        style="height: 40px; width: 50vw"
+                      ></app-code-editor>
                     </div>
                     <div style="float: left" class="ml-2">
                       <button

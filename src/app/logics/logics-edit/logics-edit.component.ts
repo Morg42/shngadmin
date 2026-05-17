@@ -1,6 +1,5 @@
 import { NgStyle } from '@angular/common';
 import {
-  AfterViewChecked,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -13,9 +12,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+import { CompletionContext } from '@codemirror/autocomplete';
+import { KeyBinding } from '@codemirror/view';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import * as CodeMirror from 'codemirror';
 import { PrimeTemplate } from 'primeng/api';
 import { Bind } from 'primeng/bind';
 import { ButtonDirective } from 'primeng/button';
@@ -25,6 +24,10 @@ import { Message } from 'primeng/message';
 import { Ripple } from 'primeng/ripple';
 import { TableModule } from 'primeng/table';
 import { Tab as Tab_1, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
+import {
+  CmCompletionSource,
+  CodeEditorComponent,
+} from '../../common/components/code-editor/code-editor.component';
 import { DynamicFieldComponent } from '../../common/components/dynamic-field/dynamic-field.component';
 import { ConfigParameter, TableColumn } from '../../common/models/interfaces';
 import { LogicsinfoType } from '../../common/models/logics-info';
@@ -51,7 +54,7 @@ import { SharedService } from '../../common/services/shared.service';
     TabPanels,
     TabPanel,
     ButtonDirective,
-    CodemirrorModule,
+    CodeEditorComponent,
     FormsModule,
     InputText,
     NgStyle,
@@ -63,7 +66,7 @@ import { SharedService } from '../../common/services/shared.service';
     TranslatePipe,
   ],
 })
-export class LogicsEditComponent implements AfterViewChecked, OnInit {
+export class LogicsEditComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
@@ -92,81 +95,41 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   parameter_cols: TableColumn[];
   pluginParameters: Record<string, Record<string, unknown>> = {};
 
-  // -----------------------------------------------------------------
-  //  Vars for the codemirror components
-  //
-  rulers: { color: string; column: number; lineStyle: string }[] = [];
+  @ViewChild('codeeditor') codeEditor?: CodeEditorComponent;
+  @ViewChild('watchitems') codeEditorWatchItems?: CodeEditorComponent;
 
-  // -----------------------------------------------------
-  //  Vars for the YAML syntax checker
-  //
-  @ViewChild('codeeditor', { static: true }) private codeEditor: any;
-  @ViewChild('watchitems', { static: true }) private codeEditorWatchItems: any;
   myEditFilename: string;
   myLogicName: string;
   myLogicIsLoaded = false;
-  autocomplete_list: {}[] = [];
-  full_autocomplete_list: {}[] = [];
-  valid_item_list: {}[] = [];
+  autocomplete_list: { text: string; displayText: string }[] = [];
+  full_autocomplete_list: { text: string; displayText: string }[] = [];
+  valid_item_list: string[] = [];
   myTextarea = '';
   myTextareaOrig = '';
   myTextareaWatchItems = '';
 
-  cmOptionsWatchItems = {
-    autorefresh: true,
+  mainCompletionSource: CmCompletionSource = () => null;
+  watchItemCompletionSource: CmCompletionSource = () => null;
 
-    lineWrapping: false,
-    indentWithTabs: false,
-    indentUnit: 1,
-    tabSize: 1,
-  };
-
-  cmOptions = {
-    indentWithTabs: false,
-    indentUnit: 4,
-    tabSize: 4,
-    extraKeys: {
-      F1: (cm: unknown) => {
-        this.editorHelp_display = true;
-      },
-      Tab: 'insertSoftTab',
-      'Shift-Tab': 'indentLess',
-      F11: function (cm: any) {
-        cm.setOption('fullScreen', !cm.getOption('fullScreen'));
-        // cm.getScrollerElement().style.maxHeight = 'none';
-      },
-      Esc: function (cm: any, fullScreen: unknown) {
-        if (cm.getOption('fullScreen')) {
-          cm.setOption('fullScreen', false);
-        }
-      },
-      'Ctrl-Space': 'autocomplete',
-      'Ctrl-I': 'autocomplete_item',
-      'Ctrl-Q': function (cm: any) {
-        cm.foldCode(cm.getCursor());
-      },
-      'Shift-Ctrl-Q': function (cm: any) {
-        for (let l = cm.firstLine(); l <= cm.lastLine(); ++l) {
-          cm.foldCode({ line: l, ch: 0 }, null, 'unfold');
-        }
-      },
-      'Ctrl-L': function (cm: any) {
-        cm.setOption('lineWrapping', !cm.getOption('lineWrapping'));
+  readonly watchItemAllowedPattern = /^[a-z0-9._-]+$/i;
+  readonly watchItemExtraKeys: KeyBinding[] = [
+    {
+      key: 'Enter',
+      run: () => {
+        this.addItem();
+        return true;
       },
     },
-    fullScreen: false,
-    lineNumbers: true,
-    readOnly: false,
-    lineSeparator: '\n',
-    rulers: this.rulers,
-    mode: 'python',
-    lineWrapping: false,
-    firstLineNumber: 1,
-    autorefresh: true,
-    fixedGutter: true,
-    foldGutter: true,
-    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
-  };
+  ];
+  readonly editorExtraKeys: KeyBinding[] = [
+    {
+      key: 'F1',
+      run: () => {
+        this.editorHelp_display = true;
+        return true;
+      },
+    },
+  ];
 
   editorHelp_display = false;
   parameterHelp_display = false;
@@ -185,19 +148,13 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
     this.myLogicName = logic[0].trim();
     this.log.log('LogicsEditComponent.ngOnInit()', { logic });
 
-    // let logicName = this.route.snapshot.paramMap['params']['logicname'];
-    // if (logicName !== undefined) {
-    //   if (logicName.endsWith('.log')) {
-    //     logicName = logicName.slice(0, -4);
-    //   }
-    // }
-
-    // this.myEditFilename = logicName;
-    for (let i = 1; i <= 100; i++) {
-      this.rulers.push({ color: '#eee', column: i * 4, lineStyle: 'dashed' });
-    }
     this.wrongWatchItem = false;
     this.logicChanged = false;
+
+    // Build completion sources once — they close over the mutable arrays,
+    // so completions appear as soon as subscriptions populate the lists.
+    this.mainCompletionSource = this._makeCompletionSource(this.autocomplete_list);
+    this.watchItemCompletionSource = this._makeCompletionSource(this.full_autocomplete_list);
 
     this.getLogicInfo(this.myLogicName);
 
@@ -238,21 +195,6 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
         }
         this.cdr.markForCheck();
       });
-
-    this.registerAutocompleteHelper('autocompleteHint', this.autocomplete_list);
-    this.registerAutocompleteHelper('autocompleteWatchItemsHint', this.full_autocomplete_list);
-    // @ts-ignore
-    CodeMirror.commands.autocomplete_shng = function (cm) {
-      // @ts-ignore
-      CodeMirror.showHint(cm, CodeMirror.hint.autocompleteHint, { completeSingle: false });
-    };
-    // @ts-ignore
-    CodeMirror.commands.autocomplete_shng_watch_items = function (cm) {
-      // @ts-ignore
-      CodeMirror.showHint(cm, CodeMirror.hint.autocompleteWatchItemsHint, {
-        completeSingle: false,
-      });
-    };
   }
 
   getPluginParameterDefinitions() {
@@ -455,12 +397,6 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe((responseFile) => {
             this.myTextarea = responseFile;
-            // this.log.log('ngOnInit', 'read', {responseFile});
-            const editor = this.codeEditor.codeMirror;
-            editor.setOption('lineSeparator', '\n');
-            if (this.myTextarea.indexOf('\r\n') >= 0) {
-              editor.setOption('lineSeparator', '\r\n');
-            }
             this.myTextareaOrig = this.myTextarea;
             this.cdr.markForCheck();
           });
@@ -571,50 +507,21 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
     return false;
   }
 
-  registerAutocompleteHelper(name: string, curDict: any[]) {
-    CodeMirror.registerHelper('hint', name, function (editor: any) {
-      const cur = editor.getCursor();
-      const curLine = editor.getLine(cur.line);
-      let start = cur.ch;
-      let end = start;
-
-      const charexp = /[\w\.\w$]+/;
-      while (end < curLine.length && charexp.test(curLine.charAt(end))) {
-        end++;
-      }
-      while (start && charexp.test(curLine.charAt(start - 1))) {
-        start--;
-      }
-      let curWord = start !== end && curLine.slice(start, end);
-      if (curWord.length > 1) {
-        curWord = curWord.trim();
-      }
+  private _makeCompletionSource(
+    curDict: { text: string; displayText: string }[],
+  ): CmCompletionSource {
+    return (context: CompletionContext) => {
+      const word = context.matchBefore(/[\w.$]+/);
+      if (!word || word.text.trim().length < 3) return null;
+      const curWord = word.text.trim();
       const regex = new RegExp('^' + curWord, 'i');
-      if (curWord.length >= 3) {
-        const oCompletions = {
-          list: (!curWord
-            ? []
-            : curDict.filter(function (item: any) {
-                return item['displayText'].match(regex);
-              })
-          ).sort(function (a: any, b: any) {
-            const nameA = a.text.toLowerCase();
-            const nameB = b.text.toLowerCase();
-            if (nameA < nameB) {
-              // sort string ascending
-              return -1;
-            }
-            if (nameA > nameB) {
-              return 1;
-            }
-            return 0; // default return value (no sorting)
-          }),
-          from: CodeMirror.Pos(cur.line, start),
-          to: CodeMirror.Pos(cur.line, end),
-        };
-        return oCompletions;
-      }
-    });
+      const options = curDict
+        .filter((item) => item.displayText.match(regex))
+        .sort((a, b) => (a.text.toLowerCase() < b.text.toLowerCase() ? -1 : 1))
+        .map((item) => ({ label: item.displayText, apply: item.text }));
+      if (options.length === 0) return null;
+      return { from: word.from, to: word.to, options, filter: false };
+    };
   }
 
   removeItem(item: LogicsWatchItem) {
@@ -660,75 +567,6 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
     this.wrongWatchItem = false;
     this.logicChanged = this.hasLogicChanged();
     return;
-  }
-
-  ngAfterViewChecked() {
-    const editor1 = this.codeEditor.codeMirror;
-
-    if (editor1.getOption('fullScreen')) {
-      editor1.setSize('100vw', '100vh');
-    } else {
-      editor1.setSize('calc(100vw - 45px)', 'calc(100vh - 200px)');
-      // editor1.setSize('93vw', '74vh');
-    }
-
-    editor1.refresh();
-
-    const editor2 = this.codeEditorWatchItems.codeMirror;
-    editor2.setSize('50vw', 'auto');
-    editor2.refresh();
-    /* prohibit new lines, spaces and tabs for watch items input field */
-    editor2.on('beforeChange', function (cm: any, changeObj: any) {
-      const typedNewLine =
-        changeObj.origin === '+input' &&
-        typeof changeObj.text === 'object' &&
-        changeObj.text.join('') === '';
-      const typedSpaceorTab =
-        (changeObj.origin === '+input' || changeObj.origin === 'paste') &&
-        !/^[a-z0-9\.\_\-]+$/i.test(changeObj.text[0]);
-      if (typedNewLine || typedSpaceorTab) {
-        return changeObj.cancel();
-      }
-      return null;
-    });
-  }
-
-  logicsCodeKeyUp(event: any) {
-    this.logicChanged = this.hasLogicChanged();
-    const editor1 = this.codeEditor.codeMirror;
-    if (
-      !editor1.state.completionActive /*Enables keyboard navigation in autocomplete list*/ &&
-      event.keyCode !== 9 &&
-      event.keyCode !== 13 &&
-      event.keyCode !== 27 &&
-      event.keyCode !== 37 &&
-      event.keyCode !== 38 &&
-      event.keyCode !== 39 &&
-      event.keyCode !== 40 &&
-      event.keyCode !== 46
-    ) {
-      // @ts-ignore
-      CodeMirror.commands.autocomplete_shng(editor1);
-    }
-  }
-
-  watchItemKeyUp(event: any) {
-    const editor2 = this.codeEditorWatchItems.codeMirror;
-    if (
-      !editor2.state.completionActive /*Enables keyboard navigation in autocomplete list*/ &&
-      event.keyCode !== 9 &&
-      event.keyCode !== 13 &&
-      event.keyCode !== 27 &&
-      event.keyCode !== 37 &&
-      event.keyCode !== 38 &&
-      event.keyCode !== 39 &&
-      event.keyCode !== 40 &&
-      event.keyCode !== 46
-    ) {
-      // && event.keyCode !== 8 && event.keyCode !== 17 && event.keyCode !== 86)
-      // @ts-ignore
-      CodeMirror.commands.autocomplete_shng_watch_items(editor2);
-    }
   }
 
   saveCode(reload = false) {
@@ -832,9 +670,6 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
     if (this.parametersChanged()) {
       this.saveParameters(reload);
     }
-
-    const editor = this.codeEditor.codeMirror;
-    editor.refresh();
   }
 
   triggerLogic() {

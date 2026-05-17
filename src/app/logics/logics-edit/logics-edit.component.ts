@@ -617,16 +617,11 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
     });
   }
 
-  removeItem(itemName: string) {
-    for (const j of this.logic.watch_item) {
-      if (String(j) === itemName) {
-        const index = this.logic.watch_item.indexOf(j);
-        if (index > -1) {
-          this.logic.watch_item.splice(index, 1);
-          this.logicChanged = this.hasLogicChanged();
-          return;
-        }
-      }
+  removeItem(item: LogicsWatchItem) {
+    const index = this.logic.watch_item.indexOf(item);
+    if (index > -1) {
+      this.logic.watch_item.splice(index, 1);
+      this.logicChanged = this.hasLogicChanged();
     }
     return;
   }

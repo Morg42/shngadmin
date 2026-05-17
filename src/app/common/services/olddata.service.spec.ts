@@ -10,21 +10,12 @@ describe('OlddataService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [translateTestingModule],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        { provide: 'BASE_URL', useValue: 'http://localhost/' },
-        OlddataService,
-      ],
+      providers: [provideHttpClient(), provideHttpClientTesting(), OlddataService],
     });
     service = TestBed.inject(OlddataService);
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
-  });
-
-  it('baseUrl is set from the BASE_URL token', () => {
-    expect(service.baseUrl).toBe('http://localhost/');
   });
 });

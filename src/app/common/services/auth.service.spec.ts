@@ -8,7 +8,7 @@ import { AuthService } from './auth.service';
 import { UserPreferencesService } from './user-preferences.service';
 
 function tokenFactory(): string | null {
-  return localStorage.getItem('token');
+  return sessionStorage.getItem('token');
 }
 
 const PROVIDERS = [
@@ -23,7 +23,7 @@ describe('AuthService (no token)', () => {
   let service: AuthService;
 
   beforeEach(() => {
-    localStorage.clear();
+    sessionStorage.clear();
     TestBed.configureTestingModule({
       imports: [JwtModule.forRoot({ config: { tokenGetter: tokenFactory } })],
       providers: PROVIDERS,
@@ -32,7 +32,7 @@ describe('AuthService (no token)', () => {
   });
 
   afterEach(() => {
-    localStorage.clear();
+    sessionStorage.clear();
     TestBed.inject(HttpTestingController).verify();
   });
 
@@ -40,14 +40,14 @@ describe('AuthService (no token)', () => {
     expect(service).toBeTruthy();
   });
 
-  it('loggedIn$ starts false when no token in localStorage', () => {
+  it('loggedIn$ starts false when no token in sessionStorage', () => {
     expect(service.loggedIn$.getValue()).toBe(false);
   });
 
-  it('logout() removes token from localStorage and emits false', () => {
-    localStorage.setItem('token', 'fake-token');
+  it('logout() removes token from sessionStorage and emits false', () => {
+    sessionStorage.setItem('token', 'fake-token');
     service.logout();
-    expect(localStorage.getItem('token')).toBeNull();
+    expect(sessionStorage.getItem('token')).toBeNull();
     expect(service.loggedIn$.getValue()).toBe(false);
   });
 
@@ -64,12 +64,18 @@ describe('AuthService (no token)', () => {
   });
 });
 
-describe('AuthService (token in localStorage)', () => {
+// Valid JWT with no expiry claim — passes decodeToken without throwing.
+const VALID_JWT =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9' +
+  '.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ' +
+  '.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+
+describe('AuthService (token in sessionStorage)', () => {
   let service: AuthService;
 
   beforeEach(() => {
-    localStorage.clear();
-    localStorage.setItem('token', 'some-token');
+    sessionStorage.clear();
+    sessionStorage.setItem('token', VALID_JWT);
     TestBed.configureTestingModule({
       imports: [JwtModule.forRoot({ config: { tokenGetter: tokenFactory } })],
       providers: PROVIDERS,
@@ -78,11 +84,11 @@ describe('AuthService (token in localStorage)', () => {
   });
 
   afterEach(() => {
-    localStorage.clear();
+    sessionStorage.clear();
     TestBed.inject(HttpTestingController).verify();
   });
 
-  it('loggedIn$ starts true when token is present in localStorage', () => {
+  it('loggedIn$ starts true when token is present in sessionStorage', () => {
     expect(service.loggedIn$.getValue()).toBe(true);
   });
 });

@@ -45,12 +45,14 @@
         <tr>
           <td>
             <div style="margin-top: 10px; padding-left: 10px; padding-right: 5px">
-              <ngx-codemirror
+              <app-code-editor
                 #codeeditor
-                [options]="cmOptions"
-                [(ngModel)]="myTextarea"
-                [autoFocus]="true"
-              ></ngx-codemirror>
+                [language]="'yaml'"
+                [readOnly]="false"
+                [(value)]="myTextarea"
+                [foldable]="true"
+                style="height: calc(100vh - 160px)"
+              ></app-code-editor>
               <a style="font-size: small">{{ 'RESTART FOR CHANGES' | translate }}</a>
             </div>
           </td>

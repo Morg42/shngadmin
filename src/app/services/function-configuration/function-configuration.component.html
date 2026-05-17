@@ -98,7 +98,14 @@
   </div>
 
   <div class="items-fileeditor">
-    <ngx-codemirror #codeeditor [options]="cmOptions" [(ngModel)]="myTextarea" [autoFocus]="true"></ngx-codemirror>
+    <app-code-editor
+      #codeeditor
+      [language]="'python'"
+      [readOnly]="cmReadOnly"
+      [(value)]="myTextarea"
+      [foldable]="true"
+      style="height: calc(100vh - 160px)"
+    ></app-code-editor>
     <a style="font-size: small">{{ 'RELOAD FOR CHANGES' | translate }}</a>
   </div>
 </div>

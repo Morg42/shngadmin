@@ -183,12 +183,13 @@
 
             <div style="font-weight: normal; padding-top: 10px; padding-left: 10px; padding-right: 5px">
               {{ 'SERVICES.EVAL_CHECK_SOURCE' | translate }}
-              <ngx-codemirror
+              <app-code-editor
                 #evalcodeeditor
-                [options]="cmEvalOptions"
-                [(ngModel)]="myEvalTextarea"
-                [autoFocus]="true"
-              ></ngx-codemirror>
+                [language]="'python'"
+                [readOnly]="false"
+                [(value)]="myEvalTextarea"
+                style="height: 160px; width: 100%"
+              ></app-code-editor>
             </div>
 
             <br />
@@ -208,13 +209,13 @@
             <br />
             <div style="font-weight: normal; padding-top: 10px; padding-left: 10px; padding-right: 5px">
               {{ 'SERVICES.EVAL_CHECK_EXPANDED' | translate }}
-              <ngx-codemirror
+              <app-code-editor
                 #evalcodeeditor2
-                [options]="cmEvalOptionsOutput"
-                [ngModel]="myEvalTextOutput"
-                [autoFocus]="true"
-                [disabled]="true"
-              ></ngx-codemirror>
+                [language]="'text'"
+                [readOnly]="true"
+                [value]="myEvalTextOutput"
+                style="height: 160px; width: 100%"
+              ></app-code-editor>
             </div>
 
             <br />
@@ -262,21 +263,22 @@
               <tbody>
                 <tr>
                   <td style="width: 49%; height: 100px; margin-top: 10px; padding-left: 10px; padding-right: 5px">
-                    <ngx-codemirror
+                    <app-code-editor
                       #codeeditor
-                      [options]="cmOptions"
-                      [(ngModel)]="myTextarea"
-                      [autoFocus]="true"
-                    ></ngx-codemirror>
+                      [language]="'yaml'"
+                      [readOnly]="false"
+                      [(value)]="myTextarea"
+                      style="height: calc(100vh - 260px)"
+                    ></app-code-editor>
                   </td>
                   <td style="width: 49%; height: 100px; margin-top: 10px; padding-left: 0">
-                    <ngx-codemirror
+                    <app-code-editor
                       #codeeditor2
-                      [options]="cmOptionsOutput"
-                      [ngModel]="myTextOutput"
-                      [autoFocus]="true"
-                      [disabled]="true"
-                    ></ngx-codemirror>
+                      [language]="'yaml'"
+                      [readOnly]="true"
+                      [value]="myTextOutput"
+                      style="height: calc(100vh - 260px)"
+                    ></app-code-editor>
                   </td>
                 </tr>
               </tbody>
@@ -309,21 +311,22 @@
               <tbody>
                 <tr>
                   <td style="width: 49%; height: 100px; margin-top: 10px; padding-left: 10px; padding-right: 5px">
-                    <ngx-codemirror
+                    <app-code-editor
                       #convertercodeeditor
-                      [options]="cmConveterOptions"
-                      [(ngModel)]="myConverterTextarea"
-                      [autoFocus]="true"
-                    ></ngx-codemirror>
+                      [language]="'text'"
+                      [readOnly]="false"
+                      [(value)]="myConverterTextarea"
+                      style="height: calc(100vh - 260px)"
+                    ></app-code-editor>
                   </td>
                   <td style="width: 49%; height: 100px; margin-top: 10px; padding-left: 0">
-                    <ngx-codemirror
+                    <app-code-editor
                       #convertercodeeditor2
-                      [options]="cmConverterOptionsOutput"
-                      [ngModel]="myConverterTextOutput"
-                      [autoFocus]="true"
-                      [disabled]="true"
-                    ></ngx-codemirror>
+                      [language]="'yaml'"
+                      [readOnly]="true"
+                      [value]="myConverterTextOutput"
+                      style="height: calc(100vh - 260px)"
+                    ></app-code-editor>
                   </td>
                 </tr>
               </tbody>

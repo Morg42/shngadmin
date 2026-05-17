@@ -1,5 +1,4 @@
 import {
-  AfterViewChecked,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -27,7 +26,6 @@ interface LogfileChunk {
 import { NgStyle } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
-import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { PrimeTemplate } from 'primeng/api';
 import { Bind } from 'primeng/bind';
 import { ButtonDirective } from 'primeng/button';
@@ -35,6 +33,7 @@ import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { Select } from 'primeng/select';
+import { CodeEditorComponent } from '../../common/components/code-editor/code-editor.component';
 import { ServerApiService } from '../../common/services/server-api.service';
 
 interface DropDownEntry {
@@ -54,7 +53,7 @@ interface DropDownEntry {
     FormsModule,
     ButtonDirective,
     InputText,
-    CodemirrorModule,
+    CodeEditorComponent,
     Dialog,
     NgStyle,
     ProgressSpinner,
@@ -62,7 +61,7 @@ interface DropDownEntry {
     TranslatePipe,
   ],
 })
-export class LogDisplayComponent implements AfterViewChecked, OnInit {
+export class LogDisplayComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
@@ -72,7 +71,7 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
   private titleService = inject(Title);
   private readonly log = inject(LogService);
 
-  @ViewChild('codeeditor', { static: true }) private codeEditor: any;
+  @ViewChild('codeeditor') codeEditor?: CodeEditorComponent;
 
   loglevels: DropDownEntry[] = [];
 
@@ -97,35 +96,8 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
   chunk_no = 1;
   logfile_content = '';
 
-  cmOptions = {
-    indentWithTabs: false,
-    indentUnit: 4,
-    tabSize: 4,
-    extraKeys: {
-      F11: function (cm: any) {
-        cm.setOption('fullScreen', !cm.getOption('fullScreen'));
-      },
-      'Ctrl-L': function (cm: any) {
-        cm.setOption('lineWrapping', !cm.getOption('lineWrapping'));
-      },
-      Esc: function (cm: any, fullScreen: unknown) {
-        if (cm.getOption('fullScreen')) {
-          cm.setOption('fullScreen', false);
-        }
-      },
-    },
-    fullScreen: false,
-    lineNumbers: true,
-    readOnly: true,
-    lineSeparator: '\n',
-    mode: 'ttcn',
-    lineWrapping: false,
-    firstLineNumber: 1,
-    autorefresh: true,
-    fixedGutter: true,
-    foldGutter: true,
-    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
-  };
+  cmLineNumbers = true;
+  cmFirstLineNumber = 1;
 
   editorHelp_display = false;
   spinner_display: boolean = false;
@@ -184,17 +156,6 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
             this.cdr.markForCheck();
           });
       });
-  }
-
-  ngAfterViewChecked() {
-    const editor1 = this.codeEditor.codeMirror;
-    if (editor1.getOption('fullScreen')) {
-      editor1.setSize('100vw', '100vh');
-    } else {
-      // editor1.setSize('97vw', '83vh');
-      editor1.setSize('calc(100% - 5px)', 'calc(100vh - 160px)');
-    }
-    editor1.refresh();
   }
 
   fillTimeframe(useActual = false) {
@@ -267,7 +228,7 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
 
   filterLogChunk() {
     this.logfile_content = '';
-    this.cmOptions.lineNumbers = this.level_filter === 'ALL' && this.text_filter === '';
+    this.cmLineNumbers = this.level_filter === 'ALL' && this.text_filter === '';
     if (!this.logfile_chunk) return;
 
     const filter = this.text_filter;
@@ -284,7 +245,7 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
   }
 
   scrollDown() {
-    this.codeEditor.codeMirror.execCommand('goDocEnd');
+    this.codeEditor?.scrollToEnd();
   }
 
   readLogfile(chunk = 1) {
@@ -304,9 +265,9 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
           this.first_chunk = this.logfile_chunk.lines[0] === 1;
           this.last_chunk = this.logfile_chunk.lastchunk;
           this.chunk_no = this.logfile_chunk.chunk;
-          this.cmOptions.lineNumbers = true;
-          this.cmOptions.firstLineNumber = this.logfile_chunk.lines[0];
-          if (this.cmOptions.firstLineNumber !== undefined) {
+          this.cmLineNumbers = true;
+          this.cmFirstLineNumber = this.logfile_chunk.lines[0];
+          if (this.cmFirstLineNumber !== undefined) {
             for (let i = 0; i < this.logfile_chunk.loglines.length; i++) {
               let wrk2 = '';
               for (let c = 0; c < this.logfile_chunk.loglines[i].length; c++) {

@@ -114,7 +114,15 @@
   </div>
 
   <div style="height: 100px; margin-left: 0; margin-top: 10px; padding-left: 10px; padding-right: 5px">
-    <ngx-codemirror #codeeditor [options]="cmOptions" [(ngModel)]="logfile_content" [autoFocus]="true"></ngx-codemirror>
+    <app-code-editor
+      #codeeditor
+      [language]="'text'"
+      [readOnly]="true"
+      [lineNums]="cmLineNumbers"
+      [firstLineNumber]="cmFirstLineNumber"
+      [value]="logfile_content"
+      style="height: calc(100vh - 160px)"
+    ></app-code-editor>
   </div>
 </div>
 

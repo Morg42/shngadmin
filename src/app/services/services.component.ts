@@ -1,5 +1,4 @@
 import {
-  AfterViewChecked,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -29,7 +28,6 @@ import { SharedService } from '../common/services/shared.service';
 
 import { NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { sha512 } from 'js-sha512';
 import { PrimeTemplate } from 'primeng/api';
 import { Bind } from 'primeng/bind';
@@ -40,6 +38,7 @@ import { InputText } from 'primeng/inputtext';
 import { Ripple } from 'primeng/ripple';
 import { Select } from 'primeng/select';
 import { Tab as Tab_1, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
+import { CodeEditorComponent } from '../common/components/code-editor/code-editor.component';
 // import {LogicsWatchItem} from '../common/models/logics-watch-item';
 // import {SelectItem} from 'primeng/api';
 
@@ -69,7 +68,7 @@ export interface CacheEntryType {
     Select,
     FormsModule,
     ButtonDirective,
-    CodemirrorModule,
+    CodeEditorComponent,
     InputText,
     Dialog,
     PrimeTemplate,
@@ -77,7 +76,7 @@ export interface CacheEntryType {
     TranslatePipe,
   ],
 })
-export class ServicesComponent implements AfterViewChecked, OnInit {
+export class ServicesComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private http = inject(HttpClient);
@@ -113,141 +112,38 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
   show_backup_confirm = false;
   show_restore_chooser = false;
 
-  // -----------------------------------------------------------------
-  //  Vars for the codemirror components
-  //
-  rulers: { color: string; column: number; lineStyle: string }[] = [];
-
   // -----------------------------------------------------
   //  Vars for the EVAL syntax checker
   //
-  @ViewChild('evalcodeeditor', { static: true }) private evalCodeEditor: any;
-  @ViewChild('evalcodeeditor2', { static: true }) private evalCodeEditor2: any;
+  @ViewChild('evalcodeeditor') evalCodeEditor?: CodeEditorComponent;
+  @ViewChild('evalcodeeditor2') evalCodeEditor2?: CodeEditorComponent;
 
   myEvalTextarea = '';
   myRelativeTo = '';
   myEvalResult = '';
   myResultType = '';
-  cmEvalOptions = {
-    indentWithTabs: false,
-    indentUnit: 4,
-    tabSize: 4,
-    extraKeys: {
-      Tab: 'insertSoftTab',
-      'Shift-Tab': 'indentLess',
-    },
-    lineNumbers: true,
-    readOnly: false,
-    lineSeparator: '\n',
-    rulers: this.rulers,
-    mode: 'python',
-    lineWrapping: false,
-    firstLineNumber: 1,
-    autorefresh: true,
-    fixedGutter: true,
-  };
 
   myEvalTextOutput = '';
-  cmEvalOptionsOutput = {
-    indentWithTabs: false,
-    indentUnit: 4,
-    tabSize: 4,
-    extraKeys: {
-      Tab: 'insertSoftTab',
-      'Shift-Tab': 'indentLess',
-    },
-    lineNumbers: true,
-    readOnly: false,
-    lineSeparator: '\n',
-    rulers: this.rulers,
-    mode: 'python',
-    lineWrapping: false,
-    firstLineNumber: 1,
-    autorefresh: true,
-    fixedGutter: true,
-  };
 
   // -----------------------------------------------------
   //  Vars for the YAML syntax checker
   //
-  @ViewChild('codeeditor', { static: true }) private codeEditor: any;
-  @ViewChild('codeeditor2', { static: true }) private codeEditor2: any;
+  @ViewChild('codeeditor') codeEditor?: CodeEditorComponent;
+  @ViewChild('codeeditor2') codeEditor2?: CodeEditorComponent;
 
   myTextarea = '';
-  cmOptions = {
-    indentWithTabs: false,
-    indentUnit: 4,
-    tabSize: 4,
-    extraKeys: {
-      Tab: 'insertSoftTab',
-      'Shift-Tab': 'indentLess',
-    },
-    lineNumbers: true,
-    readOnly: false,
-    lineSeparator: '\n',
-    rulers: this.rulers,
-    mode: 'yaml',
-    lineWrapping: false,
-    firstLineNumber: 1,
-    autorefresh: true,
-    fixedGutter: true,
-  };
 
   myTextOutput = '';
-  cmOptionsOutput = {
-    indentWithTabs: false,
-    indentUnit: 4,
-    tabSize: 4,
-    extraKeys: {
-      Tab: 'insertSoftTab',
-      'Shift-Tab': 'indentLess',
-    },
-    lineNumbers: true,
-    readOnly: false,
-    lineSeparator: '\n',
-    rulers: this.rulers,
-    mode: 'yaml',
-    lineWrapping: false,
-    firstLineNumber: 1,
-    autorefresh: true,
-    fixedGutter: true,
-  };
 
   // -----------------------------------------------------
   //  Vars for the YAML converter
   //
-  @ViewChild('convertercodeeditor', { static: true }) private converterCodeEditor: any;
-  @ViewChild('convertercodeeditor2', { static: true }) private converterCodeEditor2: any;
+  @ViewChild('convertercodeeditor') converterCodeEditor?: CodeEditorComponent;
+  @ViewChild('convertercodeeditor2') converterCodeEditor2?: CodeEditorComponent;
 
   myConverterTextarea = '';
-  cmConveterOptions = {
-    lineNumbers: true,
-    readOnly: false,
-    indentUnit: 4,
-    lineSeparator: '\n',
-    rulers: this.rulers,
-    // mode: 'yaml',
-    lineWrapping: false,
-    firstLineNumber: 1,
-    indentWithTabs: false,
-    autorefresh: true,
-    fixedGutter: true,
-  };
 
   myConverterTextOutput = '';
-  cmConverterOptionsOutput = {
-    lineNumbers: true,
-    readOnly: false,
-    indentUnit: 4,
-    lineSeparator: '\n',
-    rulers: this.rulers,
-    mode: 'yaml',
-    lineWrapping: false,
-    firstLineNumber: 1,
-    indentWithTabs: false,
-    autorefresh: true,
-    fixedGutter: true,
-  };
 
   cacheInfo: CacheEntryType[] = [];
   cacheAllChecked: boolean;
@@ -258,10 +154,6 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
 
   ngOnInit() {
     // this.log.log('ServicesComponent.ngOnInit');
-
-    for (let i = 1; i <= 100; i++) {
-      this.rulers.push({ color: '#eee', column: i * 4, lineStyle: 'dashed' });
-    }
 
     this.dataServiceServer
       .getServerinfo()
@@ -336,26 +228,6 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     }
   }
 
-  ngAfterViewChecked() {
-    const evalEditor1 = this.evalCodeEditor.codeMirror;
-    const evalEditor2 = this.evalCodeEditor2.codeMirror;
-    // const h = evalEditor1.getViewport();
-
-    evalEditor1.setSize('100%', 160);
-    evalEditor1.refresh();
-    evalEditor2.setSize('100%', 160);
-    evalEditor2.refresh();
-
-    const editor1 = this.codeEditor.codeMirror;
-    const editor2 = this.codeEditor2.codeMirror;
-    editor1.refresh();
-    editor2.refresh();
-    const editor3 = this.converterCodeEditor.codeMirror;
-    const editor4 = this.converterCodeEditor2.codeMirror;
-    editor3.refresh();
-    editor4.refresh();
-  }
-
   createPwdHash() {
     this.log.log('createPwdHash');
     this.pwd_hash = sha512(this.pwd_clear);
@@ -369,13 +241,6 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
         this.myTextOutput = response as string;
-        this.cmOptionsOutput.lineNumbers = true;
-        // if (this.myTextOutput.startsWith('ERROR:')) {
-        //   this.cmOptionsOutput.lineNumbers = false;
-        // }
-        this.cmOptionsOutput.lineNumbers = !this.myTextOutput.startsWith('ERROR:');
-        const editor2 = this.codeEditor2.codeMirror;
-        editor2.refresh();
         this.cdr.markForCheck();
       });
   }
@@ -406,12 +271,6 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
         this.myConverterTextOutput = response as string;
-        this.cmConverterOptionsOutput.lineNumbers = true;
-        //          if (this.myConverterTextOutput.startsWith('ERROR:')) {
-        //            this.cmConverterOptionsOutput.lineNumbers = false;
-        //          }
-        //          const editor4 = this.converterCodeEditor2.codeMirror;
-        //          editor4.refresh();
         this.cdr.markForCheck();
       });
   }

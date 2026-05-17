@@ -1,5 +1,4 @@
 import {
-  AfterViewChecked,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -16,12 +15,12 @@ import { PrimeTemplate, SelectItem } from 'primeng/api';
 import { NgStyle } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
-import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { Bind } from 'primeng/bind';
 import { ButtonDirective } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { Listbox } from 'primeng/listbox';
+import { CodeEditorComponent } from '../../common/components/code-editor/code-editor.component';
 import { FilesApiService } from '../../common/services/files-api.service';
 import { LogService } from '../../common/services/log.service';
 import { ScenesApiService } from '../../common/services/scenes-api.service';
@@ -38,7 +37,7 @@ import { ServicesApiService } from '../../common/services/services-api.service';
     ButtonDirective,
     Listbox,
     FormsModule,
-    CodemirrorModule,
+    CodeEditorComponent,
     Dialog,
     PrimeTemplate,
     InputText,
@@ -46,7 +45,7 @@ import { ServicesApiService } from '../../common/services/services-api.service';
     TranslatePipe,
   ],
 })
-export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
+export class SceneConfigurationComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private translate = inject(TranslateService);
@@ -57,15 +56,10 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
   private titleService = inject(Title);
   private readonly log = inject(LogService);
 
-  // -----------------------------------------------------------------
-  //  Vars for the codemirror components
-  //
-  rulers: { color: string; column: number; lineStyle: string }[] = [];
-
   // -----------------------------------------------------
   //  Vars for the YAML syntax checker
   //
-  @ViewChild('codeeditor', { static: true }) private codeEditor: any;
+  @ViewChild('codeeditor') codeEditor?: CodeEditorComponent;
 
   filelist: string[];
   sceneFiles: SelectItem[];
@@ -77,44 +71,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
   myTextarea = '';
   myTextareaOrig = '';
 
-  cmOptions = {
-    indentWithTabs: false,
-    indentUnit: 4,
-    tabSize: 4,
-    extraKeys: {
-      Tab: 'insertSoftTab',
-      'Shift-Tab': 'indentLess',
-      F11: function (cm: any) {
-        cm.setOption('fullScreen', !cm.getOption('fullScreen'));
-        // cm.getScrollerElement().style.maxHeight = 'none';
-      },
-      Esc: function (cm: any, fullScreen: unknown) {
-        if (cm.getOption('fullScreen')) {
-          cm.setOption('fullScreen', false);
-        }
-      },
-      'Ctrl-Q': function (cm: any) {
-        cm.foldCode(cm.getCursor());
-      },
-      'Shift-Ctrl-Q': function (cm: any) {
-        for (let l = cm.firstLine(); l <= cm.lastLine(); ++l) {
-          cm.foldCode({ line: l, ch: 0 }, null, 'unfold');
-        }
-      },
-    },
-    fullScreen: false,
-    lineNumbers: true,
-    readOnly: false,
-    lineSeparator: '\n',
-    rulers: this.rulers,
-    mode: 'yaml',
-    lineWrapping: false,
-    firstLineNumber: 1,
-    autorefresh: true,
-    fixedGutter: true,
-    foldGutter: true,
-    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
-  };
+  cmReadOnly = true;
 
   editorHelp_display = false;
   error_display = false;
@@ -133,9 +90,6 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
   ngOnInit() {
     // this.log.log('LoggingConfigurationComponent.ngOnInit');
 
-    for (let i = 1; i <= 100; i++) {
-      this.rulers.push({ color: '#eee', column: i * 4, lineStyle: 'dashed' });
-    }
     this.getSceneFile('');
 
     this.sceneFiles = [];
@@ -169,19 +123,6 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
             this.cdr.markForCheck();
           });
       });
-  }
-
-  ngAfterViewChecked() {
-    const editor1 = this.codeEditor.codeMirror;
-
-    if (editor1.getOption('fullScreen')) {
-      editor1.setSize('100vw', '100vh');
-    } else {
-      editor1.setSize('calc(100% - 10px)', 'calc(100vh - 160px)');
-      // width: min(80%, 100% - 280px);       calc(80vw - 90px)
-    }
-
-    editor1.refresh();
   }
 
   newConfig() {
@@ -239,7 +180,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
     this.myTextarea = '# ' + this.newFilename + '.yaml\n';
     this.myTextareaOrig = this.myTextarea;
     this.myEditFilename = this.newFilename;
-    this.cmOptions.readOnly = false;
+    this.cmReadOnly = false;
 
     this.fileService
       .saveFile('scenes', this.myEditFilename, this.myTextarea)
@@ -274,7 +215,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
     } else {
       this.myEditFilename = '';
       this.myTextarea = '';
-      this.cmOptions.readOnly = true;
+      this.cmReadOnly = true;
       this.myTextarea = this.translate.instant('SCENE_CONFIG.FILETYPE_UNSUPPORTED');
     }
   }
@@ -282,7 +223,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
   getSceneFile(filename: string) {
     this.myEditFilename = '';
     this.myTextarea = '';
-    this.cmOptions.readOnly = true;
+    this.cmReadOnly = true;
     if (filename === '') {
       return;
     }
@@ -297,7 +238,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
           this.myTextarea = this.translate.instant('SCENE_CONFIG.FILE_NOT_FOUND');
         } else {
           this.myEditFilename = filename;
-          this.cmOptions.readOnly = false;
+          this.cmReadOnly = false;
         }
         this.cdr.markForCheck();
       });
@@ -321,10 +262,6 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
               this.myTextareaOrig = this.myTextarea;
               this.cdr.markForCheck();
             });
-        }
-        if (this.codeEditor !== undefined) {
-          const editor = this.codeEditor.codeMirror;
-          editor.refresh();
         }
         this.cdr.markForCheck();
       });

@@ -3,11 +3,11 @@
 @import '@fontsource/roboto/400.css';
 @import '@fontsource/roboto/700.css';
 
-@import 'codemirror/lib/codemirror.css';
-@import 'codemirror/addon/hint/show-hint.css';
-@import 'codemirror/addon/dialog/dialog.css';
-@import 'codemirror/addon/search/matchesonscrollbar.css';
-@import 'codemirror/addon/fold/foldgutter.css';
+/*@import 'codemirror/lib/codemirror.css';*/
+/*@import 'codemirror/addon/hint/show-hint.css';*/
+/*@import 'codemirror/addon/dialog/dialog.css';*/
+/*@import 'codemirror/addon/search/matchesonscrollbar.css';*/
+/*@import 'codemirror/addon/fold/foldgutter.css';*/
 
 /* Hide spinners for number fields */
 input[type='number'] {
@@ -22,15 +22,15 @@ input::-webkit-inner-spin-button {
 }
 
 /* @import "codemirror/addon/display/fullscreen.css"; */
-.CodeMirror-fullscreen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: auto;
-  z-index: 12000;
-}
+/*.CodeMirror-fullscreen {*/
+/*  position: fixed;*/
+/*  top: 0;*/
+/*  left: 0;*/
+/*  right: 0;*/
+/*  bottom: 0;*/
+/*  height: auto;*/
+/*  z-index: 12000;*/
+/*}*/
 
 /*
 
@@ -343,15 +343,15 @@ plusIconlist-group-item.py-2.node-tree.node-selected {
   border-bottom-left-radius: 0.25rem;
 }
 
-.CodeMirror {
-  border: 1px solid #ddd;
-  height: auto;
-}
+/*.CodeMirror {*/
+/*  border: 1px solid #ddd;*/
+/*  height: auto;*/
+/*}*/
 
-.CodeMirror-scroll {
-  overflow-x: auto;
-  overflow-y: auto;
-}
+/*.CodeMirror-scroll {*/
+/*  overflow-x: auto;*/
+/*  overflow-y: auto;*/
+/*}*/
 
 .python-tabs .cm-tab {
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAMCAYAAAAkuj5RAAAAAXNSR0IArs4c6QAAAGFJREFUSMft1LsRQFAQheHPowAKoACx3IgEKtaEHujDjORSgWTH/ZOdnZOcM/sgk/kFFWY0qV8foQwS4MKBCS3qR6ixBJvElOobYAtivseIE120FaowJPN75GMu8j/LfMwNjh4HUpwg4LUAAAAASUVORK5CYII=);

@@ -50,7 +50,7 @@ export class StructsComponent implements OnInit {
   structsGroups: string[] = [];
   selectedItem: TreeNode;
   displayTree: TreeNode[];
-  displayTrees: Record<string, unknown>;
+  displayTrees: Record<string, TreeNode[]>;
   groupExpanded: Record<string, unknown>;
   structExpanded: Record<string, unknown>;
   structExpanded2: Record<string, unknown>;

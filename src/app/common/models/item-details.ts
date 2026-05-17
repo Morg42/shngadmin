@@ -45,7 +45,7 @@ export interface ItemDetails {
   autotimer: string;
   threshold: string;
   threshold_crossed: string;
-  config: {};
+  config: Record<string, unknown>;
   logics: {
     name: string;
     description: string;

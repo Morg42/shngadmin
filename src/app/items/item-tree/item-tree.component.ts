@@ -35,7 +35,6 @@ import { ItemDetails } from '../../common/models/item-details';
 import { ItemTree } from '../../common/models/item-tree';
 import { LogService } from '../../common/services/log.service';
 import { OlddataService } from '../../common/services/olddata.service';
-import { ServerApiService } from '../../common/services/server-api.service';
 import { SharedService } from '../../common/services/shared.service';
 import { WebsocketPluginService } from '../../common/services/websocket-plugin.service';
 import { WebsocketService } from '../../common/services/websocket.service';
@@ -133,7 +132,6 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private dataService = inject(OlddataService);
-  private dataServiceServer = inject(ServerApiService);
   private translate = inject(TranslateService);
   private websocketPluginService = inject(WebsocketPluginService);
   public shared = inject(SharedService);
@@ -179,13 +177,8 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   ngOnInit() {
     this.log.log('ItemTreeComponent.ngOnInit:');
 
-    this.dataServiceServer
-      .getServerinfo()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((response) => {
-        this.setTitle(this.translate.instant('ITEMS.ITEMS'));
-        this.getItemtree();
-      });
+    this.setTitle(this.translate.instant('ITEMS.ITEMS'));
+    this.getItemtree();
 
     window.addEventListener('resize', this.resizeHandler, false);
     this.resizeItemTree();

@@ -17,7 +17,6 @@ import { ButtonDirective } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { CodeEditorComponent } from '../../common/components/code-editor/code-editor.component';
 import { FilesApiService } from '../../common/services/files-api.service';
-import { ServerApiService } from '../../common/services/server-api.service';
 import { ServicesApiService } from '../../common/services/services-api.service';
 
 @Component({
@@ -40,7 +39,6 @@ export class LoggingConfigurationComponent implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
   private fileService = inject(FilesApiService);
   private dataService = inject(ServicesApiService);
-  private dataServiceServer = inject(ServerApiService);
   private translate = inject(TranslateService);
   private titleService = inject(Title);
 
@@ -66,20 +64,15 @@ export class LoggingConfigurationComponent implements OnInit {
 
     this.myEditFilename = 'logging';
 
-    this.dataServiceServer
-      .getServerinfo()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((response) => {
-        this.setTitle(this.translate.instant('MENU.LOGGING_CONFIGURATION'));
+    this.setTitle(this.translate.instant('MENU.LOGGING_CONFIGURATION'));
 
-        this.fileService
-          .readFile('logging')
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe((response2) => {
-            this.myTextarea = response2;
-            this.myTextareaOrig = response2;
-            this.cdr.markForCheck();
-          });
+    this.fileService
+      .readFile('logging')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((response2) => {
+        this.myTextarea = response2;
+        this.myTextareaOrig = response2;
+        this.cdr.markForCheck();
       });
   }
 

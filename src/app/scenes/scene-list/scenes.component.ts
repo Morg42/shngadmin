@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -8,7 +7,6 @@ import {
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { switchMap } from 'rxjs';
 
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
@@ -21,7 +19,6 @@ import { SceneInfo } from '../../common/models/scene-info';
 import { SystemInfo } from '../../common/models/system-info';
 import { LogService } from '../../common/services/log.service';
 import { ScenesApiService } from '../../common/services/scenes-api.service';
-import { ServerApiService } from '../../common/services/server-api.service';
 
 @Component({
   selector: 'app-scenes',
@@ -46,8 +43,6 @@ export class ScenesComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
-  private http = inject(HttpClient);
-  private dataServiceServer = inject(ServerApiService);
   private translate = inject(TranslateService);
   private messageService = inject(MessageService);
   private dataService = inject(ScenesApiService);
@@ -62,12 +57,9 @@ export class ScenesComponent implements OnInit {
     this.log.log('ScenesComponent.ngOnInit');
     this.setTitle(this.translate.instant('MENU.SCENE_LIST'));
 
-    this.dataServiceServer
-      .getServerinfo()
-      .pipe(
-        switchMap(() => this.dataService.getScenes()),
-        takeUntilDestroyed(this.destroyRef),
-      )
+    this.dataService
+      .getScenes()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
         this.sceneList = response as SceneInfo[];
         //          this.schedulerinfo.sort(function (a, b) {return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)});

@@ -29,7 +29,6 @@ import { PypiInfo } from '../../common/models/pypi-info';
 import { SystemInfo } from '../../common/models/system-info';
 import { LogService } from '../../common/services/log.service';
 import { OlddataService } from '../../common/services/olddata.service';
-import { ServerApiService } from '../../common/services/server-api.service';
 import { SharedService } from '../../common/services/shared.service';
 import { WebsocketPluginService } from '../../common/services/websocket-plugin.service';
 import { WebsocketService } from '../../common/services/websocket.service';
@@ -59,7 +58,6 @@ export class SystemComponent implements OnDestroy, OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
   private http = inject(HttpClient);
   private dataService = inject(OlddataService);
-  private dataServiceServer = inject(ServerApiService);
   private translate = inject(TranslateService);
   private websocketPluginService = inject(WebsocketPluginService);
   public shared = inject(SharedService);
@@ -160,13 +158,9 @@ export class SystemComponent implements OnDestroy, OnInit {
   ngOnInit() {
     this.log.log('SystemComponent.ngOnInit:');
 
-    this.dataServiceServer!.getServerinfo()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((response) => {
-        this.setTitle(this.translate.instant('MENU.SYSTEM_PROPERTIES'));
-        this.initSystemInfo();
-        this.cdr.markForCheck();
-      });
+    this.setTitle(this.translate.instant('MENU.SYSTEM_PROPERTIES'));
+    this.initSystemInfo();
+    this.cdr.markForCheck();
   }
 
   ngOnDestroy(): void {

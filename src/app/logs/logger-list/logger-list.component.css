@@ -25,21 +25,8 @@
   width: 100%;
   margin: 0;
   padding: 0;
-
-  padding-left: 10px; /* padding around tab border */
+  padding-left: 10px;
   padding-right: 10px;
-
-  display: grid;
-  grid-template-rows: 0 auto 0;
-  grid-template-columns: 1fr;
-
-  grid-template-areas:
-    'body-header-services'
-    'body-content-services'
-    'body-footer-services';
-
-  grid-gap: 0;
-  grid-auto-flow: row;
 }
 
 /*

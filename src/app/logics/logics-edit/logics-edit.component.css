@@ -41,17 +41,7 @@
   grid-area: body-content;
   width: 100%;
   height: calc(100vh - 60px);
-
   overflow: hidden;
-
-  display: grid;
-  grid-template-areas:
-    'tab-header'
-    'tab-content'
-    'tab-footer';
-  grid-template-columns: 1fr;
-  /* grid-auto-rows: minmax(50px, max-content); */
-  grid-template-rows: 0 auto 0;
 }
 
 .body-footer {

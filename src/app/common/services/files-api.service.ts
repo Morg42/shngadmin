@@ -14,7 +14,7 @@ export class FilesApiService {
   private appConfig = inject(AppConfigService);
   private readonly log = inject(LogService);
 
-  readFile(filetype, filename = '') {
+  readFile(filetype: string, filename = '') {
     // this.log.log('FilesApiService.readFile()', {filename});
 
     const apiUrl = this.appConfig.apiUrl;
@@ -52,7 +52,7 @@ export class FilesApiService {
     );
   }
 
-  saveFile(filetype, filename = '', content = '') {
+  saveFile(filetype: string, filename = '', content = '') {
     // this.log.log('FilesApiService.saveFile');
 
     const apiUrl = this.appConfig.apiUrl;
@@ -80,7 +80,7 @@ export class FilesApiService {
     );
   }
 
-  deleteFile(filetype, filename = '') {
+  deleteFile(filetype: string, filename = '') {
     this.log.log('FilesApiService.deleteFile()', { filename });
 
     const apiUrl = this.appConfig.apiUrl;
@@ -120,7 +120,7 @@ export class FilesApiService {
     );
   }
 
-  getfileList(filetype) {
+  getfileList(filetype: string) {
     this.log.log('FilesApiService.getfileList()', { filetype });
 
     const apiUrl = this.appConfig.apiUrl;

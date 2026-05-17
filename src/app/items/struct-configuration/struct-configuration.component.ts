@@ -52,7 +52,7 @@ export class StructConfigurationComponent implements AfterViewChecked, OnInit {
   // -----------------------------------------------------
   //  Vars for the YAML syntax checker
   //
-  @ViewChild('codeeditor', { static: true }) private codeEditor;
+  @ViewChild('codeeditor', { static: true }) private codeEditor: any;
 
   myEditFilename: string;
   myTextarea = '';
@@ -62,24 +62,24 @@ export class StructConfigurationComponent implements AfterViewChecked, OnInit {
     indentUnit: 4,
     tabSize: 4,
     extraKeys: {
-      F1: function (cm) {
+      F1: (cm: unknown) => {
         this.editorHelp_display = true;
       },
       Tab: 'insertSoftTab',
       'Shift-Tab': 'indentLess',
-      F11: function (cm) {
+      F11: function (cm: any) {
         cm.setOption('fullScreen', !cm.getOption('fullScreen'));
         // cm.getScrollerElement().style.maxHeight = 'none';
       },
-      Esc: function (cm, fullScreen) {
+      Esc: function (cm: any, fullScreen: unknown) {
         if (cm.getOption('fullScreen')) {
           cm.setOption('fullScreen', false);
         }
       },
-      'Ctrl-Q': function (cm) {
+      'Ctrl-Q': function (cm: any) {
         cm.foldCode(cm.getCursor());
       },
-      'Shift-Ctrl-Q': function (cm) {
+      'Shift-Ctrl-Q': function (cm: any) {
         for (let l = cm.firstLine(); l <= cm.lastLine(); ++l) {
           cm.foldCode({ line: l, ch: 0 }, null, 'unfold');
         }

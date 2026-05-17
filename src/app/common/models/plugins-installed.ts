@@ -4,6 +4,7 @@
 export interface PluginInstalled {
   type: string;
   description: Record<string, string> | string;
+  disp_description?: string;
   version: string;
   state: string;
   documentation: string;

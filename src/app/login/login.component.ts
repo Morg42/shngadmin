@@ -30,7 +30,7 @@ export class LoginComponent {
   public authService = inject(AuthService);
   invalidLogin: boolean;
 
-  signIn(credentials) {
+  signIn(credentials: { username: string; password: string }) {
     this.authService
       .login(credentials)
       .pipe(takeUntilDestroyed(this.destroyRef))

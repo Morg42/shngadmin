@@ -77,13 +77,13 @@ export class LoggerLineComponent {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly log = inject(LogService);
 
-  getParent(logger) {
+  getParent(logger: string) {
     const parts = logger.split('.');
     parts.pop();
     return parts.join('.');
   }
 
-  baseName(str, withExtension = true) {
+  baseName(str: string, withExtension = true) {
     let base = str;
     base = base.substring(base.lastIndexOf('/') + 1);
     if (!withExtension && base.lastIndexOf('.') !== -1) {
@@ -92,7 +92,7 @@ export class LoggerLineComponent {
     return base;
   }
 
-  levelChanged(lg, level) {
+  levelChanged(lg: unknown, level: unknown) {
     let activeLevel = this.levelDefault;
     if (level !== null) {
       activeLevel = this.logger.active.level;
@@ -100,7 +100,7 @@ export class LoggerLineComponent {
     this.levelChange.emit(activeLevel);
   }
 
-  loggerIsDeletable(logger) {
+  loggerIsDeletable(logger: string) {
     if (
       logger === 'plugins' ||
       logger === 'logics' ||
@@ -138,7 +138,7 @@ export class LoggerLineComponent {
   //   functions to support choosing of handlers
   // ------------------------------------------------------------------------------
 
-  chooseHandlers(logger) {
+  chooseHandlers(logger: string) {
     // this.loggerToModify = logger;
     this.header_param = { logger: logger };
     this.handlers = [
@@ -211,7 +211,7 @@ export class LoggerLineComponent {
   //   functions to support logger deletion
   // ------------------------------------------------------------------------------
 
-  deleteLogger(logger) {
+  deleteLogger(logger: string) {
     this.loggerToDelete = logger;
     this.delete_param = { logger: logger };
     this.confirmdelete_display = true;

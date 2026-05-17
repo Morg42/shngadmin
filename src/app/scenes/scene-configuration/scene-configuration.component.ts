@@ -65,7 +65,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
   // -----------------------------------------------------
   //  Vars for the YAML syntax checker
   //
-  @ViewChild('codeeditor', { static: true }) private codeEditor;
+  @ViewChild('codeeditor', { static: true }) private codeEditor: any;
 
   filelist: string[];
   sceneFiles: SelectItem[];
@@ -84,19 +84,19 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
     extraKeys: {
       Tab: 'insertSoftTab',
       'Shift-Tab': 'indentLess',
-      F11: function (cm) {
+      F11: function (cm: any) {
         cm.setOption('fullScreen', !cm.getOption('fullScreen'));
         // cm.getScrollerElement().style.maxHeight = 'none';
       },
-      Esc: function (cm, fullScreen) {
+      Esc: function (cm: any, fullScreen: unknown) {
         if (cm.getOption('fullScreen')) {
           cm.setOption('fullScreen', false);
         }
       },
-      'Ctrl-Q': function (cm) {
+      'Ctrl-Q': function (cm: any) {
         cm.foldCode(cm.getCursor());
       },
-      'Shift-Ctrl-Q': function (cm) {
+      'Shift-Ctrl-Q': function (cm: any) {
         for (let l = cm.firstLine(); l <= cm.lastLine(); ++l) {
           cm.foldCode({ line: l, ch: 0 }, null, 'unfold');
         }
@@ -279,7 +279,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
     }
   }
 
-  getSceneFile(filename) {
+  getSceneFile(filename: string) {
     this.myEditFilename = '';
     this.myTextarea = '';
     this.cmOptions.readOnly = true;
@@ -334,7 +334,7 @@ export class SceneConfigurationComponent implements AfterViewChecked, OnInit {
     // this.log.log('reloadPlugin', {pluginConfigName});
 
     this.sceneApiService
-      .reloadScene(name)
+      .reloadScene(this.myEditFilename)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
         this.log.log('reloadScene', '\nresponse', { response });

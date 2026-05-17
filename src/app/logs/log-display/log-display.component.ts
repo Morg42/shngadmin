@@ -72,7 +72,7 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
   private titleService = inject(Title);
   private readonly log = inject(LogService);
 
-  @ViewChild('codeeditor', { static: true }) private codeEditor;
+  @ViewChild('codeeditor', { static: true }) private codeEditor: any;
 
   loglevels: DropDownEntry[] = [];
 
@@ -102,13 +102,13 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
     indentUnit: 4,
     tabSize: 4,
     extraKeys: {
-      F11: function (cm) {
+      F11: function (cm: any) {
         cm.setOption('fullScreen', !cm.getOption('fullScreen'));
       },
-      'Ctrl-L': function (cm) {
+      'Ctrl-L': function (cm: any) {
         cm.setOption('lineWrapping', !cm.getOption('lineWrapping'));
       },
-      Esc: function (cm, fullScreen) {
+      Esc: function (cm: any, fullScreen: unknown) {
         if (cm.getOption('fullScreen')) {
           cm.setOption('fullScreen', false);
         }
@@ -136,8 +136,8 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
 
   ngOnInit() {
     // test if component is called with a parameter and remove '.log' from the parameter
-    let logParam = this.route.snapshot.paramMap['params']['logname'];
-    if (logParam !== undefined) {
+    let logParam = this.route.snapshot.paramMap.get('logname');
+    if (logParam !== null) {
       if (logParam.endsWith('.log')) {
         logParam = logParam.slice(0, -4);
       }
@@ -160,9 +160,10 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
         this.dataService
           .getLogs()
           .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe((response2: LogsType) => {
-            this.logs_info = response2['logs'];
-            this.default_log = response2['default'];
+          .subscribe((response2) => {
+            const logs = response2 as LogsType;
+            this.logs_info = logs['logs'];
+            this.default_log = logs['default'];
             this.logs = [];
             for (let log in this.logs_info) {
               if (this.logs_info.hasOwnProperty(log)) {
@@ -170,7 +171,7 @@ export class LogDisplayComponent implements AfterViewChecked, OnInit {
               }
             }
             this.selectedLog = null;
-            if (logParam !== undefined) {
+            if (logParam !== null) {
               if (logParam in this.logs_info) {
                 this.selectedLog = logParam;
                 this.fillTimeframe(true);

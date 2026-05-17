@@ -50,10 +50,10 @@ export class StructsComponent implements OnInit {
   structsGroups: string[] = [];
   selectedItem: TreeNode;
   displayTree: TreeNode[];
-  displayTrees: {};
-  groupExpanded: {};
-  structExpanded: {};
-  structExpanded2: {};
+  displayTrees: Record<string, unknown>;
+  groupExpanded: Record<string, unknown>;
+  structExpanded: Record<string, unknown>;
+  structExpanded2: Record<string, unknown>;
   globalStructsID: string;
 
   // systeminfo: SystemInfo = <SystemInfo>{};
@@ -146,13 +146,13 @@ export class StructsComponent implements OnInit {
   // -------------------------------------------------------------------------------------------
   // build a display tree for the PrimeNG component from the itemtree received from the backend
   //
-  buildDisplayTree(subtree) {
+  buildDisplayTree(subtree: any) {
     const displayTreeList: Record<string, unknown>[] = [];
     for (const key in subtree) {
       if (key in subtree) {
-        const displayNode = {};
+        const displayNode: Record<string, unknown> = {};
         if (Array.isArray(subtree)) {
-          displayNode['label'] = '- ' + subtree[key];
+          displayNode['label'] = '- ' + (subtree as any)[key];
         } else {
           if (
             typeof subtree[key] === 'string' ||
@@ -190,7 +190,7 @@ export class StructsComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-  getStructListByGroup(group) {
+  getStructListByGroup(group: string) {
     const structSublist: string[] = [];
     // eslint-disable-next-line guard-for-in
     for (const entry in this.structsList) {
@@ -207,7 +207,7 @@ export class StructsComponent implements OnInit {
     return structSublist;
   }
 
-  doConsoleLog(s) {
+  doConsoleLog(s: unknown) {
     this.log.warn('doConsoleLog', s);
   }
 

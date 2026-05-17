@@ -63,7 +63,7 @@ export class LogsApiService {
             err.error.error,
         );
 
-        const result = {};
+        const result: Record<string, unknown> = {};
         result['file'] = filename;
         result['filesize'] = 0;
         result['chunk'] = 1;

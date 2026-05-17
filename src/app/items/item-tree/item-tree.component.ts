@@ -121,7 +121,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   Object = Object;
   JSON = JSON;
 
-  selectedNode;
+  selectedNode: unknown;
 
   update_age = '';
   change_age = '';
@@ -212,7 +212,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     }, 3000);
   }
 
-  closeAlert(item_oldvalue) {
+  closeAlert(item_oldvalue: unknown) {
     this.item_val.value = item_oldvalue;
     this.showItemAlert = false;
   }
@@ -228,9 +228,10 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
       .getItemtree()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (response: [number, ItemTree]) => {
-          this.itemcount = response[0];
-          this.filesTree0 = response[1] as unknown as {}[];
+        next: (response) => {
+          const [itemcount, tree] = response as [number, ItemTree];
+          this.itemcount = itemcount;
+          this.filesTree0 = tree as unknown as {}[];
           this.filterNodes('');
           this.searchStart_param = { number: String(this.appConfig.itemtreeSearchstart) };
           this.cdr.markForCheck();
@@ -242,7 +243,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
       });
   }
 
-  updateValue(item_path, item_value, item_type, item_oldvalue) {
+  updateValue(item_path: string, item_value: any, item_type: string, item_oldvalue: unknown) {
     this.log.log('ItemTreeComponent.updateValue:');
     this.log.log({ item_path }, { item_value });
 
@@ -281,15 +282,15 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     });
   }
 
-  updateMonitoredItem(itempath, itemdata) {
+  updateMonitoredItem(itempath: string, itemdata: unknown) {
     for (let i = 0; i < this.monitoredItems.length; i++) {
       if (this.monitoredItems[i][0] === itempath) {
-        this.monitoredItems[i][1] = itemdata;
+        this.monitoredItems[i][1] = itemdata as Record<string, unknown>;
       }
     }
   }
 
-  remove_none(caller) {
+  remove_none(caller: string) {
     const caller_array = caller.split(':');
     if (caller_array.length === 1 || caller_array[1].toLowerCase() === 'none') {
       return caller_array[0];
@@ -297,7 +298,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     return caller;
   }
 
-  monitoredDataFunction(data) {
+  monitoredDataFunction(data: any) {
     // Callback function that receives the data from the websocket session
     this.data = data;
     const self = this;
@@ -317,7 +318,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
 
       // this.getDetails(path);
 
-      const data = {};
+      const data: Record<string, unknown> = {};
       data['value'] = this.itemdetails.value;
       data['last_update'] = this.itemdetails.last_update;
       data['last_change'] = this.itemdetails.last_change;
@@ -370,8 +371,8 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
         .getItemDetails(path)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
-          next: (response: ItemDetails[]) => {
-            const details = response[0];
+          next: (response) => {
+            const details = (response as ItemDetails[])[0];
             details.value = ItemTreeComponent.htmlDecode(String(details.value));
             details.last_value = ItemTreeComponent.htmlDecode(details.last_value);
             details.previous_value = ItemTreeComponent.htmlDecode(details.previous_value);
@@ -408,7 +409,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     }
   }
 
-  showDetails(response?) {
+  showDetails(response?: unknown) {
     this.log.log('showDetails:');
     this.log.log({ response });
 
@@ -420,7 +421,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
       this.previous_update_age = this.shared.ageToString(0);
       this.previous_change_age = this.shared.ageToString(0);
     } else {
-      this.itemdetails = response;
+      this.itemdetails = response as ItemDetails;
 
       this.update_age = this.shared.ageToString(this.itemdetails.update_age);
       this.change_age = this.shared.ageToString(this.itemdetails.change_age);
@@ -434,15 +435,15 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
    * For PrimeNG Tree:
    */
 
-  filterTree(treeModel, value) {
-    if (value.length >= String(this.appConfig.itemtreeSearchstart)) {
+  filterTree(treeModel: unknown, value: string) {
+    if (value.length >= Number(this.appConfig.itemtreeSearchstart)) {
       this.filterNodes(value);
     } else {
       this.filterNodes('');
     }
   }
 
-  filterNodes(value) {
+  filterNodes(value: string) {
     value = value.toLowerCase();
     this.filteredTree = structuredClone(this.filesTree0);
     this.treeIsFiltered = false;
@@ -453,13 +454,13 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     }
   }
 
-  clearFilter(event, filter) {
+  clearFilter(event: unknown, filter: any) {
     filter.value = '';
     this.filterTree(event, filter.value);
     this.itemdetailsloaded = false;
   }
 
-  prune(array, filter) {
+  prune(array: any[], filter: string) {
     for (let i = array.length - 1; i >= 0; i--) {
       const obj = array[i];
       if (obj.children) {
@@ -478,7 +479,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     }
   }
 
-  nodeSelect(event) {
+  nodeSelect(event: any) {
     this.log.log('Node Selected: ' + event.node.label);
     this.itemdetailsloaded = false;
     this.getDetails(event.node.path);

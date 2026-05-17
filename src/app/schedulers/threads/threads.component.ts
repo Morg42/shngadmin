@@ -52,8 +52,9 @@ export class ThreadsComponent implements OnInit {
           .getThreads()
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe((response2) => {
-            this.threadsList = response2[1];
-            this.threads_count = response2[0];
+            const r2 = response2 as [number, unknown];
+            this.threadsList = r2[1] as any;
+            this.threads_count = r2[0];
             //          this.schedulerinfo.sort(function (a, b) {return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)});
             this.log.log('getThreads', { response2 });
             this.cdr.markForCheck();

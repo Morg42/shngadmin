@@ -177,7 +177,15 @@ export class SystemConfigComponent implements OnInit {
   // Column definitions for parameter configuration tables
   //
   columnDefinitions() {
-    const columnDefinitions = [
+    const columnDefinitions: {
+      field: string;
+      sfield: string;
+      header: string;
+      width: string;
+      iwidth?: string;
+      iwidthwide?: string;
+      paddingleft?: string;
+    }[] = [
       { field: 'name', sfield: 'confname', header: 'PLUGIN.PARAMETER', width: '190px' },
       { field: 'type', sfield: 'conftype', header: 'PLUGIN.TYPE', width: '80px' },
       { field: 'value', sfield: 'paramvalue', header: 'PLUGIN.VALUE', width: '240px' },
@@ -206,7 +214,7 @@ export class SystemConfigComponent implements OnInit {
   // ---------------------------------------------------------
   // Fill ParamData for display/editing of parameters
   //
-  fillParamData(meta, param, data) {
+  fillParamData(meta: any, param: string, data: any) {
     // fill valuelist
     const vl: { label: string; value: unknown }[] = [];
     if (meta['parameters'][param]['valid_list'] !== undefined) {
@@ -450,7 +458,7 @@ export class SystemConfigComponent implements OnInit {
   // ---------------------------------------------------------
   // change password
   //
-  change_password_dialog($event, rowData, col_field) {
+  change_password_dialog($event: unknown, rowData: any, col_field: string) {
     this.log.log('change_password_dialog()');
     this.log.log('hash', rowData[col_field]);
     this.pwd_hash_old = rowData[col_field];
@@ -464,7 +472,7 @@ export class SystemConfigComponent implements OnInit {
     this.pwd_change_dialog_display = true;
   }
 
-  change_password($event) {
+  change_password($event: unknown) {
     this.log.log('change_password()');
     this.pwd_old_is_empty = false;
     this.pwd_old_is_wrong = false;
@@ -545,7 +553,7 @@ export class SystemConfigComponent implements OnInit {
     }
   }
 
-  check_value_restrictions(parameter) {
+  check_value_restrictions(parameter: any) {
     let error_found = false;
     let error_text = '';
 
@@ -666,7 +674,7 @@ export class SystemConfigComponent implements OnInit {
       return false;
     }
 
-    const data = {};
+    const data: Record<string, any> = {};
     data['common'] = {};
     data['common']['data'] = {};
     for (const p in this.common_parameters) {

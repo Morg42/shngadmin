@@ -62,7 +62,7 @@ export class AuthService {
     return Math.round(new Date().getTime() / 1000);
   }
 
-  login(credentials) {
+  login(credentials: { username: string; password: string }) {
     this.log.log('authService.login() entering');
     this.logTimestamp = this.getTimestamp();
 

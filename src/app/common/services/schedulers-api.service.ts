@@ -26,9 +26,9 @@ export class SchedulersApiService {
         this.log.error(
           'SchedulersApiService (getSchedulers): Could not read schedulers data' +
             ' - ' +
-            err.error.error,
+            err?.error?.error,
         );
-        return of({});
+        return of([]);
       }),
     );
   }

@@ -37,7 +37,6 @@ import { ItemsApiService } from '../../common/services/items-api.service';
 import { LogService } from '../../common/services/log.service';
 import { LogicsApiService } from '../../common/services/logics-api.service';
 import { PluginsApiService } from '../../common/services/plugins-api.service';
-import { ServerApiService } from '../../common/services/server-api.service';
 import { SharedService } from '../../common/services/shared.service';
 
 @Component({
@@ -70,7 +69,6 @@ export class LogicsEditComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
-  private dataServiceServer = inject(ServerApiService);
   private dataService = inject(LogicsApiService);
   private fileService = inject(FilesApiService);
   private pluginsapiService = inject(PluginsApiService);
@@ -158,25 +156,20 @@ export class LogicsEditComponent implements OnInit {
 
     this.getLogicInfo(this.myLogicName);
 
-    this.dataServiceServer
-      .getServerinfo()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((response) => {
-        this.setTitle(this.translate.instant('LOGICS.LOGIC') + ' ' + this.myLogicName);
+    this.setTitle(this.translate.instant('LOGICS.LOGIC') + ' ' + this.myLogicName);
 
-        this.pluginsapiService
-          .getPluginsAPI()
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe((response2) => {
-            const result = response2 as string[];
-            for (let i = 0; i < result.length; i++) {
-              this.autocomplete_list.push({
-                text: 'sh.' + result[i],
-                displayText: 'sh.' + result[i] + ' | Plugin',
-              });
-            }
-            this.cdr.markForCheck();
+    this.pluginsapiService
+      .getPluginsAPI()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((response2) => {
+        const result = response2 as string[];
+        for (let i = 0; i < result.length; i++) {
+          this.autocomplete_list.push({
+            text: 'sh.' + result[i],
+            displayText: 'sh.' + result[i] + ' | Plugin',
           });
+        }
+        this.cdr.markForCheck();
       });
 
     this.itemsapiService

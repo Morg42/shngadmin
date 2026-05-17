@@ -32,7 +32,6 @@ import { Message } from 'primeng/message';
 import { Ripple } from 'primeng/ripple';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { LogService } from '../../common/services/log.service';
-import { ServerApiService } from '../../common/services/server-api.service';
 
 @Component({
   selector: 'app-logics',
@@ -67,7 +66,6 @@ export class LogicsListComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private http = inject(HttpClient);
-  private dataServiceServer = inject(ServerApiService);
   private dataService = inject(LogicsApiService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -115,14 +113,8 @@ export class LogicsListComponent implements OnInit {
     this.groupExpandedOnStart = this.dataService.groupExpanded;
     this.groupExpanded = this.dataService.groupExpanded;
 
-    this.dataServiceServer
-      .getServerinfo()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((response) => {
-        this.setTitle(this.translate.instant('MENU.LOGICS'));
-
-        this.getLogics();
-      });
+    this.setTitle(this.translate.instant('MENU.LOGICS'));
+    this.getLogics();
   }
 
   baseName(str: string, withExtension = true) {

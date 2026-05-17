@@ -18,8 +18,6 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { LogService } from '../../common/services/log.service';
 import { OlddataService } from '../../common/services/olddata.service';
 import { PluginsApiService } from '../../common/services/plugins-api.service';
-import { ServerApiService } from '../../common/services/server-api.service';
-
 import { SharedService } from '../../common/services/shared.service';
 
 import { NgOptimizedImage, NgStyle } from '@angular/common';
@@ -83,7 +81,6 @@ export interface ConfiguredPlugin {
 export class PluginConfigComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
-  private serverdataService = inject(ServerApiService);
   private pluginsdataService = inject(PluginsApiService);
   private dataService = inject(OlddataService);
   private translate = inject(TranslateService);
@@ -158,15 +155,10 @@ export class PluginConfigComponent implements OnInit {
     this.spinner_display = true;
     this.spinner_header = this.translate.instant('PLUGIN.LOADCONFIG');
 
-    this.serverdataService
-      .getServerinfo()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((serverdataResponse) => {
-        this.shared.setGuiLanguage();
-        this.setTitle(this.translate.instant('PLUGIN.PLUGIN_CONFIGURATION'));
-        this.spinner_header = this.translate.instant('PLUGIN.LOADCONFIG');
-        this.reloadPluginList();
-      });
+    this.shared.setGuiLanguage();
+    this.setTitle(this.translate.instant('PLUGIN.PLUGIN_CONFIGURATION'));
+    this.spinner_header = this.translate.instant('PLUGIN.LOADCONFIG');
+    this.reloadPluginList();
 
     this.cols = [
       { field: 'enabled', sfield: '', header: '' },

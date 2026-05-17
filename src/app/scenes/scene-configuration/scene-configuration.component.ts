@@ -24,7 +24,6 @@ import { CodeEditorComponent } from '../../common/components/code-editor/code-ed
 import { FilesApiService } from '../../common/services/files-api.service';
 import { LogService } from '../../common/services/log.service';
 import { ScenesApiService } from '../../common/services/scenes-api.service';
-import { ServerApiService } from '../../common/services/server-api.service';
 import { ServicesApiService } from '../../common/services/services-api.service';
 
 @Component({
@@ -49,7 +48,6 @@ export class SceneConfigurationComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private translate = inject(TranslateService);
-  private dataServiceServer = inject(ServerApiService);
   private fileService = inject(FilesApiService);
   private sceneApiService = inject(ScenesApiService);
   private dataService = inject(ServicesApiService);
@@ -94,34 +92,29 @@ export class SceneConfigurationComponent implements OnInit {
 
     this.sceneFiles = [];
 
-    this.dataServiceServer
-      .getServerinfo()
+    this.setTitle(this.translate.instant('MENU.SCENE_CONFIGURATION'));
+
+    this.fileService
+      .getfileList('scenes')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        this.setTitle(this.translate.instant('MENU.SCENE_CONFIGURATION'));
-
-        this.fileService
-          .getfileList('scenes')
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe((response) => {
-            this.filelist = <string[]>response;
-            for (let i = 0; i < this.filelist.length; i++) {
-              //
-              // I get it. The sample code here and in the docs is wrong, it should read like this:
-              //
-              // fails
-              //   this.cities.push({name:'New York', code: 'NY'});
-              //
-              // correct
-              //   this.cities = [...this.cities, {name:'New York', code: 'NY'}];
-              //
-              this.sceneFiles = [
-                ...this.sceneFiles,
-                <SelectItem>{ label: this.filelist[i], value: this.filelist[i] },
-              ];
-            }
-            this.cdr.markForCheck();
-          });
+        this.filelist = <string[]>response;
+        for (let i = 0; i < this.filelist.length; i++) {
+          //
+          // I get it. The sample code here and in the docs is wrong, it should read like this:
+          //
+          // fails
+          //   this.cities.push({name:'New York', code: 'NY'});
+          //
+          // correct
+          //   this.cities = [...this.cities, {name:'New York', code: 'NY'}];
+          //
+          this.sceneFiles = [
+            ...this.sceneFiles,
+            <SelectItem>{ label: this.filelist[i], value: this.filelist[i] },
+          ];
+        }
+        this.cdr.markForCheck();
       });
   }
 

@@ -24,7 +24,6 @@ import { InputText } from 'primeng/inputtext';
 import { Listbox } from 'primeng/listbox';
 import { CodeEditorComponent } from '../../common/components/code-editor/code-editor.component';
 import { LogService } from '../../common/services/log.service';
-import { ServerApiService } from '../../common/services/server-api.service';
 import { ServicesApiService } from '../../common/services/services-api.service';
 
 @Component({
@@ -49,7 +48,6 @@ export class ItemConfigurationComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private translate = inject(TranslateService);
-  private dataServiceServer = inject(ServerApiService);
   private fileService = inject(FilesApiService);
   private dataService = inject(ServicesApiService);
   private titleService = inject(Title);
@@ -91,33 +89,28 @@ export class ItemConfigurationComponent implements OnInit {
 
     this.itemFiles = [];
 
-    this.dataServiceServer
-      .getServerinfo()
+    this.setTitle(this.translate.instant('MENU.ITEM_CONFIGURATION'));
+    this.fileService
+      .getfileList('items')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        this.setTitle(this.translate.instant('MENU.ITEM_CONFIGURATION'));
-        this.fileService
-          .getfileList('items')
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe((response) => {
-            this.filelist = <string[]>response;
-            for (let i = 0; i < this.filelist.length; i++) {
-              //
-              // I get it. The sample code here and in the docs is wrong, it should read like this:
-              //
-              // fails
-              //   this.cities.push({name:'New York', code: 'NY'});
-              //
-              // correct
-              //   this.cities = [...this.cities, {name:'New York', code: 'NY'}];
-              //
-              this.itemFiles = [
-                ...this.itemFiles,
-                <SelectItem>{ label: this.filelist[i], value: this.filelist[i] },
-              ];
-            }
-            this.cdr.markForCheck();
-          });
+        this.filelist = <string[]>response;
+        for (let i = 0; i < this.filelist.length; i++) {
+          //
+          // I get it. The sample code here and in the docs is wrong, it should read like this:
+          //
+          // fails
+          //   this.cities.push({name:'New York', code: 'NY'});
+          //
+          // correct
+          //   this.cities = [...this.cities, {name:'New York', code: 'NY'}];
+          //
+          this.itemFiles = [
+            ...this.itemFiles,
+            <SelectItem>{ label: this.filelist[i], value: this.filelist[i] },
+          ];
+        }
+        this.cdr.markForCheck();
       });
     // this.getItemFile('q21_09Bad');
   }

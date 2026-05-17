@@ -147,21 +147,16 @@ export class SystemConfigComponent implements OnInit {
   ngOnInit() {
     // this.log.log('SystemConfigComponent.ngOnInit');
 
-    this.dataServiceServer
-      .getServerinfo()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((response) => {
-        this.setTitle(this.translate.instant('MENU.SYSTEM_CONFIGURATION'));
+    this.setTitle(this.translate.instant('MENU.SYSTEM_CONFIGURATION'));
 
-        this.dataService
-          .getConfig()
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe((configResponse) => {
-            this.config = configResponse as SystemConfig;
-            // this.log.log({response}, {configResponse});
-            this.fillDialogData();
-            this.cdr.markForCheck();
-          });
+    this.dataService
+      .getConfig()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((configResponse) => {
+        this.config = configResponse as SystemConfig;
+        // this.log.log({configResponse});
+        this.fillDialogData();
+        this.cdr.markForCheck();
       });
   }
 

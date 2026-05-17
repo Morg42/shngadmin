@@ -24,7 +24,6 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { LoggersType } from '../../common/models/loggers-info';
 import { LogService } from '../../common/services/log.service';
 import { LoggersApiService } from '../../common/services/loggers-api.service';
-import { ServerApiService } from '../../common/services/server-api.service';
 import { LoggerLineComponent } from '../logger-line/logger-line.component';
 
 @Component({
@@ -55,7 +54,6 @@ export class LoggerListComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private dataService = inject(LoggersApiService);
-  private dataServiceServer = inject(ServerApiService);
   protected router = inject(Router);
   private translate = inject(TranslateService);
   private titleService = inject(Title);
@@ -86,25 +84,20 @@ export class LoggerListComponent implements OnInit {
   ngOnInit() {
     this.log.log('LoggerListComponent.ngOnInit');
 
-    this.dataServiceServer
-      .getServerinfo()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((response) => {
-        this.setTitle(this.translate.instant('MENU.LOGGER_CONFIGURATION'));
+    this.setTitle(this.translate.instant('MENU.LOGGER_CONFIGURATION'));
 
-        this.dataService
-          .getLoggers()
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe((response2: LoggersType) => {
-            this.loggers = response2['loggers'];
-            this.active_plugins = response2['active_plugins'];
-            this.active_logics = response2['active_logics'];
-            this.loggersList = Object.keys(response2['loggers']);
-            this.loggersList = this.loggersList.sort();
-            this.definedHandlers = response2['defined_handlers'];
-            this.log.log('ngOnInit: response2', response2);
-            this.cdr.markForCheck();
-          });
+    this.dataService
+      .getLoggers()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((response2: LoggersType) => {
+        this.loggers = response2['loggers'];
+        this.active_plugins = response2['active_plugins'];
+        this.active_logics = response2['active_logics'];
+        this.loggersList = Object.keys(response2['loggers']);
+        this.loggersList = this.loggersList.sort();
+        this.definedHandlers = response2['defined_handlers'];
+        this.log.log('ngOnInit: response2', response2);
+        this.cdr.markForCheck();
       });
   }
 

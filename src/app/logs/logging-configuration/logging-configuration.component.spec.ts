@@ -12,27 +12,39 @@ import {
 } from '../../../testing/test-helpers';
 import { AppConfigService } from '../../common/services/app-config.service';
 import { AuthService } from '../../common/services/auth.service';
-import { ServerApiService } from '../../common/services/server-api.service';
+import { FilesApiService } from '../../common/services/files-api.service';
+import { ServicesApiService } from '../../common/services/services-api.service';
 import { LoggingConfigurationComponent } from './logging-configuration.component';
+
+// The fixture is plain text (a YAML file)
+const loggingFixtureText = `%YAML 1.1
+---
+version: 1
+disable_existing_loggers: false
+`;
 
 describe('LoggingConfigurationComponent', () => {
   let component: LoggingConfigurationComponent;
   let fixture: ComponentFixture<LoggingConfigurationComponent>;
 
-  beforeEach(async () => {
-    const mockServerApi = {
-      getServerBasicinfo: () => of({}),
-      getServerinfo: () => of({}),
-      shng_serverinfo: {},
-    };
+  const mockFilesApi = {
+    readFile: () => of(loggingFixtureText),
+    saveFile: () => of(true),
+  };
 
+  const mockServicesApi = {
+    CheckYamlText: () => of('OK'),
+  };
+
+  beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [LoggingConfigurationComponent, translateTestingModule],
       providers: [
         provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: ServerApiService, useValue: mockServerApi },
+        { provide: FilesApiService, useValue: mockFilesApi },
+        { provide: ServicesApiService, useValue: mockServicesApi },
         { provide: AuthService, useValue: createMockAuthService() },
         { provide: AppConfigService, useValue: createMockAppConfigService() },
       ],
@@ -43,18 +55,26 @@ describe('LoggingConfigurationComponent', () => {
 
     fixture = TestBed.createComponent(LoggingConfigurationComponent);
     component = fixture.componentInstance;
-    (component as any).codeEditor = {
-      codeMirror: {
-        getOption: jest.fn(() => false),
-        setSize: jest.fn(),
-        refresh: jest.fn(),
-        state: { completionActive: false },
-      },
-    };
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should load the logging file content into myTextarea', () => {
+    expect(component.myTextarea).toBe(loggingFixtureText);
+  });
+
+  it('should keep myTextareaOrig in sync with loaded content', () => {
+    expect(component.myTextareaOrig).toBe(loggingFixtureText);
+  });
+
+  it('should set myEditFilename to "logging"', () => {
+    expect(component.myEditFilename).toBe('logging');
+  });
+
+  it('should contain YAML version header in loaded content', () => {
+    expect(component.myTextarea).toContain('version: 1');
   });
 });

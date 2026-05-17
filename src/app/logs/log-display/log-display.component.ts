@@ -34,7 +34,6 @@ import { InputText } from 'primeng/inputtext';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { Select } from 'primeng/select';
 import { CodeEditorComponent } from '../../common/components/code-editor/code-editor.component';
-import { ServerApiService } from '../../common/services/server-api.service';
 
 interface DropDownEntry {
   label: string;
@@ -65,7 +64,6 @@ export class LogDisplayComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
-  private dataServiceServer = inject(ServerApiService);
   private dataService = inject(LogsApiService);
   private translate = inject(TranslateService);
   private titleService = inject(Title);
@@ -123,38 +121,33 @@ export class LogDisplayComponent implements OnInit {
     this.loglevels.push({ label: 'ERROR', value: ' ERROR ' });
     this.loglevels.push({ label: 'CRITICAL', value: ' CRITICAL ' });
 
-    this.dataServiceServer
-      .getServerinfo()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((response) => {
-        this.setTitle(this.translate.instant('MENU.LOGS_DISPLAY'));
+    this.setTitle(this.translate.instant('MENU.LOGS_DISPLAY'));
 
-        this.dataService
-          .getLogs()
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe((response2) => {
-            const logs = response2 as LogsType;
-            this.logs_info = logs['logs'];
-            this.default_log = logs['default'];
-            this.logs = [];
-            for (let log in this.logs_info) {
-              if (this.logs_info.hasOwnProperty(log)) {
-                this.logs.push({ label: log, value: log });
-              }
-            }
-            this.selectedLog = null;
-            if (logParam !== null) {
-              if (logParam in this.logs_info) {
-                this.selectedLog = logParam;
-                this.fillTimeframe(true);
-              }
-            }
-            if (this.selectedLog == null && this.default_log in this.logs_info) {
-              this.selectedLog = this.default_log;
-              this.fillTimeframe(true);
-            }
-            this.cdr.markForCheck();
-          });
+    this.dataService
+      .getLogs()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((response2) => {
+        const logs = response2 as LogsType;
+        this.logs_info = logs['logs'];
+        this.default_log = logs['default'];
+        this.logs = [];
+        for (let log in this.logs_info) {
+          if (this.logs_info.hasOwnProperty(log)) {
+            this.logs.push({ label: log, value: log });
+          }
+        }
+        this.selectedLog = null;
+        if (logParam !== null) {
+          if (logParam in this.logs_info) {
+            this.selectedLog = logParam;
+            this.fillTimeframe(true);
+          }
+        }
+        if (this.selectedLog == null && this.default_log in this.logs_info) {
+          this.selectedLog = this.default_log;
+          this.fillTimeframe(true);
+        }
+        this.cdr.markForCheck();
       });
   }
 

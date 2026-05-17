@@ -146,7 +146,7 @@ export class PluginsApiService {
   // -----------------------------------------------------------
   //  Update config of one plugin in etc/plugin.yaml on backend
   //
-  setPluginConfig(pluginsection, config) {
+  setPluginConfig(pluginsection: string, config: unknown) {
     // this.log.log('PluginsApiService.setPluginConfig');
 
     const apiUrl = this.appConfig.apiUrl;
@@ -185,7 +185,7 @@ export class PluginsApiService {
   // -----------------------------------------------------------
   //  add a new config of one plugin in etc/plugin.yaml on backend
   //
-  addPluginConfig(pluginsection, config) {
+  addPluginConfig(pluginsection: string, config: unknown) {
     // this.log.log('PluginsApiService.addPluginConfig');
 
     const apiUrl = this.appConfig.apiUrl;
@@ -226,7 +226,7 @@ export class PluginsApiService {
   // -----------------------------------------------------------
   //  add a new config of one plugin in etc/plugin.yaml on backend
   //
-  deletePluginConfig(pluginsection) {
+  deletePluginConfig(pluginsection: string) {
     // this.log.log('PluginsApiService.deletePluginConfig\n', {pluginsection});
 
     const apiUrl = this.appConfig.apiUrl;
@@ -271,7 +271,7 @@ export class PluginsApiService {
   // -----------------------------------------------------------
   //  set plugin state to started/stopped
   //
-  setPluginState(pluginConfigName, action, filename = '') {
+  setPluginState(pluginConfigName: string, action: string, filename = '') {
     // valid actions are: 'trigger', 'enable', 'disable', 'load', 'unload', 'reload', 'delete', 'create'
     action = action.toLowerCase();
     this.log.warn('PluginsApiService.setPluginState', { pluginConfigName }, { action });

@@ -33,7 +33,7 @@ export class FunctionsApiService {
     );
   }
 
-  reloadFunction(name) {
+  reloadFunction(name: string) {
     const apiUrl = this.appConfig.apiUrl;
     const url = apiUrl + 'functions/reload/' + name;
 

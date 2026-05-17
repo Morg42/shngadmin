@@ -33,7 +33,7 @@ export class ConfigApiService {
     );
   }
 
-  saveConfig(data) {
+  saveConfig(data: unknown) {
     // this.log.log('ConfigApiService.saveConfig');
 
     const apiUrl = this.appConfig.apiUrl;

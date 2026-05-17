@@ -121,8 +121,8 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
   // -----------------------------------------------------
   //  Vars for the EVAL syntax checker
   //
-  @ViewChild('evalcodeeditor', { static: true }) private evalCodeEditor;
-  @ViewChild('evalcodeeditor2', { static: true }) private evalCodeEditor2;
+  @ViewChild('evalcodeeditor', { static: true }) private evalCodeEditor: any;
+  @ViewChild('evalcodeeditor2', { static: true }) private evalCodeEditor2: any;
 
   myEvalTextarea = '';
   myRelativeTo = '';
@@ -170,8 +170,8 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
   // -----------------------------------------------------
   //  Vars for the YAML syntax checker
   //
-  @ViewChild('codeeditor', { static: true }) private codeEditor;
-  @ViewChild('codeeditor2', { static: true }) private codeEditor2;
+  @ViewChild('codeeditor', { static: true }) private codeEditor: any;
+  @ViewChild('codeeditor2', { static: true }) private codeEditor2: any;
 
   myTextarea = '';
   cmOptions = {
@@ -216,8 +216,8 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
   // -----------------------------------------------------
   //  Vars for the YAML converter
   //
-  @ViewChild('convertercodeeditor', { static: true }) private converterCodeEditor;
-  @ViewChild('convertercodeeditor2', { static: true }) private converterCodeEditor2;
+  @ViewChild('convertercodeeditor', { static: true }) private converterCodeEditor: any;
+  @ViewChild('convertercodeeditor2', { static: true }) private converterCodeEditor2: any;
 
   myConverterTextarea = '';
   cmConveterOptions = {
@@ -304,7 +304,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
       });
   }
 
-  deleteCacheEntry(entryNr) {
+  deleteCacheEntry(entryNr: number) {
     // this.log.log('deleteCacheEntry', this.cacheInfo[entryNr].filename);
     this.dataService
       .deleteCacheFile(this.cacheInfo[entryNr].filename)
@@ -427,7 +427,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
   // -------------------------------------------------------
   // translate status text of SmartHomeNG
   //
-  translate_shngStatus(text) {
+  translate_shngStatus(text: string) {
     //    const translated_text = this.translate.instant('SHNG_STATE.' + text);
     //    if (translated_text.startsWith('SHNG_STATE.')) {
     //      return text;
@@ -456,7 +456,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
         } else {
           // this.log.log('getShngStatus', res.code, res.text);
           this.shng_statuscode = res.code;
-          this.shng_status = this.translate_shngStatus(res.text);
+          this.shng_status = this.translate_shngStatus(res.text ?? '');
           if (res.details !== undefined) {
             this.shng_status += ' (' + res.details + ')';
           }
@@ -485,7 +485,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
       });
   }
 
-  sleep(time) {
+  sleep(time: number) {
     // https://davidwalsh.name/javascript-sleep-function
     return new Promise((resolve) => setTimeout(resolve, time));
   }
@@ -550,7 +550,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     this.restore_disabled = false;
   }
 
-  myUploader(event, form) {
+  myUploader(event: any, form: any) {
     this.log.log('myUploader', event.files);
     this.log.log('myUploader', event.files[0].name);
 
@@ -604,7 +604,7 @@ export class ServicesComponent implements AfterViewChecked, OnInit {
     reader.readAsDataURL(event.files[0]);
   }
 
-  doUpload(form) {
+  doUpload(form: any) {
     this.log.log('doUpload');
 
     /*

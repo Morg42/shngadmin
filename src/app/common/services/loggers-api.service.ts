@@ -32,7 +32,7 @@ export class LoggersApiService {
     );
   }
 
-  setLoggerLevel(logger, level) {
+  setLoggerLevel(logger: string, level: string) {
     // this.log.log('LoggersApiService.setLoggerLevel');
 
     const apiUrl = this.appConfig.apiUrl;
@@ -58,7 +58,7 @@ export class LoggersApiService {
     );
   }
 
-  setHandlers(logger, handlerList) {
+  setHandlers(logger: string, handlerList: string) {
     // this.log.log('LoggersApiService.setHandlers');
 
     const apiUrl = this.appConfig.apiUrl;
@@ -84,7 +84,7 @@ export class LoggersApiService {
     );
   }
 
-  addLogger(logger) {
+  addLogger(logger: string) {
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'loggers/' + logger + '/';
     return this.http.post(url, 'xxx').pipe(
@@ -104,7 +104,7 @@ export class LoggersApiService {
     );
   }
 
-  deleteLogger(logger) {
+  deleteLogger(logger: string) {
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'loggers/' + logger + '/';
     return this.http.delete(url).pipe(

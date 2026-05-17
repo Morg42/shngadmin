@@ -25,6 +25,18 @@ export interface Message {
   rawdata: unknown;
 }
 
+export type SeriesEntry = [number, number, { date: string; time: string }];
+
+interface SeriesResponse {
+  sid: string;
+  series: (number | { date: string; time: string })[][];
+}
+
+interface SeriesData {
+  series: SeriesEntry[];
+  tsdiff: number;
+}
+
 type SeriesCallback = (series: unknown) => void;
 
 // ------------------------------------------------------------------
@@ -123,15 +135,15 @@ export class WebsocketPluginService {
     cmd: 'item',
   };
 
-  systemload = { series: [], tsdiff: 0 };
-  systemmemory = { series: [], tsdiff: 0 };
-  systemswap = { series: [], tsdiff: 0 };
-  memory = { series: [], tsdiff: 0 };
-  threads = { series: [], tsdiff: 0 };
-  workerThreads = { series: [], tsdiff: 0 };
-  idleWorkerThreads = { series: [], tsdiff: 0 };
-  activeWorkerThreads = { series: [], tsdiff: 0 };
-  disk = { series: [], tsdiff: 0 };
+  systemload: SeriesData = { series: [], tsdiff: 0 };
+  systemmemory: SeriesData = { series: [], tsdiff: 0 };
+  systemswap: SeriesData = { series: [], tsdiff: 0 };
+  memory: SeriesData = { series: [], tsdiff: 0 };
+  threads: SeriesData = { series: [], tsdiff: 0 };
+  workerThreads: SeriesData = { series: [], tsdiff: 0 };
+  idleWorkerThreads: SeriesData = { series: [], tsdiff: 0 };
+  activeWorkerThreads: SeriesData = { series: [], tsdiff: 0 };
+  disk: SeriesData = { series: [], tsdiff: 0 };
 
   private monitoredItems = new Subject<void>();
   public monitoredItemsUpdate$ = this.monitoredItems.asObservable();
@@ -197,7 +209,7 @@ export class WebsocketPluginService {
         if (data.cmd === 'item') {
           this.handleResponseItem(data);
         } else if (data.cmd === 'series') {
-          this.handleResponseSeries(data);
+          this.handleResponseSeries(data as unknown as SeriesResponse);
         } else {
           this.log.log('message received:', data);
         }
@@ -221,7 +233,7 @@ export class WebsocketPluginService {
     this.websocketService.close();
   }
 
-  handleResponseItem(data) {
+  handleResponseItem(data: Message) {
     if (this.monitorCallbackFunction) {
       this.monitorCallbackFunction(data);
     }
@@ -281,21 +293,22 @@ export class WebsocketPluginService {
   // Handle responses to series requests
   //
 
-  convertTimestamps(data) {
+  convertTimestamps(data: SeriesResponse) {
     for (let i = 0; i < data.series.length; i++) {
-      data.series[i].push(this.shared.getTimeStamp(new Date(data.series[i][0])));
+      data.series[i].push(this.shared.getTimeStamp(new Date(data.series[i][0] as number)));
     }
   }
 
-  convertMemorysize(data) {
+  convertMemorysize(data: SeriesResponse) {
     for (let i = 0; i < data.series.length; i++) {
-      data.series[i][1] = data.series[i][1] / 1000 / 1000;
+      data.series[i][1] = (data.series[i][1] as number) / 1000 / 1000;
     }
   }
 
-  updateSeries(graphdata, data) {
+  updateSeries(graphdata: SeriesData, data: SeriesResponse) {
     if (graphdata.series.length === 0) {
-      const tstampDiff = data.series[data.series.length - 1][0] - data.series[0][0];
+      const tstampDiff =
+        (data.series[data.series.length - 1][0] as number) - (data.series[0][0] as number);
       graphdata.tsdiff = tstampDiff;
     } else if (graphdata.series.length > 1) {
       const tstampOldest = new Date().getTime() - graphdata.tsdiff;
@@ -304,46 +317,46 @@ export class WebsocketPluginService {
       }
       graphdata.series[0][0] = tstampOldest;
     }
-    graphdata.series.push(...data.series);
+    graphdata.series.push(...(data.series as SeriesEntry[]));
   }
 
-  handleResponseSeries(data) {
-    if (data.sid.startsWith(this.msgListenSeriesMemory.item)) {
+  handleResponseSeries(data: SeriesResponse) {
+    if (data.sid.startsWith(this.msgListenSeriesMemory.item!)) {
       this.convertMemorysize(data);
     }
-    if (data.sid.startsWith(this.msgListenSeriesSystemMemory.item)) {
+    if (data.sid.startsWith(this.msgListenSeriesSystemMemory.item!)) {
       this.convertMemorysize(data);
     }
-    if (data.sid.startsWith(this.msgListenSeriesSwap.item)) {
+    if (data.sid.startsWith(this.msgListenSeriesSwap.item!)) {
       this.convertMemorysize(data);
     }
     this.convertTimestamps(data);
 
-    if (data.sid.startsWith(this.msgListenSeriesLoad.item)) {
+    if (data.sid.startsWith(this.msgListenSeriesLoad.item!)) {
       this.updateSeries(this.systemload, data);
       this.systemloadSource.next();
-    } else if (data.sid.startsWith(this.msgListenSeriesSystemMemory.item)) {
+    } else if (data.sid.startsWith(this.msgListenSeriesSystemMemory.item!)) {
       this.updateSeries(this.systemmemory, data);
       this.systemmemorySource.next();
-    } else if (data.sid.startsWith(this.msgListenSeriesSwap.item)) {
+    } else if (data.sid.startsWith(this.msgListenSeriesSwap.item!)) {
       this.updateSeries(this.systemswap, data);
       this.systemswapSource.next();
-    } else if (data.sid.startsWith(this.msgListenSeriesMemory.item)) {
+    } else if (data.sid.startsWith(this.msgListenSeriesMemory.item!)) {
       this.updateSeries(this.memory, data);
       this.memorySource.next();
-    } else if (data.sid.startsWith(this.msgListenSeriesThreads.item)) {
+    } else if (data.sid.startsWith(this.msgListenSeriesThreads.item!)) {
       this.updateSeries(this.threads, data);
       this.threadsSource.next();
-    } else if (data.sid.startsWith(this.msgListenSeriesWorkerThreads.item)) {
+    } else if (data.sid.startsWith(this.msgListenSeriesWorkerThreads.item!)) {
       this.updateSeries(this.workerThreads, data);
       this.workerThreadsSource.next();
-    } else if (data.sid.startsWith(this.msgListenSeriesIdleWorkerThreads.item)) {
+    } else if (data.sid.startsWith(this.msgListenSeriesIdleWorkerThreads.item!)) {
       this.updateSeries(this.idleWorkerThreads, data);
       this.idleWorkerThreadsSource.next();
-    } else if (data.sid.startsWith(this.msgListenSeriesActiveWorkerThreads.item)) {
+    } else if (data.sid.startsWith(this.msgListenSeriesActiveWorkerThreads.item!)) {
       this.updateSeries(this.activeWorkerThreads, data);
       this.activeWorkerThreadsSource.next();
-    } else if (data.sid.startsWith(this.msgListenSeriesDisk.item)) {
+    } else if (data.sid.startsWith(this.msgListenSeriesDisk.item!)) {
       this.updateSeries(this.disk, data);
       this.diskSource.next();
     } else {

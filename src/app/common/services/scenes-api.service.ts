@@ -31,7 +31,7 @@ export class ScenesApiService {
     );
   }
 
-  reloadScene(name) {
+  reloadScene(name: string) {
     const apiUrl = this.appConfig.apiUrl;
     const url = apiUrl + 'scenes/reload/' + name;
 

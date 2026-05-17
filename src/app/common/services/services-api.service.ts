@@ -23,7 +23,7 @@ export class ServicesApiService {
   // -----------------------------------------------------------
   //  Send eval data to check if it is conform to Python specification
   //
-  CheckEvalData(evalData) {
+  CheckEvalData(evalData: unknown) {
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'services/evalcheck/';
     return this.http.put<EvalResult>(url, evalData).pipe(
@@ -51,7 +51,7 @@ export class ServicesApiService {
   // -----------------------------------------------------------
   //  Send yaml text to check if it is conform to specification
   //
-  CheckYamlText(yamlText) {
+  CheckYamlText(yamlText: string) {
     // this.log.log('ServicesApiService.CheckYamlText');
 
     const apiUrl = this.appConfig.apiUrl;
@@ -82,7 +82,7 @@ export class ServicesApiService {
   // -----------------------------------------------------------
   //  Send yaml text to check if it is conform to specification
   //
-  ConvertToYamlText(confText) {
+  ConvertToYamlText(confText: string) {
     // this.log.log('ServicesApiService.CheckYamlText');
 
     const apiUrl = this.appConfig.apiUrl;
@@ -128,7 +128,7 @@ export class ServicesApiService {
     );
   }
 
-  deleteCacheFile(filename) {
+  deleteCacheFile(filename: string) {
     // this.log.log('ServicesApiService.deleteCacheFile');
 
     const apiUrl = this.appConfig.apiUrl;

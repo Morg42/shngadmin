@@ -122,7 +122,7 @@ export class PluginsComponent implements OnInit {
       });
   }
 
-  parameterLines(parameters) {
+  parameterLines(parameters: number) {
     let result = Math.round(parameters / 2);
     if (result < 3) {
       result = 3;
@@ -130,7 +130,7 @@ export class PluginsComponent implements OnInit {
     return result;
   }
 
-  attributeLines(parameters) {
+  attributeLines(parameters: number) {
     let result = Math.round(parameters / 3);
     if (result < 2) {
       result = 2;
@@ -142,7 +142,7 @@ export class PluginsComponent implements OnInit {
     window.open(url, '_blank');
   }
 
-  stopPlugin(pluginConfigName) {
+  stopPlugin(pluginConfigName: string) {
     // this.log.log('stopPlugin', {pluginConfigName});
 
     this.pluginsDataService
@@ -153,7 +153,7 @@ export class PluginsComponent implements OnInit {
       });
   }
 
-  startPlugin(pluginConfigName) {
+  startPlugin(pluginConfigName: string) {
     // this.log.log('startPlugin', {pluginConfigName});
 
     this.pluginsDataService
@@ -164,7 +164,7 @@ export class PluginsComponent implements OnInit {
       });
   }
 
-  reloadPlugin(pluginConfigName) {
+  reloadPlugin(pluginConfigName: string) {
     // this.log.log('reloadPlugin', {pluginConfigName});
 
     this.pluginsDataService

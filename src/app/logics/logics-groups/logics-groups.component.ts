@@ -58,10 +58,10 @@ export class LogicsGroupsComponent implements OnInit {
   // -----------------------------------------------------
   //  Vars for the YAML syntax checker
   //
-  @ViewChild('codeeditor') private codeEditor;
+  @ViewChild('codeeditor') private codeEditor: unknown;
   @ViewChild('groupDesc') private groupDescEl: ElementRef<HTMLElement>;
 
-  logicGroups: LogicsGroupType[]; // filelist: string[];
+  logicGroups: Record<string, LogicsGroupType>; // filelist: string[];
   groupList: string[];
   group: LogicsGroupType;
   menuGroupList: SelectItem[]; // itemFiles: SelectItem[];
@@ -95,7 +95,7 @@ export class LogicsGroupsComponent implements OnInit {
       .getGroupsInfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        this.logicGroups = (response as { groups: LogicsGroupType[] })['groups'];
+        this.logicGroups = (response as { groups: Record<string, LogicsGroupType> })['groups'];
         this.groupList = Object.keys(this.logicGroups).sort(function (a, b) {
           return a.toLowerCase().localeCompare(b.toLowerCase());
         });

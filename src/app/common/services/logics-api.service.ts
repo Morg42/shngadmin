@@ -65,7 +65,7 @@ export class LogicsApiService {
     );
   }
 
-  getLogic(logicname) {
+  getLogic(logicname: string) {
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'logics/' + logicname;
     return this.http.get(url).pipe(
@@ -86,7 +86,7 @@ export class LogicsApiService {
     );
   }
 
-  getLogicState(logicname) {
+  getLogicState(logicname: string) {
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'logics/' + logicname + '?infotype=status';
     return this.http.get(url).pipe(
@@ -108,7 +108,7 @@ export class LogicsApiService {
     );
   }
 
-  setLogicState(logicName, action, filename = '') {
+  setLogicState(logicName: string, action: string, filename = '') {
     // valid actions are: 'trigger', 'enable', 'disable', 'load', 'unload', 'reload', 'delete', 'create'
     action = action.toLowerCase();
     // this.log.warn('LogicsApiService.setLogicState', {logicName}, {action});
@@ -147,7 +147,7 @@ export class LogicsApiService {
     );
   }
 
-  saveLogicParameters(logicName, paramObj) {
+  saveLogicParameters(logicName: string, paramObj: unknown) {
     // paramObj is a dict containing the entries of the parameter section in etc/logic.yamls
     // parameters to be deleted must be included with an empty string as value!
     // this.log.warn('LogicsApiService.saveLogicParameters', {logicName}, {paramObj});
@@ -185,7 +185,7 @@ export class LogicsApiService {
     );
   }
 
-  saveLogicGroup(groupName, group) {
+  saveLogicGroup(groupName: string, group: unknown) {
     const apiUrl = this.appConfig.apiUrl;
     const url = apiUrl + 'logics/' + groupName + '?action=' + 'savegroup';
     return this.http.put(url, JSON.stringify(group)).pipe(
@@ -217,7 +217,7 @@ export class LogicsApiService {
     );
   }
 
-  deleteLogicGroup(groupName) {
+  deleteLogicGroup(groupName: string) {
     const apiUrl = this.appConfig.apiUrl;
     const url = apiUrl + 'logics/' + groupName + '?action=' + 'deletegroup';
     return this.http.put(url, JSON.stringify('')).pipe(

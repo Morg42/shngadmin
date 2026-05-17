@@ -100,8 +100,8 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   // -----------------------------------------------------
   //  Vars for the YAML syntax checker
   //
-  @ViewChild('codeeditor', { static: true }) private codeEditor;
-  @ViewChild('watchitems', { static: true }) private codeEditorWatchItems;
+  @ViewChild('codeeditor', { static: true }) private codeEditor: any;
+  @ViewChild('watchitems', { static: true }) private codeEditorWatchItems: any;
   myEditFilename: string;
   myLogicName: string;
   myLogicIsLoaded = false;
@@ -126,31 +126,31 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
     indentUnit: 4,
     tabSize: 4,
     extraKeys: {
-      F1: function (cm) {
+      F1: (cm: unknown) => {
         this.editorHelp_display = true;
       },
       Tab: 'insertSoftTab',
       'Shift-Tab': 'indentLess',
-      F11: function (cm) {
+      F11: function (cm: any) {
         cm.setOption('fullScreen', !cm.getOption('fullScreen'));
         // cm.getScrollerElement().style.maxHeight = 'none';
       },
-      Esc: function (cm, fullScreen) {
+      Esc: function (cm: any, fullScreen: unknown) {
         if (cm.getOption('fullScreen')) {
           cm.setOption('fullScreen', false);
         }
       },
       'Ctrl-Space': 'autocomplete',
       'Ctrl-I': 'autocomplete_item',
-      'Ctrl-Q': function (cm) {
+      'Ctrl-Q': function (cm: any) {
         cm.foldCode(cm.getCursor());
       },
-      'Shift-Ctrl-Q': function (cm) {
+      'Shift-Ctrl-Q': function (cm: any) {
         for (let l = cm.firstLine(); l <= cm.lastLine(); ++l) {
           cm.foldCode({ line: l, ch: 0 }, null, 'unfold');
         }
       },
-      'Ctrl-L': function (cm) {
+      'Ctrl-L': function (cm: any) {
         cm.setOption('lineWrapping', !cm.getOption('lineWrapping'));
       },
     },
@@ -177,7 +177,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
   }
 
   ngOnInit() {
-    const logic = this.route.snapshot.paramMap['params']['logicname'].split('|');
+    const logic = (this.route.snapshot.paramMap.get('logicname') ?? '').split('|');
     if (logic.length === 1) {
       logic.push('');
     }
@@ -310,7 +310,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
             );
 
             let val: unknown = null;
-            val = this.logic[param];
+            val = (this.logic as unknown as Record<string, unknown>)[param];
             // this.log.log({param}, {val});
             if (val === undefined || val === null) {
               val = null;
@@ -368,7 +368,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
       });
   }
 
-  listToString(list): string | null {
+  listToString(list: any): string | null {
     let result: string | null = '';
     if (list === null) {
       result = null;
@@ -387,7 +387,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
     return result;
   }
 
-  stringToList(str) {
+  stringToList(str: string | null) {
     // let wrk = str.trim();
     // wrk =  wrk.replace(/,/g, ' ');   // comma is no delimiter
     // wrk =  wrk.replace(/\|/g, ' ');
@@ -407,7 +407,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
     return list;
   }
 
-  getLogicInfo(logicname) {
+  getLogicInfo(logicname: string) {
     // this.log.warn({logicname});
     this.dataService
       .getLogic(logicname)
@@ -491,12 +491,13 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
       .getLogicState(logicname)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        if (response['watch_item'] !== undefined) {
+        const resp = response as Record<string, unknown>;
+        if (resp['watch_item'] !== undefined) {
           // assign only if valid data is returned (do not assigen in localhost test mode)
           this.logic = response as LogicsinfoType;
         }
         this.log.warn('getLogicInfo *4', this.logic, response);
-        this.myLogicIsLoaded = response['is_loaded'];
+        this.myLogicIsLoaded = resp['is_loaded'] as boolean;
         // this.log.warn('LogicsEditComponent.getLogicInfo() state isLoaded', response['is_loaded']);
         this.cdr.markForCheck();
       });
@@ -570,8 +571,8 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
     return false;
   }
 
-  registerAutocompleteHelper(name, curDict) {
-    CodeMirror.registerHelper('hint', name, function (editor) {
+  registerAutocompleteHelper(name: string, curDict: any[]) {
+    CodeMirror.registerHelper('hint', name, function (editor: any) {
       const cur = editor.getCursor();
       const curLine = editor.getLine(cur.line);
       let start = cur.ch;
@@ -593,10 +594,10 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
         const oCompletions = {
           list: (!curWord
             ? []
-            : curDict.filter(function (item) {
+            : curDict.filter(function (item: any) {
                 return item['displayText'].match(regex);
               })
-          ).sort(function (a, b) {
+          ).sort(function (a: any, b: any) {
             const nameA = a.text.toLowerCase();
             const nameB = b.text.toLowerCase();
             if (nameA < nameB) {
@@ -616,7 +617,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
     });
   }
 
-  removeItem(itemName) {
+  removeItem(itemName: string) {
     for (const j of this.logic.watch_item) {
       if (String(j) === itemName) {
         const index = this.logic.watch_item.indexOf(j);
@@ -682,7 +683,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
     editor2.setSize('50vw', 'auto');
     editor2.refresh();
     /* prohibit new lines, spaces and tabs for watch items input field */
-    editor2.on('beforeChange', function (cm, changeObj) {
+    editor2.on('beforeChange', function (cm: any, changeObj: any) {
       const typedNewLine =
         changeObj.origin === '+input' &&
         typeof changeObj.text === 'object' &&
@@ -697,7 +698,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
     });
   }
 
-  logicsCodeKeyUp(event) {
+  logicsCodeKeyUp(event: any) {
     this.logicChanged = this.hasLogicChanged();
     const editor1 = this.codeEditor.codeMirror;
     if (
@@ -716,7 +717,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
     }
   }
 
-  watchItemKeyUp(event) {
+  watchItemKeyUp(event: any) {
     const editor2 = this.codeEditorWatchItems.codeMirror;
     if (
       !editor2.state.completionActive /*Enables keyboard navigation in autocomplete list*/ &&
@@ -765,19 +766,23 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
     this.logicChanged = this.hasLogicChanged();
   }
 
-  saveParameters(reload) {
+  saveParameters(reload: boolean) {
     // this.log.log('LoggingConfigurationComponent.saveParameters');
 
-    const params = {};
+    const params: Record<string, unknown> = {};
 
     if (!(parseInt(this.logic.cycle ?? '', 10) > 0)) {
       this.logic.cycle = null;
     }
     params['logic_description'] = this.logic.logic_description;
-    params['group'] = this.stringToList(this.logic.group);
+    params['group'] = this.stringToList(
+      Array.isArray(this.logic.group) ? this.logic.group.join(' | ') : (this.logic.group ?? null),
+    );
     this.logic.group = this.listToString(params['group']);
     params['cycle'] = this.logic.cycle;
-    params['crontab'] = this.stringToList(this.logic.crontab);
+    params['crontab'] = this.stringToList(
+      Array.isArray(this.logic.crontab) ? this.logic.crontab.join(' | ') : this.logic.crontab,
+    );
     this.logic.crontab = this.listToString(params['crontab']);
 
     params['watch_item'] = this.logic.watch_item;
@@ -789,8 +794,8 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
         for (let i = 0; i < this.parameters.length; i++) {
           if (this.parameters[i].name === param) {
             if (this.parameters[i].type === 'list') {
-              params[param] = this.stringToList(this.parameters[i].value);
-              this.parameters[i].value = this.listToString(params[param]);
+              params[param] = this.stringToList(this.parameters[i].value as string | null);
+              this.parameters[i].value = this.listToString(params[param] as string | null);
             } else {
               params[param] = this.parameters[i].value;
             }
@@ -847,7 +852,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
       });
   }
 
-  reloadLogic(logicName) {
+  reloadLogic(logicName: string) {
     this.log.log('reloadLogic', { logicName });
 
     if (logicName === undefined) {
@@ -864,7 +869,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
       });
   }
 
-  loadLogic(logicName) {
+  loadLogic(logicName: string) {
     this.log.log('loadLogic', { logicName });
     // this.log.warn('myLogicName', this.myLogicName, 'myEditFilename', this.myEditFilename);
 
@@ -882,7 +887,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
       });
   }
 
-  disableLogic(logicName) {
+  disableLogic(logicName: string) {
     // this.log.log('disableLogic', {logicName});
     this.dataService
       .setLogicState(logicName, 'disable')
@@ -894,7 +899,7 @@ export class LogicsEditComponent implements AfterViewChecked, OnInit {
       });
   }
 
-  enableLogic(logicName) {
+  enableLogic(logicName: string) {
     // this.log.log('enableLogic', {logicName});
     this.dataService
       .setLogicState(logicName, 'enable')

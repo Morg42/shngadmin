@@ -73,7 +73,7 @@ export class SystemComponent implements OnDestroy, OnInit {
 
   systeminfo: SystemInfo = <SystemInfo>{};
   pypiinfo: PypiInfo[];
-  reqinfodisplay: {};
+  reqinfodisplay: Record<string, string>;
   plugincount = 0;
   documentationcount = 0;
   testsuitecount = 0;
@@ -181,8 +181,8 @@ export class SystemComponent implements OnDestroy, OnInit {
       .getSysteminfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (response: SystemInfo) => {
-          this.systeminfo = response;
+        next: (response) => {
+          this.systeminfo = response as SystemInfo;
 
           this.os_uptime = this.shared.ageToString(this.systeminfo.uptime);
           this.sh_uptime = this.shared.ageToString(this.systeminfo.sh_uptime);
@@ -201,8 +201,8 @@ export class SystemComponent implements OnDestroy, OnInit {
       .getPypiinfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (response: PypiInfo[]) => {
-          this.pypiinfo = response;
+        next: (response) => {
+          this.pypiinfo = response as PypiInfo[];
           this.loading = false;
 
           // count if plugin requirements exist
@@ -283,7 +283,7 @@ export class SystemComponent implements OnDestroy, OnInit {
   // methods for the Pypi check tab
   // -----------------------------------
   //
-  buildreqinfostring(element) {
+  buildreqinfostring(element: any): string {
     /* Build String for requirements column */
     let reqString = '';
 

@@ -1,6 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -46,7 +46,7 @@ describe('PluginConfigComponent', () => {
         { provide: AppConfigService, useValue: createMockAppConfigService() },
         { provide: OlddataService, useValue: mockOlddata },
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      schemas: [NO_ERRORS_SCHEMA],
     })
       .overrideComponent(PluginConfigComponent, { set: { imports: [TranslatePipe] } })
       .compileComponents();

@@ -1,6 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { provideRouter } from '@angular/router';
@@ -40,10 +40,10 @@ describe('LoginComponent', () => {
         { provide: AuthService, useValue: mockAuthService },
         { provide: AppConfigService, useValue: createMockAppConfigService() },
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      schemas: [NO_ERRORS_SCHEMA],
     })
       .overrideComponent(LoginComponent, {
-        set: { imports: [TranslatePipe, FormsModule], schemas: [CUSTOM_ELEMENTS_SCHEMA] },
+        set: { imports: [TranslatePipe, FormsModule], schemas: [NO_ERRORS_SCHEMA] },
       })
       .compileComponents();
 

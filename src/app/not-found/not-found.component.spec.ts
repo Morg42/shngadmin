@@ -1,6 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -15,7 +15,7 @@ describe('NotFoundComponent', () => {
     await TestBed.configureTestingModule({
       imports: [NotFoundComponent, translateTestingModule],
       providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      schemas: [NO_ERRORS_SCHEMA],
     })
       .overrideComponent(NotFoundComponent, { set: { imports: [TranslatePipe] } })
       .compileComponents();

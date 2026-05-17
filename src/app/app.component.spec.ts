@@ -1,6 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -37,7 +37,7 @@ describe('AppComponent', () => {
         { provide: AppConfigService, useValue: createMockAppConfigService() },
         { provide: 'BASE_URL', useValue: 'http://localhost/' },
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      schemas: [NO_ERRORS_SCHEMA],
     })
       .overrideComponent(AppComponent, { set: { imports: [TranslatePipe] } })
       .compileComponents();

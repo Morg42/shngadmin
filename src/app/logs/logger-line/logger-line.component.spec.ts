@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslatePipe } from '@ngx-translate/core';
 import { translateTestingModule } from '../../../testing/test-helpers';
@@ -11,7 +11,7 @@ describe('LoggerLineComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [LoggerLineComponent, translateTestingModule],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      schemas: [NO_ERRORS_SCHEMA],
     })
       .overrideComponent(LoggerLineComponent, { set: { imports: [TranslatePipe] } })
       .compileComponents();

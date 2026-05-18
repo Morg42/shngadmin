@@ -156,6 +156,20 @@ export class ServerApiService {
     );
   }
 
+  getPypiInfo() {
+    const url = this.appConfig.apiUrl + 'system/pypi';
+    return this.http.get(url).pipe(
+      map((response) => response),
+      catchError((err: HttpErrorResponse) => {
+        this.log.error(
+          'ServerApiService.getPypiInfo(): Could not read PyPI data - ',
+          err?.error?.error || err.message || err,
+        );
+        return of([]);
+      }),
+    );
+  }
+
   downloadConfigBackup() {
     this.log.log('downloadConfigBackup');
     const url = this.appConfig.apiUrl + 'files/backup/';

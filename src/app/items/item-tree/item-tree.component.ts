@@ -30,8 +30,8 @@ import { TreeNodeSelectEvent } from 'primeng/tree';
 
 import { ItemDetails } from '../../common/models/item-details';
 import { ItemTree } from '../../common/models/item-tree';
+import { ItemsApiService } from '../../common/services/items-api.service';
 import { LogService } from '../../common/services/log.service';
-import { OlddataService } from '../../common/services/olddata.service';
 import { SharedService } from '../../common/services/shared.service';
 import { WebsocketPluginService } from '../../common/services/websocket-plugin.service';
 import { WebsocketService } from '../../common/services/websocket.service';
@@ -124,7 +124,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
-  private dataService = inject(OlddataService);
+  private itemsApi = inject(ItemsApiService);
   private translate = inject(TranslateService);
   private websocketPluginService = inject(WebsocketPluginService);
   public shared = inject(SharedService);
@@ -191,8 +191,8 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
   }
 
   getItemtree() {
-    this.dataService
-      .getItemtree()
+    this.itemsApi
+      .getItemTree()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
@@ -204,7 +204,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
           this.cdr.markForCheck();
         },
         error: (error) => {
-          this.log.log('ERROR: ItemsComponent: dataService.getItemtree():');
+          this.log.log('ERROR: ItemsComponent: itemsApi.getItemTree():');
           this.log.log(error);
         },
       });
@@ -222,13 +222,19 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
     if (typeof item_value === 'boolean') {
       const strValue = item_value.toString();
       this.log.log('--> updateValue (bool): ' + strValue);
-      this.dataService.changeItemValue(item_path, strValue);
+      this.itemsApi
+        .changeItemValue(item_path, strValue)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe();
       return;
     }
 
     if (typeof item_value === 'string') {
       this.log.log('--> updateValue (string): ' + item_value);
-      this.dataService.changeItemValue(item_path, item_value);
+      this.itemsApi
+        .changeItemValue(item_path, item_value)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe();
       return;
     }
 
@@ -248,7 +254,10 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
       }
     }
     this.log.log('--> updateValue: ' + item_value.value);
-    this.dataService.changeItemValue(item_path, item_value.value ?? '');
+    this.itemsApi
+      .changeItemValue(item_path, item_value.value ?? '')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
   }
 
   sortMonitoredItems() {
@@ -351,7 +360,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
     this.log.log('ItemTreeComponent.getDetails: ' + path);
     this.log.warn('- this', this);
     if (path !== undefined) {
-      this.dataService
+      this.itemsApi
         .getItemDetails(path)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
@@ -384,7 +393,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
             this.cdr.markForCheck();
           },
           error: (error) => {
-            this.log.log('ERROR: ItemsComponent: dataService.getItemDetails():');
+            this.log.log('ERROR: ItemsComponent: itemsApi.getItemDetails():');
             this.log.log(error);
           },
         });

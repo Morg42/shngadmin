@@ -18,7 +18,6 @@ import { AppComponent, HttpLoaderFactory } from './app/app.component';
 import { appRoutes } from './app/app.routes';
 import { getBaseUrl, jwtOptionsFactory } from './app/bootstrap.utils';
 import { connectivityInterceptor } from './app/common/interceptors/connectivity.interceptor';
-import { OlddataService } from './app/common/services/olddata.service';
 import { WebsocketPluginService } from './app/common/services/websocket-plugin.service';
 import { environment } from './environments/environment';
 
@@ -67,7 +66,6 @@ bootstrapApplication(AppComponent, {
       }),
     ),
     { provide: 'BASE_URL', useFactory: getBaseUrl },
-    OlddataService,
     WebsocketPluginService,
     TranslateService,
     provideAnimationsAsync(),

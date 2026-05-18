@@ -28,7 +28,7 @@ import { APP_NAME, APP_VERSION } from '../../app.component';
 import { PypiInfo } from '../../common/models/pypi-info';
 import { SystemInfo } from '../../common/models/system-info';
 import { LogService } from '../../common/services/log.service';
-import { OlddataService } from '../../common/services/olddata.service';
+import { ServerApiService } from '../../common/services/server-api.service';
 import { SharedService } from '../../common/services/shared.service';
 import { WebsocketPluginService } from '../../common/services/websocket-plugin.service';
 import { WebsocketService } from '../../common/services/websocket.service';
@@ -57,7 +57,7 @@ export class SystemComponent implements OnDestroy, OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private http = inject(HttpClient);
-  private dataService = inject(OlddataService);
+  private serverApi = inject(ServerApiService);
   private translate = inject(TranslateService);
   private websocketPluginService = inject(WebsocketPluginService);
   public shared = inject(SharedService);
@@ -169,10 +169,10 @@ export class SystemComponent implements OnDestroy, OnInit {
 
   initSystemInfo() {
     // ---------------------------------------------
-    // Initialize system info (from OlddataService)
+    // Initialize system info
     //
-    this.dataService
-      .getSysteminfo()
+    this.serverApi
+      .getServerinfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
@@ -183,7 +183,7 @@ export class SystemComponent implements OnDestroy, OnInit {
           this.cdr.markForCheck();
         },
         error: (error) => {
-          this.log.log('SystemComponent: dataService.getSysteminfo():');
+          this.log.log('SystemComponent: serverApi.getServerinfo():');
           this.log.log(error);
         },
       });
@@ -191,8 +191,8 @@ export class SystemComponent implements OnDestroy, OnInit {
     // -----------------------------------
     // Initialize Pypi info
     //
-    this.dataService
-      .getPypiinfo()
+    this.serverApi
+      .getPypiInfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
@@ -241,7 +241,7 @@ export class SystemComponent implements OnDestroy, OnInit {
           }
           this.cdr.markForCheck();
         },
-        error: (error) => this.log.log('SystemComponent: dataService.getPypiinfo():' + error),
+        error: (error) => this.log.log('SystemComponent: serverApi.getPypiInfo():' + error),
       });
 
     // -----------------------------------

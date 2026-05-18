@@ -29,13 +29,11 @@ import { LogicsGroupType, LogicsinfoType } from '../../common/models/logics-info
 import { LogicsWatchItem } from '../../common/models/logics-watch-item';
 import { LogService } from '../../common/services/log.service';
 import { LogicsApiService } from '../../common/services/logics-api.service';
-import { OlddataService } from '../../common/services/olddata.service';
-
 @Component({
   selector: 'app-logics',
   templateUrl: './logics-list.component.html',
   styleUrls: ['./logics-list.component.css'],
-  providers: [OlddataService],
+  providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     Bind,

@@ -14,7 +14,6 @@ import {
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { LogService } from '../../common/services/log.service';
-import { OlddataService } from '../../common/services/olddata.service';
 import { PluginsApiService } from '../../common/services/plugins-api.service';
 import { SharedService } from '../../common/services/shared.service';
 
@@ -112,7 +111,6 @@ export class PluginConfigComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private pluginsdataService = inject(PluginsApiService);
-  private dataService = inject(OlddataService);
   private translate = inject(TranslateService);
   private shared = inject(SharedService);
   private router = inject(Router);

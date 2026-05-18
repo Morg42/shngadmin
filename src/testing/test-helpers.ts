@@ -50,6 +50,7 @@ export function createMockAppConfigService() {
     itemtreeSearchstart: 3,
     developerMode: false,
     config$: new BehaviorSubject({
+      loginRequired: null,
       apiUrl: '/api/',
       defaultLanguage: 'en',
       hostIp: 'localhost',
@@ -69,7 +70,9 @@ export function createMockAppConfigService() {
       fallbackLanguageOrder: ['en', 'de'],
       dataUrl: '',
     }).asObservable(),
-    snapshot: { apiUrl: '/api/', defaultLanguage: 'en', hostIp: 'localhost' },
+    snapshot: { loginRequired: null, apiUrl: '/api/', defaultLanguage: 'en', hostIp: 'localhost' },
+    serverReady$: of({ wsPort: '2121' }),
+    authReady$: of(false),
     patch: (_partial: unknown) => {},
   };
 }

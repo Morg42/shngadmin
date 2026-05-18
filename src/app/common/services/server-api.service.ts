@@ -58,6 +58,7 @@ export class ServerApiService {
         this.appConfig.patch({
           clientIp: result.client_ip,
           wsHost: this.appConfig.hostIp,
+          loginRequired: result.login_required ?? false,
         });
 
         this.shared.setGuiLanguage();

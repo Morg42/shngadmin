@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { UserPreferencesService } from './user-preferences.service';
 
 /**
@@ -8,6 +8,9 @@ import { UserPreferencesService } from './user-preferences.service';
  * All values have safe defaults so callers never receive null.
  */
 export interface AppConfig {
+  // Auth — null until /api/server/ responds
+  loginRequired: boolean | null;
+
   // Connection
   apiUrl: string;
   dataUrl: string;
@@ -34,6 +37,7 @@ export interface AppConfig {
 }
 
 const DEFAULT_CONFIG: AppConfig = {
+  loginRequired: null,
   apiUrl: '',
   dataUrl: '',
   hostIp: '',
@@ -99,6 +103,17 @@ export class AppConfigService {
    */
   get serverReady$(): Observable<AppConfig> {
     return this._config$.pipe(filter((cfg) => cfg.wsPort !== ''));
+  }
+
+  /**
+   * Emits once after getServerBasicinfo() has patched loginRequired, making
+   * it safe for the auth guard to decide whether to allow or redirect.
+   */
+  get authReady$(): Observable<boolean> {
+    return this._config$.pipe(
+      filter((cfg) => cfg.loginRequired !== null),
+      map((cfg) => cfg.loginRequired as boolean),
+    );
   }
 
   // ----------------------------------------------------------------

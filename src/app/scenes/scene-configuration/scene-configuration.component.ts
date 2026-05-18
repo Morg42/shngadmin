@@ -149,8 +149,6 @@ export class SceneConfigurationComponent implements OnInit {
         }
       });
 
-    // alert('code for removal of plugin "' + this.dialog_configname + '" configurations is not yet implemented');
-
     return true;
   }
 

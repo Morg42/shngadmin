@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -11,6 +10,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
+import { timer } from 'rxjs';
 import { AppConfigService } from '../common/services/app-config.service';
 import { UserPreferencesService } from '../common/services/user-preferences.service';
 
@@ -76,7 +76,6 @@ export interface CacheEntryType {
 export class ServicesComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
-  private http = inject(HttpClient);
   private translate = inject(TranslateService);
   public shared = inject(SharedService);
   private fileService = inject(FilesApiService);
@@ -329,9 +328,9 @@ export class ServicesComponent implements OnInit {
               interval = interval3;
             }
           }
-          this.sleep(interval).then(() => {
-            this.getShngStatus();
-          });
+          timer(interval)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => this.getShngStatus());
         } else {
           this.log.warn('getShngStatus', 'Statuspolling aborted');
           this.shng_status = this.translate_shngStatus('not active');
@@ -339,11 +338,6 @@ export class ServicesComponent implements OnInit {
         }
         this.cdr.markForCheck();
       });
-  }
-
-  sleep(time: number) {
-    // https://davidwalsh.name/javascript-sleep-function
-    return new Promise((resolve) => setTimeout(resolve, time));
   }
 
   // -------------------------------------------------------

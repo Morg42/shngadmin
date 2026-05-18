@@ -13,6 +13,7 @@ import { Title } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { Toast } from 'primeng/toast';
 import { OfflineBannerComponent } from './common/components/offline-banner/offline-banner.component';
 import { ServerInfo } from './common/models/server-info';
 import { AuthService } from './common/services/auth.service';
@@ -37,7 +38,7 @@ export const APP_VERSION = '1.0.0';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TopNavigationComponent, RouterOutlet, OfflineBannerComponent],
+  imports: [TopNavigationComponent, RouterOutlet, OfflineBannerComponent, Toast],
 })
 export class AppComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);

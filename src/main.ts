@@ -13,6 +13,7 @@ import { JWT_OPTIONS, JwtModule } from '@auth0/angular-jwt';
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { definePreset } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
+import { MessageService } from 'primeng/api';
 import { providePrimeNG } from 'primeng/config';
 import { AppComponent, HttpLoaderFactory } from './app/app.component';
 import { appRoutes } from './app/app.routes';
@@ -64,6 +65,7 @@ bootstrapApplication(AppComponent, {
       }),
     ),
     { provide: 'BASE_URL', useFactory: getBaseUrl },
+    MessageService,
     WebsocketPluginService,
     TranslateService,
     provideAnimationsAsync(),

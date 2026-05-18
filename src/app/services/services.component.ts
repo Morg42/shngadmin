@@ -28,7 +28,7 @@ import { SharedService } from '../common/services/shared.service';
 import { NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { sha512 } from 'js-sha512';
-import { PrimeTemplate } from 'primeng/api';
+import { MessageService, PrimeTemplate } from 'primeng/api';
 import { Bind } from 'primeng/bind';
 import { ButtonDirective } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
@@ -80,6 +80,7 @@ export class ServicesComponent implements OnInit {
   public shared = inject(SharedService);
   private fileService = inject(FilesApiService);
   private dataService = inject(ServicesApiService);
+  private readonly messageService = inject(MessageService);
   private dataServiceServer = inject(ServerApiService);
   private titleService = inject(Title);
   private appConfig = inject(AppConfigService);
@@ -423,6 +424,11 @@ export class ServicesComponent implements OnInit {
     // file reading failed
     reader.addEventListener('error', () => {
       this.log.error('Error: Failed to read file');
+      this.messageService.add({
+        severity: 'error',
+        summary: 'File read error',
+        detail: 'Failed to read the selected file.',
+      });
     });
 
     // file read progress

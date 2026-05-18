@@ -4,6 +4,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
+import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
 import cacheFixture from '../../testing/fixtures/api/services/cachecheck/default.json';
 import {
@@ -62,6 +63,7 @@ describe('ServicesComponent', () => {
         { provide: UserPreferencesService, useValue: mockUserPrefs },
         { provide: AuthService, useValue: createMockAuthService() },
         { provide: AppConfigService, useValue: createMockAppConfigService() },
+        MessageService,
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })

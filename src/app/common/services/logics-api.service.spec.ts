@@ -1,6 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { MessageService } from 'primeng/api';
 import { createMockAppConfigService } from '../../../testing/test-helpers';
 import { AppConfigService } from './app-config.service';
 import { LogicsApiService } from './logics-api.service';
@@ -15,6 +16,7 @@ describe('LogicsApiService', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: AppConfigService, useValue: createMockAppConfigService() },
+        MessageService,
         LogicsApiService,
       ],
     });

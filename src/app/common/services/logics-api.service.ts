@@ -1,6 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 
+import { MessageService } from 'primeng/api';
 import { BehaviorSubject, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AppConfigService } from './app-config.service';
@@ -18,6 +19,7 @@ export class LogicsApiService {
   private http = inject(HttpClient);
   private appConfig = inject(AppConfigService);
   private readonly log = inject(LogService);
+  private readonly messageService = inject(MessageService);
 
   private readonly _groupExpanded = new BehaviorSubject<number[]>([]);
   readonly groupExpanded$ = this._groupExpanded.asObservable();
@@ -128,11 +130,13 @@ export class LogicsApiService {
             // this.log.log('LogicsApiService.setLogicState', 'success');
             return true;
           } else {
-            this.log.log('LogicsApiService.setLogicState', 'failed');
-            this.log.warn(
-              'LogicsApiService.setLogicState',
-              result.result + ': ' + result.description,
-            );
+            this.log.warn('LogicsApiService.setLogicState', result.result, result.description);
+            this.messageService.add({
+              severity: 'error',
+              summary: result.result,
+              detail: result.description,
+              sticky: true,
+            });
             return false;
           }
         } else {
@@ -166,11 +170,17 @@ export class LogicsApiService {
             // this.log.log('LogicsApiService.setLogicState', 'success');
             return true;
           } else {
-            this.log.log('LogicsApiService.saveLogicParameters', 'fail');
             this.log.warn(
               'LogicsApiService.saveLogicParameters',
-              result.result + ': ' + result.description,
+              result.result,
+              result.description,
             );
+            this.messageService.add({
+              severity: 'error',
+              summary: result.result,
+              detail: result.description,
+              sticky: true,
+            });
             return false;
           }
         } else {
@@ -204,11 +214,13 @@ export class LogicsApiService {
             this.log.log('LogicsApiService.saveLogicGroup', 'success');
             return true;
           } else {
-            this.log.log('LogicsApiService.saveLogicGroup', 'fail');
-            this.log.warn(
-              'LogicsApiService.saveLogicGroup',
-              result.result + ': ' + result.description,
-            );
+            this.log.warn('LogicsApiService.saveLogicGroup', result.result, result.description);
+            this.messageService.add({
+              severity: 'error',
+              summary: result.result,
+              detail: result.description,
+              sticky: true,
+            });
             return false;
           }
         } else {
@@ -240,11 +252,13 @@ export class LogicsApiService {
             this.log.log('LogicsApiService.deleteLogicGroup', 'success');
             return true;
           } else {
-            this.log.log('LogicsApiService.deleteLogicGroup', 'fail');
-            this.log.warn(
-              'LogicsApiService.deleteLogicGroup',
-              result.result + ': ' + result.description,
-            );
+            this.log.warn('LogicsApiService.deleteLogicGroup', result.result, result.description);
+            this.messageService.add({
+              severity: 'error',
+              summary: result.result,
+              detail: result.description,
+              sticky: true,
+            });
             return false;
           }
         } else {

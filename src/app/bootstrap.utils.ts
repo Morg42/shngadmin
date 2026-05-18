@@ -16,5 +16,7 @@ export function jwtOptionsFactory(injector: Injector) {
       const authService = injector.get(AuthService);
       return authService.getToken();
     },
+    // Restrict token injection to requests going to the same host as the app.
+    allowedDomains: [window.location.hostname],
   };
 }

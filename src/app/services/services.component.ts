@@ -409,7 +409,7 @@ export class ServicesComponent implements OnInit {
     this.restore_disabled = false;
   }
 
-  myUploader(event: any, form: any) {
+  myUploader(event: { files: File[] }, form: { clear: () => void }) {
     this.log.log('myUploader', event.files);
     this.log.log('myUploader', event.files[0].name);
 
@@ -463,7 +463,7 @@ export class ServicesComponent implements OnInit {
     reader.readAsDataURL(event.files[0]);
   }
 
-  doUpload(form: any) {
+  doUpload(form: { clear: () => void }) {
     this.log.log('doUpload');
 
     /*

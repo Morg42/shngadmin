@@ -142,7 +142,7 @@ export class LogicsListComponent implements OnInit {
     }
   }
 
-  groupOpened(event: any) {
+  groupOpened(event: { index: number }) {
     const index = event['index'];
     this.log.warn('groupOpened', { index });
 
@@ -156,7 +156,7 @@ export class LogicsListComponent implements OnInit {
     this.log.log('this.groupExpanded', this.groupExpanded);
   }
 
-  groupClosed(event: any) {
+  groupClosed(event: { index: number }) {
     const index = event['index'];
     this.log.warn('groupClosed', { index });
     if (this.groupExpanded === undefined) {

@@ -21,7 +21,8 @@ import { Message } from 'primeng/message';
 import { Ripple } from 'primeng/ripple';
 import { Select } from 'primeng/select';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
-import { LoggersType } from '../../common/models/loggers-info';
+import { LoggersApiResponse, LoggersType } from '../../common/models/loggers-info';
+// LoggersType is used for the loggers field type below
 import { LogService } from '../../common/services/log.service';
 import { LoggersApiService } from '../../common/services/loggers-api.service';
 import { LoggerLineComponent } from '../logger-line/logger-line.component';
@@ -83,21 +84,25 @@ export class LoggerListComponent implements OnInit {
 
   ngOnInit() {
     this.log.log('LoggerListComponent.ngOnInit');
-
     this.setTitle(this.translate.instant('MENU.LOGGER_CONFIGURATION'));
+    this.refreshLoggers();
+  }
 
+  private applyLoggersResponse(r: LoggersApiResponse) {
+    this.loggers = r.loggers;
+    this.active_plugins = r.active_plugins;
+    this.active_logics = r.active_logics;
+    this.loggersList = Object.keys(r.loggers).sort();
+    this.definedHandlers = r.defined_handlers;
+    this.cdr.markForCheck();
+  }
+
+  private refreshLoggers() {
     this.dataService
       .getLoggers()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((response2: LoggersType) => {
-        this.loggers = response2['loggers'];
-        this.active_plugins = response2['active_plugins'];
-        this.active_logics = response2['active_logics'];
-        this.loggersList = Object.keys(response2['loggers']);
-        this.loggersList = this.loggersList.sort();
-        this.definedHandlers = response2['defined_handlers'];
-        this.log.log('ngOnInit: response2', response2);
-        this.cdr.markForCheck();
+      .subscribe((r) => {
+        if (r && 'loggers' in r) this.applyLoggersResponse(r as LoggersApiResponse);
       });
   }
 
@@ -285,19 +290,7 @@ export class LoggerListComponent implements OnInit {
           this.log.warn('dataService.addLogger ERROR', { description });
         }
 
-        if (result === 'ok') {
-          this.dataService
-            .getLoggers()
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe((response2: LoggersType) => {
-              this.loggers = response2['loggers'];
-              this.active_plugins = response2['active_plugins'];
-              this.active_logics = response2['active_logics'];
-              this.loggersList = Object.keys(response2['loggers']);
-              this.loggersList = this.loggersList.sort();
-              this.cdr.markForCheck();
-            });
-        }
+        if (result === 'ok') this.refreshLoggers();
       });
   }
 
@@ -315,21 +308,7 @@ export class LoggerListComponent implements OnInit {
           this.log.warn('dataService.deleteLogger ERROR', { description });
         }
 
-        if (result === 'ok') {
-          this.dataService
-            .getLoggers()
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe((response2: LoggersType) => {
-              this.loggers = response2['loggers'];
-              this.active_plugins = response2['active_plugins'];
-              this.active_logics = response2['active_logics'];
-              this.loggersList = Object.keys(response2['loggers']);
-              this.loggersList = this.loggersList.sort();
-              this.definedHandlers = response2['defined_handlers'];
-              this.log.log('loggerDelete: response2', response2);
-              this.cdr.markForCheck();
-            });
-        }
+        if (result === 'ok') this.refreshLoggers();
       });
   }
 
@@ -347,21 +326,7 @@ export class LoggerListComponent implements OnInit {
           this.log.warn('dataService.setHandlers ERROR', { description });
         }
 
-        if (result === 'ok') {
-          this.dataService
-            .getLoggers()
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe((response2: LoggersType) => {
-              this.loggers = response2['loggers'];
-              this.active_plugins = response2['active_plugins'];
-              this.active_logics = response2['active_logics'];
-              this.loggersList = Object.keys(response2['loggers']);
-              this.loggersList = this.loggersList.sort();
-              this.definedHandlers = response2['defined_handlers'];
-              this.log.log('loggerDelete: response2', response2);
-              this.cdr.markForCheck();
-            });
-        }
+        if (result === 'ok') this.refreshLoggers();
       });
   }
 }

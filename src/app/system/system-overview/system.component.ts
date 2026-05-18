@@ -277,7 +277,7 @@ export class SystemComponent implements OnDestroy, OnInit {
   // methods for the Pypi check tab
   // -----------------------------------
   //
-  buildreqinfostring(element: any): string {
+  buildreqinfostring(element: PypiInfo): string {
     /* Build String for requirements column */
     let reqString = '';
 

@@ -41,6 +41,38 @@ import { PluginsConfig } from '../../common/models/plugins-config';
 import { PluginsInstalled } from '../../common/models/plugins-installed';
 import { ServerInfo } from '../../common/models/server-info';
 
+interface PluginParamMeta {
+  type?: string;
+  gui_type?: string;
+  valid_list?: unknown[];
+  valid_min?: number;
+  valid_max?: number;
+  default?: unknown;
+  mandatory?: boolean;
+  description?: Record<string, string>;
+  hide?: boolean;
+}
+
+interface PluginMetaInfo {
+  plugin?: {
+    state?: string;
+    type?: string;
+    description?: Record<string, string>;
+  };
+  parameters?: Record<string, PluginParamMeta>;
+}
+
+interface PluginSectionConfig {
+  plugin_name?: string;
+  class_path?: string;
+  instance?: string;
+  _meta?: PluginMetaInfo;
+  _loaded?: boolean;
+  plugin_enabled?: boolean | string;
+  _description?: unknown;
+  [key: string]: unknown;
+}
+
 export interface ConfiguredPlugin {
   confname: string;
   instance: string;
@@ -198,17 +230,16 @@ export class PluginConfigComponent implements OnInit {
   //
   private buildConfiguredPlugins(): void {
     const newPlugins: ConfiguredPlugin[] = [];
-    const plugin_config = this.pluginconflist?.plugin_config as Record<string, any>;
+    const plugin_config = this.pluginconflist?.plugin_config as Record<string, PluginSectionConfig>;
     for (const plg in plugin_config) {
       if (plugin_config.hasOwnProperty(plg)) {
         const confname = plg;
-        let plgname = plugin_config[plg]['plugin_name'];
-        if (plgname === undefined) {
-          plgname = plugin_config[plg]['class_path'];
-        }
-        const instance = plugin_config[plg]['instance'];
+        const plgname = (plugin_config[plg].plugin_name ?? plugin_config[plg].class_path) as
+          | string
+          | undefined;
+        const instance = plugin_config[plg].instance;
 
-        const meta = plugin_config[confname]['_meta'];
+        const meta = plugin_config[confname]._meta;
 
         let deprecated = '-';
         if (meta?.plugin) {
@@ -222,14 +253,14 @@ export class PluginConfigComponent implements OnInit {
         }
         const conf: ConfiguredPlugin = {
           confname: confname,
-          instance: instance,
-          plugin: deprecated + plgname,
+          instance: instance ?? '',
+          plugin: deprecated + (plgname ?? ''),
           desc: '',
-          loaded: !!plugin_config[plg]['_loaded'],
+          loaded: !!plugin_config[plg]._loaded,
           enabled: 'true',
         };
 
-        if (plugin_config[plg]['plugin_enabled'] === 'False') {
+        if (plugin_config[plg].plugin_enabled === 'False') {
           conf.enabled = 'false';
         }
 
@@ -239,14 +270,14 @@ export class PluginConfigComponent implements OnInit {
           conf.type = meta.plugin.type;
         }
 
-        let desc = plugin_config[plg]['_description'];
+        let desc: unknown = plugin_config[plg]._description;
         if (conf.type === undefined || conf.type === 'classic') {
           conf.type = 'classic';
-          if (plugin_config[plg]['_meta'] != null) {
-            desc = plugin_config[plg]['_meta']['plugin']['description'];
+          if (plugin_config[plg]._meta != null) {
+            desc = plugin_config[plg]._meta?.plugin?.description;
           }
         }
-        let plgdesc = this.shared.getDescription(desc);
+        let plgdesc = this.shared.getDescription(desc as Record<string, string> | null | undefined);
         plgdesc = plgdesc.replace(new RegExp('\n', 'g'), '<br>');
         plgdesc = plgdesc.replace(new RegExp(' \\*\\*', 'g'), ' <b><mark>');
         plgdesc = plgdesc.replace(new RegExp('\\*\\* ', 'g'), '</mark></b> ');
@@ -261,7 +292,7 @@ export class PluginConfigComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-  listToString(list: any) {
+  listToString(list: string | string[] | undefined) {
     let result = '';
     if (typeof list === 'string') {
       result = list;
@@ -298,16 +329,16 @@ export class PluginConfigComponent implements OnInit {
   //  - Get the configuration data for the selected plugin
   //    for the modal dialog
   //
-  rowClicked(event: unknown, rowdata: any) {
+  rowClicked(event: unknown, rowdata: ConfiguredPlugin) {
     this.dialog_configname = rowdata.confname;
     this.dialog_pluginname = rowdata.plugin.slice(1);
     this.rowclicked_foredit = rowdata;
 
-    const pconf = this.pluginconflist.plugin_config as Record<string, any>;
+    const pconf = this.pluginconflist.plugin_config as Record<string, PluginSectionConfig>;
     const conf = pconf[rowdata.confname];
     this.log.log({ conf });
-    const meta = pconf[rowdata.confname]['_meta'];
-    let desc = null;
+    const meta = pconf[rowdata.confname]._meta;
+    let desc: Record<string, string> | null = null;
     this.classic = true;
     if (meta != null && meta !== undefined && meta.plugin !== undefined) {
       if (meta.plugin.type !== undefined && meta.plugin.type !== 'classic') {
@@ -317,7 +348,7 @@ export class PluginConfigComponent implements OnInit {
       if (meta.plugin.state !== undefined) {
         this.state = meta.plugin.state;
       }
-      desc = meta['plugin']['description'];
+      desc = meta.plugin.description ?? null;
     }
     this.dialog_readonly = this.pluginconflist.readonly;
     this.dialog_description = this.shared.getDescription(desc);
@@ -370,34 +401,34 @@ export class PluginConfigComponent implements OnInit {
     this.parameters = [];
 
     this.lang = this.appConfig.defaultLanguage;
-    if (meta != null && meta !== undefined && meta['parameters'] !== 'NONE') {
-      for (const param in meta['parameters']) {
-        if (meta['parameters'].hasOwnProperty(param)) {
+    const metaParams = meta?.parameters ?? {};
+    if (meta != null && meta !== undefined && (meta.parameters as unknown) !== 'NONE') {
+      for (const param in metaParams) {
+        if (metaParams.hasOwnProperty(param)) {
+          const pm = metaParams[param];
           const vl: { label: string; value: unknown }[] = [];
-          if (meta['parameters'][param]['valid_list'] !== undefined) {
-            for (let i = 0; i < meta['parameters'][param]['valid_list'].length; i++) {
+          if (pm.valid_list !== undefined) {
+            for (let i = 0; i < pm.valid_list.length; i++) {
               const wrk = {
-                label: String(meta['parameters'][param]['valid_list'][i]),
-                value: meta['parameters'][param]['valid_list'][i],
+                label: String(pm.valid_list[i]),
+                value: pm.valid_list[i],
               };
               vl.push(wrk);
             }
           }
 
-          if (meta['parameters'][param]['type'] === 'bool') {
+          if (pm.type === 'bool') {
             vl.push({ label: 'true', value: true });
             vl.push({ label: 'false', value: false });
           }
 
           let paramdesc = '';
-          if (meta['parameters'][param]['description'] !== undefined) {
-            paramdesc = meta['parameters'][param]['description'][this.lang];
+          if (pm.description !== undefined) {
+            paramdesc = pm.description[this.lang];
             if (paramdesc === '' || paramdesc === undefined) {
-              paramdesc =
-                meta['parameters'][param]['description'][this.shared.getFallbackLanguage()];
+              paramdesc = pm.description[this.shared.getFallbackLanguage()];
               if (paramdesc === '' || paramdesc === undefined) {
-                paramdesc =
-                  meta['parameters'][param]['description'][this.shared.getFallbackLanguage(1)];
+                paramdesc = pm.description[this.shared.getFallbackLanguage(1)];
               }
             }
           }
@@ -413,26 +444,23 @@ export class PluginConfigComponent implements OnInit {
 
           const paramdata = {
             name: param,
-            type: meta['parameters'][param]['type'],
-            gui_type: meta['parameters'][param]['gui_type'],
+            type: pm.type,
+            gui_type: pm.gui_type,
             valid_list: vl,
-            valid_min: meta['parameters'][param]['valid_min'],
-            valid_max: meta['parameters'][param]['valid_max'],
-            default: meta['parameters'][param]['default'],
-            mandatory: meta['parameters'][param]['mandatory'],
+            valid_min: pm.valid_min,
+            valid_max: pm.valid_max,
+            default: pm.default,
+            mandatory: pm.mandatory,
             value: conf[param],
             desc: paramdesc,
             initial_unset: false as boolean,
           };
 
           if (paramdata['type'] === 'list') {
-            paramdata['default'] = this.listToString(meta['parameters'][param]['default']);
+            paramdata['default'] = this.listToString(pm.default as string | string[] | undefined);
           }
-          if (
-            meta['parameters'][param]['hide'] &&
-            ['str', 'int'].indexOf(meta['parameters'][param]['type']) !== -1
-          ) {
-            paramdata['type'] = 'hide' + '-' + meta['parameters'][param]['type'];
+          if (pm.hide && ['str', 'int'].indexOf(pm.type ?? '') !== -1) {
+            paramdata['type'] = 'hide' + '-' + pm.type;
           }
 
           const initial_unset = conf[param] === undefined || conf[param] === null;
@@ -451,25 +479,25 @@ export class PluginConfigComponent implements OnInit {
             } else if (typeof conf[param] === 'boolean') {
               paramdata.value = conf[param];
             } else {
-              paramdata.value = conf[param].toLowerCase() === 'true';
+              paramdata.value = (conf[param] as string).toLowerCase() === 'true';
             }
           } else if (paramdata.type === 'list') {
             paramdata.value =
               initial_unset && paramdata.default != null
                 ? paramdata.default
-                : this.listToString(<string>conf[param]);
+                : this.listToString(conf[param] as string);
           } else if (paramdata.type === 'int') {
             paramdata.value =
               initial_unset && paramdata.default != null
                 ? typeof paramdata.default === 'number'
                   ? paramdata.default
                   : parseInt(String(paramdata.default), 10)
-                : parseInt(conf[param], 10);
+                : parseInt(conf[param] as string, 10);
           } else {
             paramdata.value =
               initial_unset && paramdata.default != null
                 ? String(paramdata.default)
-                : <string>conf[param];
+                : (conf[param] as string);
           }
 
           this.parameters.push(paramdata);
@@ -481,7 +509,7 @@ export class PluginConfigComponent implements OnInit {
   }
 
   saveConfig() {
-    const pluginConf = this.pluginconflist.plugin_config as Record<string, any>;
+    const pluginConf = this.pluginconflist.plugin_config as Record<string, PluginSectionConfig>;
     const conf = pluginConf[this.dialog_configname];
 
     let errors_found = false;
@@ -603,13 +631,14 @@ export class PluginConfigComponent implements OnInit {
       this.dialog_display = false;
       this.save_error = null;
 
-      for (const param of Object.keys(pluginConf[this.dialog_configname]._meta.parameters)) {
+      const saveParams = pluginConf[this.dialog_configname]._meta?.parameters ?? {};
+      for (const param of Object.keys(saveParams)) {
         if (
-          pluginConf[this.dialog_configname]._meta.parameters[param]['type'] === 'list' &&
+          saveParams[param].type === 'list' &&
           pluginConf[this.dialog_configname][param] !== undefined
         ) {
           pluginConf[this.dialog_configname][param] = this.stringToList(
-            pluginConf[this.dialog_configname][param],
+            pluginConf[this.dialog_configname][param] as string,
           );
         }
       }
@@ -622,7 +651,7 @@ export class PluginConfigComponent implements OnInit {
         if (this.rowclicked_foredit) this.rowclicked_foredit.enabled = 'true';
       }
       if (this.rowclicked_foredit)
-        this.rowclicked_foredit.instance = pluginConf[this.dialog_configname]['instance'];
+        this.rowclicked_foredit.instance = pluginConf[this.dialog_configname].instance ?? '';
 
       const config = JSON.parse(JSON.stringify(pluginConf[this.dialog_configname]));
       delete config['_meta'];

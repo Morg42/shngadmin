@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 
 import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { LoggersType } from '../models/loggers-info';
+import { LoggersApiResponse } from '../models/loggers-info';
 import { AppConfigService } from './app-config.service';
 import { LogService } from './log.service';
 
@@ -18,7 +18,7 @@ export class LoggersApiService {
   getLoggers() {
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'loggers/';
-    return this.http.get<LoggersType>(url).pipe(
+    return this.http.get<LoggersApiResponse>(url).pipe(
       map((response) => {
         const result = response;
         return result;

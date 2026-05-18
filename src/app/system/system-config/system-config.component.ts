@@ -209,7 +209,11 @@ export class SystemConfigComponent implements OnInit {
   // ---------------------------------------------------------
   // Fill ParamData for display/editing of parameters
   //
-  fillParamData(meta: any, param: string, data: any) {
+  fillParamData(
+    meta: { parameters: Record<string, ParameterMeta> },
+    param: string,
+    data: Record<string, unknown>,
+  ) {
     // fill valuelist
     const vl: { label: string; value: unknown }[] = [];
     if (meta['parameters'][param]['valid_list'] !== undefined) {
@@ -453,10 +457,10 @@ export class SystemConfigComponent implements OnInit {
   // ---------------------------------------------------------
   // change password
   //
-  change_password_dialog($event: unknown, rowData: any, col_field: string) {
+  change_password_dialog($event: unknown, rowData: ConfigParameter, col_field: string) {
     this.log.log('change_password_dialog()');
     this.log.log('hash', rowData[col_field]);
-    this.pwd_hash_old = rowData[col_field];
+    this.pwd_hash_old = rowData[col_field] as string | null;
     this.pwd_rowData = rowData;
     this.pwd_col = col_field;
 
@@ -548,7 +552,7 @@ export class SystemConfigComponent implements OnInit {
     }
   }
 
-  check_value_restrictions(parameter: any) {
+  check_value_restrictions(parameter: ConfigParameter) {
     let error_found = false;
     let error_text = '';
 
@@ -558,31 +562,34 @@ export class SystemConfigComponent implements OnInit {
       parameter['value'] = null;
     }
 
+    const type = (parameter.type ?? '').toLowerCase();
+    const value = parameter.value as string;
+    const numVal = Number(parameter.value);
+    const validMin = parameter['valid_min'] as number | undefined;
+    const validMax = parameter['valid_max'] as number | undefined;
+
     // checking data types
-    if (parameter['value'] !== null && parameter['value'] !== '') {
-      error_text = "'" + parameter['value'] + "' ";
-      if (
-        parameter['type'].toLowerCase() === 'knx_ga' &&
-        !this.shared.is_knx_groupaddress(parameter['value'])
-      ) {
+    if (parameter.value !== null && parameter.value !== '') {
+      error_text = "'" + value + "' ";
+      if (type === 'knx_ga' && !this.shared.is_knx_groupaddress(value)) {
         error_found = true;
         error_text += this.translate.instant('PLUGIN.INVALID_KNX_ADDRESS');
       }
-      if (parameter['type'].toLowerCase() === 'mac' && !this.shared.is_mac(parameter['value'])) {
+      if (type === 'mac' && !this.shared.is_mac(value)) {
         error_found = true;
         error_text += this.translate.instant('PLUGIN.INVALID_MAC_ADDRESS');
       }
-      if (parameter['type'].toLowerCase() === 'ipv4' && !this.shared.is_ipv4(parameter['value'])) {
+      if (type === 'ipv4' && !this.shared.is_ipv4(value)) {
         error_found = true;
         error_text += this.translate.instant('PLUGIN.INVALID_IP_ADDRESS') + ' (v4)';
       }
-      if (parameter['type'].toLowerCase() === 'ipv6' && !this.shared.is_ipv6(parameter['value'])) {
+      if (type === 'ipv6' && !this.shared.is_ipv6(value)) {
         error_found = true;
         error_text += this.translate.instant('PLUGIN.INVALID_IP_ADDRESS') + ' (v6)';
       }
-      if (parameter['type'].toLowerCase() === 'ip') {
-        if (!this.shared.is_ipv4(parameter['value']) && !this.shared.is_ipv6(parameter['value'])) {
-          if (!this.shared.is_hostname(parameter['value'])) {
+      if (type === 'ip') {
+        if (!this.shared.is_ipv4(value) && !this.shared.is_ipv6(value)) {
+          if (!this.shared.is_hostname(value)) {
             error_found = true;
             error_text += this.translate.instant('PLUGIN.INVALID_HOSTNAME');
           }
@@ -591,23 +598,19 @@ export class SystemConfigComponent implements OnInit {
     }
 
     // check valid minimum and maximum value
-    if (parameter['value'] !== null && parameter['value'] < parameter['valid_min']) {
+    if (parameter.value !== null && validMin !== undefined && numVal < validMin) {
       error_found = true;
-      error_text =
-        this.translate.instant('PLUGIN.DEFINED_MIN') + " '" + parameter['valid_min'] + "'";
-      error_text +=
-        ', ' + this.translate.instant('PLUGIN.ACTUAL_VALUE') + " '" + parameter['value'] + "'";
+      error_text = this.translate.instant('PLUGIN.DEFINED_MIN') + " '" + validMin + "'";
+      error_text += ', ' + this.translate.instant('PLUGIN.ACTUAL_VALUE') + " '" + value + "'";
     }
-    if (parameter['value'] !== null && parameter['value'] > parameter['valid_max']) {
+    if (parameter.value !== null && validMax !== undefined && numVal > validMax) {
       error_found = true;
-      error_text =
-        this.translate.instant('PLUGIN.DEFINED_MAX') + " '" + parameter['valid_max'] + "'";
-      error_text +=
-        ', ' + this.translate.instant('PLUGIN.ACTUAL_VALUE') + " '" + parameter['value'] + "'";
+      error_text = this.translate.instant('PLUGIN.DEFINED_MAX') + " '" + validMax + "'";
+      error_text += ', ' + this.translate.instant('PLUGIN.ACTUAL_VALUE') + " '" + value + "'";
     }
 
     // check if value is mandantory
-    if ((parameter['value'] === null || parameter['value'] === '') && parameter['mandatory']) {
+    if ((parameter.value === null || parameter.value === '') && parameter['mandatory']) {
       error_found = true;
       error_text = this.translate.instant('PLUGIN.MANDATORY_VALUE');
     }

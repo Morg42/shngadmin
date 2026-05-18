@@ -146,26 +146,25 @@ export class StructsComponent implements OnInit {
   // -------------------------------------------------------------------------------------------
   // build a display tree for the PrimeNG component from the itemtree received from the backend
   //
-  buildDisplayTree(subtree: any) {
+  buildDisplayTree(subtree: Record<string, unknown> | unknown[]) {
     const displayTreeList: Record<string, unknown>[] = [];
+    const asRecord = subtree as Record<string, unknown>;
     for (const key in subtree) {
       if (key in subtree) {
         const displayNode: Record<string, unknown> = {};
         if (Array.isArray(subtree)) {
-          displayNode['label'] = '- ' + (subtree as any)[key];
+          displayNode['label'] = '- ' + asRecord[key];
         } else {
-          if (
-            typeof subtree[key] === 'string' ||
-            typeof subtree[key] === 'number' ||
-            typeof subtree[key] === 'boolean'
-          ) {
-            displayNode['label'] = key + ': ' + subtree[key];
+          const val = asRecord[key];
+          if (typeof val === 'string' || typeof val === 'number' || typeof val === 'boolean') {
+            displayNode['label'] = key + ': ' + val;
           } else {
             displayNode['label'] = key;
           }
         }
-        if (typeof subtree[key] === 'object') {
-          const children = this.buildDisplayTree(subtree[key]);
+        const val = asRecord[key];
+        if (typeof val === 'object' && val !== null) {
+          const children = this.buildDisplayTree(val as Record<string, unknown>);
           if (children.length > 0) {
             displayNode['children'] = children;
           } else {

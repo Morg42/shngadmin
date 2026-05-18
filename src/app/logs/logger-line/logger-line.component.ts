@@ -17,7 +17,7 @@ import { Checkbox } from 'primeng/checkbox';
 import { Dialog } from 'primeng/dialog';
 import { Message } from 'primeng/message';
 import { Select } from 'primeng/select';
-import { LoggersType } from '../../common/models/loggers-info';
+import { LoggerInfo } from '../../common/models/loggers-info';
 import { LogService } from '../../common/services/log.service';
 
 @Component({
@@ -40,7 +40,7 @@ import { LogService } from '../../common/services/log.service';
 })
 export class LoggerLineComponent {
   @Input() loggerName: string;
-  @Input() logger: LoggersType;
+  @Input() logger: LoggerInfo;
   @Input() loggerActive: boolean;
   @Input() definedHandlers: string[];
   // @Input() loggerActiveLevel: any;

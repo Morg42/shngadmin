@@ -30,6 +30,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import { PrimeTemplate, TreeNode } from 'primeng/api';
+import { TreeNodeSelectEvent } from 'primeng/tree';
 
 import { ItemDetails } from '../../common/models/item-details';
 import { ItemTree } from '../../common/models/item-tree';
@@ -85,7 +86,7 @@ type MonitoredItem = [string, Record<string, unknown>];
 })
 export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   @ViewChild('vc', { read: ViewContainerRef, static: true }) vc: ViewContainerRef;
-  @ViewChild('tpl', { read: TemplateRef, static: true }) tpl: TemplateRef<any>;
+  @ViewChild('tpl', { read: TemplateRef, static: true }) tpl: TemplateRef<unknown>;
   @ViewChild('treeEl') private treeEl: ElementRef<HTMLElement>;
   @ViewChild('treeDetailEl') private treeDetailEl: ElementRef<HTMLElement>;
 
@@ -236,25 +237,37 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
       });
   }
 
-  updateValue(item_path: string, item_value: any, item_type: string, item_oldvalue: unknown) {
+  updateValue(
+    item_path: string,
+    item_value: boolean | string | { value: string | number | null },
+    item_type: string,
+    item_oldvalue: unknown,
+  ) {
     this.log.log('ItemTreeComponent.updateValue:');
     this.log.log({ item_path }, { item_value });
 
     if (typeof item_value === 'boolean') {
-      item_value = item_value.toString();
-      this.log.log('--> updateValue (bool): ' + item_value);
+      const strValue = item_value.toString();
+      this.log.log('--> updateValue (bool): ' + strValue);
+      this.dataService.changeItemValue(item_path, strValue);
+      return;
+    }
+
+    if (typeof item_value === 'string') {
+      this.log.log('--> updateValue (string): ' + item_value);
       this.dataService.changeItemValue(item_path, item_value);
       return;
     }
 
     if (item_type === 'num' || item_type === 'scene') {
-      if (isNaN(Number(item_value.value))) {
+      const numVal = Number(item_value.value);
+      if (isNaN(numVal)) {
         this.item_val = item_value;
         this.alertText = this.translate.instant('ITEMS.ALERT.NOT NUMERIC');
         this.showItemAlert = true;
         return;
       }
-      if (item_type === 'scene' && (item_value.value < 0 || item_value.value > 63)) {
+      if (item_type === 'scene' && (numVal < 0 || numVal > 63)) {
         this.item_val = item_value;
         this.alertText = this.translate.instant('ITEMS.ALERT.INVALID SCENE NUMBER');
         this.showItemAlert = true;
@@ -262,7 +275,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
       }
     }
     this.log.log('--> updateValue: ' + item_value.value);
-    this.dataService.changeItemValue(item_path, item_value.value);
+    this.dataService.changeItemValue(item_path, item_value.value ?? '');
   }
 
   sortMonitoredItems() {
@@ -291,13 +304,18 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     return caller;
   }
 
-  monitoredDataFunction(data: any) {
+  monitoredDataFunction(raw: unknown) {
     // Callback function that receives the data from the websocket session
+    const data = raw as { items: MonitoredItem[] };
     this.data = data;
     const self = this;
     for (let i = 0; i < data.items.length; i++) {
-      data.items[i][1].last_update_by = this.remove_none(data.items[i][1].last_update_by);
-      data.items[i][1].last_change_by = this.remove_none(data.items[i][1].last_change_by);
+      data.items[i][1]['last_update_by'] = this.remove_none(
+        data.items[i][1]['last_update_by'] as string,
+      );
+      data.items[i][1]['last_change_by'] = this.remove_none(
+        data.items[i][1]['last_change_by'] as string,
+      );
       self.updateMonitoredItem(data.items[i][0], data.items[i][1]);
     }
   }
@@ -447,13 +465,13 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     }
   }
 
-  clearFilter(event: unknown, filter: any) {
+  clearFilter(event: unknown, filter: { value: string }) {
     filter.value = '';
     this.filterTree(event, filter.value);
     this.itemdetailsloaded = false;
   }
 
-  prune(array: any[], filter: string) {
+  prune(array: TreeNode[], filter: string) {
     for (let i = array.length - 1; i >= 0; i--) {
       const obj = array[i];
       if (obj.children) {
@@ -464,18 +482,19 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
           return true;
         }
       }
-      if (obj.label.toLowerCase().indexOf(filter) === -1) {
-        if (obj.children.length === 0) {
+      if ((obj.label ?? '').toLowerCase().indexOf(filter) === -1) {
+        if ((obj.children ?? []).length === 0) {
           array.splice(i, 1);
         }
       }
     }
   }
 
-  nodeSelect(event: any) {
-    this.log.log('Node Selected: ' + event.node.label);
+  nodeSelect(event: TreeNodeSelectEvent) {
+    const node = event.node as TreeNode & { path: string };
+    this.log.log('Node Selected: ' + node.label);
     this.itemdetailsloaded = false;
-    this.getDetails(event.node.path);
+    this.getDetails(node.path);
   }
 
   expandAll() {

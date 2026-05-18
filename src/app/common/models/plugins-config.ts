@@ -3,5 +3,5 @@
 //
 export interface PluginsConfig {
   readonly: boolean;
-  plugin_config: {};
+  plugin_config: Record<string, Record<string, unknown>>;
 }

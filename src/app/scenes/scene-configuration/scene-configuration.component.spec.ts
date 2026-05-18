@@ -53,7 +53,9 @@ describe('SceneConfigurationComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
-      .overrideComponent(SceneConfigurationComponent, { set: { imports: [TranslatePipe] } })
+      .overrideComponent(SceneConfigurationComponent, {
+        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      })
       .compileComponents();
 
     fixture = TestBed.createComponent(SceneConfigurationComponent);

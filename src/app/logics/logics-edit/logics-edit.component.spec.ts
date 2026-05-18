@@ -50,7 +50,9 @@ describe('LogicsEditComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
-      .overrideComponent(LogicsEditComponent, { set: { imports: [TranslatePipe] } })
+      .overrideComponent(LogicsEditComponent, {
+        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      })
       .compileComponents();
 
     fixture = TestBed.createComponent(LogicsEditComponent);

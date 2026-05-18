@@ -39,7 +39,9 @@ describe('PluginsComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
-      .overrideComponent(PluginsComponent, { set: { imports: [TranslatePipe, UpperCasePipe] } })
+      .overrideComponent(PluginsComponent, {
+        set: { imports: [TranslatePipe, UpperCasePipe], schemas: [NO_ERRORS_SCHEMA] },
+      })
       .compileComponents();
 
     fixture = TestBed.createComponent(PluginsComponent);

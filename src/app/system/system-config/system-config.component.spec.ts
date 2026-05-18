@@ -57,7 +57,9 @@ describe('SystemConfigComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
-      .overrideComponent(SystemConfigComponent, { set: { imports: [TranslatePipe] } })
+      .overrideComponent(SystemConfigComponent, {
+        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      })
       .compileComponents();
 
     fixture = TestBed.createComponent(SystemConfigComponent);

@@ -37,7 +37,9 @@ describe('SchedulersComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
-      .overrideComponent(SchedulersComponent, { set: { imports: [TranslatePipe] } })
+      .overrideComponent(SchedulersComponent, {
+        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      })
       .compileComponents();
 
     fixture = TestBed.createComponent(SchedulersComponent);

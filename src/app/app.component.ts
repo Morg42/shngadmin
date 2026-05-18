@@ -31,7 +31,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 // Exported as module-level constants so other modules can import them
 // directly without injecting AppComponent.
 export const APP_NAME = 'shngAdmin';
-export const APP_VERSION = '1.0.0';
+export const APP_VERSION = '1.12.0';
 
 @Component({
   selector: 'app-root',

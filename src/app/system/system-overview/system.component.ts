@@ -252,7 +252,6 @@ export class SystemComponent implements OnDestroy, OnInit {
     let filepath = '/3rdpartylicenses.txt';
     const hostip = this.appConfig.hostIp;
     const disclosureText = document.getElementById('disclosuretext');
-    // # TODO
     // filepath = '/admin' + filepath;
     this.http
       .get(filepath, { responseType: 'text' })

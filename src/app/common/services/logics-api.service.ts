@@ -129,8 +129,9 @@ export class LogicsApiService {
             return true;
           } else {
             this.log.log('LogicsApiService.setLogicState', 'failed');
-            alert(
-              'LogicsApiService.setLogicState:\n\n' + result.result + ': ' + result.description,
+            this.log.warn(
+              'LogicsApiService.setLogicState',
+              result.result + ': ' + result.description,
             );
             return false;
           }
@@ -166,8 +167,9 @@ export class LogicsApiService {
             return true;
           } else {
             this.log.log('LogicsApiService.saveLogicParameters', 'fail');
-            alert(
-              'LogicsApiService.saveLogicParameters:\n' + result.result + '\n' + result.description,
+            this.log.warn(
+              'LogicsApiService.saveLogicParameters',
+              result.result + ': ' + result.description,
             );
             return false;
           }
@@ -203,7 +205,10 @@ export class LogicsApiService {
             return true;
           } else {
             this.log.log('LogicsApiService.saveLogicGroup', 'fail');
-            alert('LogicsApiService.saveLogicGroup:\n' + result.result + '\n' + result.description);
+            this.log.warn(
+              'LogicsApiService.saveLogicGroup',
+              result.result + ': ' + result.description,
+            );
             return false;
           }
         } else {
@@ -236,8 +241,9 @@ export class LogicsApiService {
             return true;
           } else {
             this.log.log('LogicsApiService.deleteLogicGroup', 'fail');
-            alert(
-              'LogicsApiService.deleteLogicGroup:\n' + result.result + '\n' + result.description,
+            this.log.warn(
+              'LogicsApiService.deleteLogicGroup',
+              result.result + ': ' + result.description,
             );
             return false;
           }

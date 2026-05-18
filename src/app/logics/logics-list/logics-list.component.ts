@@ -1,4 +1,3 @@
-// import { Component, OnInit } from '@angular/core';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -12,11 +11,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { HttpClient } from '@angular/common/http';
 
-import { LogicsGroupType, LogicsinfoType } from '../../common/models/logics-info';
-import { LogicsWatchItem } from '../../common/models/logics-watch-item';
-import { LogicsApiService } from '../../common/services/logics-api.service';
-import { OlddataService } from '../../common/services/olddata.service';
-// //// import {Log} from '@angular/core/testing/src/logger';
 import { NgStyle } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
@@ -31,7 +25,11 @@ import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { Ripple } from 'primeng/ripple';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
+import { LogicsGroupType, LogicsinfoType } from '../../common/models/logics-info';
+import { LogicsWatchItem } from '../../common/models/logics-watch-item';
 import { LogService } from '../../common/services/log.service';
+import { LogicsApiService } from '../../common/services/logics-api.service';
+import { OlddataService } from '../../common/services/olddata.service';
 
 @Component({
   selector: 'app-logics',

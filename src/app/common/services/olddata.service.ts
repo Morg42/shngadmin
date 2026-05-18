@@ -53,7 +53,7 @@ export class OlddataService {
     const url = url_start + 'plugin_set_config.html?plugin_section=' + pluginsection + '&config=' + configstr;
     this.log.warn('setPluginConfig: url: ' + url);
     if (host_ip === 'localhost:4200') {
-      alert('setPluginConfig ' + pluginsection + ': Nothing saved, because running on localhost');
+      this.log.warn('setPluginConfig ' + pluginsection + ': Nothing saved, because running on localhost');
     } else {
       this.http.get(url)
         .subscribe(

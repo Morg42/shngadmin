@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -12,8 +13,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 import { AppConfigService } from '../common/services/app-config.service';
 import { UserPreferencesService } from '../common/services/user-preferences.service';
-// import { Title } from '@angular/platform-browser';
-import { HttpClient } from '@angular/common/http';
 
 import { saveAs } from 'file-saver';
 
@@ -39,8 +38,6 @@ import { Ripple } from 'primeng/ripple';
 import { Select } from 'primeng/select';
 import { Tab as Tab_1, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { CodeEditorComponent } from '../common/components/code-editor/code-editor.component';
-// import {LogicsWatchItem} from '../common/models/logics-watch-item';
-// import {SelectItem} from 'primeng/api';
 
 export interface CacheEntryType {
   filename: string;
@@ -430,8 +427,8 @@ export class ServicesComponent implements OnInit {
     });
 
     // file reading failed
-    reader.addEventListener('error', function () {
-      alert('Error : Failed to read file');
+    reader.addEventListener('error', () => {
+      this.log.error('Error: Failed to read file');
     });
 
     // file read progress

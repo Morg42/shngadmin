@@ -8,7 +8,6 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AppConfigService } from '../common/services/app-config.service';
-// import { isSuccess } from '@angular/http/src/http_utils';
 
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MenuItem } from 'primeng/api';

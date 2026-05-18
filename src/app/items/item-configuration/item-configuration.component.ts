@@ -12,8 +12,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { PrimeTemplate, SelectItem } from 'primeng/api';
 
-import { FilesApiService } from '../../common/services/files-api.service';
-//import {ServerInfo} from '../../common/models/server-info';
 import { NgStyle } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
@@ -23,6 +21,7 @@ import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { Listbox } from 'primeng/listbox';
 import { CodeEditorComponent } from '../../common/components/code-editor/code-editor.component';
+import { FilesApiService } from '../../common/services/files-api.service';
 import { LogService } from '../../common/services/log.service';
 import { ServicesApiService } from '../../common/services/services-api.service';
 
@@ -145,8 +144,6 @@ export class ItemConfigurationComponent implements OnInit {
           this.cdr.markForCheck();
         }
       });
-
-    // alert('code for removal of plugin "' + this.dialog_configname + '" configurations is not yet implemented');
 
     return true;
   }

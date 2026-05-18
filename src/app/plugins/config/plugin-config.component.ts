@@ -13,8 +13,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
-// import { DeleteConfigComponent } from './delete-config/delete-config.component';
-
 import { LogService } from '../../common/services/log.service';
 import { OlddataService } from '../../common/services/olddata.service';
 import { PluginsApiService } from '../../common/services/plugins-api.service';

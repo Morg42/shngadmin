@@ -59,7 +59,7 @@
             </td>
             <td [style.opacity]="row.loaded ? '1' : '0.5'">
               @if (row['type'] && ['web', 'protocol', 'interface', 'gateway', 'system'].includes(row['type'])) {
-                <img ngSrc="assets/img/plugin_{{ row['type'] }}.svg" style="width: 25px" width="25" height="25" />
+                <img [src]="'assets/img/plugin_' + row['type'] + '.svg'" style="width: 25px" width="25" height="25" />
               } @else if (row['type'] === 'classic') {
                 &nbsp;-
               } @else {
@@ -393,7 +393,7 @@
         <p-accordion-header (click)="pluginadd.maximize()">
           <span style="font-size: larger"
             ><img
-              ngSrc="assets/img/plugin_{{ plugintype }}.svg"
+              [src]="'assets/img/plugin_' + plugintype + '.svg'"
               style="width: 30px; cursor: pointer"
               width="30"
               height="30"

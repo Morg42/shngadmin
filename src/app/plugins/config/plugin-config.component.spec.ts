@@ -9,12 +9,10 @@ import fixtureData from '../../../testing/fixtures/api/plugins/config/default.js
 import {
   createMockAppConfigService,
   createMockAuthService,
-  createMockOlddataService,
   translateTestingModule,
 } from '../../../testing/test-helpers';
 import { AppConfigService } from '../../common/services/app-config.service';
 import { AuthService } from '../../common/services/auth.service';
-import { OlddataService } from '../../common/services/olddata.service';
 import { PluginsApiService } from '../../common/services/plugins-api.service';
 import { ServerApiService } from '../../common/services/server-api.service';
 import { UserPreferencesService } from '../../common/services/user-preferences.service';
@@ -45,7 +43,6 @@ describe('PluginConfigComponent', () => {
         { provide: PluginsApiService, useValue: mockPluginsApi },
         { provide: AuthService, useValue: createMockAuthService() },
         { provide: AppConfigService, useValue: createMockAppConfigService() },
-        { provide: OlddataService, useValue: createMockOlddataService() },
         // AppComponent is declared as a component provider and injects these
         {
           provide: ServerApiService,

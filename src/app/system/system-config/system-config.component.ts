@@ -161,11 +161,37 @@ export class SystemConfigComponent implements OnInit {
   }
 
   fillDialogData() {
+    this.lang = this.appConfig.defaultLanguage;
     this.fillCommonDialogData();
     this.fillHttpDialogData();
     this.fillWebsocketDialogData();
     this.fillAdminDialogData();
     this.fillMqttDialogData();
+  }
+
+  private hashPlainPasswords(data: Record<string, unknown>): void {
+    if (data['password'] && data['password'] !== '') {
+      if (!data['hashed_password']) {
+        data['hashed_password'] = sha512(data['password'] as string);
+        data['password'] = null;
+      }
+    }
+    if (data['service_password'] && data['service_password'] !== '') {
+      if (!data['service_hashed_password']) {
+        data['service_hashed_password'] = sha512(data['service_password'] as string);
+        data['service_password'] = null;
+      }
+    }
+  }
+
+  private buildSectionParams(section: ConfigSection, skip: string[] = []): ConfigParameter[] {
+    const params: ConfigParameter[] = [];
+    for (const param in section.meta.parameters) {
+      if (section.meta.parameters.hasOwnProperty(param) && !skip.includes(param)) {
+        params.push(this.fillParamData(section.meta, param, section.data));
+      }
+    }
+    return params;
   }
 
   // ---------------------------------------------------------
@@ -270,187 +296,41 @@ export class SystemConfigComponent implements OnInit {
     return paramdata;
   }
 
-  // ---------------------------------------------------------
-  // Fill the mask with core parameter data
-  //
   fillCommonDialogData() {
-    this.lang = this.appConfig.defaultLanguage;
-
     this.common_parameter_cols = this.columnDefinitions();
-    this.common_parameters = [];
-
-    const meta = this.config.common.meta;
-    const data = this.config.common.data;
-
-    // this.log.log({data});
-    for (const param in meta.parameters) {
-      // this.log.log({param}, data[param]);
-      if (meta.parameters.hasOwnProperty(param)) {
-        // Fill ParamData for display/editing of parameters
-        const paramdata = this.fillParamData(meta, param, data);
-        // add to the table of configured plugins
-        this.common_parameters.push(paramdata);
-      }
-    }
-    // deepcopy form data
+    this.common_parameters = this.buildSectionParams(this.config.common);
     this.common_parameters_beforeEdit = JSON.parse(JSON.stringify(this.common_parameters));
   }
 
-  // ---------------------------------------------------------
-  // Fill the mask with http parameter data
-  //
   fillHttpDialogData() {
-    this.lang = this.appConfig.defaultLanguage;
-
+    this.hashPlainPasswords(this.config.http.data);
     this.http_parameter_cols = this.columnDefinitions();
-    this.http_parameters = [];
-
-    const meta = this.config.http.meta;
-    const data = this.config.http.data;
-
-    // if plain password is defined, create a hashed password and delete the plain password
-    if (data.password !== undefined && data.password !== null) {
-      if (data.password !== '') {
-        if (
-          data.hashed_password === undefined ||
-          data.hashed_password === null ||
-          data.hashed_password === ''
-        ) {
-          data.hashed_password = sha512(data.password as string);
-          data.password = null;
-        }
-      }
-    }
-
-    // if plain service-password is defined, create a hashed service-password and delete the plain service-password
-    if (data.service_password !== undefined && data.service_password !== null) {
-      if (data.service_password !== '') {
-        if (
-          data.service_hashed_password === undefined ||
-          data.service_hashed_password === null ||
-          data.service_hashed_password === ''
-        ) {
-          data.service_hashed_password = sha512(data.service_password as string);
-          data.service_password = null;
-        }
-      }
-    }
-
-    for (const param in meta.parameters) {
-      if (meta.parameters.hasOwnProperty(param)) {
-        // ignore plain text password fields
-        if (['password', 'service_password'].indexOf(param) === -1) {
-          // Fill ParamData for display/editing of parameters
-          const paramdata = this.fillParamData(meta, param, data);
-          // add to the table of configured plugins
-          this.http_parameters.push(paramdata);
-        }
-      }
-    }
-    // deepcopy form data
+    this.http_parameters = this.buildSectionParams(this.config.http, [
+      'password',
+      'service_password',
+    ]);
     this.http_parameters_beforeEdit = JSON.parse(JSON.stringify(this.http_parameters));
   }
 
-  // ---------------------------------------------------------
-  // Fill the mask with webocket parameter data
-  //
   fillWebsocketDialogData() {
-    this.lang = this.appConfig.defaultLanguage;
-
+    this.hashPlainPasswords(this.config.websocket.data);
     this.websocket_parameter_cols = this.columnDefinitions();
-    this.websocket_parameters = [];
-
-    const meta = this.config.websocket.meta;
-    const data = this.config.websocket.data;
-
-    // if plain password is defined, create a hashed password and delete the plain password
-    if (data.password !== undefined && data.password !== null) {
-      if (data.password !== '') {
-        if (
-          data.hashed_password === undefined ||
-          data.hashed_password === null ||
-          data.hashed_password === ''
-        ) {
-          data.hashed_password = sha512(data.password as string);
-          data.password = null;
-        }
-      }
-    }
-
-    // if plain service-password is defined, create a hashed service-password and delete the plain service-password
-    if (data.service_password !== undefined && data.service_password !== null) {
-      if (data.service_password !== '') {
-        if (
-          data.service_hashed_password === undefined ||
-          data.service_hashed_password === null ||
-          data.service_hashed_password === ''
-        ) {
-          data.service_hashed_password = sha512(data.service_password as string);
-          data.service_password = null;
-        }
-      }
-    }
-
-    for (const param in meta.parameters) {
-      if (meta.parameters.hasOwnProperty(param)) {
-        // ignore plain text password fields
-        if (['password', 'service_password'].indexOf(param) === -1) {
-          // Fill ParamData for display/editing of parameters
-          const paramdata = this.fillParamData(meta, param, data);
-          // add to the table of configured plugins
-          this.websocket_parameters.push(paramdata);
-        }
-      }
-    }
-    // deepcopy form data
+    this.websocket_parameters = this.buildSectionParams(this.config.websocket, [
+      'password',
+      'service_password',
+    ]);
     this.websocket_parameters_beforeEdit = JSON.parse(JSON.stringify(this.websocket_parameters));
   }
 
-  // ---------------------------------------------------------
-  // Fill the mask with admin parameter data
-  //
   fillAdminDialogData() {
-    this.lang = this.appConfig.defaultLanguage;
-
     this.admin_parameter_cols = this.columnDefinitions();
-    this.admin_parameters = [];
-
-    const meta = this.config.admin.meta;
-    const data = this.config.admin.data;
-
-    for (const param in meta.parameters) {
-      if (meta.parameters.hasOwnProperty(param)) {
-        // Fill ParamData for display/editing of parameters
-        const paramdata = this.fillParamData(meta, param, data);
-        // add to the table of configured plugins
-        this.admin_parameters.push(paramdata);
-      }
-    }
-    // deepcopy form data
+    this.admin_parameters = this.buildSectionParams(this.config.admin);
     this.admin_parameters_beforeEdit = JSON.parse(JSON.stringify(this.admin_parameters));
   }
 
-  // ---------------------------------------------------------
-  // Fill the mask with mqtt parameter data
-  //
   fillMqttDialogData() {
-    this.lang = this.appConfig.defaultLanguage;
-
     this.mqtt_parameter_cols = this.columnDefinitions();
-    this.mqtt_parameters = [];
-
-    const meta = this.config.mqtt.meta;
-    const data = this.config.mqtt.data;
-
-    for (const param in meta.parameters) {
-      if (meta.parameters.hasOwnProperty(param)) {
-        // Fill ParamData for display/editing of parameters
-        const paramdata = this.fillParamData(meta, param, data);
-        // add to the table of configured plugins
-        this.mqtt_parameters.push(paramdata);
-      }
-    }
-    // deepcopy form data
+    this.mqtt_parameters = this.buildSectionParams(this.config.mqtt);
     this.mqtt_parameters_beforeEdit = JSON.parse(JSON.stringify(this.mqtt_parameters));
   }
 

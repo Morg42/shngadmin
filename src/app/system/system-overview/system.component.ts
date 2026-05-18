@@ -172,7 +172,7 @@ export class SystemComponent implements OnDestroy, OnInit {
     // Initialize system info
     //
     this.serverApi
-      .getServerinfo()
+      .getSystemStats()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
@@ -183,7 +183,7 @@ export class SystemComponent implements OnDestroy, OnInit {
           this.cdr.markForCheck();
         },
         error: (error) => {
-          this.log.log('SystemComponent: serverApi.getServerinfo():');
+          this.log.log('SystemComponent: serverApi.getSystemStats():');
           this.log.log(error);
         },
       });

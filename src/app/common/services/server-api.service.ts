@@ -156,8 +156,22 @@ export class ServerApiService {
     );
   }
 
+  getSystemStats() {
+    const url = this.appConfig.apiUrl + 'system/info';
+    return this.http.get(url).pipe(
+      map((response) => response),
+      catchError((err: HttpErrorResponse) => {
+        this.log.error(
+          'ServerApiService.getSystemStats(): Could not read system stats - ',
+          err?.error?.error || err.message || err,
+        );
+        return of({});
+      }),
+    );
+  }
+
   getPypiInfo() {
-    const url = this.appConfig.apiUrl + 'system/pypi';
+    const url = this.appConfig.apiUrl + 'server/pypi';
     return this.http.get(url).pipe(
       map((response) => response),
       catchError((err: HttpErrorResponse) => {

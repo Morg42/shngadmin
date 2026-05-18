@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -8,10 +7,7 @@ import {
   inject,
   OnDestroy,
   OnInit,
-  TemplateRef,
   ViewChild,
-  ViewContainerRef,
-  ViewRef,
 } from '@angular/core';
 import { AppConfigService } from '../../common/services/app-config.service';
 
@@ -84,13 +80,9 @@ type MonitoredItem = [string, Record<string, unknown>];
     TranslatePipe,
   ],
 })
-export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
-  @ViewChild('vc', { read: ViewContainerRef, static: true }) vc!: ViewContainerRef;
-  @ViewChild('tpl', { read: TemplateRef, static: true }) tpl!: TemplateRef<unknown>;
+export class ItemTreeComponent implements OnDestroy, OnInit {
   @ViewChild('treeEl') private treeEl!: ElementRef<HTMLElement>;
   @ViewChild('treeDetailEl') private treeDetailEl!: ElementRef<HTMLElement>;
-
-  childViewRef!: ViewRef;
 
   faSearch = faSearch;
   faCircleNotch = faCircleNotch;
@@ -185,25 +177,6 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
     this.resizeItemTree();
 
     this.websocketPluginService.connect();
-  }
-
-  ngAfterViewInit() {
-    this.childViewRef = this.tpl.createEmbeddedView(null);
-  }
-
-  insertChildView() {
-    this.vc.insert(this.childViewRef);
-  }
-
-  removeChildView() {
-    this.vc.detach();
-  }
-
-  reloadChildView() {
-    this.removeChildView();
-    setTimeout(() => {
-      this.insertChildView();
-    }, 3000);
   }
 
   closeAlert(item_oldvalue: unknown) {

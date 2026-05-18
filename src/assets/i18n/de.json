@@ -68,6 +68,7 @@
     "PACKAGES_WO_REQ": "Pakete ohne Requirements",
     "MISSING": "fehlt",
     "UNKNOWN": "unbekannt",
+    "PYPI_DATA_PENDING": "Warte auf Vervollständigung der PyPI Versionsdaten...",
     "CONFIGURATION": "Konfiguration",
     "COMMON_SETTINGS": "Allgemein",
     "HTTP_SETTINGS": "Http Modul",

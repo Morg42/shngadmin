@@ -17,11 +17,13 @@ import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { ChartData } from 'chart.js';
-import { combineLatest } from 'rxjs';
+import { combineLatest, Subject, timer } from 'rxjs';
+import { switchMap, takeUntil } from 'rxjs/operators';
 
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { Bind } from 'primeng/bind';
 import { UIChart } from 'primeng/chart';
+import { ProgressSpinner } from 'primeng/progressspinner';
 import { Ripple } from 'primeng/ripple';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { APP_NAME, APP_VERSION } from '../../app.component';
@@ -51,6 +53,7 @@ import { WebsocketService } from '../../common/services/websocket.service';
     UIChart,
     DecimalPipe,
     TranslatePipe,
+    ProgressSpinner,
   ],
 })
 export class SystemComponent implements OnDestroy, OnInit {
@@ -68,6 +71,8 @@ export class SystemComponent implements OnDestroy, OnInit {
   faCheckCircle = faCheckCircle;
 
   loading: boolean = true;
+  pypiPending = false;
+  private readonly pypiPollStop$ = new Subject<void>();
 
   systeminfo: SystemInfo = <SystemInfo>{};
   pypiinfo!: PypiInfo[];
@@ -165,6 +170,7 @@ export class SystemComponent implements OnDestroy, OnInit {
 
   ngOnDestroy(): void {
     this.websocketPluginService.disconnect();
+    this.pypiPollStop$.complete();
   }
 
   initSystemInfo() {
@@ -188,61 +194,7 @@ export class SystemComponent implements OnDestroy, OnInit {
         },
       });
 
-    // -----------------------------------
-    // Initialize Pypi info
-    //
-    this.serverApi
-      .getPypiInfo()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (response) => {
-          this.pypiinfo = response as PypiInfo[];
-          this.loading = false;
-
-          // count if plugin requirements exist
-          this.plugincount = 0;
-          for (let i = 0; i < this.pypiinfo.length; ++i) {
-            if (this.pypiinfo[i].is_required_for_plugins === true) {
-              this.plugincount++;
-            }
-          }
-
-          // count if documentation requirements exist
-          this.documentationcount = 0;
-          for (let i = 0; i < this.pypiinfo.length; ++i) {
-            if (this.pypiinfo[i].is_required_for_docbuild === true) {
-              this.documentationcount++;
-            }
-          }
-
-          // count if testsuite requirements exist
-          this.testsuitecount = 0;
-          for (let i = 0; i < this.pypiinfo.length; ++i) {
-            if (this.pypiinfo[i].is_required_for_testsuite === true) {
-              this.testsuitecount++;
-            }
-          }
-
-          // count if package without requirements exist
-          this.norequirementcount = 0;
-          for (let i = 0; i < this.pypiinfo.length; ++i) {
-            if (
-              this.pypiinfo[i].is_required === false &&
-              this.pypiinfo[i].is_required_for_docbuild === false &&
-              this.pypiinfo[i].is_required_for_testsuite === false
-            ) {
-              this.norequirementcount++;
-            }
-          }
-
-          this.reqinfodisplay = {};
-          for (let i = 0; i < this.pypiinfo.length; ++i) {
-            this.reqinfodisplay[this.pypiinfo[i].name] = this.buildreqinfostring(this.pypiinfo[i]);
-          }
-          this.cdr.markForCheck();
-        },
-        error: (error) => this.log.log('SystemComponent: serverApi.getPypiInfo():' + error),
-      });
+    // PyPI data is fetched on demand when the user opens the PyPI tab.
 
     // -----------------------------------
     // Initialize info for the graph-tab
@@ -276,6 +228,59 @@ export class SystemComponent implements OnDestroy, OnInit {
   // methods for the Pypi check tab
   // -----------------------------------
   //
+  onTabChange(value: string | number | undefined) {
+    if (String(value) === '2') {
+      this.startPypiPoll();
+    } else {
+      this.pypiPollStop$.next();
+    }
+  }
+
+  private startPypiPoll() {
+    if (this.pypiinfo?.length && this.pypiinfo.every((p) => p.pypi_version !== '--')) {
+      return;
+    }
+    this.pypiPending = true;
+    this.cdr.markForCheck();
+
+    timer(0, 5000)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        takeUntil(this.pypiPollStop$),
+        switchMap(() => this.serverApi.getPypiInfo()),
+      )
+      .subscribe({
+        next: (response) => {
+          this.processPypiData(response as PypiInfo[]);
+          if (this.pypiinfo.every((p) => p.pypi_version !== '--')) {
+            this.pypiPending = false;
+            this.pypiPollStop$.next();
+          }
+          this.cdr.markForCheck();
+        },
+        error: (err) => this.log.log('SystemComponent: pypi poll error:', err),
+      });
+  }
+
+  private processPypiData(data: PypiInfo[]) {
+    this.pypiinfo = data;
+    this.loading = false;
+    this.plugincount = data.filter((p) => p.is_required_for_plugins).length;
+    this.documentationcount = data.filter((p) => p.is_required_for_docbuild).length;
+    this.testsuitecount = data.filter((p) => p.is_required_for_testsuite).length;
+    this.norequirementcount = data.filter(
+      (p) =>
+        !p.is_required &&
+        !p.is_required_for_plugins &&
+        !p.is_required_for_docbuild &&
+        !p.is_required_for_testsuite,
+    ).length;
+    this.reqinfodisplay = {};
+    for (const pkg of data) {
+      this.reqinfodisplay[pkg.name] = this.buildreqinfostring(pkg);
+    }
+  }
+
   buildreqinfostring(element: PypiInfo): string {
     /* Build String for requirements column */
     let reqString = '';

@@ -1,4 +1,3 @@
-// import { Component, OnInit } from '@angular/core';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -12,11 +11,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { HttpClient } from '@angular/common/http';
 
-import { LogicsGroupType, LogicsinfoType } from '../../common/models/logics-info';
-import { LogicsWatchItem } from '../../common/models/logics-watch-item';
-import { LogicsApiService } from '../../common/services/logics-api.service';
-import { OlddataService } from '../../common/services/olddata.service';
-// //// import {Log} from '@angular/core/testing/src/logger';
 import { NgStyle } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
@@ -31,13 +25,15 @@ import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { Ripple } from 'primeng/ripple';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
+import { LogicsGroupType, LogicsinfoType } from '../../common/models/logics-info';
+import { LogicsWatchItem } from '../../common/models/logics-watch-item';
 import { LogService } from '../../common/services/log.service';
-
+import { LogicsApiService } from '../../common/services/logics-api.service';
 @Component({
   selector: 'app-logics',
   templateUrl: './logics-list.component.html',
   styleUrls: ['./logics-list.component.css'],
-  providers: [OlddataService],
+  providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     Bind,
@@ -75,11 +71,11 @@ export class LogicsListComponent implements OnInit {
   private readonly log = inject(LogService);
 
   groupdefinitions: Record<string, Record<string, string>> = {};
-  groupList: LogicsGroupType[];
+  groupList!: LogicsGroupType[];
   groupExpandedOnStart: number[] = [];
   groupExpanded: number[] = [];
   nogroups: boolean;
-  logics: LogicsinfoType[];
+  logics!: LogicsinfoType[];
   userlogics: LogicsinfoType[] = [];
   systemlogics: LogicsinfoType[] = [];
   newlogics: LogicsinfoType[] = [];
@@ -94,7 +90,7 @@ export class LogicsListComponent implements OnInit {
   wrongNewLogicName: string = '';
   confirmdelete_display: boolean = false;
   logicToDelete: string = '';
-  delete_param: {};
+  delete_param!: {};
 
   constructor() {
     this.userlogics = [];
@@ -142,7 +138,7 @@ export class LogicsListComponent implements OnInit {
     }
   }
 
-  groupOpened(event: any) {
+  groupOpened(event: { index: number }) {
     const index = event['index'];
     this.log.warn('groupOpened', { index });
 
@@ -156,7 +152,7 @@ export class LogicsListComponent implements OnInit {
     this.log.log('this.groupExpanded', this.groupExpanded);
   }
 
-  groupClosed(event: any) {
+  groupClosed(event: { index: number }) {
     const index = event['index'];
     this.log.warn('groupClosed', { index });
     if (this.groupExpanded === undefined) {

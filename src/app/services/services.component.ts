@@ -10,10 +10,9 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
+import { timer } from 'rxjs';
 import { AppConfigService } from '../common/services/app-config.service';
 import { UserPreferencesService } from '../common/services/user-preferences.service';
-// import { Title } from '@angular/platform-browser';
-import { HttpClient } from '@angular/common/http';
 
 import { saveAs } from 'file-saver';
 
@@ -39,8 +38,6 @@ import { Ripple } from 'primeng/ripple';
 import { Select } from 'primeng/select';
 import { Tab as Tab_1, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { CodeEditorComponent } from '../common/components/code-editor/code-editor.component';
-// import {LogicsWatchItem} from '../common/models/logics-watch-item';
-// import {SelectItem} from 'primeng/api';
 
 export interface CacheEntryType {
   filename: string;
@@ -79,7 +76,6 @@ export interface CacheEntryType {
 export class ServicesComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
-  private http = inject(HttpClient);
   private translate = inject(TranslateService);
   public shared = inject(SharedService);
   private fileService = inject(FilesApiService);
@@ -93,8 +89,8 @@ export class ServicesComponent implements OnInit {
   //  schedulerinfo: SchedulerInfo[];
 
   serverInfo = <ServerInfo>{};
-  default_language: string;
-  shng_status: string;
+  default_language!: string;
+  shng_status!: string;
   status_errorcount = 0;
 
   valid_languagelist: { label: string; value: string }[] = [];
@@ -104,8 +100,8 @@ export class ServicesComponent implements OnInit {
   shng_statuscode = 0;
 
   pwd_clear = '';
-  pwd_hash: string;
-  pwd_show: boolean;
+  pwd_hash!: string;
+  pwd_show!: boolean;
 
   backup_disabled = false;
   restore_disabled = false;
@@ -146,7 +142,7 @@ export class ServicesComponent implements OnInit {
   myConverterTextOutput = '';
 
   cacheInfo: CacheEntryType[] = [];
-  cacheAllChecked: boolean;
+  cacheAllChecked!: boolean;
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);
@@ -332,9 +328,9 @@ export class ServicesComponent implements OnInit {
               interval = interval3;
             }
           }
-          this.sleep(interval).then(() => {
-            this.getShngStatus();
-          });
+          timer(interval)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => this.getShngStatus());
         } else {
           this.log.warn('getShngStatus', 'Statuspolling aborted');
           this.shng_status = this.translate_shngStatus('not active');
@@ -342,11 +338,6 @@ export class ServicesComponent implements OnInit {
         }
         this.cdr.markForCheck();
       });
-  }
-
-  sleep(time: number) {
-    // https://davidwalsh.name/javascript-sleep-function
-    return new Promise((resolve) => setTimeout(resolve, time));
   }
 
   // -------------------------------------------------------
@@ -409,7 +400,7 @@ export class ServicesComponent implements OnInit {
     this.restore_disabled = false;
   }
 
-  myUploader(event: any, form: any) {
+  myUploader(event: { files: File[] }, form: { clear: () => void }) {
     this.log.log('myUploader', event.files);
     this.log.log('myUploader', event.files[0].name);
 
@@ -430,8 +421,8 @@ export class ServicesComponent implements OnInit {
     });
 
     // file reading failed
-    reader.addEventListener('error', function () {
-      alert('Error : Failed to read file');
+    reader.addEventListener('error', () => {
+      this.log.error('Error: Failed to read file');
     });
 
     // file read progress
@@ -463,7 +454,7 @@ export class ServicesComponent implements OnInit {
     reader.readAsDataURL(event.files[0]);
   }
 
-  doUpload(form: any) {
+  doUpload(form: { clear: () => void }) {
     this.log.log('doUpload');
 
     /*

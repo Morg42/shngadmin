@@ -38,7 +38,9 @@ describe('LogicsGroupsComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
-      .overrideComponent(LogicsGroupsComponent, { set: { imports: [TranslatePipe] } })
+      .overrideComponent(LogicsGroupsComponent, {
+        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      })
       .compileComponents();
 
     fixture = TestBed.createComponent(LogicsGroupsComponent);

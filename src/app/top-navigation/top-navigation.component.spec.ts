@@ -43,7 +43,9 @@ describe('TopNavigationComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
-      .overrideComponent(TopNavigationComponent, { set: { imports: [TranslatePipe] } })
+      .overrideComponent(TopNavigationComponent, {
+        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      })
       .compileComponents();
 
     fixture = TestBed.createComponent(TopNavigationComponent);

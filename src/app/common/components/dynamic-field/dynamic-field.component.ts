@@ -12,8 +12,8 @@ import { ConfigParameter, TableColumn } from '../../models/interfaces';
   imports: [Bind, Select, FormsModule, InputText, NgStyle],
 })
 export class DynamicFieldComponent {
-  @Input() row: ConfigParameter;
-  @Input() col: TableColumn;
+  @Input() row!: ConfigParameter;
+  @Input() col!: TableColumn;
   @Output() changed = new EventEmitter<void>();
 
   readonly NUM_TYPES = ['int', 'num', 'float', 'scene', 'hide-int'];

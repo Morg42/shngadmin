@@ -59,13 +59,13 @@ export class LogicsGroupsComponent implements OnInit {
   //  Vars for the YAML syntax checker
   //
   @ViewChild('codeeditor') private codeEditor: unknown;
-  @ViewChild('groupDesc') private groupDescEl: ElementRef<HTMLElement>;
+  @ViewChild('groupDesc') private groupDescEl!: ElementRef<HTMLElement>;
 
-  logicGroups: Record<string, LogicsGroupType>; // filelist: string[];
-  groupList: string[];
-  group: LogicsGroupType;
-  menuGroupList: SelectItem[]; // itemFiles: SelectItem[];
-  selectedGroup: SelectItem;
+  logicGroups!: Record<string, LogicsGroupType>; // filelist: string[];
+  groupList!: string[];
+  group!: LogicsGroupType;
+  menuGroupList!: SelectItem[]; // itemFiles: SelectItem[];
+  selectedGroup!: SelectItem;
 
   myEditGroup = ''; // myEditFilename = '';
 
@@ -79,10 +79,10 @@ export class LogicsGroupsComponent implements OnInit {
 
   groupTitleOrig = '';
   groupDescriptionOrig = '';
-  groupChanged: boolean;
+  groupChanged!: boolean;
 
   confirmdelete_display: boolean = false;
-  delete_param: {};
+  delete_param!: {};
 
   ngOnInit() {
     this.group = { title: '', description: '' };

@@ -43,7 +43,9 @@ describe('LoggerListComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
-      .overrideComponent(LoggerListComponent, { set: { imports: [TranslatePipe] } })
+      .overrideComponent(LoggerListComponent, {
+        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      })
       .compileComponents();
 
     fixture = TestBed.createComponent(LoggerListComponent);

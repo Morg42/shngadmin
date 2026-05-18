@@ -13,7 +13,9 @@ describe('LoggerLineComponent', () => {
       imports: [LoggerLineComponent, translateTestingModule],
       schemas: [NO_ERRORS_SCHEMA],
     })
-      .overrideComponent(LoggerLineComponent, { set: { imports: [TranslatePipe] } })
+      .overrideComponent(LoggerLineComponent, {
+        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      })
       .compileComponents();
 
     fixture = TestBed.createComponent(LoggerLineComponent);

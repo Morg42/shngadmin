@@ -29,9 +29,9 @@ export class ThreadsComponent implements OnInit {
   private titleService = inject(Title);
   private readonly log = inject(LogService);
 
-  threadsList: ThreadInfo[];
-  threads_count: number;
-  thread_response: [number, ThreadInfo[]];
+  threadsList!: ThreadInfo[];
+  threads_count!: number;
+  thread_response!: [number, ThreadInfo[]];
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);

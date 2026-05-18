@@ -34,8 +34,8 @@ export class SchedulersComponent implements OnInit {
   private appConfig = inject(AppConfigService);
   private readonly log = inject(LogService);
 
-  schedulerinfo: SchedulerInfo[];
-  developerMode: boolean;
+  schedulerinfo!: SchedulerInfo[];
+  developerMode!: boolean;
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);

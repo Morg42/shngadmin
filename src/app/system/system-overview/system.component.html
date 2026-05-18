@@ -1,229 +1,251 @@
 <div class="shngbody">
-  <p-tabs value="0">
-    <p-tablist>
-      <p-tab value="0">{{ 'SYSTEM.SYSTEMINFO' | translate }}</p-tab>
-      <p-tab value="1">{{ 'SYSTEM.CHARTS' | translate }}</p-tab>
-      <p-tab value="2">{{ 'SYSTEM.PYPI CHECK' | translate }}</p-tab>
-      <p-tab value="3">{{ 'SYSTEM.DISCLOSURES' | translate }}</p-tab>
-    </p-tablist>
-    <p-tabpanels>
-      <p-tabpanel value="0">
-        <div class="shngsysinfo">
-          <div class="info-header">
-            <span></span>
-            <span
-              ><strong>{{ 'SYSTEM.PROPERTY' | translate }}</strong></span
-            >
-            <span
-              ><strong>{{ 'SYSTEM.STATE' | translate }}</strong></span
-            >
-          </div>
-          <div class="info-content">
-            <span><img ngSrc="assets/img/logo_small_76x76.png" height="76" width="76" /></span>
-            <span>{{ 'SYSTEM.SHNG_VERSION' | translate }}:</span>
-            <span
-              >{{ systeminfo.sh_vers }} &nbsp; {{ 'SYSTEM.IN' | translate }} &nbsp; {{ systeminfo.sh_dir }} &nbsp;
-              &nbsp; &nbsp; &nbsp; &nbsp; ({{ systeminfo.sh_desc }})</span
-            >
-
-            <span><img ngSrc="assets/img/logo_small_76x76.png" height="76" width="76" /></span>
-            <span>{{ 'SYSTEM.SHNG_PLG_VERSION' | translate }}:</span>
-            <span
-              >{{ systeminfo.plg_vers }} &nbsp; {{ 'SYSTEM.IN' | translate }} &nbsp; {{ systeminfo.sh_dir }}/plugins
-              &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ({{ systeminfo.plg_desc }})</span
-            >
-
-            <span><img ngSrc="assets/img/logo_small_76x76.png" height="76" width="76" /></span>
-            <span>{{ 'SYSTEM.SHNG_ADMIN_GUI' | translate }}:</span>
-            <span>{{ appName }} {{ appVersion }}</span>
-
-            <span><img ngSrc="assets/img/python.png" height="236" width="230" /></span>
-            <span>{{ 'SYSTEM.PYTHON VERSION' | translate }}:</span>
-
-            @if (systeminfo.pyvirtual) {
+  <div style="position: relative">
+    @if (pypiPending) {
+      <div
+        style="
+          position: absolute;
+          top: 0.45rem;
+          right: 1rem;
+          z-index: 10;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.95rem;
+          color: #666;
+        "
+      >
+        <p-progressSpinner
+          [style]="{ width: '16px', height: '16px' }"
+          styleClass="plugin-loading-spinner"
+        ></p-progressSpinner>
+        {{ 'SYSTEM.PYPI_DATA_PENDING' | translate }}
+      </div>
+    }
+    <p-tabs value="0" (valueChange)="onTabChange($event)">
+      <p-tablist>
+        <p-tab value="0">{{ 'SYSTEM.SYSTEMINFO' | translate }}</p-tab>
+        <p-tab value="1">{{ 'SYSTEM.CHARTS' | translate }}</p-tab>
+        <p-tab value="2">{{ 'SYSTEM.PYPI CHECK' | translate }}</p-tab>
+        <p-tab value="3">{{ 'SYSTEM.DISCLOSURES' | translate }}</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel value="0">
+          <div class="shngsysinfo">
+            <div class="info-header">
+              <span></span>
               <span
-                >{{ systeminfo.pyversion }} (virtual environment) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ({{
-                  systeminfo.pypath
-                }})</span
+                ><strong>{{ 'SYSTEM.PROPERTY' | translate }}</strong></span
               >
-            }
-            @if (!systeminfo.pyvirtual) {
-              <span>{{ systeminfo.pyversion }} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ({{ systeminfo.pypath }})</span>
-            }
+              <span
+                ><strong>{{ 'SYSTEM.STATE' | translate }}</strong></span
+              >
+            </div>
+            <div class="info-content">
+              <span><img ngSrc="assets/img/logo_small_76x76.png" height="76" width="76" /></span>
+              <span>{{ 'SYSTEM.SHNG_VERSION' | translate }}:</span>
+              <span
+                >{{ systeminfo.sh_vers }} &nbsp; {{ 'SYSTEM.IN' | translate }} &nbsp; {{ systeminfo.sh_dir }} &nbsp;
+                &nbsp; &nbsp; &nbsp; &nbsp; ({{ systeminfo.sh_desc }})</span
+              >
 
-            <span><img ngSrc="assets/img/terminal-server.svg" height="16" width="16" /></span>
-            <span>{{ 'SYSTEM.HOST' | translate }}:</span>
-            <span
-              >{{ systeminfo.node }}
-              @if (systeminfo.ip !== '0.0.0.0') {
-                <span> &nbsp; &nbsp; - &nbsp; &nbsp; IPv4: {{ systeminfo.ip }}</span>
-              }
-              @if (systeminfo.ipv6 !== '::1') {
-                <span> &nbsp; &nbsp; - &nbsp; &nbsp; IPv6: {{ systeminfo.ipv6 }}</span>
-              }
-            </span>
+              <span><img ngSrc="assets/img/logo_small_76x76.png" height="76" width="76" /></span>
+              <span>{{ 'SYSTEM.SHNG_PLG_VERSION' | translate }}:</span>
+              <span
+                >{{ systeminfo.plg_vers }} &nbsp; {{ 'SYSTEM.IN' | translate }} &nbsp; {{ systeminfo.sh_dir }}/plugins
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ({{ systeminfo.plg_desc }})</span
+              >
 
-            @if (['debian', 'raspbian'].includes(systeminfo.osflavor ?? '')) {
-              <span><img ngSrc="assets/img/{{ systeminfo.osflavor }}.svg" /></span>
-            }
-            @if (!['debian', 'raspbian'].includes(systeminfo.osflavor ?? '')) {
-              @if (['linux', 'macos', 'windows'].includes(systeminfo.ostype ?? '')) {
-                <span><img ngSrc="assets/img/{{ systeminfo.ostype }}.svg" /></span>
-              }
-              @if (!['linux', 'macos', 'windows'].includes(systeminfo.ostype ?? '')) {
-                <span><img ngSrc="assets/img/os.png" height="224" width="224" /></span>
-              }
-            }
+              <span><img ngSrc="assets/img/logo_small_76x76.png" height="76" width="76" /></span>
+              <span>{{ 'SYSTEM.SHNG_ADMIN_GUI' | translate }}:</span>
+              <span>{{ appName }} {{ appVersion }}</span>
 
-            <span>{{ 'SYSTEM.OS' | translate }}:</span>
-            <!--
-            <span>{{ systeminfo.vers }}&nbsp;&nbsp;-&nbsp;&nbsp;{{ 'SYSTEM.ARCHITECTURE'|translate }}:&nbsp;{{ systeminfo.arch }}</span>
-            -->
-            <span>{{ systeminfo.vers }}</span>
+              <span><img ngSrc="assets/img/python.png" height="236" width="230" /></span>
+              <span>{{ 'SYSTEM.PYTHON VERSION' | translate }}:</span>
 
-            <span><img ngSrc="assets/img/tux_hdd.svg" height="945" width="1122" /></span>
-            <span>{{ 'SYSTEM.PID' | translate }}:</span>
-            <span>{{ systeminfo.pid }}</span>
-
-            <span><img ngSrc="assets/img/user.svg" height="793" width="793" /></span>
-            <span>{{ 'SYSTEM.USER' | translate }}:</span>
-            <span>{{ systeminfo.user }}</span>
-
-            <span><img ngSrc="assets/img/hd.svg" height="793" width="793" /></span>
-            <span>{{ 'SYSTEM.FREE DISC SPACE' | translate }}:</span>
-            <span>{{ systeminfo.freespace | number: '1.0-0' }} MByte</span>
-
-            @if (systeminfo.hardware) {
-              @if (systeminfo.rasppi) {
-                <span><img ngSrc="assets/img/raspberry_pi.svg" height="720" width="570" /></span>
-              }
-              @if (!systeminfo.rasppi) {
-                <span><img ngSrc="assets/img/terminal-server.svg" height="16" width="16" /></span>
-              }
-              <span>{{ 'SYSTEM.HARDWARE' | translate }}:</span>
-              @if (!systeminfo.hwspeed) {
-                <span>{{ systeminfo.hardware }}</span>
-              }
-              @if (systeminfo.hwspeed) {
+              @if (systeminfo.pyvirtual) {
                 <span
-                  >{{ systeminfo.hardware }} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ({{
-                    'SPEEDCLASS.' + systeminfo.hwspeed | translate
+                  >{{ systeminfo.pyversion }} (virtual environment) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ({{
+                    systeminfo.pypath
                   }})</span
                 >
               }
-            }
+              @if (!systeminfo.pyvirtual) {
+                <span>{{ systeminfo.pyversion }} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ({{ systeminfo.pypath }})</span>
+              }
 
-            <span><img ngSrc="assets/img/clock.svg" height="16" width="16" /></span>
-            <span>{{ 'SYSTEM.DATE' | translate }} / {{ 'SYSTEM.TIME' | translate }}:</span>
-            <span>{{ shared.displayDateTime(systeminfo.now) }}</span>
+              <span><img src="assets/img/terminal-server.svg" height="16" width="16" /></span>
+              <span>{{ 'SYSTEM.HOST' | translate }}:</span>
+              <span
+                >{{ systeminfo.node }}
+                @if (systeminfo.ip !== '0.0.0.0') {
+                  <span> &nbsp; &nbsp; - &nbsp; &nbsp; IPv4: {{ systeminfo.ip }}</span>
+                }
+                @if (systeminfo.ipv6 !== '::1') {
+                  <span> &nbsp; &nbsp; - &nbsp; &nbsp; IPv6: {{ systeminfo.ipv6 }}</span>
+                }
+              </span>
 
-            <span><img ngSrc="assets/img/logo_small_76x76.png" height="76" width="76" /></span>
-            <span>{{ 'SYSTEM.UPTIME' | translate }} SmartHomeNG:</span>
-            <span>{{ sh_uptime }}</span>
+              @if (['debian', 'raspbian'].includes(systeminfo.osflavor ?? '')) {
+                <span><img [src]="'assets/img/' + systeminfo.osflavor + '.svg'" /></span>
+              }
+              @if (!['debian', 'raspbian'].includes(systeminfo.osflavor ?? '')) {
+                @if (['linux', 'macos', 'windows'].includes(systeminfo.ostype ?? '')) {
+                  <span><img [src]="'assets/img/' + systeminfo.ostype + '.svg'" /></span>
+                }
+                @if (!['linux', 'macos', 'windows'].includes(systeminfo.ostype ?? '')) {
+                  <span><img ngSrc="assets/img/os.png" height="224" width="224" /></span>
+                }
+              }
 
-            <span><img ngSrc="assets/img/terminal-server.svg" height="16" width="16" /></span>
-            <span>{{ 'SYSTEM.UPTIME_HOST' | translate }}:</span>
-            <span>{{ os_uptime }}</span>
-          </div>
-          <div class="info-footer"></div>
-        </div>
-      </p-tabpanel>
-
-      <p-tabpanel value="1">
-        <div class="shngcharts">
-          <div class="charts-header"></div>
-          <div class="charts-content">
-            <p-chart
-              type="line"
-              width="360px"
-              height="280px"
-              #chartWorkerThreads
-              [data]="chartdataWorkerThreads"
-              [options]="chartoptionsScheduler"
-            ></p-chart>
-            <p-chart
-              type="line"
-              width="360px"
-              height="280px"
-              #chartThreads
-              [data]="chartdataThreads"
-              [options]="chartoptionsShng"
-            ></p-chart>
-            <p-chart
-              type="line"
-              width="360px"
-              height="280px"
-              #chartMemory
-              [data]="chartdataMemory"
-              [options]="chartoptionsShng"
-            ></p-chart>
-            <p-chart
-              type="line"
-              width="360px"
-              height="280px"
-              #chartSystemload
-              [data]="chartdataLoad"
-              [options]="chartoptionsSystem"
-            ></p-chart>
-            <p-chart
-              type="line"
-              width="360px"
-              height="280px"
-              #chartSystemMemory
-              [data]="chartdataSystemMemory"
-              [options]="chartoptionsSystem"
-            ></p-chart>
-            <p-chart
-              type="line"
-              width="360px"
-              height="280px"
-              #chartSystemSwap
-              [data]="chartdataSwap"
-              [options]="chartoptionsSystem"
-            ></p-chart>
-            <p-chart
-              type="line"
-              width="360px"
-              height="280px"
-              #chartDisk
-              [data]="chartdataDisk"
-              [options]="chartoptionsDisc"
-            ></p-chart>
-          </div>
-          <div class="charts-footer"></div>
-        </div>
-      </p-tabpanel>
-
-      <p-tabpanel value="2">
-        <div class="shngpypi">
-          <div class="pypi-header">
-            <table id="package_checkh" class="table">
-              <thead>
-                <tr class="shng_heading">
-                  <th scope="col" style="min-width: 250px; width: 320px; border-top: 0">
-                    {{ 'SYSTEM.PYTHON_PACKAGE' | translate }}
-                  </th>
-                  <th scope="col" style="min-width: 150px; width: 250px; border-top: 0">
-                    {{ 'SYSTEM.MINIMUM VERSION' | translate }}
-                  </th>
-                  <th scope="col" style="min-width: 150px; width: 250px; border-top: 0; background-color: #f7f7f7">
-                    {{ 'SYSTEM.INSTALLED VERSION' | translate }}
-                  </th>
-                  <th scope="col" style="min-width: 150px; width: 250px; border-top: 0">
-                    {{ 'SYSTEM.MAXIMUM VERSION' | translate }}
-                  </th>
-                  <!--      <th scope="col" style="width: 25%; border-top: 0">{{ 'SYSTEM.REQUIREMENTS'|translate }}</th> -->
-                  <th scope="col" style="min-width: 200px; width: 250px; border-top: 0">
-                    {{ 'SYSTEM.NEWEST VERSION' | translate }}
-                  </th>
-                </tr>
-              </thead>
-            </table>
-          </div>
-
-          <div class="pypi-content">
-            <table id="package_check2" class="table">
+              <span>{{ 'SYSTEM.OS' | translate }}:</span>
               <!--
+            <span>{{ systeminfo.vers }}&nbsp;&nbsp;-&nbsp;&nbsp;{{ 'SYSTEM.ARCHITECTURE'|translate }}:&nbsp;{{ systeminfo.arch }}</span>
+            -->
+              <span>{{ systeminfo.vers }}</span>
+
+              <span><img src="assets/img/tux_hdd.svg" height="32" width="32" /></span>
+              <span>{{ 'SYSTEM.PID' | translate }}:</span>
+              <span>{{ systeminfo.pid }}</span>
+
+              <span><img src="assets/img/user.svg" height="32" width="32" /></span>
+              <span>{{ 'SYSTEM.USER' | translate }}:</span>
+              <span>{{ systeminfo.user }}</span>
+
+              <span><img src="assets/img/hd.svg" height="32" width="32" /></span>
+              <span>{{ 'SYSTEM.FREE DISC SPACE' | translate }}:</span>
+              <span>{{ systeminfo.freespace | number: '1.0-0' }} MByte</span>
+
+              @if (systeminfo.hardware) {
+                @if (systeminfo.rasppi) {
+                  <span><img src="assets/img/raspberry_pi.svg" height="32" width="26" /></span>
+                }
+                @if (!systeminfo.rasppi) {
+                  <span><img src="assets/img/terminal-server.svg" height="16" width="16" /></span>
+                }
+                <span>{{ 'SYSTEM.HARDWARE' | translate }}:</span>
+                @if (!systeminfo.hwspeed) {
+                  <span>{{ systeminfo.hardware }}</span>
+                }
+                @if (systeminfo.hwspeed) {
+                  <span
+                    >{{ systeminfo.hardware }} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ({{
+                      'SPEEDCLASS.' + systeminfo.hwspeed | translate
+                    }})</span
+                  >
+                }
+              }
+
+              <span><img src="assets/img/clock.svg" height="16" width="16" /></span>
+              <span>{{ 'SYSTEM.DATE' | translate }} / {{ 'SYSTEM.TIME' | translate }}:</span>
+              <span>{{ shared.displayDateTime(systeminfo.now) }}</span>
+
+              <span><img ngSrc="assets/img/logo_small_76x76.png" height="76" width="76" /></span>
+              <span>{{ 'SYSTEM.UPTIME' | translate }} SmartHomeNG:</span>
+              <span>{{ sh_uptime }}</span>
+
+              <span><img src="assets/img/terminal-server.svg" height="16" width="16" /></span>
+              <span>{{ 'SYSTEM.UPTIME_HOST' | translate }}:</span>
+              <span>{{ os_uptime }}</span>
+            </div>
+            <div class="info-footer"></div>
+          </div>
+        </p-tabpanel>
+
+        <p-tabpanel value="1">
+          <div class="shngcharts">
+            <div class="charts-header"></div>
+            <div class="charts-content">
+              <p-chart
+                type="line"
+                width="360px"
+                height="280px"
+                #chartWorkerThreads
+                [data]="chartdataWorkerThreads"
+                [options]="chartoptionsScheduler"
+              ></p-chart>
+              <p-chart
+                type="line"
+                width="360px"
+                height="280px"
+                #chartThreads
+                [data]="chartdataThreads"
+                [options]="chartoptionsShng"
+              ></p-chart>
+              <p-chart
+                type="line"
+                width="360px"
+                height="280px"
+                #chartMemory
+                [data]="chartdataMemory"
+                [options]="chartoptionsShng"
+              ></p-chart>
+              <p-chart
+                type="line"
+                width="360px"
+                height="280px"
+                #chartSystemload
+                [data]="chartdataLoad"
+                [options]="chartoptionsSystem"
+              ></p-chart>
+              <p-chart
+                type="line"
+                width="360px"
+                height="280px"
+                #chartSystemMemory
+                [data]="chartdataSystemMemory"
+                [options]="chartoptionsSystem"
+              ></p-chart>
+              <p-chart
+                type="line"
+                width="360px"
+                height="280px"
+                #chartSystemSwap
+                [data]="chartdataSwap"
+                [options]="chartoptionsSystem"
+              ></p-chart>
+              <p-chart
+                type="line"
+                width="360px"
+                height="280px"
+                #chartDisk
+                [data]="chartdataDisk"
+                [options]="chartoptionsDisc"
+              ></p-chart>
+            </div>
+            <div class="charts-footer"></div>
+          </div>
+        </p-tabpanel>
+
+        <p-tabpanel value="2">
+          <div class="shngpypi">
+            <div class="pypi-header">
+              <table id="package_checkh" class="table">
+                <thead>
+                  <tr class="shng_heading">
+                    <th scope="col" style="min-width: 250px; width: 320px; border-top: 0">
+                      {{ 'SYSTEM.PYTHON_PACKAGE' | translate }}
+                    </th>
+                    <th scope="col" style="min-width: 150px; width: 250px; border-top: 0">
+                      {{ 'SYSTEM.MINIMUM VERSION' | translate }}
+                    </th>
+                    <th scope="col" style="min-width: 150px; width: 250px; border-top: 0; background-color: #f7f7f7">
+                      {{ 'SYSTEM.INSTALLED VERSION' | translate }}
+                    </th>
+                    <th scope="col" style="min-width: 150px; width: 250px; border-top: 0">
+                      {{ 'SYSTEM.MAXIMUM VERSION' | translate }}
+                    </th>
+                    <!--      <th scope="col" style="width: 25%; border-top: 0">{{ 'SYSTEM.REQUIREMENTS'|translate }}</th> -->
+                    <th scope="col" style="min-width: 200px; width: 250px; border-top: 0">
+                      {{ 'SYSTEM.NEWEST VERSION' | translate }}
+                    </th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+
+            <div class="pypi-content">
+              <table id="package_check2" class="table">
+                <!--
               <thead>
               <tr class="shng_heading">
                 <th scope="col" style="min-width: 250px; border-top: 0">{{ 'SYSTEM.PYTHON_PACKAGE'|translate }}</th>
@@ -234,350 +256,80 @@
               </tr>
               </thead>
 -->
-              <tbody>
-                @if (loading) {
-                  <tr>
-                    <td colspan="5">
-                      <p style="padding-top: 100px; text-align: center; font-size: x-large">Loading...</p>
-                    </td>
-                  </tr>
-                }
-
-                <!-- is required (BASE) -->
-
-                @for (pypipackage of pypiinfo; track pypipackage.name) {
-                  @if (pypipackage.is_required === true) {
+                <tbody>
+                  @if (loading) {
                     <tr>
-                      @if (pypipackage.pypi_doc_url === '') {
-                        <td class="py-1" style="min-width: 250px; width: 320px">{{ pypipackage.name }}</td>
-                      }
-                      @if (pypipackage.pypi_doc_url !== '') {
-                        <td class="py-1" style="min-width: 250px; width: 320px">
-                          <a target="_blank" class="text-shng-bold pypi_link" href="{{ pypipackage.pypi_doc_url }}">{{
-                            pypipackage.name
-                          }}</a>
-                        </td>
-                      }
-                      <td class="py-1" style="min-width: 150px; width: 250px">{{ pypipackage.vers_req_min || '*' }}</td>
-
-                      @if (pypipackage.vers_ok && pypipackage.vers_recent) {
-                        <td
-                          class="py-1"
-                          style="
-                            min-width: 150px;
-                            width: 250px;
-                            background-color: #f7f7f7;
-                            color: green;
-                            font-weight: bold;
-                          "
-                        >
-                          {{ pypipackage.vers_installed }}
-                          <i title="{{ 'SYSTEM.VERS_OK_RECENT' | translate }}" class="fa fa-check-circle"></i>
-                        </td>
-                      }
-                      @if (pypipackage.vers_ok && !pypipackage.vers_recent) {
-                        <td class="py-1" style="min-width: 150px; width: 250px; background-color: #f7f7f7">
-                          {{ pypipackage.vers_installed }}
-                          <i title="{{ 'SYSTEM.VERS_OK_NOT_RECENT' | translate }}" class="far fa-check-circle"></i>
-                        </td>
-                      }
-                      @if (!pypipackage.vers_ok && pypipackage.vers_installed === '-') {
-                        <td
-                          class="py-1"
-                          style="min-width: 150px; background-color: #f7f7f7; color: red; font-weight: bold"
-                        >
-                          {{ 'SYSTEM.MISSING' | translate }}
-                          <i title="{{ 'SYSTEM.VERS_MISSING' | translate }}" class="fa fa-times-circle"></i>
-                        </td>
-                      }
-                      @if (!pypipackage.vers_ok && pypipackage.vers_installed !== '-') {
-                        <td class="py-1" style="min-width: 150px; width: 250px; background-color: #f7f7f7; color: red">
-                          {{ pypipackage.vers_installed }}
-                        </td>
-                      }
-
-                      @if (pypipackage.pypi_version_ok || pypipackage.vers_recent) {
-                        <td class="py-1" style="min-width: 150px; width: 250px">
-                          {{ pypipackage.vers_req_max || '*' }}
-                        </td>
-                      }
-                      @if (!pypipackage.pypi_version_ok && !pypipackage.vers_recent) {
-                        <td class="py-1" style="min-width: 150px; width: 250px; color: green; font-weight: bold">
-                          {{ pypipackage.vers_req_max || '*' }}
-                          <i title="{{ 'SYSTEM.VERS_OK_MAX_NOT_RECENT' | translate }}" class="fa fa-check-circle"></i>
-                        </td>
-                      }
-                      <!--        <td class="py-1">{{ reqinfodisplay[pypipackage.name] }}</td> -->
-
-                      @if (
-                        (pypipackage.pypi_version_ok && pypipackage.vers_recent) || pypipackage.pypi_version === '--'
-                      ) {
-                        <td class="py-1" style="min-width: 200px; width: 250px">{{ pypipackage.pypi_version }}</td>
-                      }
-                      @if (
-                        pypipackage.pypi_version_ok && !pypipackage.vers_recent && pypipackage.pypi_version !== '--'
-                      ) {
-                        <td class="py-1" style="min-width: 200px; width: 250px; color: green; font-weight: bold">
-                          {{ pypipackage.pypi_version }}
-                          <i title="{{ 'SYSTEM.VERS_OK_RECENT' | translate }}" class="fa fa-check-circle"></i>
-                        </td>
-                      }
-                      @if (!pypipackage.pypi_version_ok && pypipackage.pypi_version !== '--') {
-                        <td class="py-1" style="min-width: 200px; width: 250px; color: red">
-                          {{ pypipackage.pypi_version || 'SYSTEM.UNKNOWN' | translate }}
-                          <i title="{{ 'SYSTEM.VERS_NOT_OK' | translate }}" class="far fa-times-circle"></i>
-                        </td>
-                      }
+                      <td colspan="5">
+                        <p style="padding-top: 100px; text-align: center; font-size: x-large">Loading...</p>
+                      </td>
                     </tr>
                   }
-                }
-                <tr>
-                  <td colspan="5"></td>
-                </tr>
-              </tbody>
-              <!--
-                      /* Link package PyPi URL */
-                      var packageName = element['name'];
-                      if (element['pypi_doc_url'] != '') {
-                      packageName = "<a target=\"_blank\" class=\"text-shng pypi_link\" href=\""+element['pypi_doc_url']+"\">"+packageName+"</a>";
-                      }
-              -->
 
-              <!-- is required (PLUGINS) -->
+                  <!-- is required (BASE) -->
 
-              @if (plugincount > 0) {
-                <thead>
-                  <tr class="shng_heading">
-                    <th class="py-1" style="background: #eee" colspan="5">
-                      {{ 'SYSTEM.PACKAGES_REQ_PLUGINS' | translate }}
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody>
                   @for (pypipackage of pypiinfo; track pypipackage.name) {
-                    @if (pypipackage.is_required_for_plugins === true) {
+                    @if (pypipackage.is_required === true) {
                       <tr>
                         @if (pypipackage.pypi_doc_url === '') {
-                          <td class="py-1">{{ pypipackage.name }}</td>
+                          <td class="py-1" style="min-width: 250px; width: 320px">{{ pypipackage.name }}</td>
                         }
                         @if (pypipackage.pypi_doc_url !== '') {
-                          <td class="py-1">
-                            <a target="_blank" href="{{ pypipackage.pypi_doc_url }}">{{ pypipackage.name }}</a>
-                          </td>
-                        }
-
-                        <td class="py-1">{{ pypipackage.vers_req_min || '*' }}</td>
-                        @if (pypipackage.vers_ok && pypipackage.vers_recent) {
-                          <td class="py-1" style="background-color: #f7f7f7; color: green; font-weight: bold">
-                            {{ pypipackage.vers_installed }}
-                            <i title="{{ 'SYSTEM.VERS_OK_RECENT' | translate }}" class="fa fa-check-circle"></i>
-                          </td>
-                        }
-                        @if (pypipackage.vers_ok && !pypipackage.vers_recent) {
-                          <td class="py-1" style="background-color: #f7f7f7">
-                            {{ pypipackage.vers_installed }}
-                            <i title="{{ 'SYSTEM.VERS_OK_NOT_RECENT' | translate }}" class="far fa-check-circle"></i>
-                          </td>
-                        }
-                        @if (!pypipackage.vers_ok && pypipackage.vers_installed === '-') {
-                          <td class="py-1" style="background-color: #f7f7f7; color: red; font-weight: bold">
-                            {{ 'SYSTEM.MISSING' | translate }}
-                            <i title="{{ 'SYSTEM.VERS_MISSING' | translate }}" class="fa fa-times-circle"></i>
-                          </td>
-                        }
-                        @if (!pypipackage.vers_ok && pypipackage.vers_installed !== '-') {
-                          <td class="py-1" style="background-color: #f7f7f7; color: red">
-                            {{ pypipackage.vers_installed }}
-                          </td>
-                        }
-
-                        @if (pypipackage.pypi_version_ok || pypipackage.vers_recent) {
-                          <td class="py-1">{{ pypipackage.vers_req_max || '*' }}</td>
-                        }
-                        @if (!pypipackage.pypi_version_ok && !pypipackage.vers_recent) {
-                          <td class="py-1" style="color: green; font-weight: bold">
-                            {{ pypipackage.vers_req_max || '*' }}
-                            <i title="{{ 'SYSTEM.VERS_OK_MAX_NOT_RECENT' | translate }}" class="fa fa-check-circle"></i>
-                          </td>
-                        }
-                        <!--        <td class="py-1">{{ reqinfodisplay[pypipackage.name] }}</td> -->
-
-                        @if (pypipackage.pypi_version === '--') {
-                          <td class="py-1">{{ pypipackage.pypi_version }}</td>
-                        }
-                        @if (
-                          pypipackage.pypi_version_ok && pypipackage.vers_recent && pypipackage.pypi_version !== '--'
-                        ) {
-                          <td class="py-1">{{ pypipackage.pypi_version }}</td>
-                        }
-                        @if (
-                          pypipackage.pypi_version_ok && !pypipackage.vers_recent && pypipackage.pypi_version !== '--'
-                        ) {
-                          <td class="py-1" style="color: green; font-weight: bold">
-                            {{ pypipackage.pypi_version }}
-                            <i title="{{ 'SYSTEM.VERS_OK_RECENT' | translate }}" class="fa fa-check-circle"></i>
-                          </td>
-                        }
-                        @if (!pypipackage.pypi_version_ok && pypipackage.pypi_version !== '--') {
-                          <td class="py-1" style="color: red">
-                            {{ pypipackage.pypi_version || 'SYSTEM.UNKNOWN' | translate }}
-                            <i title="{{ 'SYSTEM.VERS_NOT_OK' | translate }}" class="far fa-times-circle"></i>
-                          </td>
-                        }
-                      </tr>
-                    }
-                  }
-                  <tr>
-                    <td colspan="5"></td>
-                  </tr>
-                </tbody>
-              }
-
-              <!-- is required (DOCUMENTAION) -->
-
-              @if (documentationcount > 0) {
-                <thead>
-                  <tr class="shng_heading">
-                    <th class="py-1" style="background: #eee" colspan="5">
-                      {{ 'SYSTEM.PACKAGES_REQ_DOCUMENTATION' | translate }}
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  @for (pypipackage of pypiinfo; track pypipackage.name) {
-                    @if (pypipackage.is_required_for_docbuild === true) {
-                      <tr>
-                        @if (pypipackage.pypi_doc_url === '') {
-                          <td class="py-1">{{ pypipackage.name }}</td>
-                        }
-                        @if (pypipackage.pypi_doc_url !== '') {
-                          <td class="py-1">
-                            <a target="_blank" class="text-shng pypi_link" href="{{ pypipackage.pypi_doc_url }}">{{
+                          <td class="py-1" style="min-width: 250px; width: 320px">
+                            <a target="_blank" class="text-shng-bold pypi_link" href="{{ pypipackage.pypi_doc_url }}">{{
                               pypipackage.name
                             }}</a>
                           </td>
                         }
-                        <td class="py-1">{{ pypipackage.vers_req_min || '*' }}</td>
+                        <td class="py-1" style="min-width: 150px; width: 250px">
+                          {{ pypipackage.vers_req_min || '*' }}
+                        </td>
 
                         @if (pypipackage.vers_ok && pypipackage.vers_recent) {
-                          <td class="py-1" style="color: green; font-weight: bold">
+                          <td
+                            class="py-1"
+                            style="
+                              min-width: 150px;
+                              width: 250px;
+                              background-color: #f7f7f7;
+                              color: green;
+                              font-weight: bold;
+                            "
+                          >
                             {{ pypipackage.vers_installed }}
                             <i title="{{ 'SYSTEM.VERS_OK_RECENT' | translate }}" class="fa fa-check-circle"></i>
                           </td>
                         }
                         @if (pypipackage.vers_ok && !pypipackage.vers_recent) {
-                          <td class="py-1">
+                          <td class="py-1" style="min-width: 150px; width: 250px; background-color: #f7f7f7">
                             {{ pypipackage.vers_installed }}
                             <i title="{{ 'SYSTEM.VERS_OK_NOT_RECENT' | translate }}" class="far fa-check-circle"></i>
                           </td>
                         }
                         @if (!pypipackage.vers_ok && pypipackage.vers_installed === '-') {
-                          <td class="py-1" style="color: red; font-weight: bold">
+                          <td
+                            class="py-1"
+                            style="min-width: 150px; background-color: #f7f7f7; color: red; font-weight: bold"
+                          >
                             {{ 'SYSTEM.MISSING' | translate }}
                             <i title="{{ 'SYSTEM.VERS_MISSING' | translate }}" class="fa fa-times-circle"></i>
                           </td>
                         }
                         @if (!pypipackage.vers_ok && pypipackage.vers_installed !== '-') {
-                          <td class="py-1" style="color: red">{{ pypipackage.vers_installed }}</td>
+                          <td
+                            class="py-1"
+                            style="min-width: 150px; width: 250px; background-color: #f7f7f7; color: red"
+                          >
+                            {{ pypipackage.vers_installed }}
+                          </td>
                         }
 
                         @if (pypipackage.pypi_version_ok || pypipackage.vers_recent) {
-                          <td class="py-1">{{ pypipackage.vers_req_max || '*' }}</td>
-                        }
-                        @if (!pypipackage.pypi_version_ok && !pypipackage.vers_recent) {
-                          <td class="py-1" style="color: green; font-weight: bold">
+                          <td class="py-1" style="min-width: 150px; width: 250px">
                             {{ pypipackage.vers_req_max || '*' }}
-                            <i title="{{ 'SYSTEM.VERS_OK_MAX_NOT_RECENT' | translate }}" class="fa fa-check-circle"></i>
                           </td>
-                        }
-                        <!--        <td class="py-1">{{ reqinfodisplay[pypipackage.name] }}</td> -->
-
-                        @if (pypipackage.pypi_version === '--') {
-                          <td class="py-1">{{ pypipackage.pypi_version }}</td>
-                        }
-                        @if (
-                          pypipackage.pypi_version_ok && pypipackage.vers_recent && pypipackage.pypi_version !== '--'
-                        ) {
-                          <td class="py-1">
-                            {{ pypipackage.pypi_version }}
-                            <i title="{{ 'SYSTEM.VERS_OK_RECENT' | translate }}" class="far fa-check-circle"></i>
-                          </td>
-                        }
-                        @if (
-                          pypipackage.pypi_version_ok && !pypipackage.vers_recent && pypipackage.pypi_version !== '--'
-                        ) {
-                          <td class="py-1" style="color: green; font-weight: bold">{{ pypipackage.pypi_version }}</td>
-                        }
-                        @if (!pypipackage.pypi_version_ok && pypipackage.pypi_version !== '--') {
-                          <td class="py-1" style="color: red">
-                            {{ pypipackage.pypi_version || 'SYSTEM.UNKNOWN' | translate }}
-                            <i title="{{ 'SYSTEM.VERS_NOT_OK' | translate }}" class="far fa-times-circle"></i>
-                          </td>
-                        }
-                      </tr>
-                    }
-                  }
-                  <tr>
-                    <td colspan="5"></td>
-                  </tr>
-                </tbody>
-              }
-
-              <!-- is required (TESTSUITE) -->
-
-              @if (testsuitecount > 0) {
-                <thead>
-                  <tr class="shng_heading">
-                    <th class="py-1" style="background: #eee" colspan="5">
-                      {{ 'SYSTEM.PACKAGES_REQ_TESTSUITE' | translate }}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (pypipackage of pypiinfo; track pypipackage.name) {
-                    @if (pypipackage.is_required_for_testsuite === true) {
-                      <tr>
-                        @if (pypipackage.pypi_doc_url === '') {
-                          <td class="py-1">{{ pypipackage.name }}</td>
-                        }
-                        @if (pypipackage.pypi_doc_url !== '') {
-                          <td class="py-1">
-                            <a target="_blank" class="text-shng pypi_link" href="{{ pypipackage.pypi_doc_url }}">{{
-                              pypipackage.name
-                            }}</a>
-                          </td>
-                        }
-                        <td class="py-1">{{ pypipackage.vers_req_min || '*' }}</td>
-
-                        @if (pypipackage.vers_ok && pypipackage.vers_recent) {
-                          <td class="py-1" style="color: green; font-weight: bold">
-                            {{ pypipackage.vers_installed }}
-                            <i title="{{ 'SYSTEM.VERS_OK_RECENT' | translate }}" class="fa fa-check-circle"></i>
-                          </td>
-                        }
-                        @if (pypipackage.vers_ok && !pypipackage.vers_recent) {
-                          <td class="py-1">
-                            {{ pypipackage.vers_installed }}
-                            <i title="{{ 'SYSTEM.VERS_OK_NOT_RECENT' | translate }}" class="far fa-check-circle"></i>
-                          </td>
-                        }
-                        @if (!pypipackage.vers_ok && pypipackage.vers_installed === '-') {
-                          <td class="py-1" style="color: red; font-weight: bold">
-                            {{ 'SYSTEM.MISSING' | translate }}
-                            <i title="{{ 'SYSTEM.VERS_MISSING' | translate }}" class="fa fa-times-circle"></i>
-                          </td>
-                        }
-                        @if (!pypipackage.vers_ok && pypipackage.vers_installed !== '-') {
-                          <td class="py-1" style="color: red">{{ pypipackage.vers_installed }}</td>
-                        }
-
-                        @if (pypipackage.pypi_version_ok || pypipackage.vers_recent) {
-                          <td class="py-1">{{ pypipackage.vers_req_max || '*' }}</td>
                         }
                         @if (!pypipackage.pypi_version_ok && !pypipackage.vers_recent) {
-                          <td class="py-1" style="color: green; font-weight: bold">
+                          <td class="py-1" style="min-width: 150px; width: 250px; color: green; font-weight: bold">
                             {{ pypipackage.vers_req_max || '*' }}
                             <i title="{{ 'SYSTEM.VERS_OK_MAX_NOT_RECENT' | translate }}" class="fa fa-check-circle"></i>
                           </td>
@@ -587,15 +339,18 @@
                         @if (
                           (pypipackage.pypi_version_ok && pypipackage.vers_recent) || pypipackage.pypi_version === '--'
                         ) {
-                          <td class="py-1">{{ pypipackage.pypi_version }}</td>
+                          <td class="py-1" style="min-width: 200px; width: 250px">{{ pypipackage.pypi_version }}</td>
                         }
                         @if (
                           pypipackage.pypi_version_ok && !pypipackage.vers_recent && pypipackage.pypi_version !== '--'
                         ) {
-                          <td class="py-1" style="color: green; font-weight: bold">{{ pypipackage.pypi_version }}</td>
+                          <td class="py-1" style="min-width: 200px; width: 250px; color: green; font-weight: bold">
+                            {{ pypipackage.pypi_version }}
+                            <i title="{{ 'SYSTEM.VERS_OK_RECENT' | translate }}" class="fa fa-check-circle"></i>
+                          </td>
                         }
                         @if (!pypipackage.pypi_version_ok && pypipackage.pypi_version !== '--') {
-                          <td class="py-1" style="color: red">
+                          <td class="py-1" style="min-width: 200px; width: 250px; color: red">
                             {{ pypipackage.pypi_version || 'SYSTEM.UNKNOWN' | translate }}
                             <i title="{{ 'SYSTEM.VERS_NOT_OK' | translate }}" class="far fa-times-circle"></i>
                           </td>
@@ -607,56 +362,338 @@
                     <td colspan="5"></td>
                   </tr>
                 </tbody>
-              }
+                <!--
+                      /* Link package PyPi URL */
+                      var packageName = element['name'];
+                      if (element['pypi_doc_url'] != '') {
+                      packageName = "<a target=\"_blank\" class=\"text-shng pypi_link\" href=\""+element['pypi_doc_url']+"\">"+packageName+"</a>";
+                      }
+              -->
 
-              <!-- is NOT required -->
+                <!-- is required (PLUGINS) -->
 
-              @if (norequirementcount > 0) {
-                <thead>
-                  <tr class="shng_heading">
-                    <th class="py-1" style="background: #eee" colspan="5">
-                      {{ 'SYSTEM.PACKAGES_WO_REQ' | translate }}
-                    </th>
-                  </tr>
-                </thead>
+                @if (plugincount > 0) {
+                  <thead>
+                    <tr class="shng_heading">
+                      <th class="py-1" style="background: #eee" colspan="5">
+                        {{ 'SYSTEM.PACKAGES_REQ_PLUGINS' | translate }}
+                      </th>
+                    </tr>
+                  </thead>
 
-                <tbody>
-                  @for (pypipackage of pypiinfo; track pypipackage.name) {
-                    @if (
-                      pypipackage.is_required === false &&
-                      pypipackage.is_required_for_plugins === false &&
-                      pypipackage.is_required_for_docbuild === false &&
-                      pypipackage.is_required_for_testsuite === false
-                    ) {
-                      <tr>
-                        @if (pypipackage.pypi_doc_url === '') {
-                          <td class="py-1">{{ pypipackage.name }}</td>
-                        }
-                        @if (pypipackage.pypi_doc_url !== '') {
-                          <td class="py-1">
-                            <a target="_blank" class="text-shng pypi_link" href="{{ pypipackage.pypi_doc_url }}">{{
-                              pypipackage.name
-                            }}</a>
-                          </td>
-                        }
+                  <tbody>
+                    @for (pypipackage of pypiinfo; track pypipackage.name) {
+                      @if (pypipackage.is_required_for_plugins === true) {
+                        <tr>
+                          @if (pypipackage.pypi_doc_url === '') {
+                            <td class="py-1">{{ pypipackage.name }}</td>
+                          }
+                          @if (pypipackage.pypi_doc_url !== '') {
+                            <td class="py-1">
+                              <a target="_blank" href="{{ pypipackage.pypi_doc_url }}">{{ pypipackage.name }}</a>
+                            </td>
+                          }
 
-                        <td class="py-1">{{ pypipackage.vers_req_min || '-' }}</td>
+                          <td class="py-1">{{ pypipackage.vers_req_min || '*' }}</td>
+                          @if (pypipackage.vers_ok && pypipackage.vers_recent) {
+                            <td class="py-1" style="background-color: #f7f7f7; color: green; font-weight: bold">
+                              {{ pypipackage.vers_installed }}
+                              <i title="{{ 'SYSTEM.VERS_OK_RECENT' | translate }}" class="fa fa-check-circle"></i>
+                            </td>
+                          }
+                          @if (pypipackage.vers_ok && !pypipackage.vers_recent) {
+                            <td class="py-1" style="background-color: #f7f7f7">
+                              {{ pypipackage.vers_installed }}
+                              <i title="{{ 'SYSTEM.VERS_OK_NOT_RECENT' | translate }}" class="far fa-check-circle"></i>
+                            </td>
+                          }
+                          @if (!pypipackage.vers_ok && pypipackage.vers_installed === '-') {
+                            <td class="py-1" style="background-color: #f7f7f7; color: red; font-weight: bold">
+                              {{ 'SYSTEM.MISSING' | translate }}
+                              <i title="{{ 'SYSTEM.VERS_MISSING' | translate }}" class="fa fa-times-circle"></i>
+                            </td>
+                          }
+                          @if (!pypipackage.vers_ok && pypipackage.vers_installed !== '-') {
+                            <td class="py-1" style="background-color: #f7f7f7; color: red">
+                              {{ pypipackage.vers_installed }}
+                            </td>
+                          }
 
-                        <td class="py-1">{{ pypipackage.vers_installed }}</td>
+                          @if (pypipackage.pypi_version_ok || pypipackage.vers_recent) {
+                            <td class="py-1">{{ pypipackage.vers_req_max || '*' }}</td>
+                          }
+                          @if (!pypipackage.pypi_version_ok && !pypipackage.vers_recent) {
+                            <td class="py-1" style="color: green; font-weight: bold">
+                              {{ pypipackage.vers_req_max || '*' }}
+                              <i
+                                title="{{ 'SYSTEM.VERS_OK_MAX_NOT_RECENT' | translate }}"
+                                class="fa fa-check-circle"
+                              ></i>
+                            </td>
+                          }
+                          <!--        <td class="py-1">{{ reqinfodisplay[pypipackage.name] }}</td> -->
 
-                        <td class="py-1">{{ pypipackage.vers_req_max || '-' }}</td>
-                        <!--          <td class="py-1">{{ reqinfodisplay[pypipackage.name] }}</td> -->
-                        <td class="py-1">{{ pypipackage.pypi_version }}</td>
-                      </tr>
+                          @if (pypipackage.pypi_version === '--') {
+                            <td class="py-1">{{ pypipackage.pypi_version }}</td>
+                          }
+                          @if (
+                            pypipackage.pypi_version_ok && pypipackage.vers_recent && pypipackage.pypi_version !== '--'
+                          ) {
+                            <td class="py-1">{{ pypipackage.pypi_version }}</td>
+                          }
+                          @if (
+                            pypipackage.pypi_version_ok && !pypipackage.vers_recent && pypipackage.pypi_version !== '--'
+                          ) {
+                            <td class="py-1" style="color: green; font-weight: bold">
+                              {{ pypipackage.pypi_version }}
+                              <i title="{{ 'SYSTEM.VERS_OK_RECENT' | translate }}" class="fa fa-check-circle"></i>
+                            </td>
+                          }
+                          @if (!pypipackage.pypi_version_ok && pypipackage.pypi_version !== '--') {
+                            <td class="py-1" style="color: red">
+                              {{ pypipackage.pypi_version || 'SYSTEM.UNKNOWN' | translate }}
+                              <i title="{{ 'SYSTEM.VERS_NOT_OK' | translate }}" class="far fa-times-circle"></i>
+                            </td>
+                          }
+                        </tr>
+                      }
                     }
-                  }
-                </tbody>
-              }
-            </table>
+                    <tr>
+                      <td colspan="5"></td>
+                    </tr>
+                  </tbody>
+                }
+
+                <!-- is required (DOCUMENTAION) -->
+
+                @if (documentationcount > 0) {
+                  <thead>
+                    <tr class="shng_heading">
+                      <th class="py-1" style="background: #eee" colspan="5">
+                        {{ 'SYSTEM.PACKAGES_REQ_DOCUMENTATION' | translate }}
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    @for (pypipackage of pypiinfo; track pypipackage.name) {
+                      @if (pypipackage.is_required_for_docbuild === true) {
+                        <tr>
+                          @if (pypipackage.pypi_doc_url === '') {
+                            <td class="py-1">{{ pypipackage.name }}</td>
+                          }
+                          @if (pypipackage.pypi_doc_url !== '') {
+                            <td class="py-1">
+                              <a target="_blank" class="text-shng pypi_link" href="{{ pypipackage.pypi_doc_url }}">{{
+                                pypipackage.name
+                              }}</a>
+                            </td>
+                          }
+                          <td class="py-1">{{ pypipackage.vers_req_min || '*' }}</td>
+
+                          @if (pypipackage.vers_ok && pypipackage.vers_recent) {
+                            <td class="py-1" style="color: green; font-weight: bold">
+                              {{ pypipackage.vers_installed }}
+                              <i title="{{ 'SYSTEM.VERS_OK_RECENT' | translate }}" class="fa fa-check-circle"></i>
+                            </td>
+                          }
+                          @if (pypipackage.vers_ok && !pypipackage.vers_recent) {
+                            <td class="py-1">
+                              {{ pypipackage.vers_installed }}
+                              <i title="{{ 'SYSTEM.VERS_OK_NOT_RECENT' | translate }}" class="far fa-check-circle"></i>
+                            </td>
+                          }
+                          @if (!pypipackage.vers_ok && pypipackage.vers_installed === '-') {
+                            <td class="py-1" style="color: red; font-weight: bold">
+                              {{ 'SYSTEM.MISSING' | translate }}
+                              <i title="{{ 'SYSTEM.VERS_MISSING' | translate }}" class="fa fa-times-circle"></i>
+                            </td>
+                          }
+                          @if (!pypipackage.vers_ok && pypipackage.vers_installed !== '-') {
+                            <td class="py-1" style="color: red">{{ pypipackage.vers_installed }}</td>
+                          }
+
+                          @if (pypipackage.pypi_version_ok || pypipackage.vers_recent) {
+                            <td class="py-1">{{ pypipackage.vers_req_max || '*' }}</td>
+                          }
+                          @if (!pypipackage.pypi_version_ok && !pypipackage.vers_recent) {
+                            <td class="py-1" style="color: green; font-weight: bold">
+                              {{ pypipackage.vers_req_max || '*' }}
+                              <i
+                                title="{{ 'SYSTEM.VERS_OK_MAX_NOT_RECENT' | translate }}"
+                                class="fa fa-check-circle"
+                              ></i>
+                            </td>
+                          }
+                          <!--        <td class="py-1">{{ reqinfodisplay[pypipackage.name] }}</td> -->
+
+                          @if (pypipackage.pypi_version === '--') {
+                            <td class="py-1">{{ pypipackage.pypi_version }}</td>
+                          }
+                          @if (
+                            pypipackage.pypi_version_ok && pypipackage.vers_recent && pypipackage.pypi_version !== '--'
+                          ) {
+                            <td class="py-1">
+                              {{ pypipackage.pypi_version }}
+                              <i title="{{ 'SYSTEM.VERS_OK_RECENT' | translate }}" class="far fa-check-circle"></i>
+                            </td>
+                          }
+                          @if (
+                            pypipackage.pypi_version_ok && !pypipackage.vers_recent && pypipackage.pypi_version !== '--'
+                          ) {
+                            <td class="py-1" style="color: green; font-weight: bold">{{ pypipackage.pypi_version }}</td>
+                          }
+                          @if (!pypipackage.pypi_version_ok && pypipackage.pypi_version !== '--') {
+                            <td class="py-1" style="color: red">
+                              {{ pypipackage.pypi_version || 'SYSTEM.UNKNOWN' | translate }}
+                              <i title="{{ 'SYSTEM.VERS_NOT_OK' | translate }}" class="far fa-times-circle"></i>
+                            </td>
+                          }
+                        </tr>
+                      }
+                    }
+                    <tr>
+                      <td colspan="5"></td>
+                    </tr>
+                  </tbody>
+                }
+
+                <!-- is required (TESTSUITE) -->
+
+                @if (testsuitecount > 0) {
+                  <thead>
+                    <tr class="shng_heading">
+                      <th class="py-1" style="background: #eee" colspan="5">
+                        {{ 'SYSTEM.PACKAGES_REQ_TESTSUITE' | translate }}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (pypipackage of pypiinfo; track pypipackage.name) {
+                      @if (pypipackage.is_required_for_testsuite === true) {
+                        <tr>
+                          @if (pypipackage.pypi_doc_url === '') {
+                            <td class="py-1">{{ pypipackage.name }}</td>
+                          }
+                          @if (pypipackage.pypi_doc_url !== '') {
+                            <td class="py-1">
+                              <a target="_blank" class="text-shng pypi_link" href="{{ pypipackage.pypi_doc_url }}">{{
+                                pypipackage.name
+                              }}</a>
+                            </td>
+                          }
+                          <td class="py-1">{{ pypipackage.vers_req_min || '*' }}</td>
+
+                          @if (pypipackage.vers_ok && pypipackage.vers_recent) {
+                            <td class="py-1" style="color: green; font-weight: bold">
+                              {{ pypipackage.vers_installed }}
+                              <i title="{{ 'SYSTEM.VERS_OK_RECENT' | translate }}" class="fa fa-check-circle"></i>
+                            </td>
+                          }
+                          @if (pypipackage.vers_ok && !pypipackage.vers_recent) {
+                            <td class="py-1">
+                              {{ pypipackage.vers_installed }}
+                              <i title="{{ 'SYSTEM.VERS_OK_NOT_RECENT' | translate }}" class="far fa-check-circle"></i>
+                            </td>
+                          }
+                          @if (!pypipackage.vers_ok && pypipackage.vers_installed === '-') {
+                            <td class="py-1" style="color: red; font-weight: bold">
+                              {{ 'SYSTEM.MISSING' | translate }}
+                              <i title="{{ 'SYSTEM.VERS_MISSING' | translate }}" class="fa fa-times-circle"></i>
+                            </td>
+                          }
+                          @if (!pypipackage.vers_ok && pypipackage.vers_installed !== '-') {
+                            <td class="py-1" style="color: red">{{ pypipackage.vers_installed }}</td>
+                          }
+
+                          @if (pypipackage.pypi_version_ok || pypipackage.vers_recent) {
+                            <td class="py-1">{{ pypipackage.vers_req_max || '*' }}</td>
+                          }
+                          @if (!pypipackage.pypi_version_ok && !pypipackage.vers_recent) {
+                            <td class="py-1" style="color: green; font-weight: bold">
+                              {{ pypipackage.vers_req_max || '*' }}
+                              <i
+                                title="{{ 'SYSTEM.VERS_OK_MAX_NOT_RECENT' | translate }}"
+                                class="fa fa-check-circle"
+                              ></i>
+                            </td>
+                          }
+                          <!--        <td class="py-1">{{ reqinfodisplay[pypipackage.name] }}</td> -->
+
+                          @if (
+                            (pypipackage.pypi_version_ok && pypipackage.vers_recent) ||
+                            pypipackage.pypi_version === '--'
+                          ) {
+                            <td class="py-1">{{ pypipackage.pypi_version }}</td>
+                          }
+                          @if (
+                            pypipackage.pypi_version_ok && !pypipackage.vers_recent && pypipackage.pypi_version !== '--'
+                          ) {
+                            <td class="py-1" style="color: green; font-weight: bold">{{ pypipackage.pypi_version }}</td>
+                          }
+                          @if (!pypipackage.pypi_version_ok && pypipackage.pypi_version !== '--') {
+                            <td class="py-1" style="color: red">
+                              {{ pypipackage.pypi_version || 'SYSTEM.UNKNOWN' | translate }}
+                              <i title="{{ 'SYSTEM.VERS_NOT_OK' | translate }}" class="far fa-times-circle"></i>
+                            </td>
+                          }
+                        </tr>
+                      }
+                    }
+                    <tr>
+                      <td colspan="5"></td>
+                    </tr>
+                  </tbody>
+                }
+
+                <!-- is NOT required -->
+
+                @if (norequirementcount > 0) {
+                  <thead>
+                    <tr class="shng_heading">
+                      <th class="py-1" style="background: #eee" colspan="5">
+                        {{ 'SYSTEM.PACKAGES_WO_REQ' | translate }}
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    @for (pypipackage of pypiinfo; track pypipackage.name) {
+                      @if (
+                        pypipackage.is_required === false &&
+                        pypipackage.is_required_for_plugins === false &&
+                        pypipackage.is_required_for_docbuild === false &&
+                        pypipackage.is_required_for_testsuite === false
+                      ) {
+                        <tr>
+                          @if (pypipackage.pypi_doc_url === '') {
+                            <td class="py-1">{{ pypipackage.name }}</td>
+                          }
+                          @if (pypipackage.pypi_doc_url !== '') {
+                            <td class="py-1">
+                              <a target="_blank" class="text-shng pypi_link" href="{{ pypipackage.pypi_doc_url }}">{{
+                                pypipackage.name
+                              }}</a>
+                            </td>
+                          }
+
+                          <td class="py-1">{{ pypipackage.vers_req_min || '-' }}</td>
+
+                          <td class="py-1">{{ pypipackage.vers_installed }}</td>
+
+                          <td class="py-1">{{ pypipackage.vers_req_max || '-' }}</td>
+                          <!--          <td class="py-1">{{ reqinfodisplay[pypipackage.name] }}</td> -->
+                          <td class="py-1">{{ pypipackage.pypi_version }}</td>
+                        </tr>
+                      }
+                    }
+                  </tbody>
+                }
+              </table>
+            </div>
+            <div class="pypi-footer"></div>
           </div>
-          <div class="pypi-footer"></div>
-        </div>
-        <!--
+          <!--
             if (element['is_required_for_testsuite']) {
             <tr class=\"shng_heading\"><td class=\"py-1\" style=\"background:#eee;\" colspan=\"5\">{{ _('Pakete für die Testsuite') }}</td></tr>");
             } else if (element['is_required_for_docbuild']) {
@@ -665,15 +702,16 @@
             <tr class=\"shng_heading\"><td class=\"py-1\" style=\"background:#eee;\" colspan=\"5\">{{ _('Pakete ohne Requirements') }}</td></tr>");
             }
       -->
-      </p-tabpanel>
+        </p-tabpanel>
 
-      <p-tabpanel value="3">
-        <div class="shngdisclosure">
-          <div id="disclosuretext" class="shngdisclosure-text"></div>
-        </div>
-      </p-tabpanel>
+        <p-tabpanel value="3">
+          <div class="shngdisclosure">
+            <div id="disclosuretext" class="shngdisclosure-text"></div>
+          </div>
+        </p-tabpanel>
 
-      <!-- ====================================================================================================== -->
-    </p-tabpanels>
-  </p-tabs>
+        <!-- ====================================================================================================== -->
+      </p-tabpanels>
+    </p-tabs>
+  </div>
 </div>

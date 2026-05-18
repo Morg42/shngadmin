@@ -1,42 +1,31 @@
 //
-// Datatype for <shng-server>:<port>/api/logs
+// Datatypes for <shng-server>:<port>/api/loggers
 //
 
-export interface LoggersType {
-  // TODO: define proper shape once the API contract is documented
-  [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+export interface LoggerActiveInfo {
+  disabled: boolean;
+  level: string;
+  filters: string[];
+  handlers: string[];
+  logfiles: string[];
+  parent_handlers_names?: string[];
 }
 
-/*
-export interface LoggersInfoDict {
-  [key: string]: string[];
+export interface LoggerInfo {
+  level: string;
+  handlers: string[];
+  active: LoggerActiveInfo;
+  not_conf?: boolean;
+  propagate?: boolean;
 }
 
-
-export interface LoggersType {
-  logs: LoggersInfoDict;
-  default: string;
+/** Full response shape returned by GET /api/loggers/ */
+export interface LoggersApiResponse {
+  loggers: Record<string, LoggerInfo>;
+  active_plugins: string[];
+  active_logics: string[];
+  defined_handlers: string[];
 }
-*/
 
-/*
-
-  "knx_busmonitor": {
-    "level": "INFO",
-    "handlers": [
-      "shng_busmonitor_file"
-    ],
-    "active": {
-      "disabled": false,
-      "level": "INFO",
-      "filters": [],
-      "handlers": [
-        "TimedRotatingFileHandler"
-      ],
-      "logfiles": [
-        "/usr/local/shng_dev/var/log/knx_busmonitor.log"
-      ]
-    }
-  },
-
- */
+/** The inner loggers dict — what components store after extracting response.loggers */
+export type LoggersType = Record<string, LoggerInfo>;

@@ -41,7 +41,9 @@ describe('ThreadsComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
-      .overrideComponent(ThreadsComponent, { set: { imports: [TranslatePipe] } })
+      .overrideComponent(ThreadsComponent, {
+        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      })
       .compileComponents();
 
     fixture = TestBed.createComponent(ThreadsComponent);

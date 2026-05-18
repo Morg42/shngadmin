@@ -50,7 +50,7 @@
               <td class="py-1">
                 @if (['web', 'protocol', 'interface', 'gateway', 'system'].includes(plugin.metadata.type)) {
                   <img
-                    ngSrc="assets/img/plugin_{{ plugin.metadata.type }}.svg"
+                    [src]="'assets/img/plugin_' + plugin.metadata.type + '.svg'"
                     style="width: 25px; cursor: pointer"
                     width="25"
                     height="25"

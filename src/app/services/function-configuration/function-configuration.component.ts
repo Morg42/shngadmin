@@ -59,9 +59,9 @@ export class FunctionConfigurationComponent implements OnInit {
   //
   @ViewChild('codeeditor') codeEditor?: CodeEditorComponent;
 
-  filelist: string[];
-  functionFiles: SelectItem[];
-  selectedFunctionfile: SelectItem;
+  filelist!: string[];
+  functionFiles!: SelectItem[];
+  selectedFunctionfile!: SelectItem;
 
   reloadButtonDisabled = false;
   reloadAllButtonDisabled = false;
@@ -80,7 +80,7 @@ export class FunctionConfigurationComponent implements OnInit {
   add_enabled = false;
 
   confirmdelete_display: boolean = false;
-  delete_param: {};
+  delete_param!: {};
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);

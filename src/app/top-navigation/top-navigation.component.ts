@@ -52,7 +52,7 @@ export class TopNavigationComponent implements OnInit {
   private readonly renderer = inject(Renderer2);
   private readonly el = inject(ElementRef);
 
-  @ViewChild('topnav') private topnavEl: ElementRef<HTMLElement>;
+  @ViewChild('topnav') private topnavEl!: ElementRef<HTMLElement>;
 
   labels: string[] = [];
   menu: MenuItem[] = [];

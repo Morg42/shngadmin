@@ -15,16 +15,57 @@ export class ItemsApiService {
   private readonly log = inject(LogService);
 
   getItemList() {
-    const apiUrl = this.appConfig.apiUrl;
-    let url = apiUrl + 'items/list/';
+    const url = this.appConfig.apiUrl + 'items/list/';
     return this.http.get(url).pipe(
-      map((response) => {
-        const result = response;
-        return result;
-      }),
+      map((response) => response),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
-          'ItemsApiService (getItemList): Could not read itemlist data' + ' - ' + err.error.error,
+          'ItemsApiService.getItemList(): Could not read item list - ' + err.error?.error,
+        );
+        return of([]);
+      }),
+    );
+  }
+
+  getItemTree() {
+    const url = this.appConfig.apiUrl + 'items/tree';
+    return this.http.get(url).pipe(
+      map((response) => response),
+      catchError((err: HttpErrorResponse) => {
+        this.log.error(
+          'ItemsApiService.getItemTree(): Could not read item tree - ' + err.error?.error,
+        );
+        return of([]);
+      }),
+    );
+  }
+
+  getItemDetails(itemPath: string) {
+    const url = this.appConfig.apiUrl + 'items/' + itemPath;
+    return this.http.get(url).pipe(
+      map((response) => response),
+      catchError((err: HttpErrorResponse) => {
+        this.log.error(
+          'ItemsApiService.getItemDetails(' +
+            itemPath +
+            '): Could not read item details - ' +
+            err.error?.error,
+        );
+        return of([]);
+      }),
+    );
+  }
+
+  changeItemValue(itemPath: string, value: string | number | boolean) {
+    const url = this.appConfig.apiUrl + 'items/' + itemPath;
+    return this.http.put(url, JSON.stringify({ value })).pipe(
+      map((response) => response),
+      catchError((err: HttpErrorResponse) => {
+        this.log.error(
+          'ItemsApiService.changeItemValue(' +
+            itemPath +
+            '): Could not set value - ' +
+            err.error?.error,
         );
         return of({});
       }),

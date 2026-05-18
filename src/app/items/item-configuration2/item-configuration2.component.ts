@@ -55,9 +55,9 @@ export class ItemConfiguration2Component implements OnInit {
   //
   @ViewChild('codeeditor') codeEditor?: CodeEditorComponent;
 
-  filelist: string[];
-  itemFiles: SelectItem[];
-  selectedItemfile: SelectItem;
+  filelist!: string[];
+  itemFiles!: SelectItem[];
+  selectedItemfile!: SelectItem;
 
   myEditFilename = '';
   myTextarea = '';
@@ -73,7 +73,7 @@ export class ItemConfiguration2Component implements OnInit {
   add_enabled = false;
 
   confirmdelete_display: boolean = false;
-  delete_param: {};
+  delete_param!: {};
 
   ngOnInit() {
     // this.log.log('LoggingConfigurationComponent.ngOnInit');

@@ -32,10 +32,10 @@ export class AuthService {
   /** Emits whenever the login state changes (login success / logout). */
   readonly loggedIn$ = new BehaviorSubject<boolean>(false);
 
-  currentUser: DecodedJwtToken | null;
+  currentUser!: DecodedJwtToken | null;
   isLoginRequired: boolean;
   isLoginRequiredCount = 0;
-  expiredLogin: boolean;
+  expiredLogin!: boolean;
 
   ttl: number = 0;
   renewAfter: number = 0;

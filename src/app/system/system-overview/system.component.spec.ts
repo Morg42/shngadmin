@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BehaviorSubject, of } from 'rxjs';
@@ -16,7 +16,7 @@ import {
 } from '../../../testing/test-helpers';
 import { AppConfigService } from '../../common/services/app-config.service';
 import { AuthService } from '../../common/services/auth.service';
-import { OlddataService } from '../../common/services/olddata.service';
+import { ServerApiService } from '../../common/services/server-api.service';
 import { WebsocketPluginService } from '../../common/services/websocket-plugin.service';
 import { WebsocketService } from '../../common/services/websocket.service';
 import { SystemComponent } from './system.component';
@@ -53,9 +53,12 @@ describe('SystemComponent', () => {
     disk: { series: [] },
   };
 
-  const mockOlddata = {
-    getSysteminfo: () => of(systeminfoFixture),
-    getPypiinfo: () => of(pypiFixture),
+  const mockServerApi = {
+    getSystemStats: () => of(systeminfoFixture),
+    getPypiInfo: () => of(pypiFixture),
+    getServerBasicinfo: () => of({}),
+    getServerinfo: () => of({}),
+    shng_serverinfo: {},
   };
 
   beforeEach(async () => {
@@ -67,7 +70,7 @@ describe('SystemComponent', () => {
         provideHttpClientTesting(),
         { provide: AuthService, useValue: createMockAuthService() },
         { provide: AppConfigService, useValue: createMockAppConfigService() },
-        { provide: OlddataService, useValue: mockOlddata },
+        { provide: ServerApiService, useValue: mockServerApi },
         { provide: WebsocketService, useValue: createMockWebsocketService() },
         { provide: WebsocketPluginService, useValue: mockWebsocketPlugin },
       ],
@@ -99,16 +102,22 @@ describe('SystemComponent', () => {
     expect(component.systeminfo.node).toBe(systeminfoFixture.node);
   });
 
-  it('should populate pypiinfo with fixture entries', () => {
+  it('should populate pypiinfo after switching to PyPI tab', fakeAsync(() => {
+    component.onTabChange('2');
+    tick(0);
     expect(component.pypiinfo.length).toBe(pypiFixture.length);
-  });
+  }));
 
-  it('should set loading to false after pypi data arrives', () => {
+  it('should set loading to false after pypi data arrives', fakeAsync(() => {
+    component.onTabChange('2');
+    tick(0);
     expect(component.loading).toBe(false);
-  });
+  }));
 
-  it('should count plugin requirements correctly from pypi fixture', () => {
+  it('should count plugin requirements correctly from pypi fixture', fakeAsync(() => {
+    component.onTabChange('2');
+    tick(0);
     const expected = pypiFixture.filter((p) => p.is_required_for_plugins === true).length;
     expect(component.plugincount).toBe(expected);
-  });
+  }));
 });

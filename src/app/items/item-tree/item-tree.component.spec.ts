@@ -8,14 +8,13 @@ import { BehaviorSubject, of } from 'rxjs';
 import {
   createMockAppConfigService,
   createMockAuthService,
-  createMockOlddataService,
   createMockWebsocketPluginService,
   createMockWebsocketService,
   translateTestingModule,
 } from '../../../testing/test-helpers';
 import { AppConfigService } from '../../common/services/app-config.service';
 import { AuthService } from '../../common/services/auth.service';
-import { OlddataService } from '../../common/services/olddata.service';
+import { ItemsApiService } from '../../common/services/items-api.service';
 import { ServerApiService } from '../../common/services/server-api.service';
 import { WebsocketPluginService } from '../../common/services/websocket-plugin.service';
 import { WebsocketService } from '../../common/services/websocket.service';
@@ -41,11 +40,10 @@ describe('ItemTreeComponent', () => {
       monitor: { items: [] },
     };
 
-    const mockOlddata = {
-      ...createMockOlddataService(),
-      getItemtree: () => of([0, []]),
+    const mockItemsApi = {
+      getItemTree: () => of([0, []]),
       getItemDetails: () => of([{}]),
-      changeItemValue: jest.fn(),
+      changeItemValue: jest.fn().mockReturnValue(of({})),
     };
 
     await TestBed.configureTestingModule({
@@ -57,7 +55,7 @@ describe('ItemTreeComponent', () => {
         { provide: ServerApiService, useValue: mockServerApi },
         { provide: AuthService, useValue: createMockAuthService() },
         { provide: AppConfigService, useValue: createMockAppConfigService() },
-        { provide: OlddataService, useValue: mockOlddata },
+        { provide: ItemsApiService, useValue: mockItemsApi },
         { provide: WebsocketService, useValue: createMockWebsocketService() },
         { provide: WebsocketPluginService, useValue: mockWebsocketPlugin },
       ],

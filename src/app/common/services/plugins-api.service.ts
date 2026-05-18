@@ -169,6 +169,7 @@ export class PluginsApiService {
           }
         } else {
           this.log.log('PluginsApiService.setPluginConfig', 'fail: undefined result');
+          return undefined;
         }
       }),
       catchError((err: HttpErrorResponse) => {
@@ -210,6 +211,7 @@ export class PluginsApiService {
           }
         } else {
           this.log.log('PluginsApiService.addPluginConfig', 'fail: undefined result');
+          return undefined;
         }
       }),
       catchError((err: HttpErrorResponse) => {
@@ -255,6 +257,7 @@ export class PluginsApiService {
           }
         } else {
           this.log.log('PluginsApiService.deletePluginConfig', 'fail: undefined result');
+          return undefined;
         }
       }),
       catchError((err: HttpErrorResponse) => {
@@ -299,6 +302,7 @@ export class PluginsApiService {
           }
         } else {
           this.log.log('PluginsApiService.setPluginState', 'fail: undefined result');
+          return undefined;
         }
       }),
       catchError((err: HttpErrorResponse) => {

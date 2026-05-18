@@ -69,6 +69,7 @@ export class FilesApiService {
           return result;
         } else {
           this.log.log('FilesApiService.saveFile', 'fail: undefined result');
+          return undefined;
         }
       }),
       catchError((err: HttpErrorResponse) => {

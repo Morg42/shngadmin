@@ -17,7 +17,9 @@ describe('NotFoundComponent', () => {
       providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
       schemas: [NO_ERRORS_SCHEMA],
     })
-      .overrideComponent(NotFoundComponent, { set: { imports: [TranslatePipe] } })
+      .overrideComponent(NotFoundComponent, {
+        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      })
       .compileComponents();
 
     fixture = TestBed.createComponent(NotFoundComponent);

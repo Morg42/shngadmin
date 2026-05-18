@@ -48,7 +48,7 @@ export class StructConfigurationComponent implements OnInit {
   //
   @ViewChild('codeeditor') codeEditor?: CodeEditorComponent;
 
-  myEditFilename: string;
+  myEditFilename!: string;
   myTextarea = '';
   myTextareaOrig = '';
 

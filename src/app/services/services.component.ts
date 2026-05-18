@@ -93,8 +93,8 @@ export class ServicesComponent implements OnInit {
   //  schedulerinfo: SchedulerInfo[];
 
   serverInfo = <ServerInfo>{};
-  default_language: string;
-  shng_status: string;
+  default_language!: string;
+  shng_status!: string;
   status_errorcount = 0;
 
   valid_languagelist: { label: string; value: string }[] = [];
@@ -104,8 +104,8 @@ export class ServicesComponent implements OnInit {
   shng_statuscode = 0;
 
   pwd_clear = '';
-  pwd_hash: string;
-  pwd_show: boolean;
+  pwd_hash!: string;
+  pwd_show!: boolean;
 
   backup_disabled = false;
   restore_disabled = false;
@@ -146,7 +146,7 @@ export class ServicesComponent implements OnInit {
   myConverterTextOutput = '';
 
   cacheInfo: CacheEntryType[] = [];
-  cacheAllChecked: boolean;
+  cacheAllChecked!: boolean;
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);

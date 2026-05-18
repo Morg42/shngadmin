@@ -85,12 +85,12 @@ type MonitoredItem = [string, Record<string, unknown>];
   ],
 })
 export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
-  @ViewChild('vc', { read: ViewContainerRef, static: true }) vc: ViewContainerRef;
-  @ViewChild('tpl', { read: TemplateRef, static: true }) tpl: TemplateRef<unknown>;
-  @ViewChild('treeEl') private treeEl: ElementRef<HTMLElement>;
-  @ViewChild('treeDetailEl') private treeDetailEl: ElementRef<HTMLElement>;
+  @ViewChild('vc', { read: ViewContainerRef, static: true }) vc!: ViewContainerRef;
+  @ViewChild('tpl', { read: TemplateRef, static: true }) tpl!: TemplateRef<unknown>;
+  @ViewChild('treeEl') private treeEl!: ElementRef<HTMLElement>;
+  @ViewChild('treeDetailEl') private treeDetailEl!: ElementRef<HTMLElement>;
 
-  childViewRef: ViewRef;
+  childViewRef!: ViewRef;
 
   faSearch = faSearch;
   faCircleNotch = faCircleNotch;
@@ -103,19 +103,19 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
   faThumbtack = faThumbtack;
 
   itemcount = 0;
-  itemtree: ItemTree;
+  itemtree!: ItemTree;
   itemdetails: ItemDetails = <ItemDetails>{};
   itemdetailsloaded = false;
 
   monitoredItems: MonitoredItem[] = [];
 
-  filesTree0: {}[];
-  filteredTree: {}[];
+  filesTree0!: {}[];
+  filteredTree!: {}[];
   searchStart_param = {};
   treeIsFiltered = false;
-  selectedFile: TreeNode;
+  selectedFile!: TreeNode;
 
-  item_val: { value: unknown };
+  item_val!: { value: unknown };
   alertText = '';
 
   Object = Object;
@@ -488,6 +488,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit, AfterViewInit {
         }
       }
     }
+    return false;
   }
 
   nodeSelect(event: TreeNodeSelectEvent) {

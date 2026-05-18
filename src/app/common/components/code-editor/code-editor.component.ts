@@ -107,7 +107,7 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
   @HostBinding('class.cm-fullscreen')
   private _fullscreen = false;
 
-  private _lineWrapping: boolean;
+  private _lineWrapping!: boolean;
 
   private readOnlyComp = new Compartment();
   private lineNumComp = new Compartment();

@@ -28,7 +28,7 @@ export class LoginComponent {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   public authService = inject(AuthService);
-  invalidLogin: boolean;
+  invalidLogin!: boolean;
 
   signIn(credentials: { username: string; password: string }) {
     this.authService

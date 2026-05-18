@@ -40,11 +40,11 @@ export class HeaderComponent implements OnInit {
 
   //  faCircleNotch = faCircleNotch;
 
-  items: MenuItem[];
-  menuInitialized: boolean;
+  items!: MenuItem[];
+  menuInitialized!: boolean;
 
   // server_info: ServerInfo;
-  developerMode: boolean;
+  developerMode!: boolean;
 
   ngOnInit() {
     // console.log('HeaderComponent.ngOnInit');

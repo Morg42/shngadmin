@@ -60,9 +60,9 @@ export class LoggerListComponent implements OnInit {
   private titleService = inject(Title);
   private readonly log = inject(LogService);
 
-  loggers: LoggersType;
-  active_plugins: string[];
-  active_logics: string[];
+  loggers!: LoggersType;
+  active_plugins!: string[];
+  active_logics!: string[];
   loggersList: string[] = [];
   definedHandlers: string[] = [];
 

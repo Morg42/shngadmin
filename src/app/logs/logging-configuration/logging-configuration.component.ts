@@ -47,7 +47,7 @@ export class LoggingConfigurationComponent implements OnInit {
   //
   @ViewChild('codeeditor') codeEditor?: CodeEditorComponent;
 
-  myEditFilename: string;
+  myEditFilename!: string;
   myTextarea = '';
   myTextareaOrig = '';
 

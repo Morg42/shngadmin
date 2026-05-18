@@ -128,16 +128,16 @@ export class PluginConfigComponent implements OnInit {
   faExclamationTriangle = faExclamationTriangle; // signal deprecated plugin
   faCode = faLaptopCode; // signal plugin in state "develop"
 
-  configuredplugins: ConfiguredPlugin[];
-  cols: TableColumn[];
-  pluginconflist: PluginsConfig;
-  server_info: ServerInfo;
-  lang: string;
+  configuredplugins!: ConfiguredPlugin[];
+  cols!: TableColumn[];
+  pluginconflist!: PluginsConfig;
+  server_info!: ServerInfo;
+  lang!: string;
 
   // display modal edit dialog
-  parameters: ConfigParameter[];
-  plugin_enabled: boolean;
-  parameter_cols: TableColumn[];
+  parameters!: ConfigParameter[];
+  plugin_enabled!: boolean;
+  parameter_cols!: TableColumn[];
   classic = false;
   state = '';
   rowclicked_foredit: ConfiguredPlugin | false = false;
@@ -145,9 +145,9 @@ export class PluginConfigComponent implements OnInit {
   // for list of installed plugins dialog
   dialog_display = false;
   dialog_readonly = false;
-  dialog_configname: string;
-  dialog_pluginname: string;
-  dialog_description: string;
+  dialog_configname!: string;
+  dialog_pluginname!: string;
+  dialog_description!: string;
 
   // for add dialog
   add_display = false;
@@ -156,15 +156,15 @@ export class PluginConfigComponent implements OnInit {
   spinner_display = false;
   spinner_header = "{{'PLUGIN.LOADLIST'|translate}}...";
   add_firstrun = true;
-  plugins_installed: PluginsInstalled;
-  plugins_installed_list: string[];
+  plugins_installed!: PluginsInstalled;
+  plugins_installed_list!: string[];
 
   // set configuration name dialog
   setconfig_display = false;
-  selected_plugin: string;
-  pluginconfig_name: string;
+  selected_plugin!: string;
+  pluginconfig_name!: string;
   translate_params: {} = {};
-  add_enabled: boolean;
+  add_enabled!: boolean;
 
   // new-plugin configure-and-load workflow
   is_new_plugin = false;
@@ -172,12 +172,12 @@ export class PluginConfigComponent implements OnInit {
   save_error: string | null = null;
 
   validation_dialog_display = false;
-  validation_dialog_parameter: string;
-  validation_dialog_text: string[];
+  validation_dialog_parameter!: string;
+  validation_dialog_text!: string[];
 
   // confirm delete dialog
   confirmdelete_display = false;
-  delete_param: {};
+  delete_param!: {};
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);

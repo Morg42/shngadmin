@@ -59,9 +59,9 @@ export class SceneConfigurationComponent implements OnInit {
   //
   @ViewChild('codeeditor') codeEditor?: CodeEditorComponent;
 
-  filelist: string[];
-  sceneFiles: SelectItem[];
-  selectedScenefile: SelectItem;
+  filelist!: string[];
+  sceneFiles!: SelectItem[];
+  selectedScenefile!: SelectItem;
 
   reloadScenesButtonDisabled = false;
 
@@ -79,7 +79,7 @@ export class SceneConfigurationComponent implements OnInit {
   add_enabled = false;
 
   confirmdelete_display: boolean = false;
-  delete_param: {};
+  delete_param!: {};
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);

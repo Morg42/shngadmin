@@ -78,26 +78,26 @@ export class LogicsEditComponent implements OnInit {
   private titleService = inject(Title);
   private readonly log = inject(LogService);
 
-  logics: LogicsinfoType[];
-  newlogics: LogicsinfoType[];
+  logics!: LogicsinfoType[];
+  newlogics!: LogicsinfoType[];
   logic: LogicsinfoType = {} as LogicsinfoType;
-  wrongWatchItem: boolean;
-  logicChanged: boolean;
+  wrongWatchItem!: boolean;
+  logicChanged!: boolean;
   logicDescriptionOrig: string | undefined;
-  logicGroupOrig: string | string[] | null;
-  logicCycleOrig: string | null;
-  logicCrontabOrig: string | string[] | null;
-  logicWatchitemOrig: LogicsWatchItem[];
+  logicGroupOrig!: string | string[] | null;
+  logicCycleOrig!: string | null;
+  logicCrontabOrig!: string | string[] | null;
+  logicWatchitemOrig!: LogicsWatchItem[];
 
   parameters: ConfigParameter[] = [];
-  parameter_cols: TableColumn[];
+  parameter_cols!: TableColumn[];
   pluginParameters: Record<string, Record<string, unknown>> = {};
 
   @ViewChild('codeeditor') codeEditor?: CodeEditorComponent;
   @ViewChild('watchitems') codeEditorWatchItems?: CodeEditorComponent;
 
-  myEditFilename: string;
-  myLogicName: string;
+  myEditFilename!: string;
+  myLogicName!: string;
   myLogicIsLoaded = false;
   autocomplete_list: { text: string; displayText: string }[] = [];
   full_autocomplete_list: { text: string; displayText: string }[] = [];
@@ -540,6 +540,7 @@ export class LogicsEditComponent implements OnInit {
         return true;
       }
     }
+    return false;
   }
 
   addItem() {

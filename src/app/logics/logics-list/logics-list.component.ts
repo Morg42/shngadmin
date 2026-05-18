@@ -75,11 +75,11 @@ export class LogicsListComponent implements OnInit {
   private readonly log = inject(LogService);
 
   groupdefinitions: Record<string, Record<string, string>> = {};
-  groupList: LogicsGroupType[];
+  groupList!: LogicsGroupType[];
   groupExpandedOnStart: number[] = [];
   groupExpanded: number[] = [];
   nogroups: boolean;
-  logics: LogicsinfoType[];
+  logics!: LogicsinfoType[];
   userlogics: LogicsinfoType[] = [];
   systemlogics: LogicsinfoType[] = [];
   newlogics: LogicsinfoType[] = [];
@@ -94,7 +94,7 @@ export class LogicsListComponent implements OnInit {
   wrongNewLogicName: string = '';
   confirmdelete_display: boolean = false;
   logicToDelete: string = '';
-  delete_param: {};
+  delete_param!: {};
 
   constructor() {
     this.userlogics = [];

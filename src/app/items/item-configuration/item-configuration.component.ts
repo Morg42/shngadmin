@@ -58,9 +58,9 @@ export class ItemConfigurationComponent implements OnInit {
   //
   @ViewChild('codeeditor') codeEditor?: CodeEditorComponent;
 
-  filelist: string[];
-  itemFiles: SelectItem[];
-  selectedItemfile: SelectItem;
+  filelist!: string[];
+  itemFiles!: SelectItem[];
+  selectedItemfile!: SelectItem;
 
   myEditFilename = '';
   myTextarea = '';
@@ -76,7 +76,7 @@ export class ItemConfigurationComponent implements OnInit {
   add_enabled = false;
 
   confirmdelete_display: boolean = false;
-  delete_param: {};
+  delete_param!: {};
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);

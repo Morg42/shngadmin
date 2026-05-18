@@ -57,8 +57,8 @@ export class PluginsComponent implements OnInit {
   faExclamationTriangle = faExclamationTriangle; // signal deprecated plugin
   faCode = faLaptopCode; // signal plugin in state "develop"
 
-  plugininfo: PlugininfoType[];
-  developerMode: boolean;
+  plugininfo!: PlugininfoType[];
+  developerMode!: boolean;
   loading = true;
 
   showPluginDetails = false;

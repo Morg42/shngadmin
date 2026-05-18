@@ -39,10 +39,10 @@ import { LogService } from '../../common/services/log.service';
   ],
 })
 export class LoggerLineComponent {
-  @Input() loggerName: string;
-  @Input() logger: LoggerInfo;
-  @Input() loggerActive: boolean;
-  @Input() definedHandlers: string[];
+  @Input() loggerName!: string;
+  @Input() logger!: LoggerInfo;
+  @Input() loggerActive!: boolean;
+  @Input() definedHandlers!: string[];
   // @Input() loggerActiveLevel: any;
   @Output() levelChange = new EventEmitter();
   @Output() loggerDelete = new EventEmitter();
@@ -63,9 +63,9 @@ export class LoggerLineComponent {
 
   confirmdelete_display: boolean = false;
   loggerToDelete: string = '';
-  delete_param: {};
+  delete_param!: {};
 
-  header_param: {};
+  header_param!: {};
   handlers: { name: string; key: string }[] = [];
   chooseHandlers_display: boolean = false;
   // loggerToModify: string = '';

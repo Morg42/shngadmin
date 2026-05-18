@@ -45,16 +45,16 @@ import { StructsApiService } from '../../common/services/structs-api.service';
 export class StructsComponent implements OnInit {
   // ----
 
-  structsDict: Record<string, Record<string, unknown>>;
-  structsList: string[];
+  structsDict!: Record<string, Record<string, unknown>>;
+  structsList!: string[];
   structsGroups: string[] = [];
-  selectedItem: TreeNode;
-  displayTree: TreeNode[];
-  displayTrees: Record<string, TreeNode[]>;
-  groupExpanded: Record<string, unknown>;
-  structExpanded: Record<string, unknown>;
-  structExpanded2: Record<string, unknown>;
-  globalStructsID: string;
+  selectedItem!: TreeNode;
+  displayTree!: TreeNode[];
+  displayTrees!: Record<string, TreeNode[]>;
+  groupExpanded!: Record<string, unknown>;
+  structExpanded!: Record<string, unknown>;
+  structExpanded2!: Record<string, unknown>;
+  globalStructsID!: string;
 
   // systeminfo: SystemInfo = <SystemInfo>{};
 

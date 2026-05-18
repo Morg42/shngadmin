@@ -136,6 +136,7 @@ export class LogicsApiService {
           }
         } else {
           this.log.log('LogicsApiService.setLogicState', 'failed: Undefined result');
+          return undefined;
         }
       }),
       catchError((err: HttpErrorResponse) => {
@@ -172,6 +173,7 @@ export class LogicsApiService {
           }
         } else {
           this.log.log('LogicsApiService.setLogicState', 'fail: undefined result');
+          return undefined;
         }
       }),
       catchError((err: HttpErrorResponse) => {
@@ -206,6 +208,7 @@ export class LogicsApiService {
           }
         } else {
           this.log.log('LogicsApiService.saveLogicGroup', 'fail: undefined result');
+          return undefined;
         }
       }),
       catchError((err: HttpErrorResponse) => {
@@ -240,6 +243,7 @@ export class LogicsApiService {
           }
         } else {
           this.log.log('LogicsApiService.deleteLogicGroup', 'fail: undefined result');
+          return undefined;
         }
       }),
       catchError((err: HttpErrorResponse) => {

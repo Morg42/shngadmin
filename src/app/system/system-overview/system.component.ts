@@ -70,8 +70,8 @@ export class SystemComponent implements OnDestroy, OnInit {
   loading: boolean = true;
 
   systeminfo: SystemInfo = <SystemInfo>{};
-  pypiinfo: PypiInfo[];
-  reqinfodisplay: Record<string, string>;
+  pypiinfo!: PypiInfo[];
+  reqinfodisplay!: Record<string, string>;
   plugincount = 0;
   documentationcount = 0;
   testsuitecount = 0;

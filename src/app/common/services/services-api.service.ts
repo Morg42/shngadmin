@@ -35,6 +35,7 @@ export class ServicesApiService {
           return result;
         } else {
           this.log.log('ServicesApiService.CheckEvalData', 'fail: undefined result');
+          return undefined;
         }
       }),
       catchError((err: HttpErrorResponse) => {
@@ -96,6 +97,7 @@ export class ServicesApiService {
           return result;
         } else {
           this.log.log('ServicesApiService.ConvertToYamlText', 'fail: undefined result');
+          return undefined;
         }
       }),
       catchError((err: HttpErrorResponse) => {
@@ -142,6 +144,7 @@ export class ServicesApiService {
           return result;
         } else {
           this.log.log('ServicesApiService.deleteCacheFile', 'fail: undefined result');
+          return undefined;
         }
       }),
       catchError((err: HttpErrorResponse) => {

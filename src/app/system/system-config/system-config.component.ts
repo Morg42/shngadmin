@@ -93,28 +93,28 @@ export class SystemConfigComponent implements OnInit {
   private appConfig = inject(AppConfigService);
   private readonly log = inject(LogService);
 
-  config: SystemConfig;
-  lang: string;
+  config!: SystemConfig;
+  lang!: string;
 
-  common_parameters: ConfigParameter[];
-  common_parameter_cols: TableColumn[];
-  common_parameters_beforeEdit: ConfigParameter[];
+  common_parameters!: ConfigParameter[];
+  common_parameter_cols!: TableColumn[];
+  common_parameters_beforeEdit!: ConfigParameter[];
 
-  http_parameters: ConfigParameter[];
-  http_parameter_cols: TableColumn[];
-  http_parameters_beforeEdit: ConfigParameter[];
+  http_parameters!: ConfigParameter[];
+  http_parameter_cols!: TableColumn[];
+  http_parameters_beforeEdit!: ConfigParameter[];
 
-  websocket_parameters: ConfigParameter[];
-  websocket_parameter_cols: TableColumn[];
-  websocket_parameters_beforeEdit: ConfigParameter[];
+  websocket_parameters!: ConfigParameter[];
+  websocket_parameter_cols!: TableColumn[];
+  websocket_parameters_beforeEdit!: ConfigParameter[];
 
-  admin_parameters: ConfigParameter[];
-  admin_parameter_cols: TableColumn[];
-  admin_parameters_beforeEdit: ConfigParameter[];
+  admin_parameters!: ConfigParameter[];
+  admin_parameter_cols!: TableColumn[];
+  admin_parameters_beforeEdit!: ConfigParameter[];
 
-  mqtt_parameters: ConfigParameter[];
-  mqtt_parameter_cols: TableColumn[];
-  mqtt_parameters_beforeEdit: ConfigParameter[];
+  mqtt_parameters!: ConfigParameter[];
+  mqtt_parameter_cols!: TableColumn[];
+  mqtt_parameters_beforeEdit!: ConfigParameter[];
 
   data_changed = false;
   restart_core_button = false;
@@ -130,15 +130,15 @@ export class SystemConfigComponent implements OnInit {
   pwd_new2: string | null = null;
   pwd_hash_old: string | null = null;
   pwd_hash_new: string | null = null;
-  pwd_show: boolean;
+  pwd_show!: boolean;
 
-  pwd_old_is_empty: boolean;
-  pwd_old_is_wrong: boolean;
-  pwd_new_not_identical: boolean;
+  pwd_old_is_empty!: boolean;
+  pwd_old_is_wrong!: boolean;
+  pwd_new_not_identical!: boolean;
 
   validation_dialog_display = false;
-  validation_dialog_parameter: string;
-  validation_dialog_text: string[];
+  validation_dialog_parameter!: string;
+  validation_dialog_text!: string[];
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);
@@ -669,7 +669,7 @@ export class SystemConfigComponent implements OnInit {
     }
 
     if (errors_found) {
-      return false;
+      return;
     }
 
     const data: Record<string, any> = {};

@@ -110,7 +110,7 @@
           "builder": "@angular/build:dev-server",
           "options": {
             "buildTarget": "shngadmin:build",
-            "proxyConfig": "src/proxy.conf.json"
+            "proxyConfig": "src/proxy.conf.js"
           },
           "configurations": {
             "production": {

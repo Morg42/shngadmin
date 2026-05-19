@@ -244,22 +244,24 @@
 
         <p-tabpanel value="2">
           <div class="tab-content-services">
-            <div style="width: 50%; float: left; font-weight: normal; padding: 10px; padding-right: 5px">
-              {{ 'SERVICES.YAML_CHECK_SOURCE' | translate }}
-              <button
-                pButton
-                label="{{ 'BUTTON.CHECK' | translate }}"
-                type="button"
-                style="margin-right: 0"
-                (click)="checkYaml()"
-                class="float-sm-right ui-button-success"
-              ></button>
-            </div>
-            <div style="width: 49%; float: right; font-weight: normal; padding-top: 10px; padding-left: 0">
-              {{ 'SERVICES.YAML_CHECK_RESULT' | translate }}
+            <div style="display: flex; font-weight: normal; padding: 10px 5px 0 10px">
+              <div style="width: 50%">
+                {{ 'SERVICES.YAML_CHECK_SOURCE' | translate }}
+                <button
+                  pButton
+                  label="{{ 'BUTTON.CHECK' | translate }}"
+                  type="button"
+                  style="margin-right: 10px"
+                  (click)="checkYaml()"
+                  class="float-sm-right ui-button-success"
+                ></button>
+              </div>
+              <div style="width: 50%; padding-left: 0">
+                {{ 'SERVICES.YAML_CHECK_RESULT' | translate }}
+              </div>
             </div>
 
-            <table>
+            <table style="width: 100%">
               <tbody>
                 <tr>
                   <td style="width: 49%; margin-top: 10px; padding-left: 10px; padding-right: 5px">
@@ -292,22 +294,24 @@
 
         <p-tabpanel value="3">
           <div class="tab-content-services">
-            <div style="width: 50%; float: left; font-weight: normal; padding: 10px; padding-right: 5px">
-              {{ 'SERVICES.YAML_CONVERTER_SOURCE' | translate }}
-              <button
-                pButton
-                label="{{ 'BUTTON.CHECK' | translate }}"
-                type="button"
-                style="margin-right: 0"
-                (click)="convertYaml()"
-                class="float-sm-right ui-button-success"
-              ></button>
-            </div>
-            <div style="width: 49%; float: right; font-weight: normal; padding-top: 10px; padding-left: 0">
-              {{ 'SERVICES.YAML_CONVERTER_RESULT' | translate }}
+            <div style="display: flex; font-weight: normal; padding: 10px 5px 0 10px">
+              <div style="width: 50%">
+                {{ 'SERVICES.YAML_CONVERTER_SOURCE' | translate }}
+                <button
+                  pButton
+                  label="{{ 'BUTTON.CHECK' | translate }}"
+                  type="button"
+                  style="margin-right: 10px"
+                  (click)="convertYaml()"
+                  class="float-sm-right ui-button-success"
+                ></button>
+              </div>
+              <div style="width: 50%; padding-left: 0">
+                {{ 'SERVICES.YAML_CONVERTER_RESULT' | translate }}
+              </div>
             </div>
 
-            <table>
+            <table style="width: 100%">
               <tbody>
                 <tr>
                   <td style="width: 49%; margin-top: 10px; padding-left: 10px; padding-right: 5px">

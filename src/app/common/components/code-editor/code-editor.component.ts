@@ -75,7 +75,11 @@ export type CmCompletionSource = (
         z-index: 9999;
       }
       .cm-host {
+        height: 100%;
         width: 100%;
+      }
+      .cm-host .cm-editor {
+        height: 100%;
       }
     `,
   ],
@@ -116,7 +120,6 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
   private completionComp = new Compartment();
 
   private _view?: EditorView;
-  private _resizeObserver?: ResizeObserver;
 
   get view(): EditorView | undefined {
     return this._view;
@@ -127,26 +130,10 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
   }
 
   ngAfterViewInit() {
-    const hostEl = this.el.nativeElement as HTMLElement;
-    const cmHostEl = this.hostRef.nativeElement;
-
-    const syncHeight = () => {
-      const h = hostEl.clientHeight;
-      if (h > 0) cmHostEl.style.height = `${h}px`;
-    };
-
-    syncHeight();
-
     this._view = new EditorView({
       state: this._buildState(this.value),
-      parent: cmHostEl,
+      parent: this.hostRef.nativeElement,
     });
-
-    this._resizeObserver = new ResizeObserver(() => {
-      syncHeight();
-      this._view?.requestMeasure();
-    });
-    this._resizeObserver.observe(hostEl);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -183,7 +170,6 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
   }
 
   ngOnDestroy() {
-    this._resizeObserver?.disconnect();
     this._view?.destroy();
   }
 
@@ -298,7 +284,7 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
     ];
 
     const extensions: Extension[] = [
-      EditorView.theme({ '&': { height: '100%' }, '.cm-scroller': { overflow: 'auto' } }),
+      EditorView.theme({ '.cm-scroller': { overflow: 'auto' } }),
       this.readOnlyComp.of(EditorState.readOnly.of(this.readOnly)),
       this.lineNumComp.of(this._lineNumsExtension()),
       this.lineWrapComp.of(this._lineWrapping ? EditorView.lineWrapping : []),

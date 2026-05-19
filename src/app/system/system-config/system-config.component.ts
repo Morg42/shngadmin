@@ -210,7 +210,7 @@ export class SystemConfigComponent implements OnInit {
       { field: 'name', sfield: 'confname', header: 'PLUGIN.PARAMETER', width: '190px' },
       { field: 'type', sfield: 'conftype', header: 'PLUGIN.TYPE', width: '80px' },
       { field: 'value', sfield: 'paramvalue', header: 'PLUGIN.VALUE', width: '240px' },
-      { field: 'desc', sfield: '', header: 'PLUGIN.DESCRIPTION', width: '' },
+      { field: 'desc', sfield: '', header: 'PLUGIN.DESCRIPTION', width: '500px' },
     ];
 
     const paddingRight = 6; // distance between rnd of value field and beginning of description

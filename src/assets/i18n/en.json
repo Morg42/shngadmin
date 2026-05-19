@@ -427,6 +427,8 @@
     "LOGFILE": "Log",
     "FILTER": "Filter",
     "SCROLL_DOWN": "Scroll down",
+    "ENTER_FULLSCREEN": "Expand editor to fill the window",
+    "EXIT_FULLSCREEN": "Restore editor to normal size",
     "SELECT_LOG": "Select a log",
     "TIMEFRAME": "Timeframe",
     "SELECT_FILE": "Select a file",

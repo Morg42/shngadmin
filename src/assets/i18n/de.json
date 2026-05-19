@@ -428,6 +428,8 @@
     "LOGFILE": "Log",
     "FILTER": "Filter",
     "SCROLL_DOWN": "Nach unten scrollen",
+    "ENTER_FULLSCREEN": "Editor auf Fenstergröße erweitern",
+    "EXIT_FULLSCREEN": "Editor auf normale Größe zurücksetzen",
     "SELECT_LOG": "Log auswählen",
     "TIMEFRAME": "Zeitrahmen",
     "SELECT_FILE": "Datei auswählen",

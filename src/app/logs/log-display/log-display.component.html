@@ -101,6 +101,15 @@
       (click)="scrollDown()"
       class="ui-button-success"
     ></button>
+    <button
+      pButton
+      type="button"
+      style="margin-top: 2px; margin-left: 2px; width: 25px"
+      title="{{ (editorFullscreen ? 'LOGS.EXIT_FULLSCREEN' : 'LOGS.ENTER_FULLSCREEN') | translate }}"
+      [icon]="editorFullscreen ? 'fa fa-compress' : 'fa fa-expand'"
+      (click)="toggleEditorFullscreen()"
+      class="ui-button-success"
+    ></button>
 
     <button
       pButton
@@ -108,7 +117,7 @@
       [disabled]="false"
       icon="fa fa-info"
       style="margin-right: 10px; width: 25px"
-      (click)="this.editorHelp_display = true"
+      (click)="editorHelp_display = true"
       class="float-sm-right ui-button-success"
     ></button>
   </div>
@@ -160,11 +169,6 @@
       </th>
     </thead>
     <tbody>
-      <tr>
-        <td>F11</td>
-        <td></td>
-        <td>{{ 'HELP.F11' | translate }}</td>
-      </tr>
       <tr>
         <td>Esc</td>
         <td></td>

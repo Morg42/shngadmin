@@ -99,6 +99,7 @@ export class LogDisplayComponent implements OnInit {
   cmFirstLineNumber = 1;
 
   editorHelp_display = false;
+  editorFullscreen = false;
   spinner_display: boolean = false;
 
   public setTitle(newTitle: string) {
@@ -231,6 +232,11 @@ export class LogDisplayComponent implements OnInit {
 
   scrollDown() {
     this.codeEditor?.scrollToEnd();
+  }
+
+  toggleEditorFullscreen() {
+    this.codeEditor?.toggleFullscreen();
+    this.editorFullscreen = !this.editorFullscreen;
   }
 
   readLogfile(chunk = 1) {

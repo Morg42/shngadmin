@@ -431,6 +431,8 @@
     "LOGFILE": "Fichier journal",
     "FILTER": "Filtre",
     "SCROLL_DOWN": "Défiler vers le bas",
+    "ENTER_FULLSCREEN": "Agrandir l'éditeur pour remplir la fenêtre",
+    "EXIT_FULLSCREEN": "Restaurer l'éditeur à sa taille normale",
     "ACTUAL": "actuel",
     "SELECT_LOG": "Choisir journal",
     "TIMEFRAME": "Plage de temps",

@@ -6,12 +6,6 @@
     </p-tablist>
     <p-tabpanels>
       <p-tabpanel value="0">
-        <!--
-            <bs-alert *ngIf="alertText !== ''" type="warning"  [dismissible]="true" >
-              <strong>Warning!</strong> Better check yourself, you're not looking too good.
-            </bs-alert>
-      -->
-
         <!------------------------------------------>
         <!--   Modal dialog with details   -->
         <!------------------------------------------>
@@ -206,29 +200,11 @@
                                 <td class="py-1">{{ itemdetails.struct }}</td>
                               </tr>
                             }
-                            <!--
-                            <tr><td class="py-1">{{'value'|translate}}</td><td class="py-1">{{itemdetails.input}}</td></tr>
--->
-
                             <tr>
                               <td class="py-1">{{ 'ITEMS.VALUE' | translate }}</td>
                               <td class="py-1">
                                 @switch (itemdetails.type) {
                                   @case ('bool') {
-                                    <!-- handle bool values -->
-                                    <!--
-                                    <select class="form-control" #item_value
-                                            (onChange)="updateValue(itemdetails.path, item_value, itemdetails.type, itemdetails.value, '#myalert')">
-                                            (blur)="updateValue(itemdetails.path, item_value, itemdetails.type, itemdetails.value, '#myalert')"
-                                            id="item_value">
-                                      @if (itemdetails.value === true) {
-                                        <option selected>true</option><option>false</option>
-                                      }
-                                      @if (itemdetails.value === false) {
-                                        <option>true</option><option selected>false</option>
-                                      }
-                                    </select>
-                                    -->
                                     <p-toggleSwitch
                                       [(ngModel)]="itemdetails.value"
                                       (onChange)="

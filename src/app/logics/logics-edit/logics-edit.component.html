@@ -59,9 +59,6 @@
                         (click)="discardChanges()"
                         class="float-sm-right ui-button-secondary"
                       ></button>
-                      <!--
-                  <button pButton label="{{ 'BUTTON.TRIGGER'|translate }}" type="button" [disabled]="(myEditFilename === '') " icon="fa fa-hand-pointer" style="margin-right: 5px;" (click)="triggerLogic();" class="float-sm-right ui-button-success"></button>
--->
                       <button
                         pButton
                         label="{{ 'BUTTON.HELP' | translate }}"
@@ -213,9 +210,6 @@
               (click)="discardChanges()"
               class="float-sm-right ui-button-secondary"
             ></button>
-            <!--
-                            <button pButton label="{{ 'BUTTON.TRIGGER'|translate }}" type="button" [disabled]="(myEditFilename === '') " icon="fa fa-hand-pointer" style="margin-right: 5px;" (click)="triggerLogic();" class="float-sm-right ui-button-success"></button>
-          -->
             <button
               pButton
               label="{{ 'BUTTON.HELP' | translate }}"
@@ -522,13 +516,6 @@
                             {{ bl }}<br />
                           }
                         }
-                        <!--
-                                  @if (typeof rowData[col.field]  !== 'string') {
-                                    @for (bl of col.field; track $index) {
-                                      {{ bl }}}
-                                    }
-                                  }
-                    -->
                       }
                     </td>
                   }

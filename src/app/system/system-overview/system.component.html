@@ -98,9 +98,6 @@
               }
 
               <span>{{ 'SYSTEM.OS' | translate }}:</span>
-              <!--
-            <span>{{ systeminfo.vers }}&nbsp;&nbsp;-&nbsp;&nbsp;{{ 'SYSTEM.ARCHITECTURE'|translate }}:&nbsp;{{ systeminfo.arch }}</span>
-            -->
               <span>{{ systeminfo.vers }}</span>
 
               <span><img src="assets/img/tux_hdd.svg" height="32" width="32" /></span>
@@ -234,7 +231,6 @@
                     <th scope="col" style="min-width: 150px; width: 250px; border-top: 0">
                       {{ 'SYSTEM.MAXIMUM VERSION' | translate }}
                     </th>
-                    <!--      <th scope="col" style="width: 25%; border-top: 0">{{ 'SYSTEM.REQUIREMENTS'|translate }}</th> -->
                     <th scope="col" style="min-width: 200px; width: 250px; border-top: 0">
                       {{ 'SYSTEM.NEWEST VERSION' | translate }}
                     </th>
@@ -245,17 +241,6 @@
 
             <div class="pypi-content">
               <table id="package_check2" class="table">
-                <!--
-              <thead>
-              <tr class="shng_heading">
-                <th scope="col" style="min-width: 250px; border-top: 0">{{ 'SYSTEM.PYTHON_PACKAGE'|translate }}</th>
-                <th scope="col" style="min-width: 150px; border-top: 0">{{ 'SYSTEM.MINIMUM VERSION'|translate }}</th>
-                <th scope="col" style="min-width: 150px; border-top: 0; background-color: #f7f7f7;">{{ 'SYSTEM.INSTALLED VERSION'|translate }}</th>
-                <th scope="col" style="min-width: 150px; border-top: 0">{{ 'SYSTEM.MAXIMUM VERSION'|translate }}</th>
-                <th scope="col" style="min-width: 150px; border-top: 0">{{ 'SYSTEM.NEWEST VERSION'|translate }} (PyPI)</th>
-              </tr>
-              </thead>
--->
                 <tbody>
                   @if (loading) {
                     <tr>
@@ -266,7 +251,6 @@
                   }
 
                   <!-- is required (BASE) -->
-
                   @for (pypipackage of pypiinfo; track pypipackage.name) {
                     @if (pypipackage.is_required === true) {
                       <tr>
@@ -334,7 +318,6 @@
                             <i title="{{ 'SYSTEM.VERS_OK_MAX_NOT_RECENT' | translate }}" class="fa fa-check-circle"></i>
                           </td>
                         }
-                        <!--        <td class="py-1">{{ reqinfodisplay[pypipackage.name] }}</td> -->
 
                         @if (
                           (pypipackage.pypi_version_ok && pypipackage.vers_recent) || pypipackage.pypi_version === '--'
@@ -362,13 +345,6 @@
                     <td colspan="5"></td>
                   </tr>
                 </tbody>
-                <!--
-                      /* Link package PyPi URL */
-                      var packageName = element['name'];
-                      if (element['pypi_doc_url'] != '') {
-                      packageName = "<a target=\"_blank\" class=\"text-shng pypi_link\" href=\""+element['pypi_doc_url']+"\">"+packageName+"</a>";
-                      }
-              -->
 
                 <!-- is required (PLUGINS) -->
 
@@ -431,7 +407,6 @@
                               ></i>
                             </td>
                           }
-                          <!--        <td class="py-1">{{ reqinfodisplay[pypipackage.name] }}</td> -->
 
                           @if (pypipackage.pypi_version === '--') {
                             <td class="py-1">{{ pypipackage.pypi_version }}</td>
@@ -525,7 +500,6 @@
                               ></i>
                             </td>
                           }
-                          <!--        <td class="py-1">{{ reqinfodisplay[pypipackage.name] }}</td> -->
 
                           @if (pypipackage.pypi_version === '--') {
                             <td class="py-1">{{ pypipackage.pypi_version }}</td>
@@ -618,7 +592,6 @@
                               ></i>
                             </td>
                           }
-                          <!--        <td class="py-1">{{ reqinfodisplay[pypipackage.name] }}</td> -->
 
                           @if (
                             (pypipackage.pypi_version_ok && pypipackage.vers_recent) ||
@@ -682,7 +655,6 @@
                           <td class="py-1">{{ pypipackage.vers_installed }}</td>
 
                           <td class="py-1">{{ pypipackage.vers_req_max || '-' }}</td>
-                          <!--          <td class="py-1">{{ reqinfodisplay[pypipackage.name] }}</td> -->
                           <td class="py-1">{{ pypipackage.pypi_version }}</td>
                         </tr>
                       }
@@ -693,15 +665,6 @@
             </div>
             <div class="pypi-footer"></div>
           </div>
-          <!--
-            if (element['is_required_for_testsuite']) {
-            <tr class=\"shng_heading\"><td class=\"py-1\" style=\"background:#eee;\" colspan=\"5\">{{ _('Pakete für die Testsuite') }}</td></tr>");
-            } else if (element['is_required_for_docbuild']) {
-            <tr class=\"shng_heading\"><td class=\"py-1\" style=\"background:#eee;\" colspan=\"5\">{{ _('Pakete für den Bau der Dokumentation') }}</td></tr>");
-            } else {
-            <tr class=\"shng_heading\"><td class=\"py-1\" style=\"background:#eee;\" colspan=\"5\">{{ _('Pakete ohne Requirements') }}</td></tr>");
-            }
-      -->
         </p-tabpanel>
 
         <p-tabpanel value="3">

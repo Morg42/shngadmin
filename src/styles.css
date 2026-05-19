@@ -3,6 +3,20 @@
 @import '@fontsource/roboto/400.css';
 @import '@fontsource/roboto/700.css';
 
+/* Placeholder / default-value colour
+   Lighter than the browser default (~#757575) so set values (black) are
+   clearly distinct, but still readable. opacity:1 overrides Firefox's
+   built-in 0.54 opacity that would otherwise shift the apparent colour. */
+input::placeholder,
+textarea::placeholder {
+  color: #c0c0c0;
+  opacity: 1;
+}
+
+.p-select-label.p-placeholder {
+  color: #c0c0c0;
+}
+
 /* Hide spinners for number fields */
 input[type='number'] {
   -moz-appearance: textfield;

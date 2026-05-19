@@ -9,12 +9,12 @@
    built-in 0.54 opacity that would otherwise shift the apparent colour. */
 input::placeholder,
 textarea::placeholder {
-  color: #c0c0c0;
-  opacity: 1;
+  color: #c0c0c0 !important;
+  opacity: 1 !important;
 }
 
 .p-select-label.p-placeholder {
-  color: #c0c0c0;
+  color: #c0c0c0 !important;
 }
 
 /* Hide spinners for number fields */

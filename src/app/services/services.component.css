@@ -62,7 +62,7 @@
 
 .tab-content-services {
   grid-area: tab-content;
-  width: calc(100vw - 20px);
+  width: 100%;
   height: calc(100vh - 60px - 41px - 10px);
   border: 1px solid #dee2e6;
   border-top: 0;

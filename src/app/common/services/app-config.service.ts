@@ -70,7 +70,10 @@ export class AppConfigService {
    */
   private _config$ = new BehaviorSubject<AppConfig>({
     ...DEFAULT_CONFIG,
-    defaultLanguage: this.userPrefs.language ?? DEFAULT_CONFIG.defaultLanguage,
+    defaultLanguage:
+      this.userPrefs.language ??
+      this.userPrefs.cachedServerLanguage ??
+      DEFAULT_CONFIG.defaultLanguage,
   });
 
   // ----------------------------------------------------------------

@@ -62,9 +62,10 @@ export class AppComponent implements OnInit {
 
     this.translate.addLangs(['en', 'de', 'fr']);
 
-    // Use saved user preference immediately; server may refine it later via
-    // ServerApiService if no preference has been saved yet.
-    const initialLang = this.userPrefs.language ?? 'en';
+    // Use saved preference immediately so the correct translation file is loaded
+    // before the first render.  Priority: explicit user choice > cached server
+    // language (written after the first successful getServerinfo()) > 'en'.
+    const initialLang = this.userPrefs.language ?? this.userPrefs.cachedServerLanguage ?? 'en';
     this.translate.setDefaultLang(initialLang);
     this.translate.use(initialLang);
   }

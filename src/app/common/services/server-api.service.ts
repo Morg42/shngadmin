@@ -47,10 +47,10 @@ export class ServerApiService {
         const result = response as ServerInfo;
 
         // Only apply the server's language if the user has no saved preference.
-        // (The old guard checked appConfig.defaultLanguage which is never empty
-        //  because DEFAULT_CONFIG seeds it to 'en' — so it silently did nothing.)
-        if (!this.userPrefs.language) {
+        // Guard against the basic /api/server/ endpoint not including default_language.
+        if (!this.userPrefs.language && result.default_language) {
           this.appConfig.patch({ defaultLanguage: result.default_language });
+          this.userPrefs.cacheServerLanguage(result.default_language);
           this.translate.setDefaultLang(this.shared.getFallbackLanguage());
           this.shared.setGuiLanguage();
         }
@@ -106,8 +106,11 @@ export class ServerApiService {
           wsPort: this.shng_serverinfo.websocket_port,
         });
 
-        if (!this.userPrefs.language) {
+        if (!this.userPrefs.language && this.shng_serverinfo.default_language) {
           this.appConfig.patch({ defaultLanguage: this.shng_serverinfo.default_language });
+        }
+        if (this.shng_serverinfo.default_language) {
+          this.userPrefs.cacheServerLanguage(this.shng_serverinfo.default_language);
         }
 
         const fallbackLang = this.shared.getFallbackLanguage();

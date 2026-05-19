@@ -63,7 +63,6 @@ export type CmCompletionSource = (
     `
       :host {
         display: block;
-        position: relative;
         height: 300px;
         width: 100%;
       }
@@ -76,8 +75,8 @@ export type CmCompletionSource = (
         z-index: 9999;
       }
       .cm-host {
-        position: absolute;
-        inset: 0;
+        height: 100%;
+        width: 100%;
       }
     `,
   ],
@@ -282,7 +281,7 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
     ];
 
     const extensions: Extension[] = [
-      EditorView.theme({ '&': { height: '100%' }, '.cm-scroller': { overflowY: 'auto' } }),
+      EditorView.theme({ '&': { height: '100%' }, '.cm-scroller': { overflow: 'auto' } }),
       this.readOnlyComp.of(EditorState.readOnly.of(this.readOnly)),
       this.lineNumComp.of(this._lineNumsExtension()),
       this.lineWrapComp.of(this._lineWrapping ? EditorView.lineWrapping : []),

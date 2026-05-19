@@ -1,7 +1,6 @@
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -64,6 +63,7 @@ export type CmCompletionSource = (
     `
       :host {
         display: block;
+        position: relative;
         height: 300px;
         width: 100%;
       }
@@ -76,11 +76,8 @@ export type CmCompletionSource = (
         z-index: 9999;
       }
       .cm-host {
-        height: 100%;
-        width: 100%;
-      }
-      .cm-host .cm-editor {
-        height: 100%;
+        position: absolute;
+        inset: 0;
       }
     `,
   ],
@@ -88,7 +85,7 @@ export type CmCompletionSource = (
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
-  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly el = inject(ElementRef);
 
   @ViewChild('host', { static: true }) private hostRef!: ElementRef<HTMLDivElement>;
 
@@ -180,13 +177,18 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
 
   toggleFullscreen() {
     this._fullscreen = !this._fullscreen;
-    this.cdr.markForCheck();
+    const host = this.el.nativeElement as HTMLElement;
+    if (this._fullscreen) {
+      host.classList.add('cm-fullscreen');
+    } else {
+      host.classList.remove('cm-fullscreen');
+    }
   }
 
   exitFullscreen() {
     if (this._fullscreen) {
       this._fullscreen = false;
-      this.cdr.markForCheck();
+      (this.el.nativeElement as HTMLElement).classList.remove('cm-fullscreen');
     }
   }
 
@@ -198,11 +200,13 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
   }
 
   scrollToEnd() {
-    if (!this._view) return;
-    const view = this._view;
     requestAnimationFrame(() => {
-      const scroller = view.scrollDOM;
-      scroller.scrollTop = scroller.scrollHeight;
+      const scroller = this.hostRef.nativeElement.querySelector(
+        '.cm-scroller',
+      ) as HTMLElement | null;
+      if (scroller) {
+        scroller.scrollTop = scroller.scrollHeight;
+      }
     });
   }
 
@@ -278,6 +282,7 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
     ];
 
     const extensions: Extension[] = [
+      EditorView.theme({ '&': { height: '100%' }, '.cm-scroller': { overflowY: 'auto' } }),
       this.readOnlyComp.of(EditorState.readOnly.of(this.readOnly)),
       this.lineNumComp.of(this._lineNumsExtension()),
       this.lineWrapComp.of(this._lineWrapping ? EditorView.lineWrapping : []),

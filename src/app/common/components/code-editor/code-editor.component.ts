@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -13,6 +14,7 @@ import {
   SimpleChanges,
   ViewChild,
   ViewEncapsulation,
+  inject,
 } from '@angular/core';
 import {
   CompletionContext,
@@ -86,6 +88,8 @@ export type CmCompletionSource = (
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+  private readonly cdr = inject(ChangeDetectorRef);
+
   @ViewChild('host', { static: true }) private hostRef!: ElementRef<HTMLDivElement>;
 
   @Input() language: CmLanguage = 'text';
@@ -176,10 +180,14 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
 
   toggleFullscreen() {
     this._fullscreen = !this._fullscreen;
+    this.cdr.markForCheck();
   }
 
   exitFullscreen() {
-    if (this._fullscreen) this._fullscreen = false;
+    if (this._fullscreen) {
+      this._fullscreen = false;
+      this.cdr.markForCheck();
+    }
   }
 
   toggleLineWrapping() {
@@ -191,8 +199,11 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
 
   scrollToEnd() {
     if (!this._view) return;
-    const scroller = this._view.scrollDOM;
-    scroller.scrollTop = scroller.scrollHeight;
+    const view = this._view;
+    requestAnimationFrame(() => {
+      const scroller = view.scrollDOM;
+      scroller.scrollTop = scroller.scrollHeight;
+    });
   }
 
   foldAtCursor() {

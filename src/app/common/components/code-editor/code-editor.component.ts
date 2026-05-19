@@ -75,7 +75,6 @@ export type CmCompletionSource = (
         z-index: 9999;
       }
       .cm-host {
-        height: 100%;
         width: 100%;
       }
     `,
@@ -117,6 +116,7 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
   private completionComp = new Compartment();
 
   private _view?: EditorView;
+  private _resizeObserver?: ResizeObserver;
 
   get view(): EditorView | undefined {
     return this._view;
@@ -127,10 +127,26 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
   }
 
   ngAfterViewInit() {
+    const hostEl = this.el.nativeElement as HTMLElement;
+    const cmHostEl = this.hostRef.nativeElement;
+
+    const syncHeight = () => {
+      const h = hostEl.clientHeight;
+      if (h > 0) cmHostEl.style.height = `${h}px`;
+    };
+
+    syncHeight();
+
     this._view = new EditorView({
       state: this._buildState(this.value),
-      parent: this.hostRef.nativeElement,
+      parent: cmHostEl,
     });
+
+    this._resizeObserver = new ResizeObserver(() => {
+      syncHeight();
+      this._view?.requestMeasure();
+    });
+    this._resizeObserver.observe(hostEl);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -167,6 +183,7 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
   }
 
   ngOnDestroy() {
+    this._resizeObserver?.disconnect();
     this._view?.destroy();
   }
 

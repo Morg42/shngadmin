@@ -187,10 +187,16 @@ body {
 
 .topnav .active {
   background-color: #ccc;
-  /*
-      border-radius: 5px;
-      margin: 4px;
-  */
+}
+
+.dropdown.active .dropbtn {
+  background-color: #ccc;
+}
+
+.dropdown-content a.active {
+  background-color: #ccc;
+  color: black;
+  font-weight: 600;
 }
 
 .navbar .logo {

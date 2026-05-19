@@ -32,12 +32,15 @@
     @for (menuEntry of this.menu; track menuEntry.label) {
       @if (menuEntry.visible === true && this.loggedIn) {
         @if (menuEntry.items.length === 0) {
-          <a (click)="disableResponsiveMenu(menuEntry, false)" [routerLink]="menuEntry.routerLink">{{
-            menuEntry.label
-          }}</a>
+          <a
+            (click)="disableResponsiveMenu(menuEntry, false)"
+            [routerLink]="menuEntry.routerLink"
+            routerLinkActive="active"
+            >{{ menuEntry.label }}</a
+          >
         }
         @if (menuEntry.items.length > 0) {
-          <div class="dropdown">
+          <div class="dropdown" routerLinkActive="active">
             <button (mouseenter)="enableDropdownMenu()" class="dropbtn" (click)="onMenuHeaderClick(menuEntry)">
               <span
                 >{{ menuEntry.label }}
@@ -46,9 +49,12 @@
             </button>
             <div id="menu-{{ menuEntry.label }}" class="dropdown-content">
               @for (submenuEntry of menuEntry.items; track submenuEntry.label) {
-                <a (click)="disableResponsiveMenu(menuEntry)" [routerLink]="submenuEntry.routerLink">{{
-                  submenuEntry.label
-                }}</a>
+                <a
+                  (click)="disableResponsiveMenu(menuEntry)"
+                  [routerLink]="submenuEntry.routerLink"
+                  routerLinkActive="active"
+                  >{{ submenuEntry.label }}</a
+                >
               }
             </div>
           </div>

@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AppConfigService } from '../common/services/app-config.service';
 import { AuthService } from '../common/services/auth.service';
@@ -36,7 +36,7 @@ interface MenuItem {
   templateUrl: './top-navigation.component.html',
   styleUrls: ['./top-navigation.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgOptimizedImage, RouterLink, TranslatePipe],
+  imports: [NgOptimizedImage, RouterLink, RouterLinkActive, TranslatePipe],
 })
 export class TopNavigationComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);

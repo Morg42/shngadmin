@@ -190,7 +190,7 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
   scrollToEnd() {
     if (!this._view) return;
     const len = this._view.state.doc.length;
-    this._view.dispatch({ selection: { anchor: len }, scrollIntoView: true });
+    this._view.dispatch({ effects: EditorView.scrollIntoView(len, { y: 'end' }) });
   }
 
   foldAtCursor() {

@@ -21,6 +21,7 @@ interface LogfileChunk {
   loglines: string[];
   lastchunk: boolean;
   chunk: number;
+  chunks?: number;
 }
 
 import { NgStyle } from '@angular/common';
@@ -201,22 +202,13 @@ export class LogDisplayComponent implements OnInit {
         this.files.reverse();
       }
 
-      if (this.files.length === 1 || useActual) {
-        this.selectedFile = this.files[0].value;
-        this.readLogfile();
-      } else {
-        this.selectedFile = this.files[0].value;
-        this.readLogfile();
-      }
+      this.selectedFile = this.files[0].value;
+      this.readLogfile(0); // 0 = last (newest) chunk
     }
   }
 
   changedTimeframe() {
-    if (this.selectedFile === null) {
-      this.readLogfile();
-    } else {
-      this.readLogfile();
-    }
+    this.readLogfile(0); // 0 = last (newest) chunk
   }
 
   filterLogChunk() {

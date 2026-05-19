@@ -21,7 +21,7 @@
       pButton
       id="reloadLogButton"
       type="button"
-      (click)="this.readLogfile()"
+      (click)="readLogfile(chunk_no)"
       [disabled]="selectedLog === null || selectedFile === null"
       label="{{ 'BUTTON.RELOAD_LOG' | translate }}"
       class="ui-button-success"
@@ -73,7 +73,7 @@
       (click)="readLogfile(chunk_no - 1)"
       class="ui-button-success"
     ></button>
-    {{ chunk_no }}
+    {{ chunk_no }}{{ logfile_chunk?.chunks ? ' / ' + logfile_chunk!.chunks : '' }}
     <button
       pButton
       type="button"
@@ -174,6 +174,16 @@
         <td>Ctrl-L</td>
         <td></td>
         <td>{{ 'HELP.CTRL-L' | translate }}</td>
+      </tr>
+      <tr>
+        <td>Ctrl-F</td>
+        <td></td>
+        <td>{{ 'HELP.CTRL-F' | translate }}</td>
+      </tr>
+      <tr>
+        <td>Alt-G</td>
+        <td></td>
+        <td>{{ 'HELP.ALT-G' | translate }}</td>
       </tr>
     </tbody>
   </table>

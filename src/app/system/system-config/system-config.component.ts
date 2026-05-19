@@ -198,38 +198,12 @@ export class SystemConfigComponent implements OnInit {
   // Column definitions for parameter configuration tables
   //
   columnDefinitions() {
-    const columnDefinitions: {
-      field: string;
-      sfield: string;
-      header: string;
-      width: string;
-      iwidth?: string;
-      iwidthwide?: string;
-      paddingleft?: string;
-    }[] = [
+    return [
       { field: 'name', sfield: 'confname', header: 'PLUGIN.PARAMETER', width: '190px' },
       { field: 'type', sfield: 'conftype', header: 'PLUGIN.TYPE', width: '80px' },
       { field: 'value', sfield: 'paramvalue', header: 'PLUGIN.VALUE', width: '240px' },
-      { field: 'desc', sfield: '', header: 'PLUGIN.DESCRIPTION', width: '500px' },
+      { field: 'desc', sfield: '', header: 'PLUGIN.DESCRIPTION', width: '' },
     ];
-
-    const paddingRight = 6; // distance between rnd of value field and beginning of description
-    const widthWide = 600; // width of wide value fields (gui_type: wide_str)
-
-    for (let i = 0; i < columnDefinitions.length; i++) {
-      const width = parseInt(columnDefinitions[i]['width'], 10);
-      if (columnDefinitions[i]['width'] !== '') {
-        columnDefinitions[i]['iwidth'] = String(width - paddingRight) + 'px';
-      } else {
-        columnDefinitions[i]['iwidth'] = '';
-      }
-      columnDefinitions[i]['iwidthwide'] = String(widthWide) + 'px';
-      if (i === 2) {
-        // if column = 2 (value) -> adjust padding for description (in column 3)
-        columnDefinitions[3]['paddingleft'] = String(widthWide - width + paddingRight) + 'px';
-      }
-    }
-    return columnDefinitions;
   }
 
   // ---------------------------------------------------------

@@ -362,38 +362,12 @@ export class PluginConfigComponent implements OnInit {
       }
     }
 
-    const columnDefinitions: {
-      field: string;
-      sfield: string;
-      header: string;
-      width: string;
-      iwidth?: string;
-      iwidthwide?: string;
-      paddingleft?: string;
-    }[] = [
+    this.parameter_cols = [
       { field: 'name', sfield: 'confname', header: 'PLUGIN.PARAMETER', width: '190px' },
       { field: 'type', sfield: 'conftype', header: 'PLUGIN.TYPE', width: '80px' },
       { field: 'value', sfield: 'paramvalue', header: 'PLUGIN.VALUE', width: '240px' },
       { field: 'desc', sfield: '', header: 'PLUGIN.DESCRIPTION', width: '' },
     ];
-
-    const paddingRight = 6;
-    const widthWide = 600;
-
-    for (let i = 0; i < columnDefinitions.length; i++) {
-      const width = parseInt(columnDefinitions[i]['width'], 10);
-      if (columnDefinitions[i]['width'] !== '') {
-        columnDefinitions[i]['iwidth'] = String(width - paddingRight) + 'px';
-      } else {
-        columnDefinitions[i]['iwidth'] = '';
-      }
-      columnDefinitions[i]['iwidthwide'] = String(widthWide) + 'px';
-      if (i === 2) {
-        columnDefinitions[3]['paddingleft'] = String(widthWide - width + paddingRight) + 'px';
-      }
-    }
-
-    this.parameter_cols = columnDefinitions;
     this.parameters = [];
 
     this.lang = this.appConfig.defaultLanguage;

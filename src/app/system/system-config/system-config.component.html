@@ -20,12 +20,7 @@
       <p-tabpanels>
         <p-tabpanel value="0">
           <div class="tab-content">
-            <p-table
-              [columns]="common_parameter_cols"
-              [value]="common_parameters"
-              selectionMode="single"
-              [tableStyle]="{ width: 'auto' }"
-            >
+            <p-table [columns]="common_parameter_cols" [value]="common_parameters" selectionMode="single">
               <ng-template pTemplate="header" let-columns>
                 <tr>
                   @for (col of columns; track col.field) {
@@ -52,14 +47,7 @@
                       }
 
                       @if (dialog_readonly === true || col.field !== 'value') {
-                        @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
-                          <div [innerHTML]="rowData[col.field]"></div>
-                        }
-                        @if (col.field === 'desc' && rowData.gui_type === 'wide_str') {
-                          <div [ngStyle]="{ 'padding-left': col.paddingleft }">
-                            <div [innerHTML]="rowData[col.field]"></div>
-                          </div>
-                        }
+                        <div [innerHTML]="rowData[col.field]"></div>
                       }
                     </td>
                   }
@@ -71,12 +59,7 @@
 
         <p-tabpanel value="1">
           <div class="tab-content">
-            <p-table
-              [columns]="http_parameter_cols"
-              [value]="http_parameters"
-              selectionMode="single"
-              [tableStyle]="{ width: 'auto' }"
-            >
+            <p-table [columns]="http_parameter_cols" [value]="http_parameters" selectionMode="single">
               <ng-template pTemplate="header" let-columns>
                 <tr>
                   @for (col of columns; track col.field) {
@@ -123,14 +106,7 @@
                       }
 
                       @if (dialog_readonly === true || col.field !== 'value') {
-                        @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
-                          <div [innerHTML]="rowData[col.field]"></div>
-                        }
-                        @if (col.field === 'desc' && rowData.gui_type === 'wide_str') {
-                          <div [ngStyle]="{ 'padding-left': col.paddingleft }">
-                            <div [innerHTML]="rowData[col.field]"></div>
-                          </div>
-                        }
+                        <div [innerHTML]="rowData[col.field]"></div>
                       }
                     </td>
                   }
@@ -142,12 +118,7 @@
 
         <p-tabpanel value="2">
           <div class="tab-content">
-            <p-table
-              [columns]="websocket_parameter_cols"
-              [value]="websocket_parameters"
-              selectionMode="single"
-              [tableStyle]="{ width: 'auto' }"
-            >
+            <p-table [columns]="websocket_parameter_cols" [value]="websocket_parameters" selectionMode="single">
               <ng-template pTemplate="header" let-columns>
                 <tr>
                   @for (col of columns; track col.field) {
@@ -198,14 +169,7 @@
                       }
 
                       @if (dialog_readonly === true || col.field !== 'value') {
-                        @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
-                          <div [innerHTML]="rowData[col.field]"></div>
-                        }
-                        @if (col.field === 'desc' && rowData.gui_type === 'wide_str') {
-                          <div [ngStyle]="{ 'padding-left': col.paddingleft }">
-                            <div [innerHTML]="rowData[col.field]"></div>
-                          </div>
-                        }
+                        <div [innerHTML]="rowData[col.field]"></div>
                       }
                     </td>
                   }
@@ -217,12 +181,7 @@
 
         <p-tabpanel value="3">
           <div class="tab-content">
-            <p-table
-              [columns]="admin_parameter_cols"
-              [value]="admin_parameters"
-              selectionMode="single"
-              [tableStyle]="{ width: 'auto' }"
-            >
+            <p-table [columns]="admin_parameter_cols" [value]="admin_parameters" selectionMode="single">
               <ng-template pTemplate="header" let-columns>
                 <tr>
                   @for (col of columns; track col.field) {
@@ -249,14 +208,7 @@
                       }
 
                       @if (dialog_readonly === true || col.field !== 'value') {
-                        @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
-                          <div [innerHTML]="rowData[col.field]"></div>
-                        }
-                        @if (col.field === 'desc' && rowData.gui_type === 'wide_str') {
-                          <div [ngStyle]="{ 'padding-left': col.paddingleft }">
-                            <div [innerHTML]="rowData[col.field]"></div>
-                          </div>
-                        }
+                        <div [innerHTML]="rowData[col.field]"></div>
                       }
                     </td>
                   }
@@ -268,12 +220,7 @@
 
         <p-tabpanel value="4">
           <div class="tab-content">
-            <p-table
-              [columns]="mqtt_parameter_cols"
-              [value]="mqtt_parameters"
-              selectionMode="single"
-              [tableStyle]="{ width: 'auto' }"
-            >
+            <p-table [columns]="mqtt_parameter_cols" [value]="mqtt_parameters" selectionMode="single">
               <ng-template pTemplate="header" let-columns>
                 <tr>
                   @for (col of columns; track col.field) {
@@ -300,14 +247,7 @@
                       }
 
                       @if (dialog_readonly === true || col.field !== 'value') {
-                        @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
-                          <div [innerHTML]="rowData[col.field]"></div>
-                        }
-                        @if (col.field === 'desc' && rowData.gui_type === 'wide_str') {
-                          <div [ngStyle]="{ 'padding-left': col.paddingleft }">
-                            <div [innerHTML]="rowData[col.field]"></div>
-                          </div>
-                        }
+                        <div [innerHTML]="rowData[col.field]"></div>
                       }
                     </td>
                   }

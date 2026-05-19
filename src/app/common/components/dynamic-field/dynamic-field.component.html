@@ -6,6 +6,7 @@
       [placeholder]="placeholder"
       [(ngModel)]="row[col.field]"
       (ngModelChange)="row[col.field] = $event; onChanged()"
+      [style]="{ width: '100%' }"
     >
     </p-select>
   }
@@ -18,7 +19,7 @@
       pInputText
       [placeholder]="placeholder"
       [name]="col.field"
-      [ngStyle]="{ width: col.iwidth }"
+      style="width: 100%"
       (ngModelChange)="onChanged()"
     />
   }
@@ -29,7 +30,7 @@
       pInputText
       [placeholder]="placeholder"
       [name]="col.field"
-      [ngStyle]="{ width: col.iwidth }"
+      style="width: 100%"
       (ngModelChange)="onChanged()"
     />
   }
@@ -41,7 +42,7 @@
       pInputText
       [placeholder]="placeholder"
       [name]="col.field"
-      [ngStyle]="{ width: col.iwidth, color: '#000077' }"
+      style="width: 100%; color: #000077"
       (ngModelChange)="onChanged()"
     />
   }
@@ -52,7 +53,7 @@
       pInputText
       [placeholder]="placeholder"
       [name]="col.field"
-      [ngStyle]="{ width: col.iwidthwide }"
+      style="width: 100%"
       (ngModelChange)="onChanged()"
     />
   }
@@ -63,7 +64,7 @@
       pInputText
       [placeholder]="placeholder"
       [name]="col.field"
-      [ngStyle]="{ width: col.iwidth }"
+      style="width: 100%"
       (ngModelChange)="onChanged()"
     />
   }

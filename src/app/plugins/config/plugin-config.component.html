@@ -233,14 +233,7 @@
                   {{ rowData[col.field] }}
                 }
                 @if (dialog_readonly === true || col.field === 'desc') {
-                  @if (col.field !== 'desc' || rowData.gui_type !== 'wide_str') {
-                    <div [innerHTML]="rowData[col.field]"></div>
-                  }
-                  @if (col.field === 'desc' && rowData.gui_type === 'wide_str') {
-                    <div [ngStyle]="{ 'padding-left': col.paddingleft }">
-                      <div [innerHTML]="rowData[col.field]"></div>
-                    </div>
-                  }
+                  <div [innerHTML]="rowData[col.field]"></div>
                 }
               }
             </td>

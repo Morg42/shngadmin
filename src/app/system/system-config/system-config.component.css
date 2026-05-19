@@ -43,12 +43,13 @@
 .body-content {
   grid-area: body-content;
   width: 100%;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .body-footer {
   grid-area: body-footer;
   width: 100%;
+  padding-bottom: 10px;
 }
 
 .tab-header {

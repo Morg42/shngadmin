@@ -61,12 +61,7 @@ export type CmCompletionSource = (
   template: `<div #host class="cm-host"></div>`,
   styles: [
     `
-      :host {
-        display: block;
-        height: 300px;
-        width: 100%;
-      }
-      :host.cm-fullscreen {
+      .cm-fullscreen {
         position: fixed !important;
         top: 0;
         left: 0;
@@ -108,6 +103,8 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
 
   /** If set, typed text matching this regex is blocked (watch-items editor). */
   @Input() allowedCharsPattern?: RegExp;
+
+  @HostBinding('style.display') readonly hostDisplay = 'block';
 
   @HostBinding('class.cm-fullscreen')
   private _fullscreen = false;

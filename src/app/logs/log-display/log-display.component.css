@@ -1,4 +1,3 @@
-.CodeMirror {
-  width: 100%;
-  height: 75vh;
+.cm-editor {
+  height: 100%;
 }

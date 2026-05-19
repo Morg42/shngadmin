@@ -12,6 +12,7 @@ import {
   Output,
   SimpleChanges,
   ViewChild,
+  ViewEncapsulation,
 } from '@angular/core';
 import {
   CompletionContext,
@@ -81,6 +82,7 @@ export type CmCompletionSource = (
       }
     `,
   ],
+  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {

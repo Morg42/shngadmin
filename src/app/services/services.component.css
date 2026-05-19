@@ -17,6 +17,7 @@
 }
 .shngbody2 {
   height: calc(100vh - 60px);
+  overflow: hidden;
   width: 100%;
   margin: 0;
   padding: 0;

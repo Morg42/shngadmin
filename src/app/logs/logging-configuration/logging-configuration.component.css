@@ -1,12 +1,6 @@
 .shngbody {
-  /*
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 100vh;
-    REMARK overflow: hidden;
-    REMARK height: calc(100vh - 55px);
-  */
-
+  height: calc(100vh - 60px);
+  overflow: hidden;
   margin-left: 10px;
   margin-right: 10px;
 }

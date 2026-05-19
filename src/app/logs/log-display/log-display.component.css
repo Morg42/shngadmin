@@ -1,0 +1,7 @@
+.shngbody {
+  height: calc(100vh - 60px);
+  overflow: hidden;
+  margin: 0;
+  padding-left: 10px;
+  padding-right: 10px;
+}

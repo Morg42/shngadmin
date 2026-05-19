@@ -68,6 +68,7 @@ export type CmCompletionSource = (
         width: 100vw !important;
         height: 100vh !important;
         z-index: 9999;
+        background: Canvas;
       }
       .cm-host {
         height: 100%;

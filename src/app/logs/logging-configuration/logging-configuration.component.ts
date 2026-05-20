@@ -15,8 +15,9 @@ import { PrimeTemplate } from 'primeng/api';
 import { Bind } from 'primeng/bind';
 import { ButtonDirective } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
+import { Message } from 'primeng/message';
 import { CodeEditorComponent } from '../../common/components/code-editor/code-editor.component';
-import { FilesApiService } from '../../common/services/files-api.service';
+import { FilesApiService, LoggingConfigSaveResult } from '../../common/services/files-api.service';
 import { ServicesApiService } from '../../common/services/services-api.service';
 
 @Component({
@@ -30,6 +31,7 @@ import { ServicesApiService } from '../../common/services/services-api.service';
     CodeEditorComponent,
     FormsModule,
     Dialog,
+    Message,
     PrimeTemplate,
     TranslatePipe,
   ],
@@ -55,6 +57,8 @@ export class LoggingConfigurationComponent implements OnInit {
   error_display = false;
   myTextOutput = '';
 
+  saveResult: LoggingConfigSaveResult | null = null;
+
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);
   }
@@ -77,7 +81,7 @@ export class LoggingConfigurationComponent implements OnInit {
   }
 
   saveConfig() {
-    // console.log('LoggingConfigurationComponent.saveConfig');
+    this.saveResult = null;
 
     this.dataService
       .CheckYamlText(this.myTextarea)
@@ -86,16 +90,20 @@ export class LoggingConfigurationComponent implements OnInit {
         this.myTextOutput = response as string;
         if (this.myTextOutput.startsWith('ERROR:')) {
           this.error_display = true;
-        } else {
-          this.fileService
-            .saveFile('logging', '', this.myTextarea)
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe((response2) => {
-              this.myTextareaOrig = this.myTextarea;
-              this.cdr.markForCheck();
-            });
+          this.cdr.markForCheck();
+          return;
         }
-        this.cdr.markForCheck();
+
+        this.fileService
+          .saveLoggingConfig(this.myTextarea)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe((result) => {
+            this.saveResult = result;
+            if (result.result === 'ok') {
+              this.myTextareaOrig = this.myTextarea;
+            }
+            this.cdr.markForCheck();
+          });
       });
   }
 }

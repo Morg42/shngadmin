@@ -468,7 +468,10 @@
   "LOGGING": {
     "CONFIG_FILE": "Konfigurationsdatei",
     "CONFIG_ERROR": "Konfigurations-Fehler - Konfiguration nicht gespeichert!",
-    "CONFIG_ERROR_TEXT": "Fehler in der Konfigurationsdatei gefunden.\nUngültiges Format der Konfigurationsdatei.\n"
+    "CONFIG_ERROR_TEXT": "Fehler in der Konfigurationsdatei gefunden.\nUngültiges Format der Konfigurationsdatei.\n",
+    "SAVE_OK": "Logging-Konfiguration erfolgreich gespeichert und angewendet.",
+    "SAVE_ERROR_RESTORED": "Ungültige Logging-Konfiguration — die vorherige Konfiguration wurde wiederhergestellt.",
+    "SAVE_ERROR_NO_RESTORE": "Ungültige Logging-Konfiguration, Wiederherstellung fehlgeschlagen — logging.yaml.bak prüfen."
   },
   "BUTTON": {
     "OK": "Ok",

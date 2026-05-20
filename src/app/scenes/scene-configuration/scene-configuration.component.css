@@ -1,50 +1,41 @@
 .shngbody {
-  /*
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 100vh;
-    REMARK overflow: hidden;
-    REMARK height: calc(100vh - 55px);
-  */
-
   margin-left: 10px;
   margin-right: 10px;
+  display: grid;
+  grid-template-columns: max(20%, 200px) 1fr;
+  grid-template-rows: auto 1fr;
 }
 
 .button-row-left {
+  grid-column: 1;
+  grid-row: 1;
   font-weight: normal;
   padding-top: 10px;
-  padding-left: 0;
   padding-right: 20px;
-  float: left;
-  width: min(20%, 100% - 210px);
-  display: inline-block;
 }
 
 .button-row {
+  grid-column: 2;
+  grid-row: 1;
   font-weight: normal;
   padding-top: 10px;
   padding-left: 15px;
   padding-right: 20px;
-  float: right;
-  width: min(80%, 100% - 210px);
-  display: inline-block;
 }
 
 .items-filelist {
-  width: max(20% - 10px, 200px);
+  grid-column: 1;
+  grid-row: 2;
   min-width: 16px;
   margin-top: 20px;
-  float: left;
-  border: 1px;
 }
 
 .items-fileeditor {
-  width: min(80%, 100% - 210px);
+  grid-column: 2;
+  grid-row: 2;
   margin-top: 10px;
   padding-left: 10px;
   padding-right: 5px;
-  float: right;
 }
 
 .tab-shng > a {

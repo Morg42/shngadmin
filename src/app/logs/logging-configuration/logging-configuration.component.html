@@ -1,80 +1,54 @@
-<!--
-<div style="margin-left: 10px; margin-right: 10px;">
--->
 <div class="shngbody">
-  <div style="margin-top: 5px">
-    <table>
-      <tbody>
-        <tr>
-          <td>
-            <div style="font-weight: normal; padding-top: 10px; padding-left: 10px; padding-right: 5px">
-              {{ 'LOGGING.CONFIG_FILE' | translate }}: <strong>../etc/{{ myEditFilename }}.yaml</strong>
-              <button
-                pButton
-                label="{{ 'BUTTON.SAVE' | translate }}"
-                type="button"
-                [disabled]="myTextarea === myTextareaOrig"
-                icon="fa fa-check"
-                style="margin-right: 0"
-                (click)="saveConfig()"
-                class="float-sm-right ui-button-success"
-              ></button>
-              <button
-                pButton
-                label="{{ 'BUTTON.DISCARD' | translate }}"
-                type="button"
-                [disabled]="myEditFilename === '' || myTextarea === myTextareaOrig"
-                icon="fa fa-times"
-                style="margin-right: 10px"
-                (click)="this.myTextarea = this.myTextareaOrig"
-                class="float-sm-right ui-button-secondary"
-              ></button>
-              <button
-                pButton
-                label="{{ 'BUTTON.HELP' | translate }}"
-                type="button"
-                [disabled]="false"
-                icon="fa fa-info"
-                style="margin-right: 10px"
-                (click)="this.editorHelp_display = true"
-                class="float-sm-right ui-button-success"
-              ></button>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <div style="margin-top: 10px; padding-left: 10px; padding-right: 5px">
-              <app-code-editor
-                #codeeditor
-                [language]="'yaml'"
-                [readOnly]="false"
-                [(value)]="myTextarea"
-                [foldable]="true"
-                style="height: calc(100vh - 160px)"
-              ></app-code-editor>
-              @if (saveResult) {
-                @if (saveResult.result === 'ok') {
-                  <p-message severity="success" [text]="'LOGGING.SAVE_OK' | translate" styleClass="mt-2 w-full" />
-                } @else if (saveResult.config_restored) {
-                  <p-message
-                    severity="warn"
-                    [text]="'LOGGING.SAVE_ERROR_RESTORED' | translate"
-                    styleClass="mt-2 w-full"
-                  />
-                } @else {
-                  <p-message
-                    severity="error"
-                    [text]="'LOGGING.SAVE_ERROR_NO_RESTORE' | translate"
-                    styleClass="mt-2 w-full"
-                  />
-                }
-              }
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="button-row">
+    {{ 'LOGGING.CONFIG_FILE' | translate }}: <strong>../etc/{{ myEditFilename }}.yaml</strong>
+    <button
+      pButton
+      label="{{ 'BUTTON.SAVE' | translate }}"
+      type="button"
+      [disabled]="myTextarea === myTextareaOrig"
+      icon="fa fa-check"
+      style="margin-right: 0"
+      (click)="saveConfig()"
+      class="float-sm-right ui-button-success"
+    ></button>
+    <button
+      pButton
+      label="{{ 'BUTTON.DISCARD' | translate }}"
+      type="button"
+      [disabled]="myEditFilename === '' || myTextarea === myTextareaOrig"
+      icon="fa fa-times"
+      style="margin-right: 10px"
+      (click)="this.myTextarea = this.myTextareaOrig"
+      class="float-sm-right ui-button-secondary"
+    ></button>
+    <button
+      pButton
+      label="{{ 'BUTTON.HELP' | translate }}"
+      type="button"
+      [disabled]="false"
+      icon="fa fa-info"
+      style="margin-right: 10px"
+      (click)="this.editorHelp_display = true"
+      class="float-sm-right ui-button-success"
+    ></button>
+  </div>
+  <div class="editor-area">
+    <app-code-editor
+      #codeeditor
+      [language]="'yaml'"
+      [readOnly]="false"
+      [(value)]="myTextarea"
+      [foldable]="true"
+    ></app-code-editor>
+    @if (saveResult) {
+      @if (saveResult.result === 'ok') {
+        <p-message severity="success" [text]="'LOGGING.SAVE_OK' | translate" styleClass="mt-2 w-full" />
+      } @else if (saveResult.config_restored) {
+        <p-message severity="warn" [text]="'LOGGING.SAVE_ERROR_RESTORED' | translate" styleClass="mt-2 w-full" />
+      } @else {
+        <p-message severity="error" [text]="'LOGGING.SAVE_ERROR_NO_RESTORE' | translate" styleClass="mt-2 w-full" />
+      }
+    }
   </div>
 </div>
 

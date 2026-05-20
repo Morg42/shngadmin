@@ -1,12 +1,27 @@
 .shngbody {
+  display: flex;
+  flex-direction: column;
   height: calc(100vh - var(--navbar-height));
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 10px;
   overflow: hidden;
-  margin-left: 10px;
-  margin-right: 10px;
 }
 
-.tab-shng > a {
-  border-bottom: none !important;
-  outline: 0 !important;
-  color: rgb(160, 160, 160);
+.button-row {
+  flex-shrink: 0;
+  padding-top: 10px;
+  padding-bottom: 8px;
+}
+
+.editor-area {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-area app-code-editor {
+  flex: 1;
+  min-height: 0;
 }

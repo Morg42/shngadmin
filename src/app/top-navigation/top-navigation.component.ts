@@ -129,7 +129,16 @@ export class TopNavigationComponent implements OnInit {
 
   toggleDrawer() {
     this.drawerOpen = !this.drawerOpen;
-    if (!this.drawerOpen) {
+    if (this.drawerOpen) {
+      // Pre-expand the section whose child route is currently active
+      const url = this.router.url;
+      for (const entry of this.menu) {
+        if (entry.items.some((sub) => sub.routerLink && url.startsWith(sub.routerLink[0]))) {
+          this.drawerOpenSections.add(entry.label);
+          break;
+        }
+      }
+    } else {
       this.drawerOpenSections.clear();
     }
     this.cdr.markForCheck();

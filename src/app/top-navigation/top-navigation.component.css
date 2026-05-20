@@ -322,6 +322,10 @@ body {
   color: var(--menu-textcolor-hover);
 }
 
+.drawer-section.active .drawer-section-header {
+  background-color: var(--menu-background-color-active);
+}
+
 .drawer-section-header i {
   transition: transform 0.2s ease;
   font-size: 0.8em;

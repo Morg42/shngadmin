@@ -192,6 +192,7 @@ export class LoggerLineComponent {
     this.log.log('choosableHandlers1', this.choosableHandlers1);
     this.log.log('choosableHandlers2', this.choosableHandlers2);
 
+    this.handlersChangeEnabled = true;
     this.chooseHandlers_display = true;
   }
 

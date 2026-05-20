@@ -180,44 +180,18 @@
       <div class="col1" style="border: 0.5px solid lightgrey">
         @for (hndlr of choosableHandlers1; track hndlr.key) {
           <div>
-            @if (!hndlr.disabled || logger.propagate === false) {
-              &nbsp;
-              <p-checkbox name="group" [value]="true" [(ngModel)]="hndlr.value" [inputId]="hndlr.key"></p-checkbox>
-              <label [for]="hndlr.key">{{ hndlr.name }}</label>
-            }
-            @if (!(!hndlr.disabled || logger.propagate === false)) {
-              &nbsp;
-              <p-checkbox
-                [disabled]="true"
-                name="group"
-                [value]="true"
-                [(ngModel)]="hndlr.value"
-                [inputId]="hndlr.key"
-              ></p-checkbox>
-              <label style="color: darkgrey" [for]="hndlr.key">{{ hndlr.name }}</label>
-            }
+            &nbsp;
+            <p-checkbox name="group" [value]="true" [(ngModel)]="hndlr.value" [inputId]="hndlr.key"></p-checkbox>
+            <label [style.color]="hndlr.disabled ? 'darkgrey' : null" [for]="hndlr.key">{{ hndlr.name }}</label>
           </div>
         }
       </div>
       <div class="col2" style="border: 0.5px solid lightgrey">
         @for (hndlr of choosableHandlers2; track hndlr.key) {
           <div>
-            @if (!hndlr.disabled || logger.propagate === false) {
-              &nbsp;
-              <p-checkbox name="group" [value]="true" [(ngModel)]="hndlr.value" [inputId]="hndlr.key"></p-checkbox>
-              <label [for]="hndlr.key">{{ hndlr.name }}</label>
-            }
-            @if (!(!hndlr.disabled || logger.propagate === false)) {
-              &nbsp;
-              <p-checkbox
-                [disabled]="true"
-                name="group"
-                [value]="true"
-                [(ngModel)]="hndlr.value"
-                [inputId]="hndlr.key"
-              ></p-checkbox>
-              <label style="color: darkgrey" [for]="hndlr.key">{{ hndlr.name }}</label>
-            }
+            &nbsp;
+            <p-checkbox name="group" [value]="true" [(ngModel)]="hndlr.value" [inputId]="hndlr.key"></p-checkbox>
+            <label [style.color]="hndlr.disabled ? 'darkgrey' : null" [for]="hndlr.key">{{ hndlr.name }}</label>
           </div>
         }
       </div>

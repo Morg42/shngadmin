@@ -10,7 +10,15 @@
     <h3>
       {{ 'PLUGIN.PLUGIN_CONFIGURATION' | translate }}
       @if (spinner_display) {
-        <span style="margin-left: 1rem; font-size: 0.75rem; font-weight: normal; color: #666; vertical-align: middle">
+        <span
+          style="
+            margin-left: 1rem;
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-normal);
+            color: var(--text-muted);
+            vertical-align: middle;
+          "
+        >
           <p-progressSpinner
             [style]="{ width: '18px', height: '18px' }"
             styleClass="plugin-loading-spinner"
@@ -21,7 +29,7 @@
       <button
         pButton
         type="button"
-        style="margin-left: 0; margin-top: 5px; font-size: medium"
+        style="margin-left: 0; margin-top: 5px"
         id="btn-monitor"
         [disabled]="false"
         (click)="addPluginDialog()"
@@ -95,7 +103,7 @@
                   (click)="loadPlugin(row.confname)"
                   label="{{ 'BUTTON.LOAD' | translate }}"
                   class="ui-button-success btn-sm"
-                  style="font-size: small"
+                  class="shng-text-sm"
                 ></button>
               }
               @if (row.loaded) {
@@ -106,7 +114,7 @@
                   (click)="reloadPlugin(row.confname)"
                   label="{{ 'BUTTON.RELOAD' | translate }}"
                   class="ui-button-warning btn-sm"
-                  style="font-size: small"
+                  class="shng-text-sm"
                 ></button>
               }
             </td>
@@ -119,7 +127,7 @@
                   (click)="unloadPlugin(row.confname)"
                   label="{{ 'BUTTON.UNLOAD' | translate }}"
                   class="ui-button-secondary btn-sm"
-                  style="font-size: small"
+                  class="shng-text-sm"
                 ></button>
               }
             </td>
@@ -252,17 +260,17 @@
   <ng-template pTemplate="footer">
     @if (dialog_readonly === false) {
       @if (save_error) {
-        <span style="color: var(--shng-danger); font-size: small; margin-right: 1rem">
+        <span style="color: var(--shng-danger); font-size: var(--font-size-sm); margin-right: 1rem">
           <i class="fa fa-exclamation-triangle"></i>&nbsp;{{ save_error }}
         </span>
       }
       @if (load_error) {
-        <span style="color: var(--shng-danger); font-size: small; margin-right: 1rem">
+        <span style="color: var(--shng-danger); font-size: var(--font-size-sm); margin-right: 1rem">
           <i class="fa fa-exclamation-triangle"></i>&nbsp;{{ load_error }}
         </span>
       }
       @if (!is_new_plugin && !load_error) {
-        <a style="font-size: small">&nbsp; &nbsp; &nbsp;</a>
+        <a class="shng-text-sm">&nbsp; &nbsp; &nbsp;</a>
       }
       @if (!is_new_plugin) {
         <button
@@ -384,7 +392,7 @@
     @for (plugintype of plugintypes; track plugintype; let i = $index) {
       <p-accordion-panel [value]="i">
         <p-accordion-header (click)="pluginadd.maximize()">
-          <span style="font-size: larger"
+          <span class="shng-text-lg"
             ><img
               [src]="'assets/img/plugin_' + plugintype + '.svg'"
               style="width: 30px; cursor: pointer"

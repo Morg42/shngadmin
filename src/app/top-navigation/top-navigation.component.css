@@ -59,7 +59,7 @@ body {
   text-align: center;
   padding: 14px 10px;
   text-decoration: none;
-  font-size: 17px;
+  font-size: var(--font-size-nav);
 }
 
 .topnav .icon {
@@ -73,7 +73,7 @@ body {
 }
 
 .dropdown .dropbtn {
-  font-size: 17px;
+  font-size: var(--font-size-nav);
   border: none;
   outline: none;
   color: var(--menu-textcolor);
@@ -136,7 +136,7 @@ body {
 }
 
 .dropright .droprightbtn {
-  font-size: 17px;
+  font-size: var(--font-size-nav);
   border: none;
   outline: none;
   color: var(--menu-textcolor);
@@ -196,7 +196,7 @@ body {
 .dropdown-content a.active {
   background-color: #ccc;
   color: black;
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
 }
 
 .navbar .logo {

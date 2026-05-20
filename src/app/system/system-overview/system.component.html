@@ -2,6 +2,7 @@
   <div style="position: relative">
     @if (pypiPending) {
       <div
+        class="shng-text-muted"
         style="
           position: absolute;
           top: 0.45rem;
@@ -10,8 +11,7 @@
           display: flex;
           align-items: center;
           gap: 0.5rem;
-          font-size: 0.95rem;
-          color: #666;
+          font-size: var(--font-size-sm);
         "
       >
         <p-progressSpinner
@@ -225,7 +225,7 @@
                     <th scope="col" style="min-width: 150px; width: 250px; border-top: 0">
                       {{ 'SYSTEM.MINIMUM VERSION' | translate }}
                     </th>
-                    <th scope="col" style="min-width: 150px; width: 250px; border-top: 0; background-color: #f7f7f7">
+                    <th scope="col" class="shng-cell-alt" style="min-width: 150px; width: 250px; border-top: 0">
                       {{ 'SYSTEM.INSTALLED VERSION' | translate }}
                     </th>
                     <th scope="col" style="min-width: 150px; width: 250px; border-top: 0">
@@ -245,7 +245,7 @@
                   @if (loading) {
                     <tr>
                       <td colspan="5">
-                        <p style="padding-top: 100px; text-align: center; font-size: x-large">Loading...</p>
+                        <p class="shng-text-xl" style="padding-top: 100px; text-align: center">Loading...</p>
                       </td>
                     </tr>
                   }
@@ -269,31 +269,19 @@
                         </td>
 
                         @if (pypipackage.vers_ok && pypipackage.vers_recent) {
-                          <td
-                            class="py-1"
-                            style="
-                              min-width: 150px;
-                              width: 250px;
-                              background-color: #f7f7f7;
-                              color: green;
-                              font-weight: bold;
-                            "
-                          >
+                          <td class="py-1 shng-cell-alt shng-status-ok" style="min-width: 150px; width: 250px">
                             {{ pypipackage.vers_installed }}
                             <i title="{{ 'SYSTEM.VERS_OK_RECENT' | translate }}" class="fa fa-check-circle"></i>
                           </td>
                         }
                         @if (pypipackage.vers_ok && !pypipackage.vers_recent) {
-                          <td class="py-1" style="min-width: 150px; width: 250px; background-color: #f7f7f7">
+                          <td class="py-1 shng-cell-alt" style="min-width: 150px; width: 250px">
                             {{ pypipackage.vers_installed }}
                             <i title="{{ 'SYSTEM.VERS_OK_NOT_RECENT' | translate }}" class="far fa-check-circle"></i>
                           </td>
                         }
                         @if (!pypipackage.vers_ok && pypipackage.vers_installed === '-') {
-                          <td
-                            class="py-1"
-                            style="min-width: 150px; background-color: #f7f7f7; color: red; font-weight: bold"
-                          >
+                          <td class="py-1" class="shng-cell-alt shng-status-error" style="min-width: 150px">
                             {{ 'SYSTEM.MISSING' | translate }}
                             <i title="{{ 'SYSTEM.VERS_MISSING' | translate }}" class="fa fa-times-circle"></i>
                           </td>
@@ -301,7 +289,8 @@
                         @if (!pypipackage.vers_ok && pypipackage.vers_installed !== '-') {
                           <td
                             class="py-1"
-                            style="min-width: 150px; width: 250px; background-color: #f7f7f7; color: red"
+                            class="shng-cell-alt"
+                            style="min-width: 150px; width: 250px; color: var(--shng-red)"
                           >
                             {{ pypipackage.vers_installed }}
                           </td>
@@ -313,7 +302,7 @@
                           </td>
                         }
                         @if (!pypipackage.pypi_version_ok && !pypipackage.vers_recent) {
-                          <td class="py-1" style="min-width: 150px; width: 250px; color: green; font-weight: bold">
+                          <td class="py-1" class="shng-status-ok" style="min-width: 150px; width: 250px">
                             {{ pypipackage.vers_req_max || '*' }}
                             <i title="{{ 'SYSTEM.VERS_OK_MAX_NOT_RECENT' | translate }}" class="fa fa-check-circle"></i>
                           </td>
@@ -327,13 +316,13 @@
                         @if (
                           pypipackage.pypi_version_ok && !pypipackage.vers_recent && pypipackage.pypi_version !== '--'
                         ) {
-                          <td class="py-1" style="min-width: 200px; width: 250px; color: green; font-weight: bold">
+                          <td class="py-1" class="shng-status-ok" style="min-width: 200px; width: 250px">
                             {{ pypipackage.pypi_version }}
                             <i title="{{ 'SYSTEM.VERS_OK_RECENT' | translate }}" class="fa fa-check-circle"></i>
                           </td>
                         }
                         @if (!pypipackage.pypi_version_ok && pypipackage.pypi_version !== '--') {
-                          <td class="py-1" style="min-width: 200px; width: 250px; color: red">
+                          <td class="py-1" style="min-width: 200px; width: 250px; color: var(--shng-red)">
                             {{ pypipackage.pypi_version || 'SYSTEM.UNKNOWN' | translate }}
                             <i title="{{ 'SYSTEM.VERS_NOT_OK' | translate }}" class="far fa-times-circle"></i>
                           </td>
@@ -372,25 +361,25 @@
 
                           <td class="py-1">{{ pypipackage.vers_req_min || '*' }}</td>
                           @if (pypipackage.vers_ok && pypipackage.vers_recent) {
-                            <td class="py-1" style="background-color: #f7f7f7; color: green; font-weight: bold">
+                            <td class="py-1" class="shng-cell-alt shng-status-ok">
                               {{ pypipackage.vers_installed }}
                               <i title="{{ 'SYSTEM.VERS_OK_RECENT' | translate }}" class="fa fa-check-circle"></i>
                             </td>
                           }
                           @if (pypipackage.vers_ok && !pypipackage.vers_recent) {
-                            <td class="py-1" style="background-color: #f7f7f7">
+                            <td class="py-1 shng-cell-alt">
                               {{ pypipackage.vers_installed }}
                               <i title="{{ 'SYSTEM.VERS_OK_NOT_RECENT' | translate }}" class="far fa-check-circle"></i>
                             </td>
                           }
                           @if (!pypipackage.vers_ok && pypipackage.vers_installed === '-') {
-                            <td class="py-1" style="background-color: #f7f7f7; color: red; font-weight: bold">
+                            <td class="py-1" class="shng-cell-alt shng-status-error">
                               {{ 'SYSTEM.MISSING' | translate }}
                               <i title="{{ 'SYSTEM.VERS_MISSING' | translate }}" class="fa fa-times-circle"></i>
                             </td>
                           }
                           @if (!pypipackage.vers_ok && pypipackage.vers_installed !== '-') {
-                            <td class="py-1" style="background-color: #f7f7f7; color: red">
+                            <td class="py-1" class="shng-cell-alt shng-status-error">
                               {{ pypipackage.vers_installed }}
                             </td>
                           }
@@ -399,7 +388,7 @@
                             <td class="py-1">{{ pypipackage.vers_req_max || '*' }}</td>
                           }
                           @if (!pypipackage.pypi_version_ok && !pypipackage.vers_recent) {
-                            <td class="py-1" style="color: green; font-weight: bold">
+                            <td class="py-1 shng-status-ok">
                               {{ pypipackage.vers_req_max || '*' }}
                               <i
                                 title="{{ 'SYSTEM.VERS_OK_MAX_NOT_RECENT' | translate }}"
@@ -419,13 +408,13 @@
                           @if (
                             pypipackage.pypi_version_ok && !pypipackage.vers_recent && pypipackage.pypi_version !== '--'
                           ) {
-                            <td class="py-1" style="color: green; font-weight: bold">
+                            <td class="py-1 shng-status-ok">
                               {{ pypipackage.pypi_version }}
                               <i title="{{ 'SYSTEM.VERS_OK_RECENT' | translate }}" class="fa fa-check-circle"></i>
                             </td>
                           }
                           @if (!pypipackage.pypi_version_ok && pypipackage.pypi_version !== '--') {
-                            <td class="py-1" style="color: red">
+                            <td class="py-1" class="shng-status-error">
                               {{ pypipackage.pypi_version || 'SYSTEM.UNKNOWN' | translate }}
                               <i title="{{ 'SYSTEM.VERS_NOT_OK' | translate }}" class="far fa-times-circle"></i>
                             </td>
@@ -467,7 +456,7 @@
                           <td class="py-1">{{ pypipackage.vers_req_min || '*' }}</td>
 
                           @if (pypipackage.vers_ok && pypipackage.vers_recent) {
-                            <td class="py-1" style="color: green; font-weight: bold">
+                            <td class="py-1 shng-status-ok">
                               {{ pypipackage.vers_installed }}
                               <i title="{{ 'SYSTEM.VERS_OK_RECENT' | translate }}" class="fa fa-check-circle"></i>
                             </td>
@@ -479,20 +468,20 @@
                             </td>
                           }
                           @if (!pypipackage.vers_ok && pypipackage.vers_installed === '-') {
-                            <td class="py-1" style="color: red; font-weight: bold">
+                            <td class="py-1 shng-status-error">
                               {{ 'SYSTEM.MISSING' | translate }}
                               <i title="{{ 'SYSTEM.VERS_MISSING' | translate }}" class="fa fa-times-circle"></i>
                             </td>
                           }
                           @if (!pypipackage.vers_ok && pypipackage.vers_installed !== '-') {
-                            <td class="py-1" style="color: red">{{ pypipackage.vers_installed }}</td>
+                            <td class="py-1" class="shng-status-error">{{ pypipackage.vers_installed }}</td>
                           }
 
                           @if (pypipackage.pypi_version_ok || pypipackage.vers_recent) {
                             <td class="py-1">{{ pypipackage.vers_req_max || '*' }}</td>
                           }
                           @if (!pypipackage.pypi_version_ok && !pypipackage.vers_recent) {
-                            <td class="py-1" style="color: green; font-weight: bold">
+                            <td class="py-1 shng-status-ok">
                               {{ pypipackage.vers_req_max || '*' }}
                               <i
                                 title="{{ 'SYSTEM.VERS_OK_MAX_NOT_RECENT' | translate }}"
@@ -515,10 +504,10 @@
                           @if (
                             pypipackage.pypi_version_ok && !pypipackage.vers_recent && pypipackage.pypi_version !== '--'
                           ) {
-                            <td class="py-1" style="color: green; font-weight: bold">{{ pypipackage.pypi_version }}</td>
+                            <td class="py-1 shng-status-ok">{{ pypipackage.pypi_version }}</td>
                           }
                           @if (!pypipackage.pypi_version_ok && pypipackage.pypi_version !== '--') {
-                            <td class="py-1" style="color: red">
+                            <td class="py-1" class="shng-status-error">
                               {{ pypipackage.pypi_version || 'SYSTEM.UNKNOWN' | translate }}
                               <i title="{{ 'SYSTEM.VERS_NOT_OK' | translate }}" class="far fa-times-circle"></i>
                             </td>
@@ -559,7 +548,7 @@
                           <td class="py-1">{{ pypipackage.vers_req_min || '*' }}</td>
 
                           @if (pypipackage.vers_ok && pypipackage.vers_recent) {
-                            <td class="py-1" style="color: green; font-weight: bold">
+                            <td class="py-1 shng-status-ok">
                               {{ pypipackage.vers_installed }}
                               <i title="{{ 'SYSTEM.VERS_OK_RECENT' | translate }}" class="fa fa-check-circle"></i>
                             </td>
@@ -571,20 +560,20 @@
                             </td>
                           }
                           @if (!pypipackage.vers_ok && pypipackage.vers_installed === '-') {
-                            <td class="py-1" style="color: red; font-weight: bold">
+                            <td class="py-1 shng-status-error">
                               {{ 'SYSTEM.MISSING' | translate }}
                               <i title="{{ 'SYSTEM.VERS_MISSING' | translate }}" class="fa fa-times-circle"></i>
                             </td>
                           }
                           @if (!pypipackage.vers_ok && pypipackage.vers_installed !== '-') {
-                            <td class="py-1" style="color: red">{{ pypipackage.vers_installed }}</td>
+                            <td class="py-1" class="shng-status-error">{{ pypipackage.vers_installed }}</td>
                           }
 
                           @if (pypipackage.pypi_version_ok || pypipackage.vers_recent) {
                             <td class="py-1">{{ pypipackage.vers_req_max || '*' }}</td>
                           }
                           @if (!pypipackage.pypi_version_ok && !pypipackage.vers_recent) {
-                            <td class="py-1" style="color: green; font-weight: bold">
+                            <td class="py-1 shng-status-ok">
                               {{ pypipackage.vers_req_max || '*' }}
                               <i
                                 title="{{ 'SYSTEM.VERS_OK_MAX_NOT_RECENT' | translate }}"
@@ -602,10 +591,10 @@
                           @if (
                             pypipackage.pypi_version_ok && !pypipackage.vers_recent && pypipackage.pypi_version !== '--'
                           ) {
-                            <td class="py-1" style="color: green; font-weight: bold">{{ pypipackage.pypi_version }}</td>
+                            <td class="py-1 shng-status-ok">{{ pypipackage.pypi_version }}</td>
                           }
                           @if (!pypipackage.pypi_version_ok && pypipackage.pypi_version !== '--') {
-                            <td class="py-1" style="color: red">
+                            <td class="py-1" class="shng-status-error">
                               {{ pypipackage.pypi_version || 'SYSTEM.UNKNOWN' | translate }}
                               <i title="{{ 'SYSTEM.VERS_NOT_OK' | translate }}" class="far fa-times-circle"></i>
                             </td>

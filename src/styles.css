@@ -9,12 +9,12 @@
    built-in 0.54 opacity that would otherwise shift the apparent colour. */
 input::placeholder,
 textarea::placeholder {
-  color: #c0c0c0 !important;
+  color: var(--text-placeholder) !important;
   opacity: 1 !important;
 }
 
 .p-select-label.p-placeholder {
-  color: #c0c0c0 !important;
+  color: var(--text-placeholder) !important;
 }
 
 /* Hide spinners for number fields */
@@ -32,9 +32,11 @@ input::-webkit-inner-spin-button {
 :root {
   color-scheme: light;
 
+  /* Layout */
   --navbar-height: 60px;
   --tab-height: 41px;
 
+  /* Brand / status colours */
   --shng-blue: #709cc2;
   --shng-red: #c40808;
   --shng-green: green;
@@ -45,6 +47,36 @@ input::-webkit-inner-spin-button {
   --shng-border: #dee2e5;
   --shng-secondary-button: #e0e0e0;
   --shng-toggle-off: #a9a9a9;
+  --shng-cell-alt-bg: #f7f7f7;
+
+  /* ── Typography ─────────────────────────────── */
+  --font-family-base:
+    'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-family-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+
+  /* Scale */
+  --font-size-xs: 0.75rem; /* 12px — captions, footnotes   */
+  --font-size-sm: 0.875rem; /* 14px — secondary labels       */
+  --font-size-base: 1rem; /* 16px — body, form fields      */
+  --font-size-nav: 1.0625rem; /* 17px — navigation             */
+  --font-size-lg: 1.25rem; /* 20px — section headings       */
+  --font-size-xl: 1.5rem; /* 24px — page headings          */
+
+  /* Weights (Roboto only ships 400 + 700) */
+  --font-weight-normal: 400;
+  --font-weight-bold: 700;
+
+  --line-height-base: 1.5;
+  --line-height-tight: 1.25;
+
+  /* Text colours */
+  --text-primary: #212529; /* body text                     */
+  --text-secondary: #4d4d4d; /* headings, strong emphasis     */
+  --text-muted: #727272; /* subdued labels, group names   */
+  --text-caption: #888888; /* icons, meta, timestamps       */
+  --text-placeholder: #c0c0c0; /* input placeholders            */
+  --text-link: #337ab7; /* links                         */
+  --text-on-dark: #ffffff; /* text on coloured backgrounds  */
 }
 
 *,
@@ -55,18 +87,11 @@ input::-webkit-inner-spin-button {
 
 body {
   margin: 0;
-  font-family:
-    'Roboto',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    'Helvetica Neue',
-    Arial,
-    sans-serif;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  color: #212529;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-base);
+  color: var(--text-primary);
 }
 
 h1,
@@ -100,7 +125,7 @@ textarea {
   white-space: pre;
   overflow-wrap: normal;
   overflow-x: scroll;
-  font-family: monospace !important;
+  font-family: var(--font-family-mono) !important;
 }
 
 /* for PrimeNG */
@@ -168,8 +193,8 @@ textarea {
 }
 
 .btn-primary {
-  font-weight: 900;
-  color: #fff;
+  font-weight: var(--font-weight-bold);
+  color: var(--text-on-dark);
   background-color: var(--shng-blue) !important;
   border-color: var(--shng-blue);
 }
@@ -180,7 +205,7 @@ textarea {
 }
 
 .ui-button-success {
-  font-weight: 900;
+  font-weight: var(--font-weight-bold);
   background-color: var(--shng-blue) !important;
 }
 
@@ -206,7 +231,7 @@ textarea {
 }
 
 .ui-fileupload-buttonbar .ui-button {
-  font-weight: 900;
+  font-weight: var(--font-weight-bold);
   background-color: var(--shng-blue) !important;
 }
 
@@ -215,7 +240,7 @@ ui-inputswitch {
 }
 
 .fa-icon-grey {
-  color: #888888;
+  color: var(--text-caption);
 }
 
 /* TurboTable */
@@ -340,7 +365,7 @@ plusIconlist-group-item.py-2.node-tree.node-selected {
 }
 
 .text-shng {
-  color: #337ab7 !important;
+  color: var(--text-link) !important;
 }
 a.text-shng:focus,
 a.text-shng:hover {
@@ -348,8 +373,8 @@ a.text-shng:hover {
 }
 
 .text-shng-bold {
-  color: #337ab7 !important;
-  font-weight: bold !important;
+  color: var(--text-link) !important;
+  font-weight: var(--font-weight-bold) !important;
 }
 
 .btn-shng {
@@ -451,14 +476,14 @@ a.text-shng:hover {
 }
 
 .shng_headline {
-  color: #808080;
-  font-size: 150%;
-  font-weight: bold;
+  color: var(--text-caption);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
 }
 
 .shng_heading {
-  color: #4d4d4d;
-  font-weight: bold;
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-bold);
   border-top: 0;
 }
 
@@ -650,9 +675,9 @@ a.text-shng:hover {
   box-sizing: border-box;
   height: calc(1.5em + 0.75rem + 2px);
   padding: 0.375rem 0.75rem;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-base);
   color: #495057;
   background-color: #fff;
   border: 1px solid #ced4da;
@@ -672,15 +697,15 @@ a.text-shng:hover {
    this block adds the structural rules they both depend on.  */
 .btn {
   display: inline-block;
-  font-weight: 400;
+  font-weight: var(--font-weight-normal);
   text-align: center;
   white-space: nowrap;
   vertical-align: middle;
   user-select: none;
   border: 1px solid transparent;
   padding: 0.375rem 0.75rem;
-  font-size: 1rem;
-  line-height: 1.5;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
   border-radius: 0.25rem;
   cursor: pointer;
   box-sizing: border-box;
@@ -698,12 +723,12 @@ a.text-shng:hover {
 }
 .btn-sm {
   padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   border-radius: 0.2rem;
 }
 .btn-lg {
   padding: 0.5rem 1rem;
-  font-size: 1.25rem;
+  font-size: var(--font-size-lg);
   border-radius: 0.3rem;
 }
 .btn-block {
@@ -761,8 +786,8 @@ a.text-shng:hover {
 
 .p-tree {
   border: none !important;
-  font-size: 16px;
-  font-weight: 400;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
 }
 
 .p-tree-root {
@@ -867,14 +892,14 @@ a.text-shng:hover {
   gap: 10px;
   padding: 8px 16px;
   background: #7a3f00;
-  color: #fff;
-  font-size: 0.9rem;
+  color: var(--text-on-dark);
+  font-size: var(--font-size-sm);
 }
 .offline-icon {
-  font-size: 1.1rem;
+  font-size: var(--font-size-base);
 }
 .offline-message {
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
 }
 .offline-countdown {
   margin-left: 4px;
@@ -886,10 +911,51 @@ a.text-shng:hover {
   border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 4px;
   background: transparent;
-  color: #fff;
+  color: var(--text-on-dark);
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
 }
 .offline-retry:hover {
   background: rgba(255, 255, 255, 0.15);
+}
+
+/* ================================================================
+   Typography utilities — single-source overrides for font size,
+   weight, and semantic text colour. Reference the variables above
+   to keep all adjustments in one place.
+   ================================================================ */
+
+.shng-text-xs {
+  font-size: var(--font-size-xs);
+}
+.shng-text-sm {
+  font-size: var(--font-size-sm);
+}
+.shng-text-lg {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+}
+.shng-text-xl {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.shng-text-muted {
+  color: var(--text-muted);
+}
+.shng-text-caption {
+  color: var(--text-caption);
+}
+
+/* Status colours used on data cells in system-overview */
+.shng-status-ok {
+  color: var(--shng-green);
+  font-weight: var(--font-weight-bold);
+}
+.shng-status-error {
+  color: var(--shng-red);
+  font-weight: var(--font-weight-bold);
+}
+.shng-cell-alt {
+  background-color: var(--shng-cell-alt-bg);
 }

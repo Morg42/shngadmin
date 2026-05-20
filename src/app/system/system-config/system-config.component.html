@@ -3,7 +3,7 @@
 -->
 <div class="shngbody">
   <div class="body-header">
-    <h3 style="color: #707070; margin-left: 5px">
+    <h3 style="color: var(--text-muted); margin-left: 5px">
       {{ 'SYSTEM.CONFIGURATION' | translate }}
     </h3>
   </div>
@@ -261,10 +261,10 @@
   </div>
   <div class="body-footer">
     @if (dialog_readonly === false && restart_core_button) {
-      <a style="font-size: small">{{ 'RESTART FOR CHANGES' | translate }}</a>
+      <a class="shng-text-sm">{{ 'RESTART FOR CHANGES' | translate }}</a>
     }
     @if (dialog_readonly === false && !restart_core_button) {
-      <a style="font-size: small">&nbsp;</a>
+      <a class="shng-text-sm">&nbsp;</a>
     }
     <br />
     <button
@@ -395,7 +395,7 @@
     <tr>
       <td style="padding-right: 10px"></td>
       <td>
-        <input [(ngModel)]="pwd_show" type="checkbox" style="font-size: small" id="showtext" />{{
+        <input [(ngModel)]="pwd_show" type="checkbox" class="shng-text-sm" id="showtext" />{{
           'SYSTEM.SHOW_PASSWORDS' | translate
         }}
       </td>
@@ -403,7 +403,7 @@
   </table>
 
   <ng-template pTemplate="footer">
-    <p style="text-align: left; font-size: small">{{ 'SYSTEM.REMEMBER TO SAVE CHANGES' | translate }}</p>
+    <p style="text-align: left" class="shng-text-sm">{{ 'SYSTEM.REMEMBER TO SAVE CHANGES' | translate }}</p>
     <button
       pButton
       type="button"

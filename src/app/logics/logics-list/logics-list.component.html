@@ -12,7 +12,7 @@
               <button
                 pButton
                 type="button"
-                style="margin-left: 0; margin-left: 10px; margin-top: 10px; font-size: medium"
+                style="margin-left: 0; margin-left: 10px; margin-top: 10px"
                 id="newLogicButton"
                 [disabled]="false"
                 (click)="newLogic()"
@@ -35,15 +35,13 @@
                   <p-accordion-panel [value]="$index">
                     <p-accordion-header>
                       @if (group.name === '') {
-                        <span style="font-size: large; font-weight: bold">{{
-                          'LOGICS.NOGROUP_TITLE' | translate
-                        }}</span>
+                        <span class="shng-text-lg">{{ 'LOGICS.NOGROUP_TITLE' | translate }}</span>
                       }
                       @if (group.name !== '' && group.title !== '') {
-                        <span style="font-size: large; font-weight: bold">{{ group.name }} - {{ group.title }}</span>
+                        <span class="shng-text-lg">{{ group.name }} - {{ group.title }}</span>
                       }
                       @if (group.name !== '' && group.title === '') {
-                        <span style="font-size: large; font-weight: bold">{{ group.name }}</span>
+                        <span class="shng-text-lg">{{ group.name }}</span>
                       }
                     </p-accordion-header>
                     <p-accordion-content>
@@ -94,7 +92,7 @@
                                         </td>
                                         <td class="p-1">
                                           {{ logic.name }}<br />
-                                          <p style="font-size: 12px">{{ logic.description }}</p>
+                                          <p class="shng-text-xs">{{ logic.description }}</p>
                                         </td>
                                         <td class="p-1">{{ logic.next_exec }}</td>
                                         <td class="p-1">{{ logic.cycle }}</td>
@@ -108,7 +106,7 @@
                                         </td>
                                         <td class="p-1">
                                           {{ logic.name }}<br />
-                                          <p style="font-size: 12px">{{ logic.description }}</p>
+                                          <p class="shng-text-xs">{{ logic.description }}</p>
                                         </td>
                                         <td class="p-1 shng-color-disabled">{{ logic.next_exec }}</td>
                                         <td class="p-1 shng-color-disabled">{{ logic.cycle }}</td>
@@ -286,7 +284,7 @@
                         </td>
                         <td class="p-1">
                           {{ logic.name }}<br />
-                          <p style="font-size: 12px">{{ logic.description }}</p>
+                          <p class="shng-text-xs">{{ logic.description }}</p>
                         </td>
                         <td class="p-1">{{ logic.group }}</td>
                         <td class="p-1"></td>
@@ -340,7 +338,7 @@
               <button
                 pButton
                 type="button"
-                style="margin-left: 0; margin-left: 10px; margin-top: 10px; font-size: medium"
+                style="margin-left: 0; margin-left: 10px; margin-top: 10px"
                 id="newLogicButton_ng"
                 [disabled]="false"
                 (click)="newLogic()"
@@ -613,7 +611,7 @@
                         </td>
                         <td class="p-1">
                           {{ logic.name }}<br />
-                          <p style="font-size: 12px">{{ logic.description }}</p>
+                          <p class="shng-text-xs">{{ logic.description }}</p>
                         </td>
                         <td class="p-1">{{ logic.next_exec }}</td>
                         <td class="p-1">{{ logic.cycle }}</td>

@@ -1,13 +1,13 @@
 <div class="shngbody">
   <div>
     @if (sceneList.length === 0) {
-      <p style="margin-left: 15px; margin-top: 15px; color: #888">{{ 'SCENES.NO_SCENES' | translate }}</p>
+      <p style="margin-left: 15px; margin-top: 15px" class="shng-text-muted">{{ 'SCENES.NO_SCENES' | translate }}</p>
     }
     <p-accordion [multiple]="true">
       @for (scene of sceneList; track scene.path) {
         <p-accordion-panel [value]="$index">
           <p-accordion-header>
-            <span style="font-size: large; font-weight: bold">{{ scene['path'] }}</span>
+            <span class="shng-text-lg">{{ scene['path'] }}</span>
             @if (scene['name'] && scene['name'] !== '') {
               &nbsp; &nbsp; ({{ scene['name'] }})
             }

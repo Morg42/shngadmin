@@ -75,8 +75,8 @@
     <br />
     <br />
 
-    <i class="fa fa-sitemap" style="margin-left: 5px; color: #a2a2a2"></i>
-    <a style="margin-left: 5px; color: #727272">{{ 'SCENE_CONFIG.DEFINITION_FILES' | translate }}</a>
+    <i class="fa fa-sitemap" style="margin-left: 5px; color: var(--text-caption)"></i>
+    <a style="margin-left: 5px; color: var(--text-muted)">{{ 'SCENE_CONFIG.DEFINITION_FILES' | translate }}</a>
 
     <p-listbox
       [options]="sceneFiles"
@@ -99,7 +99,7 @@
       [foldable]="true"
       style="height: calc(100vh - 160px)"
     ></app-code-editor>
-    <a style="font-size: small">{{ 'RELOAD FOR CHANGES' | translate }}</a>
+    <a class="shng-text-sm">{{ 'RELOAD FOR CHANGES' | translate }}</a>
   </div>
 </div>
 

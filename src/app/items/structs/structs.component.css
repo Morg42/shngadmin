@@ -9,7 +9,7 @@
 }
 
 .shngbody {
-  height: calc(100vh - 60px);
+  height: calc(100vh - var(--navbar-height));
   width: 100%;
   margin: 0;
   padding: 0;
@@ -44,7 +44,7 @@
 .body-content {
   grid-area: body-content;
   width: 100%;
-  height: calc(100vh - 60px - 10px);
+  height: calc(100vh - var(--navbar-height) - 10px);
   padding: 10px;
   padding-top: 0;
 

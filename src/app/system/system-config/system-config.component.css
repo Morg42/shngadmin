@@ -8,7 +8,7 @@
   margin: 0;
 }
 .shngbody {
-  height: calc(100vh - 60px);
+  height: calc(100vh - var(--navbar-height));
   width: 100%;
   margin: 0;
   padding: 0;
@@ -60,7 +60,7 @@
 .tab-content {
   grid-area: tab-content;
   width: 100%;
-  height: calc(100vh - 60px - 50px - 65px - 41px);
+  height: calc(100vh - var(--navbar-height) - 50px - 65px - var(--tab-height));
   border: 1px solid #dee2e6;
   border-top: 0;
   overflow: auto;

@@ -8,7 +8,7 @@
   margin: 0;
 }
 .shngbody {
-  height: calc(100vh - 60px);
+  height: calc(100vh - var(--navbar-height));
   overflow: hidden;
   margin: 0;
   padding: 0;
@@ -22,7 +22,7 @@
 
 /*
 .shngtabbody {
-  height: calc(100vh - 60px - 41px);
+  height: calc(100vh - var(--navbar-height) - var(--tab-height));
   REMARK background-color: cornsilk;
 }
 */
@@ -30,7 +30,7 @@
 /* css for System-Info tab */
 
 .shngsysinfo {
-  height: calc(100vh - 60px - 41px - 10px);
+  height: calc(100vh - var(--navbar-height) - var(--tab-height) - 10px);
   width: 100%;
 
   border: 1px solid #dee2e6;
@@ -142,7 +142,7 @@
 
 /* css for SmartHomeNG Charts tab */
 .shngcharts {
-  height: calc(100vh - 60px - 41px - 10px);
+  height: calc(100vh - var(--navbar-height) - var(--tab-height) - 10px);
   width: 100%;
 
   border: 1px solid #dee2e6;
@@ -185,7 +185,7 @@
 
 /* css for SmartHomeNG PyPI check tab */
 .shngpypi {
-  height: calc(100vh - 60px - 41px - 10px);
+  height: calc(100vh - var(--navbar-height) - var(--tab-height) - 10px);
   width: 100%;
 
   border: 1px solid #dee2e6;
@@ -250,7 +250,7 @@
 }
 
 .shngdisclosure-text {
-  height: calc(100vh - 60px - 41px - 20px);
+  height: calc(100vh - var(--navbar-height) - var(--tab-height) - 20px);
   overflow-y: auto;
   white-space: pre-wrap;
   background: white;

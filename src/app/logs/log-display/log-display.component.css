@@ -1,5 +1,5 @@
 .shngbody {
-  height: calc(100vh - 60px);
+  height: calc(100vh - var(--navbar-height));
   overflow: hidden;
   margin: 0;
   padding-left: 10px;

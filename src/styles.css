@@ -31,6 +31,10 @@ input::-webkit-inner-spin-button {
 
 :root {
   color-scheme: light;
+
+  --navbar-height: 60px;
+  --tab-height: 41px;
+
   --shng-blue: #709cc2;
   --shng-red: #c40808;
   --shng-green: green;

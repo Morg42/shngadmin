@@ -16,7 +16,7 @@
   margin: 0;
 }
 .shngbody2 {
-  height: calc(100vh - 60px);
+  height: calc(100vh - var(--navbar-height));
   overflow: hidden;
   width: 100%;
   margin: 0;
@@ -64,7 +64,7 @@
 .tab-content-services {
   grid-area: tab-content;
   width: 100%;
-  height: calc(100vh - 60px - 41px - 10px);
+  height: calc(100vh - var(--navbar-height) - var(--tab-height) - 10px);
   border: 1px solid #dee2e6;
   border-top: 0;
   padding-left: 10px; /* padding around striped table inside tab border */
@@ -111,7 +111,7 @@
 .tab-content-services-content {
   grid-area: tab-content-services-content;
   width: 100%;
-  height: calc(100vh - 60px - 41px - 50px - 50px - 10px);
+  height: calc(100vh - var(--navbar-height) - var(--tab-height) - 50px - 50px - 10px);
   border: 1px solid #dee2e6;
   border-left: 0;
   overflow: auto;
@@ -126,7 +126,7 @@
 .tab-content-services-cache {
   grid-area: tab-content;
   width: 100%;
-  height: calc(100vh - 60px - 41px - 50px - 10px);
+  height: calc(100vh - var(--navbar-height) - var(--tab-height) - 50px - 10px);
   border: 1px solid #dee2e6;
   border-top: 0;
   /*overflow: auto; */
@@ -154,7 +154,7 @@
 .tab-content-services-cache-content {
   grid-area: tab-content-services-cache-content;
   width: 100%;
-  height: calc(100vh - 60px - 41px - 50px - 50px - 10px);
+  height: calc(100vh - var(--navbar-height) - var(--tab-height) - 50px - 50px - 10px);
   border: 1px solid #dee2e6;
   border-left: 0;
   overflow: auto;

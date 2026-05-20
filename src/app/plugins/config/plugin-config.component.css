@@ -9,7 +9,7 @@
    calculations inside it work correctly. */
 :host {
   display: block;
-  height: calc(100vh - 60px);
+  height: calc(100vh - var(--navbar-height));
   overflow: hidden;
 }
 

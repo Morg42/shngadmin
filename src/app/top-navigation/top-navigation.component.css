@@ -259,12 +259,12 @@ body {
   display: none; /* desktop: drawer not rendered visually */
   position: fixed;
   top: 55px; /* bottom edge of the .navbar (height: 55px) */
-  left: 0;
+  right: 0;
   width: 280px;
   height: calc(100vh - 55px);
   background: #fff;
-  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.25);
-  transform: translateX(-100%);
+  box-shadow: -2px 0 12px rgba(0, 0, 0, 0.25);
+  transform: translateX(100%);
   transition: transform 0.25s ease;
   overflow-y: auto;
   z-index: 100;

@@ -142,9 +142,9 @@ export class TopNavigationComponent implements OnInit {
   }
 
   toggleDrawerSection(label: string) {
-    if (this.drawerOpenSections.has(label)) {
-      this.drawerOpenSections.delete(label);
-    } else {
+    const wasOpen = this.drawerOpenSections.has(label);
+    this.drawerOpenSections.clear();
+    if (!wasOpen) {
       this.drawerOpenSections.add(label);
     }
     this.cdr.markForCheck();

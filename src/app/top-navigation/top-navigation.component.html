@@ -64,9 +64,13 @@
   @for (menuEntry of this.menu; track menuEntry.label) {
     @if (menuEntry.visible === true && this.loggedIn) {
       @if (menuEntry.items.length === 0) {
-        <a (click)="closeDrawer()" [routerLink]="menuEntry.routerLink" routerLinkActive="active">{{
-          menuEntry.label
-        }}</a>
+        <a
+          (click)="closeDrawer()"
+          [routerLink]="menuEntry.routerLink"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          >{{ menuEntry.label }}</a
+        >
       }
       @if (menuEntry.items.length > 0) {
         <div class="drawer-section" [class.open]="drawerOpenSections.has(menuEntry.label)" routerLinkActive="active">
@@ -76,9 +80,13 @@
           </button>
           <div class="drawer-section-items">
             @for (submenuEntry of menuEntry.items; track submenuEntry.label) {
-              <a (click)="closeDrawer()" [routerLink]="submenuEntry.routerLink" routerLinkActive="active">{{
-                submenuEntry.label
-              }}</a>
+              <a
+                (click)="closeDrawer()"
+                [routerLink]="submenuEntry.routerLink"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }"
+                >{{ submenuEntry.label }}</a
+              >
             }
           </div>
         </div>

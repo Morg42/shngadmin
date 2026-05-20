@@ -10,6 +10,7 @@ body {
   --menu-textcolor-hover: #eee;
   --menu-background-color: #eee;
   --menu-background-color-hover: #777;
+  --menu-background-color-active: #ccc;
 
   display: inline-flex;
   align-items: flex-start;
@@ -186,15 +187,15 @@ body {
 }
 
 .topnav .active {
-  background-color: #ccc;
+  background-color: var(--menu-background-color-active);
 }
 
 .dropdown.active .dropbtn {
-  background-color: #ccc;
+  background-color: var(--menu-background-color-active);
 }
 
 .dropdown-content a.active {
-  background-color: #ccc;
+  background-color: var(--menu-background-color-active);
 }
 
 .navbar .logo {

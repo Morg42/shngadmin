@@ -162,10 +162,10 @@ export class LoggerLineComponent {
           found = this.logger.handlers.includes(key);
         }
         let val: boolean[] = [];
-        if (!parentFound || this.logger.propagate === false) {
-          if (found) {
-            val = [true];
-          }
+        if (parentFound && this.logger.propagate !== false) {
+          val = [true]; // inherited from parent — show as checked but disabled
+        } else if (found) {
+          val = [true];
         }
         this.choosableHandlers.push({ name: key, key: key, value: val, disabled: parentFound });
       }

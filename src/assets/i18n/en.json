@@ -460,6 +460,7 @@
     "CHOOSE_HANDLERS": "Edit handler for logger '{{logger}}'",
     "CHOOSE_HANDLERS_TEXT": "Select one or more handlers through which the logging should take place.",
     "CHOOSE_HANDLERS_PROPAGATION_TEXT": "In addition, the logging is carried out by the handlers of higher-level loggers.",
+    "FROM_PARENT": "from parent",
     "DELETE": "Delete logger",
     "HANDLER": "Edit handlers"
   },

@@ -188,7 +188,7 @@
               [disabled]="hndlr.disabled && logger.propagate !== false"
               [inputId]="hndlr.key"
             ></p-checkbox>
-            <label [style.color]="hndlr.disabled ? 'darkgrey' : null" [for]="hndlr.key">
+            <label [style.color]="hndlr.disabled && logger.propagate !== false ? 'darkgrey' : null" [for]="hndlr.key">
               {{ hndlr.name }}
               @if (hndlr.disabled && logger.propagate !== false) {
                 <span style="font-size: 0.8em">&nbsp;({{ 'LOGGERS.FROM_PARENT' | translate }})</span>
@@ -208,7 +208,7 @@
               [disabled]="hndlr.disabled && logger.propagate !== false"
               [inputId]="hndlr.key"
             ></p-checkbox>
-            <label [style.color]="hndlr.disabled ? 'darkgrey' : null" [for]="hndlr.key">
+            <label [style.color]="hndlr.disabled && logger.propagate !== false ? 'darkgrey' : null" [for]="hndlr.key">
               {{ hndlr.name }}
               @if (hndlr.disabled && logger.propagate !== false) {
                 <span style="font-size: 0.8em">&nbsp;({{ 'LOGGERS.FROM_PARENT' | translate }})</span>

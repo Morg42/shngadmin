@@ -263,16 +263,18 @@
                       l === '__main__'
                     )
                   ) {
-                    <tr>
-                      <app-logger-line
-                        [loggerName]="l"
-                        [logger]="loggers[l]"
-                        [loggerActive]="true"
-                        [definedHandlers]="definedHandlers"
-                        (levelChange)="levelChanged(l, $event)"
-                        (loggerDelete)="loggerDelete(l)"
-                      ></app-logger-line>
-                    </tr>
+                    @if (loggers[l].active !== undefined) {
+                      <tr>
+                        <app-logger-line
+                          [loggerName]="l"
+                          [logger]="loggers[l]"
+                          [loggerActive]="true"
+                          [definedHandlers]="definedHandlers"
+                          (levelChange)="levelChanged(l, $event)"
+                          (loggerDelete)="loggerDelete(l)"
+                        ></app-logger-line>
+                      </tr>
+                    }
                   }
                 }
               </tbody>

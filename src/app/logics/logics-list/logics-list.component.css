@@ -91,3 +91,15 @@
 .description-text {
   margin-left: 4px;
 }
+
+.shng-color-success {
+  color: var(--shng-green);
+}
+
+.shng-color-danger {
+  color: var(--shng-red);
+}
+
+.shng-color-disabled {
+  color: var(--shng-disabled);
+}

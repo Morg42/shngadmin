@@ -88,9 +88,8 @@
                                       @if (logic.enabled === true) {
                                         <td class="p-1 pl-2">
                                           <span
-                                            style="color: var(--shng-green)"
+                                            class="fas fa-play-circle shng-color-success"
                                             title="{{ 'LOGICS.ENABLED' | translate }}"
-                                            class="fas fa-play-circle"
                                           ></span>
                                         </td>
                                         <td class="p-1">
@@ -103,18 +102,17 @@
                                       } @else {
                                         <td class="p-1 pl-2">
                                           <span
-                                            style="color: var(--shng-red)"
+                                            class="fas fa-pause-circle shng-color-danger"
                                             title="{{ 'LOGICS.DISABLED' | translate }}"
-                                            class="fas fa-pause-circle"
                                           ></span>
                                         </td>
                                         <td class="p-1">
                                           {{ logic.name }}<br />
                                           <p style="font-size: 12px">{{ logic.description }}</p>
                                         </td>
-                                        <td class="p-1" style="color: var(--shng-disabled)">{{ logic.next_exec }}</td>
-                                        <td class="p-1" style="color: var(--shng-disabled)">{{ logic.cycle }}</td>
-                                        <td class="p-1" style="color: var(--shng-disabled)">{{ logic.crontab }}</td>
+                                        <td class="p-1 shng-color-disabled">{{ logic.next_exec }}</td>
+                                        <td class="p-1 shng-color-disabled">{{ logic.cycle }}</td>
+                                        <td class="p-1 shng-color-disabled">{{ logic.crontab }}</td>
                                       }
 
                                       @if ((logic.watch_item_list?.length ?? 0) > 0) {
@@ -131,9 +129,9 @@
                                               <span class="fas fa-search"></span>
                                             </span>
                                           } @else {
-                                            <span style="color: var(--shng-disabled)">
+                                            <span class="shng-color-disabled">
                                               {{ logic.watch_item_list?.length }}
-                                              <span class="fas fa-search" style="color: var(--shng-disabled)"></span>
+                                              <span class="fas fa-search shng-color-disabled"></span>
                                             </span>
                                           }
                                         </td>
@@ -222,11 +220,7 @@
                                           class="btn btn-outline-danger btn-sm"
                                           (click)="deleteLogic(logic.name, logic.filename)"
                                         >
-                                          <i
-                                            class="far fa-trash-alt"
-                                            aria-hidden="true"
-                                            style="color: var(--shng-red)"
-                                          ></i>
+                                          <i class="far fa-trash-alt shng-color-danger" aria-hidden="true"></i>
                                         </button>
                                       </td>
                                     </tr>
@@ -285,9 +279,9 @@
                       <tr>
                         <td class="p-1 pl-2">
                           @if (logic.enabled === true) {
-                            <span style="color: var(--shng-green)" class="fas fa-play-circle"></span>
+                            <span class="fas fa-play-circle shng-color-success"></span>
                           } @else {
-                            <span style="color: var(--shng-red)" class="fas fa-pause-circle"></span>
+                            <span class="fas fa-pause-circle shng-color-danger"></span>
                           }
                         </td>
                         <td class="p-1">
@@ -330,7 +324,7 @@
                             class="btn btn-outline-danger btn-sm"
                             (click)="deleteLogic(logic.name, logic.filename)"
                           >
-                            <i class="far fa-trash-alt" aria-hidden="true" style="color: var(--shng-red)"></i>
+                            <i class="far fa-trash-alt shng-color-danger" aria-hidden="true"></i>
                           </button>
                         </td>
                       </tr>
@@ -381,9 +375,8 @@
                           @if (logic.enabled === true) {
                             <td class="p-1 pl-2">
                               <span
-                                style="color: var(--shng-green)"
+                                class="fas fa-play-circle shng-color-success"
                                 title="{{ 'LOGICS.ENABLED' | translate }}"
-                                class="fas fa-play-circle"
                               ></span>
                             </td>
                             <td class="p-1">{{ logic.name }}</td>
@@ -393,15 +386,14 @@
                           } @else {
                             <td class="p-1 pl-2">
                               <span
-                                style="color: var(--shng-red)"
+                                class="fas fa-pause-circle shng-color-danger"
                                 title="{{ 'LOGICS.DISABLED' | translate }}"
-                                class="fas fa-pause-circle"
                               ></span>
                             </td>
                             <td class="p-1">{{ logic.name }}</td>
-                            <td class="p-1" style="color: var(--shng-disabled)">{{ logic.next_exec }}</td>
-                            <td class="p-1" style="color: var(--shng-disabled)">{{ logic.cycle }}</td>
-                            <td class="p-1" style="color: var(--shng-disabled)">{{ logic.crontab }}</td>
+                            <td class="p-1 shng-color-disabled">{{ logic.next_exec }}</td>
+                            <td class="p-1 shng-color-disabled">{{ logic.cycle }}</td>
+                            <td class="p-1 shng-color-disabled">{{ logic.crontab }}</td>
                           }
 
                           @if ((logic.watch_item_list?.length ?? 0) > 0) {
@@ -415,9 +407,9 @@
                                   <span class="fas fa-search"></span>
                                 </span>
                               } @else {
-                                <span style="color: var(--shng-disabled)">
+                                <span class="shng-color-disabled">
                                   {{ logic.watch_item_list?.length }}
-                                  <span class="fas fa-search" style="color: var(--shng-disabled)"></span>
+                                  <span class="fas fa-search shng-color-disabled"></span>
                                 </span>
                               }
                             </td>
@@ -506,7 +498,7 @@
                               class="btn btn-outline-danger btn-sm"
                               (click)="deleteLogic(logic.name, logic.filename)"
                             >
-                              <i class="far fa-trash-alt" aria-hidden="true" style="color: var(--shng-red)"></i>
+                              <i class="far fa-trash-alt shng-color-danger" aria-hidden="true"></i>
                             </button>
                           </td>
                         </tr>
@@ -530,9 +522,9 @@
                       <tr>
                         <td class="p-1 pl-2">
                           @if (logic.enabled === true) {
-                            <span style="color: var(--shng-green)" class="fas fa-play-circle"></span>
+                            <span class="fas fa-play-circle shng-color-success"></span>
                           } @else {
-                            <span style="color: var(--shng-red)" class="fas fa-pause-circle"></span>
+                            <span class="fas fa-pause-circle shng-color-danger"></span>
                           }
                         </td>
                         <td class="p-1">{{ logic.name }}</td>
@@ -572,7 +564,7 @@
                             class="btn btn-outline-danger btn-sm"
                             (click)="deleteLogic(logic.name, logic.filename)"
                           >
-                            <i class="far fa-trash-alt" aria-hidden="true" style="color: var(--shng-red)"></i>
+                            <i class="far fa-trash-alt shng-color-danger" aria-hidden="true"></i>
                           </button>
                         </td>
                       </tr>

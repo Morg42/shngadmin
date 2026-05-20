@@ -5,13 +5,15 @@ body {
 
 /* Global styles for the navbar */
 
-.navbar {
+:host {
   --menu-textcolor: #666;
   --menu-textcolor-hover: #eee;
   --menu-background-color: #eee;
   --menu-background-color-hover: #777;
   --menu-background-color-active: #ccc;
+}
 
+.navbar {
   display: inline-flex;
   align-items: flex-start;
   flex-wrap: unset;

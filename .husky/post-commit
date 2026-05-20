@@ -1,0 +1,37 @@
+SHNG_DIR="$HOME/shng"
+SHNG_BRANCH="develop-adminui"
+SHNG_TARGET="$SHNG_DIR/modules/admin/webif/static"
+REQUIRED_BRANCH="develop"
+
+# Only run on the develop branch
+CURRENT_BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || echo "")
+echo "[post-commit] branch: '$CURRENT_BRANCH'"
+if [ "$CURRENT_BRANCH" != "$REQUIRED_BRANCH" ]; then
+  echo "[post-commit] not '$REQUIRED_BRANCH', skipping"
+  exit 0
+fi
+
+echo "[post-commit] branch is '$REQUIRED_BRANCH' — running build pipeline"
+
+# Verify shng repo has the right branch checked out
+SHNG_CURRENT=$(git -C "$SHNG_DIR" symbolic-ref --short HEAD 2>/dev/null || echo "")
+if [ "$SHNG_CURRENT" != "$SHNG_BRANCH" ]; then
+  echo "ERROR: $SHNG_DIR is on branch '$SHNG_CURRENT', expected '$SHNG_BRANCH'. Aborting deploy." >&2
+  exit 1
+fi
+
+# Run tests
+echo "[post-commit] running tests"
+npm test -- --watchAll=false --passWithNoTests
+
+# Build production bundle
+echo "[post-commit] building production bundle"
+NODE_OPTIONS="--trace-deprecation --trace-warnings" \
+  npx ng build --configuration production --aot --base-href /admin/
+
+# Deploy only if build succeeded
+echo "[post-commit] deploying to $SHNG_TARGET"
+rm -rf "$SHNG_TARGET"/*
+cp -r dist/static/* "$SHNG_TARGET/"
+
+echo "[post-commit] done"

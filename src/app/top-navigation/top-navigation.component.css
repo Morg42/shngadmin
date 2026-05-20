@@ -195,8 +195,6 @@ body {
 
 .dropdown-content a.active {
   background-color: #ccc;
-  color: black;
-  font-weight: var(--font-weight-bold);
 }
 
 .navbar .logo {

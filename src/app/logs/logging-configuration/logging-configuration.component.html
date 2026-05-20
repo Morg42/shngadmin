@@ -53,7 +53,23 @@
                 [foldable]="true"
                 style="height: calc(100vh - 160px)"
               ></app-code-editor>
-              <a class="shng-text-sm">{{ 'RESTART FOR CHANGES' | translate }}</a>
+              @if (saveResult) {
+                @if (saveResult.result === 'ok') {
+                  <p-message severity="success" [text]="'LOGGING.SAVE_OK' | translate" styleClass="mt-2 w-full" />
+                } @else if (saveResult.config_restored) {
+                  <p-message
+                    severity="warn"
+                    [text]="'LOGGING.SAVE_ERROR_RESTORED' | translate"
+                    styleClass="mt-2 w-full"
+                  />
+                } @else {
+                  <p-message
+                    severity="error"
+                    [text]="'LOGGING.SAVE_ERROR_NO_RESTORE' | translate"
+                    styleClass="mt-2 w-full"
+                  />
+                }
+              }
             </div>
           </td>
         </tr>

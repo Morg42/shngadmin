@@ -466,7 +466,10 @@
   "LOGGING": {
     "CONFIG_FILE": "Configuration file",
     "CONFIG_ERROR": "Configuration Error - Configuration data not saved!",
-    "CONFIG_ERROR_TEXT": "Error found in configuration file.\nInvalid format of configuration file. \n"
+    "CONFIG_ERROR_TEXT": "Error found in configuration file.\nInvalid format of configuration file. \n",
+    "SAVE_OK": "Logging configuration saved and applied successfully.",
+    "SAVE_ERROR_RESTORED": "Invalid logging configuration — the previous configuration has been restored.",
+    "SAVE_ERROR_NO_RESTORE": "Invalid logging configuration and restore failed — check logging.yaml.bak."
   },
   "BUTTON": {
     "OK": "Ok",

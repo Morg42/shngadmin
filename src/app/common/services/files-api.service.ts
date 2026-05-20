@@ -6,6 +6,13 @@ import { catchError, map } from 'rxjs/operators';
 import { AppConfigService } from './app-config.service';
 import { LogService } from './log.service';
 
+export interface LoggingConfigSaveResult {
+  result: 'ok' | 'error';
+  config_reloaded?: boolean;
+  config_restored?: boolean;
+  description?: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -77,6 +84,20 @@ export class FilesApiService {
           'FilesApiService.saveFile: Could not save config data' + ' - ' + err.error.error,
         );
         return of({});
+      }),
+    );
+  }
+
+  saveLoggingConfig(content: string) {
+    const url = this.appConfig.apiUrl + 'files/logging/';
+    return this.http.put<LoggingConfigSaveResult>(url, content).pipe(
+      catchError((err: HttpErrorResponse) => {
+        this.log.error('FilesApiService.saveLoggingConfig: ' + err.message);
+        return of<LoggingConfigSaveResult>({
+          result: 'error',
+          config_restored: false,
+          description: err.error?.error ?? err.message,
+        });
       }),
     );
   }

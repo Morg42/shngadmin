@@ -9,169 +9,155 @@
         <p-tabpanel value="0">
           <div class="tab-header"></div>
           <div class="tab-content">
-            <table>
-              <tbody>
-                <tr>
-                  <td>
-                    <div style="font-weight: normal; padding-top: 10px; padding-left: 10px; padding-right: 5px">
-                      @if (logic && logic.enabled && myLogicIsLoaded) {
-                        <span
-                          style="color: var(--shng-green)"
-                          class="fas fa-play-circle"
-                          title="{{ 'LOGIC_EDIT.ACTIVE' | translate }}"
-                        ></span>
-                      }
-                      @if (logic && (!logic.enabled || !myLogicIsLoaded)) {
-                        <span
-                          style="color: var(--shng-red)"
-                          class="fas fa-pause-circle"
-                          title="{{ 'LOGIC_EDIT.INACTIVE' | translate }}"
-                        ></span>
-                      }
-                      {{ 'LOGIC_EDIT.FILENAME' | translate }}: <strong>../logics/{{ myEditFilename }}</strong>
-                      <button
-                        pButton
-                        label="{{ 'BUTTON.SAVE_LOAD' | translate }}"
-                        type="button"
-                        [disabled]="!this.logicChanged"
-                        icon="fa fa-check"
-                        style="margin-right: 0"
-                        (click)="saveLogic(true)"
-                        class="float-sm-right ui-button-success"
-                      ></button>
-                      <button
-                        pButton
-                        label="{{ 'BUTTON.SAVE' | translate }}"
-                        type="button"
-                        [disabled]="!this.logicChanged"
-                        icon="fa fa-check"
-                        style="margin-right: 5px"
-                        (click)="saveLogic()"
-                        class="float-sm-right ui-button-success"
-                      ></button>
-                      <button
-                        pButton
-                        label="{{ 'BUTTON.DISCARD' | translate }}"
-                        type="button"
-                        [disabled]="myEditFilename === '' || !this.logicChanged"
-                        icon="fa fa-times"
-                        style="margin-right: 5px"
-                        (click)="discardChanges()"
-                        class="float-sm-right ui-button-secondary"
-                      ></button>
-                      <button
-                        pButton
-                        label="{{ 'BUTTON.HELP' | translate }}"
-                        type="button"
-                        [disabled]="false"
-                        icon="fa fa-info"
-                        style="margin-left: 20px; margin-right: 5px"
-                        (click)="editorHelp_display = true"
-                        class="float-sm-right ui-button-success"
-                      ></button>
+            <div class="tab-button-row">
+              @if (logic && logic.enabled && myLogicIsLoaded) {
+                <span
+                  style="color: var(--shng-green)"
+                  class="fas fa-play-circle"
+                  title="{{ 'LOGIC_EDIT.ACTIVE' | translate }}"
+                ></span>
+              }
+              @if (logic && (!logic.enabled || !myLogicIsLoaded)) {
+                <span
+                  style="color: var(--shng-red)"
+                  class="fas fa-pause-circle"
+                  title="{{ 'LOGIC_EDIT.INACTIVE' | translate }}"
+                ></span>
+              }
+              {{ 'LOGIC_EDIT.FILENAME' | translate }}: <strong>../logics/{{ myEditFilename }}</strong>
+              <button
+                pButton
+                label="{{ 'BUTTON.SAVE_LOAD' | translate }}"
+                type="button"
+                [disabled]="!this.logicChanged"
+                icon="fa fa-check"
+                style="margin-right: 0"
+                (click)="saveLogic(true)"
+                class="float-sm-right ui-button-success"
+              ></button>
+              <button
+                pButton
+                label="{{ 'BUTTON.SAVE' | translate }}"
+                type="button"
+                [disabled]="!this.logicChanged"
+                icon="fa fa-check"
+                style="margin-right: 5px"
+                (click)="saveLogic()"
+                class="float-sm-right ui-button-success"
+              ></button>
+              <button
+                pButton
+                label="{{ 'BUTTON.DISCARD' | translate }}"
+                type="button"
+                [disabled]="myEditFilename === '' || !this.logicChanged"
+                icon="fa fa-times"
+                style="margin-right: 5px"
+                (click)="discardChanges()"
+                class="float-sm-right ui-button-secondary"
+              ></button>
+              <button
+                pButton
+                label="{{ 'BUTTON.HELP' | translate }}"
+                type="button"
+                [disabled]="false"
+                icon="fa fa-info"
+                style="margin-left: 20px; margin-right: 5px"
+                (click)="editorHelp_display = true"
+                class="float-sm-right ui-button-success"
+              ></button>
 
-                      @if (this.myLogicIsLoaded) {
-                        @if (logic.enabled) {
-                          <button
-                            name="disable"
-                            title="{{ 'LOGICS.DISABLE' | translate }}"
-                            class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
-                            (click)="disableLogic(logic.name)"
-                          >
-                            <i class="fas fa-pause"></i>
-                          </button>
-                          <button
-                            name="reload"
-                            title="{{ 'LOGICS.RELOAD' | translate }}"
-                            class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
-                            (click)="reloadLogic(logic.name)"
-                          >
-                            <i class="fas fa-sync"></i>
-                          </button>
-                          <button
-                            name="trigger"
-                            title="{{ 'LOGICS.TRIGGER' | translate }}"
-                            class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
-                            (click)="triggerLogic()"
-                          >
-                            <i class="fas fa-hand-pointer"></i>
-                          </button>
-                        } @else {
-                          <button
-                            name="enable"
-                            title="{{ 'LOGICS.ENABLE' | translate }}"
-                            class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
-                            (click)="enableLogic(logic.name)"
-                          >
-                            <i class="fas fa-play"></i>
-                          </button>
-                          <button
-                            name="reload"
-                            title="{{ 'LOGICS.RELOAD' | translate }}"
-                            class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
-                            (click)="reloadLogic(logic.name)"
-                          >
-                            <i class="fas fa-sync"></i>
-                          </button>
-                          <button
-                            disabled="true"
-                            name="trigger"
-                            title="{{ 'LOGICS.TRIGGER' | translate }}"
-                            class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
-                          >
-                            <i class="fas fa-hand-pointer"></i>
-                          </button>
-                        }
-                      } @else {
-                        <button
-                          disabled="true"
-                          name="enable"
-                          title="{{ 'LOGICS.ENABLE' | translate }}"
-                          class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
-                          (click)="enableLogic(logic.name)"
-                        >
-                          <i class="fas fa-play"></i>
-                        </button>
-                        <button
-                          disabled="true"
-                          name="reload"
-                          title="{{ 'LOGICS.RELOAD' | translate }}"
-                          class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
-                          (click)="reloadLogic(logic.name)"
-                        >
-                          <i class="fas fa-sync"></i>
-                        </button>
-                        <button
-                          disabled="true"
-                          name="trigger"
-                          title="{{ 'LOGICS.TRIGGER' | translate }}"
-                          class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
-                        >
-                          <i class="fas fa-hand-pointer"></i>
-                        </button>
-                      }
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <div style="margin-top: 10px; padding-left: 10px; padding-right: 5px">
-                      <app-code-editor
-                        #codeeditor
-                        [language]="'python'"
-                        [foldable]="true"
-                        [completionSource]="mainCompletionSource"
-                        [extraKeybindings]="editorExtraKeys"
-                        [(value)]="myTextarea"
-                        (valueChange)="logicChanged = hasLogicChanged()"
-                        style="height: calc(100vh - 200px)"
-                      ></app-code-editor>
-                      <a style="font-size: small">{{ 'RESTART LOGIC FOR CHANGES' | translate }}</a>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+              @if (this.myLogicIsLoaded) {
+                @if (logic.enabled) {
+                  <button
+                    name="disable"
+                    title="{{ 'LOGICS.DISABLE' | translate }}"
+                    class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                    (click)="disableLogic(logic.name)"
+                  >
+                    <i class="fas fa-pause"></i>
+                  </button>
+                  <button
+                    name="reload"
+                    title="{{ 'LOGICS.RELOAD' | translate }}"
+                    class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                    (click)="reloadLogic(logic.name)"
+                  >
+                    <i class="fas fa-sync"></i>
+                  </button>
+                  <button
+                    name="trigger"
+                    title="{{ 'LOGICS.TRIGGER' | translate }}"
+                    class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                    (click)="triggerLogic()"
+                  >
+                    <i class="fas fa-hand-pointer"></i>
+                  </button>
+                } @else {
+                  <button
+                    name="enable"
+                    title="{{ 'LOGICS.ENABLE' | translate }}"
+                    class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                    (click)="enableLogic(logic.name)"
+                  >
+                    <i class="fas fa-play"></i>
+                  </button>
+                  <button
+                    name="reload"
+                    title="{{ 'LOGICS.RELOAD' | translate }}"
+                    class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                    (click)="reloadLogic(logic.name)"
+                  >
+                    <i class="fas fa-sync"></i>
+                  </button>
+                  <button
+                    disabled="true"
+                    name="trigger"
+                    title="{{ 'LOGICS.TRIGGER' | translate }}"
+                    class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                  >
+                    <i class="fas fa-hand-pointer"></i>
+                  </button>
+                }
+              } @else {
+                <button
+                  disabled="true"
+                  name="enable"
+                  title="{{ 'LOGICS.ENABLE' | translate }}"
+                  class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                  (click)="enableLogic(logic.name)"
+                >
+                  <i class="fas fa-play"></i>
+                </button>
+                <button
+                  disabled="true"
+                  name="reload"
+                  title="{{ 'LOGICS.RELOAD' | translate }}"
+                  class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                  (click)="reloadLogic(logic.name)"
+                >
+                  <i class="fas fa-sync"></i>
+                </button>
+                <button
+                  disabled="true"
+                  name="trigger"
+                  title="{{ 'LOGICS.TRIGGER' | translate }}"
+                  class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
+                >
+                  <i class="fas fa-hand-pointer"></i>
+                </button>
+              }
+            </div>
+            <div class="tab-editor-area">
+              <app-code-editor
+                #codeeditor
+                [language]="'python'"
+                [foldable]="true"
+                [completionSource]="mainCompletionSource"
+                [extraKeybindings]="editorExtraKeys"
+                [(value)]="myTextarea"
+                (valueChange)="logicChanged = hasLogicChanged()"
+              ></app-code-editor>
+            </div>
           </div>
         </p-tabpanel>
 

@@ -461,6 +461,7 @@
     "CHOOSE_HANDLERS": "Handler für Logger '{{logger}}' bearbeiten",
     "CHOOSE_HANDLERS_TEXT": "Wähle einen oder mehrere Handler aus, durch welche das Logging erfolgen soll.",
     "CHOOSE_HANDLERS_PROPAGATION_TEXT": "Zusätzlich erfolgt das Logging durch die Handler übergeordneter Logger.",
+    "FROM_PARENT": "vom übergeordneten Logger",
     "NO_HANDLER_DEFINED": "Es ist kein Handler definiert",
     "DELETE": "Logger löschen",
     "HANDLER": "Handler bearbeiten"

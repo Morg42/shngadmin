@@ -1,3 +1,5 @@
+[ "$(whoami)" = "sh" ] || exit 0
+
 SHNG_DIR="$HOME/shng"
 SHNG_BRANCH="develop-adminui"
 SHNG_TARGET="$SHNG_DIR/modules/admin/webif/static"

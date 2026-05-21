@@ -1,6 +1,7 @@
 import type { Config } from 'jest';
 
 const config: Config = {
+  silent: true,
   preset: 'jest-preset-angular',
   setupFilesAfterEnv: ['<rootDir>/src/setup-jest.ts'],
   testMatch: ['<rootDir>/src/**/*.spec.ts'],

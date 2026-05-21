@@ -35,10 +35,10 @@
                   <p-accordion-panel [value]="$index">
                     <p-accordion-header>
                       @if (structsDict[struct]['name'] === undefined) {
-                        <span class="shng_heading">{{ struct }}</span>
+                        <span>{{ struct }}</span>
                       }
                       @if (structsDict[struct]['name'] !== undefined) {
-                        <span class="shng_heading">{{ struct }}</span> &nbsp; &nbsp; ({{ structsDict[struct]['name'] }})
+                        <span>{{ struct }}</span> &nbsp; &nbsp; ({{ structsDict[struct]['name'] }})
                       }
                     </p-accordion-header>
                     <p-accordion-content>

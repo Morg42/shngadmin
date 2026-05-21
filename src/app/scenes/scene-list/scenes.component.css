@@ -1,9 +1,3 @@
-::ng-deep .tab-shng > a {
-  border-bottom: none !important;
-  outline: 0 !important;
-  color: rgb(160, 160, 160);
-}
-
 :host ::ng-deep .ui-accordion .ui-accordion-header:hover a {
   text-decoration: none;
 }

@@ -1,9 +1,3 @@
-::ng-deep .tab-shng > a {
-  border-bottom: none !important;
-  outline: 0 !important;
-  color: rgb(160, 160, 160);
-}
-
 .body {
   margin: 0;
 }
@@ -17,27 +11,15 @@
   padding-right: 10px;
 
   display: grid;
-  grid-template-rows: 50px auto 65px;
+  grid-template-rows: auto 65px;
   grid-template-columns: 1fr;
 
   grid-template-areas:
-    'body-header'
     'body-content'
     'body-footer';
 
   grid-gap: 0;
   grid-auto-flow: row;
-}
-
-.body-header {
-  grid-area: body-header;
-  width: 100%;
-
-  display: grid;
-  overflow: auto;
-
-  grid-template-columns: 110px minmax(140px, 280px) 1fr;
-  grid-auto-rows: minmax(50px, max-content);
 }
 
 .body-content {
@@ -60,7 +42,7 @@
 .tab-content {
   grid-area: tab-content;
   width: 100%;
-  height: calc(100vh - var(--navbar-height) - 50px - 65px - var(--tab-height));
+  height: calc(100vh - var(--navbar-height) - 65px - var(--tab-height));
   border: 1px solid #dee2e6;
   border-top: 0;
   overflow: auto;

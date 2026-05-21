@@ -1,9 +1,3 @@
-::ng-deep .tab-shng > a {
-  border-bottom: none !important;
-  outline: 0 !important;
-  color: rgb(160, 160, 160);
-}
-
 .body {
   margin: 0;
 }

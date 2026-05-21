@@ -147,7 +147,8 @@
                       [disabled]="itemdetails.path === undefined"
                       (click)="monitorItem(itemdetails.path, false)"
                     >
-                      <i style="color: #c40808" class="far fa-trash-alt"></i> {{ 'ITEMS.MONITOR' | translate }}
+                      <fa-icon [icon]="faThumbtack" style="transform: rotate(45deg)"></fa-icon>
+                      {{ 'ITEMS.MONITORED' | translate }}
                     </button>
                   }
                   <strong>{{ 'ITEMS.ITEM DETAILS' | translate }}</strong>
@@ -551,7 +552,7 @@
               id="btn-monitor2t"
               (click)="monitorItem(itemdata[0], false)"
             >
-              <i style="color: #c40808" class="far fa-trash-alt"></i>
+              <fa-icon [icon]="faThumbtack" style="transform: rotate(45deg)"></fa-icon>
             </button>
           </td>
         </tr>

@@ -722,8 +722,8 @@
   {{ 'LOGICS.CREATE_LOGIC_TEXT' | translate }}
   <br />
   <br />
-  <label style="display: block">
-    <span style="display: inline-block; width: 80px">{{ 'LOGICS.LOGIC' | translate }}:</span>
+  <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px">
+    <span style="min-width: 80px">{{ 'LOGICS.LOGIC' | translate }}:</span>
 
     <input
       [(ngModel)]="newlogic_name"
@@ -735,13 +735,12 @@
       (input)="checkNewLogicInput()"
       pInputText
       placeholder=""
-      style="position: absolute; margin-left: 100px"
       [ngStyle]="{ width: 30 }"
     />
   </label>
 
-  <label style="display: block">
-    <span style="display: inline-block; width: 80px">{{ 'LOGICS.FILENAME' | translate }}:</span>
+  <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px">
+    <span style="min-width: 80px">{{ 'LOGICS.FILENAME' | translate }}:</span>
     <input
       [(ngModel)]="newlogic_filename"
       id="nfn"
@@ -750,7 +749,6 @@
       (input)="checkNewLogicInput()"
       pInputText
       placeholder=""
-      style="position: absolute; margin-left: 100px"
       [ngStyle]="{ width: 30 }"
       autofocus
     />

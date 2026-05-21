@@ -128,18 +128,18 @@
   </ng-template>
 
   <br />
-  {{ 'FUNCTION_CONFIG.UNIQUE_NAME' | translate }}&nbsp;
-  <input
-    [(ngModel)]="newFilename"
-    type="text"
-    (input)="checkInput()"
-    pInputText
-    placeholder=""
-    [ngStyle]="{ width: 20 }"
-    autofocus
-  />
-
-  <br />
+  <div style="display: flex; align-items: center; gap: 8px">
+    {{ 'FUNCTION_CONFIG.UNIQUE_NAME' | translate }}
+    <input
+      [(ngModel)]="newFilename"
+      type="text"
+      (input)="checkInput()"
+      pInputText
+      placeholder=""
+      [ngStyle]="{ width: 20 }"
+      autofocus
+    />
+  </div>
   <br />
   <ng-template pTemplate="footer">
     <button

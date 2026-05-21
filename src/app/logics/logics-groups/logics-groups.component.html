@@ -133,18 +133,18 @@
   </ng-template>
 
   <br />
-  {{ 'LOGIC_GROUPS.UNIQUE_NAME' | translate }}&nbsp;
-  <input
-    [(ngModel)]="newGroupname"
-    type="text"
-    (input)="checkInput()"
-    pInputText
-    placeholder=""
-    [ngStyle]="{ width: 20 }"
-    autofocus
-  />
-
-  <br />
+  <div style="display: flex; align-items: center; gap: 8px">
+    {{ 'LOGIC_GROUPS.UNIQUE_NAME' | translate }}
+    <input
+      [(ngModel)]="newGroupname"
+      type="text"
+      (input)="checkInput()"
+      pInputText
+      placeholder=""
+      [ngStyle]="{ width: 20 }"
+      autofocus
+    />
+  </div>
   <br />
   <ng-template pTemplate="footer">
     <button

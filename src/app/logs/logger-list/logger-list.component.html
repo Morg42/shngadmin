@@ -310,8 +310,8 @@
   {{ 'LOGGERS.CREATE_LOGGER_TEXT' | translate }}
   <br />
   <br />
-  <label style="display: block">
-    <span style="display: inline-block; width: 120px">{{ 'LOGGERS.LOGGER_NAME' | translate }}:</span>
+  <label style="display: flex; align-items: center; gap: 8px">
+    <span style="min-width: 120px">{{ 'LOGGERS.LOGGER_NAME' | translate }}:</span>
 
     <p-select
       [options]="loggerOptions"

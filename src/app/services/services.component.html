@@ -193,16 +193,25 @@
             </div>
 
             <br />
-            <div style="padding-top: 10px; padding-left: 10px; padding-right: 5px">
-              {{ 'SERVICES.EVAL_RELATIVE_TO' | translate }}: &nbsp;
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding-top: 10px;
+                padding-left: 10px;
+                padding-right: 5px;
+              "
+            >
+              {{ 'SERVICES.EVAL_RELATIVE_TO' | translate }}:
               <input type="text" pInputText style="width: 400px" [(ngModel)]="myRelativeTo" />
               <button
                 pButton
                 label="{{ 'BUTTON.CHECK' | translate }}"
                 type="button"
-                style="margin-right: 0"
+                style="margin-right: 0; margin-left: auto"
                 (click)="checkEval()"
-                class="float-sm-right ui-button-success"
+                class="ui-button-success"
               ></button>
             </div>
 

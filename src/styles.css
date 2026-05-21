@@ -861,6 +861,8 @@ a.text-shng:hover {
   background-color: rgba(0, 0, 0, 0.09) !important;
   border-radius: 4px;
   transition: background-color 0.15s ease;
+  font-weight: var(--font-weight-normal) !important;
+  color: var(--text-secondary) !important;
 }
 .p-accordionheader:hover {
   background-color: rgba(0, 0, 0, 0.25) !important;

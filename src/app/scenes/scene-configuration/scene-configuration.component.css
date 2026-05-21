@@ -9,7 +9,6 @@
 .button-row-left {
   grid-column: 1;
   grid-row: 1;
-  font-weight: normal;
   padding-top: 10px;
   padding-right: 20px;
 }
@@ -17,7 +16,6 @@
 .button-row {
   grid-column: 2;
   grid-row: 1;
-  font-weight: normal;
   padding-top: 10px;
   padding-left: 15px;
   padding-right: 20px;

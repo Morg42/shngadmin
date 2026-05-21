@@ -43,9 +43,3 @@
   margin-left: 4px;
   padding-bottom: 48px;
 }
-
-.tab-shng > a {
-  border-bottom: none !important;
-  outline: 0 !important;
-  color: rgb(160, 160, 160);
-}

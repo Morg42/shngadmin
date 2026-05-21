@@ -1,9 +1,3 @@
-::ng-deep .tab-shng > a {
-  border-bottom: none !important;
-  outline: 0 !important;
-  color: rgb(160, 160, 160);
-}
-
 /* The host element (<app-plugins>) is display:inline by default for custom
    elements. Make it a block of known height so that height-based flex
    calculations inside it work correctly. */

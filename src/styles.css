@@ -484,8 +484,16 @@ a.text-shng:hover {
 
 .shng_heading {
   color: var(--text-secondary);
-  font-weight: var(--font-weight-bold); /* sparingly: table-section header */
+  font-weight: var(--font-weight-bold); /* sparingly: accordion-level header */
   border-top: 0;
+}
+
+/* Table column-header rows: match PrimeNG tab/table visual weight
+   — semi-bold (600), subtle background, muted label color */
+.table .shng_heading th {
+  font-weight: 600;
+  color: var(--text-muted);
+  background-color: rgba(0, 0, 0, 0.03);
 }
 
 /* ============================================================

@@ -25,9 +25,3 @@
   flex: 1;
   min-height: 0;
 }
-
-.tab-shng > a {
-  border-bottom: none !important;
-  outline: 0 !important;
-  color: rgb(160, 160, 160);
-}

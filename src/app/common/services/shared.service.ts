@@ -11,6 +11,10 @@ export class SharedService {
   private appConfig = inject(AppConfigService);
   private readonly log = inject(LogService);
 
+  /** Persists the monitored-item list across item-tree component navigation.
+   *  Stored here because WebsocketPluginService is component-scoped. */
+  public monitoredItemsList: [string, Record<string, unknown>][] = [];
+
   constructor() {
     this.log.log('SharedService constructor called');
   }

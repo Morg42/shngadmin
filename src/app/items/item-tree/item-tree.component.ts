@@ -99,9 +99,10 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
   itemdetails: ItemDetails = <ItemDetails>{};
   itemdetailsloaded = false;
 
-  /** Delegate to the singleton service so the list survives navigation */
+  /** Delegate to SharedService (true root singleton) so the list survives
+   *  navigation — WebsocketPluginService is component-scoped and gets destroyed */
   get monitoredItems(): MonitoredItem[] {
-    return this.websocketPluginService.monitoredItemsList;
+    return this.shared.monitoredItemsList;
   }
 
   filesTree0!: {}[];

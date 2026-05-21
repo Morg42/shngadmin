@@ -29,7 +29,7 @@
                   <td>
                     <strong>{{ this.default_language }}</strong>
                   </td>
-                  <td style="padding-top: 21px">
+                  <td>
                     <p-select
                       [style]="{ width: '150px' }"
                       [options]="valid_languagelist"
@@ -69,7 +69,7 @@
                   <td>
                     <strong>{{ shared.displayDateTime(serverInfo.last_backup) }}</strong>
                   </td>
-                  <td style="padding-top: 17px">
+                  <td>
                     <button
                       pButton
                       type="button"
@@ -142,7 +142,7 @@
                   <td>
                     {{ 'SERVICES.PASSWORD_HASH' | translate }}
                   </td>
-                  <td style="padding-top: 13px">
+                  <td>
                     <input
                       class="form-control"
                       [(ngModel)]="pwd_clear"
@@ -156,7 +156,7 @@
                     <input type="checkbox" [(ngModel)]="pwd_show" id="showtext" onclick="this.pwd_show = true" />
                     {{ 'SERVICES.SHOW_PASSWORD' | translate }}
                   </td>
-                  <td style="padding-top: 22px">
+                  <td>
                     <button
                       pButton
                       type="button"

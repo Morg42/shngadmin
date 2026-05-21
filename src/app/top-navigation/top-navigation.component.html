@@ -26,6 +26,7 @@
                   (click)="disableResponsiveMenu(menuEntry)"
                   [routerLink]="submenuEntry.routerLink"
                   routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }"
                   >{{ submenuEntry.label }}</a
                 >
               }

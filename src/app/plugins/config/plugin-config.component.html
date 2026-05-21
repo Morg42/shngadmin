@@ -11,13 +11,7 @@
       {{ 'PLUGIN.PLUGIN_CONFIGURATION' | translate }}
       @if (spinner_display) {
         <span
-          style="
-            margin-left: 1rem;
-            font-size: var(--font-size-xs);
-            font-weight: var(--font-weight-normal);
-            color: var(--text-muted);
-            vertical-align: middle;
-          "
+          style="margin-left: 1rem; font-size: var(--font-size-base); color: var(--text-muted); vertical-align: middle"
         >
           <p-progressSpinner
             [style]="{ width: '18px', height: '18px' }"
@@ -260,12 +254,12 @@
   <ng-template pTemplate="footer">
     @if (dialog_readonly === false) {
       @if (save_error) {
-        <span style="color: var(--shng-danger); font-size: var(--font-size-sm); margin-right: 1rem">
+        <span style="color: var(--shng-danger); font-size: var(--font-size-base); margin-right: 1rem">
           <i class="fa fa-exclamation-triangle"></i>&nbsp;{{ save_error }}
         </span>
       }
       @if (load_error) {
-        <span style="color: var(--shng-danger); font-size: var(--font-size-sm); margin-right: 1rem">
+        <span style="color: var(--shng-danger); font-size: var(--font-size-base); margin-right: 1rem">
           <i class="fa fa-exclamation-triangle"></i>&nbsp;{{ load_error }}
         </span>
       }

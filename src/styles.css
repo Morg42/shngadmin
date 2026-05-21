@@ -488,12 +488,13 @@ a.text-shng:hover {
   border-top: 0;
 }
 
-/* Table column-header rows: subtle background and muted color for structure,
-   no bold — category headings stay normal weight per design intent */
+/* Table column-header rows: semi-bold, darker text, visible stripe —
+   more pronounced than body rows; kept separate from accordion headings
+   which use the base .shng_heading rule (normal weight) */
 .table .shng_heading th {
-  font-weight: var(--font-weight-normal);
-  color: var(--text-muted);
-  background-color: rgba(0, 0, 0, 0.03);
+  font-weight: 600;
+  color: var(--text-secondary);
+  background-color: rgba(0, 0, 0, 0.06);
 }
 
 /* ============================================================

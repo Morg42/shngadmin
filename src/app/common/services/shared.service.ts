@@ -82,7 +82,7 @@ export class SharedService {
       if (!tz) {
         this.log.warn('SharedService.displayDateTime: tz could not be read from AppConfigService');
       }
-      return date + ' ' + time + ' ' + (tz || 'unknown');
+      return date + ' ' + time + (tz ? ' ' + tz : '');
     } else {
       return datetime;
     }

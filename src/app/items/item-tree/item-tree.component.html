@@ -2,7 +2,7 @@
   <p-tabs value="0">
     <p-tablist>
       <p-tab value="0">{{ 'ITEMS.ITEMS' | translate }} ({{ 'ITEMS.TOTAL' | translate }}: {{ itemcount }})</p-tab>
-      <p-tab value="1">{{ 'ITEMS.MONITORED ITEMS' | translate }}</p-tab>
+      <p-tab value="1">{{ 'ITEMS.MONITORED ITEMS' | translate }} ({{ monitoredItems.length }})</p-tab>
     </p-tablist>
     <p-tabpanels>
       <p-tabpanel value="0">
@@ -549,7 +549,7 @@
           <td class="py-1">
             <button
               type="button"
-              class="float-sm-right btn-outline btn-sm"
+              class="float-sm-right btn btn-shng btn-sm"
               style="margin-left: 5px"
               id="btn-monitor2t"
               (click)="monitorItem(itemdata[0], false)"

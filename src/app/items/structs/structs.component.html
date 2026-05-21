@@ -1,6 +1,8 @@
 <div class="shngbody">
   <div>
-    <h4 style="margin-left: 15px; margin-top: 5px">{{ 'ITEMS.STRUCT_TEMPLATES' | translate }}</h4>
+    <div class="shng_headline" style="margin-left: 15px; margin-top: 5px">
+      {{ 'ITEMS.STRUCT_TEMPLATES' | translate }}
+    </div>
     <p-accordion
       [multiple]="true"
       (onOpen)="groupExpanded[structsGroups[$event.index]] = true"

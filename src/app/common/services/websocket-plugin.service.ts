@@ -177,6 +177,9 @@ export class WebsocketPluginService {
 
   private readonly stop$ = new Subject<void>();
 
+  /** Persists the monitored-item list across component navigation */
+  public monitoredItemsList: [string, Record<string, unknown>][] = [];
+
   private msgIdentity = <Message>{
     cmd: 'identity',
     sw: APP_NAME,

@@ -1,4 +1,26 @@
 <div class="shngbody">
+  <div class="button-row-left">
+    <button
+      pButton
+      label="{{ 'BUTTON.NEW_GROUP' | translate }}"
+      type="button"
+      [disabled]="!(myEditGroup === '' || !this.groupChanged)"
+      icon="far fa-file"
+      style="margin-right: 10px"
+      (click)="newGroup()"
+      class="float-sm-left ui-button-success"
+    ></button>
+    <button
+      pButton
+      type="button"
+      [disabled]="myEditGroup === ''"
+      icon="far fa-trash-alt"
+      style="margin-right: 0; width: 25px"
+      (click)="deleteGroup()"
+      class="float-sm-left ui-button-danger"
+    ></button>
+  </div>
+
   <div class="button-row">
     <button
       pButton
@@ -23,28 +45,6 @@
   </div>
 
   <div class="logics-groupslist">
-    <button
-      pButton
-      label="{{ 'BUTTON.NEW_GROUP' | translate }}"
-      type="button"
-      [disabled]="!(myEditGroup === '' || !this.groupChanged)"
-      icon="far fa-file"
-      style="margin-left: 3px; margin-right: 10px"
-      (click)="newGroup()"
-      class="float-sm-left ui-button-success"
-    ></button>
-    <button
-      pButton
-      type="button"
-      [disabled]="myEditGroup === ''"
-      icon="far fa-trash-alt"
-      style="margin-right: 0; width: 25px"
-      (click)="deleteGroup()"
-      class="float-sm-left ui-button-danger"
-    ></button>
-    <br />
-    <br />
-
     <i class="fa fa-sitemap" style="margin-left: 5px; color: var(--text-caption)"></i>
     <a style="margin-left: 5px; color: var(--text-muted)">{{ 'LOGICS.GROUPS' | translate }}</a>
 

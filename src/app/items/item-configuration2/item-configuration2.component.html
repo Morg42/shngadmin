@@ -1,4 +1,26 @@
 <div class="shngbody">
+  <div class="button-row-left">
+    <button
+      pButton
+      label="{{ 'BUTTON.NEW_DEFINITION_FILE' | translate }}"
+      type="button"
+      [disabled]="!(myEditFilename === '' || myTextarea === myTextareaOrig)"
+      icon="far fa-file"
+      style="margin-right: 10px"
+      (click)="newConfig()"
+      class="float-sm-left ui-button-success"
+    ></button>
+    <button
+      pButton
+      type="button"
+      [disabled]="myEditFilename === ''"
+      icon="far fa-trash-alt"
+      style="margin-right: 0"
+      (click)="deleteConfig()"
+      class="float-sm-left ui-button-danger"
+    ></button>
+  </div>
+
   <div class="button-row">
     <button
       pButton
@@ -37,28 +59,6 @@
 
   <div class="items-filelist">
     <div class="filelist-header">
-      <button
-        pButton
-        label="{{ 'BUTTON.NEW_DEFINITION_FILE' | translate }}"
-        type="button"
-        [disabled]="!(myEditFilename === '' || myTextarea === myTextareaOrig)"
-        icon="far fa-file"
-        style="margin-right: 10px"
-        (click)="newConfig()"
-        class="float-sm-left ui-button-success"
-      ></button>
-      <button
-        pButton
-        type="button"
-        [disabled]="myEditFilename === ''"
-        icon="far fa-trash-alt"
-        style="margin-right: 0"
-        (click)="deleteConfig()"
-        class="float-sm-left ui-button-danger"
-      ></button>
-      <br />
-      <br />
-
       <i class="fa fa-sitemap" style="margin-left: 5px; color: #a2a2a2"></i>
       <a style="margin-left: 5px; color: #727272">{{ 'ITEM_CONFIG.DEFINITION_FILES' | translate }}</a>
     </div>

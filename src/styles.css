@@ -895,6 +895,11 @@ a.text-shng:hover {
   padding: 0 !important;
 }
 
+/* PrimeNG DataTable column headers: left-align text */
+.p-datatable th {
+  text-align: left;
+}
+
 /* items-filelist: flex column so p-listbox fills the remaining height */
 .items-filelist {
   display: flex;

@@ -1,1 +1,27 @@
+[ "$(whoami)" = "sh" ] || exit 0
+
+REQUIRED_BRANCH="develop"
+
+CURRENT_BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || echo "")
+echo "[pre-commit] branch: '$CURRENT_BRANCH'"
+
+# Run prettier via lint-staged (formats and re-stages changed files)
+echo "[pre-commit] running prettier"
 npx lint-staged
+
+# Run tests
+echo "[pre-commit] running tests"
+npm test -- --watchAll=false --passWithNoTests
+TEST_EXIT=$?
+
+if [ $TEST_EXIT -ne 0 ]; then
+  if [ "$CURRENT_BRANCH" = "$REQUIRED_BRANCH" ]; then
+    echo "[pre-commit] tests FAILED on '$REQUIRED_BRANCH' — aborting commit" >&2
+    exit 1
+  else
+    echo "[pre-commit] tests FAILED (not '$REQUIRED_BRANCH', continuing anyway)"
+  fi
+fi
+
+echo "[pre-commit] done"
+

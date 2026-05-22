@@ -37,9 +37,24 @@
         <tr class="shng_heading">
           <th style="width: 30px; border: 0"></th>
           <th style="width: 30px; border: 0"></th>
-          <th style="border: 0">{{ 'PLUGIN.CONFIGNAME' | translate }}</th>
-          <th style="min-width: 200px; border: 0">{{ 'PLUGIN.PLUGINNAME' | translate }}</th>
-          <th style="min-width: 120px; border: 0">{{ 'PLUGIN.INSTANCE' | translate }}</th>
+          <th class="sortable-th" style="border: 0" (click)="sortBy('confname')">
+            {{ 'PLUGIN.CONFIGNAME' | translate }}
+            @if (sortField === 'confname') {
+              <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+            }
+          </th>
+          <th class="sortable-th" style="min-width: 200px; border: 0" (click)="sortBy('plugin')">
+            {{ 'PLUGIN.PLUGINNAME' | translate }}
+            @if (sortField === 'plugin') {
+              <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+            }
+          </th>
+          <th class="sortable-th" style="min-width: 120px; border: 0" (click)="sortBy('instance')">
+            {{ 'PLUGIN.INSTANCE' | translate }}
+            @if (sortField === 'instance') {
+              <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+            }
+          </th>
           <th style="border: 0">{{ 'PLUGIN.DESCRIPTION' | translate }}</th>
           <th style="width: 110px; border: 0; text-align: center"></th>
           <th style="width: 110px; border: 0; text-align: center"></th>

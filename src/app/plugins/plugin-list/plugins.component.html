@@ -16,10 +16,30 @@
             <th style="width: 20px; border-top: 0"></th>
             <th style="width: 20px; border-top: 0"></th>
             <th style="width: 50px; border-top: 0">{{ 'PLUGIN.TYPE' | translate }}</th>
-            <th style="width: 200px; border-top: 0">{{ 'PLUGIN.CONFIGNAME' | translate }}</th>
-            <th style="width: 210px; border-top: 0">{{ 'PLUGIN.PLUGINNAME' | translate }}</th>
-            <th style="width: 140px; border-top: 0">{{ 'PLUGIN.INSTANCE' | translate }}</th>
-            <th style="width: 110px; border-top: 0">{{ 'PLUGIN.VERSION' | translate }}</th>
+            <th class="sortable-th" style="width: 200px; border-top: 0" (click)="sortBy('configname')">
+              {{ 'PLUGIN.CONFIGNAME' | translate }}
+              @if (sortField === 'configname') {
+                <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+              }
+            </th>
+            <th class="sortable-th" style="width: 210px; border-top: 0" (click)="sortBy('pluginname')">
+              {{ 'PLUGIN.PLUGINNAME' | translate }}
+              @if (sortField === 'pluginname') {
+                <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+              }
+            </th>
+            <th class="sortable-th" style="width: 140px; border-top: 0" (click)="sortBy('instancename')">
+              {{ 'PLUGIN.INSTANCE' | translate }}
+              @if (sortField === 'instancename') {
+                <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+              }
+            </th>
+            <th class="sortable-th" style="width: 110px; border-top: 0" (click)="sortBy('version')">
+              {{ 'PLUGIN.VERSION' | translate }}
+              @if (sortField === 'version') {
+                <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+              }
+            </th>
             <th style="width: 40px; border-top: 0">{{ 'PLUGIN.WEBIF' | translate }}</th>
             <th style="min-width: 160px; width: 220px; border-top: 0">{{ 'PLUGIN.HELP' | translate }}</th>
             @if (developerMode) {

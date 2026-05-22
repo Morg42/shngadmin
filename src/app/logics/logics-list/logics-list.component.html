@@ -55,21 +55,51 @@
                           <thead>
                             <tr class="shng_heading">
                               <th style="width: 30px; border-top: 0"></th>
-                              <th class="p-1" style="width: 320px; border-top: 0">
+                              <th
+                                class="p-1 sortable-th"
+                                style="width: 320px; border-top: 0"
+                                (click)="sortUserLogics('name')"
+                              >
                                 <strong>{{ 'LOGICS.LOGIC' | translate }}</strong>
+                                @if (uSortField === 'name') {
+                                  <span class="sort-indicator">{{ uSortOrder === 1 ? '▲' : '▼' }}</span>
+                                }
                               </th>
-                              <th class="p-1" style="width: 220px; border-top: 0">
+                              <th
+                                class="p-1 sortable-th"
+                                style="width: 220px; border-top: 0"
+                                (click)="sortUserLogics('next_exec')"
+                              >
                                 {{ 'LOGICS.NEXT_EXEC' | translate }}
+                                @if (uSortField === 'next_exec') {
+                                  <span class="sort-indicator">{{ uSortOrder === 1 ? '▲' : '▼' }}</span>
+                                }
                               </th>
-                              <th class="p-1" style="width: 70px; border-top: 0">{{ 'LOGICS.CYCLE' | translate }}</th>
+                              <th
+                                class="p-1 sortable-th"
+                                style="width: 70px; border-top: 0"
+                                (click)="sortUserLogics('cycle')"
+                              >
+                                {{ 'LOGICS.CYCLE' | translate }}
+                                @if (uSortField === 'cycle') {
+                                  <span class="sort-indicator">{{ uSortOrder === 1 ? '▲' : '▼' }}</span>
+                                }
+                              </th>
                               <th class="p-1" style="width: 150px; border-top: 0">
                                 {{ 'LOGICS.CRONTAB' | translate }}
                               </th>
                               <th class="p-1" style="width: 120px; border-top: 0">
                                 {{ 'LOGICS.WATCH_ITEMS' | translate }}
                               </th>
-                              <th class="p-1" style="width: 250px; border-top: 0">
+                              <th
+                                class="p-1 sortable-th"
+                                style="width: 250px; border-top: 0"
+                                (click)="sortUserLogics('filename')"
+                              >
                                 {{ 'LOGICS.FILENAME' | translate }}
+                                @if (uSortField === 'filename') {
+                                  <span class="sort-indicator">{{ uSortOrder === 1 ? '▲' : '▼' }}</span>
+                                }
                               </th>
                               <th class="p-1" style="width: 230px; border-top: 0">
                                 {{ 'LOGICS.ACTIONS' | translate }}
@@ -354,12 +384,40 @@
                   @if (userlogics.length > 0) {
                     <tr class="shng_heading">
                       <th style="width: 30px; border-top: 0"></th>
-                      <th class="p-1" style="width: 320px; border-top: 0">{{ 'LOGICS.LOGIC' | translate }}</th>
-                      <th class="p-1" style="width: 220px; border-top: 0">{{ 'LOGICS.NEXT_EXEC' | translate }}</th>
-                      <th class="p-1" style="width: 70px; border-top: 0">{{ 'LOGICS.CYCLE' | translate }}</th>
+                      <th class="p-1 sortable-th" style="width: 320px; border-top: 0" (click)="sortUserLogics('name')">
+                        {{ 'LOGICS.LOGIC' | translate }}
+                        @if (uSortField === 'name') {
+                          <span class="sort-indicator">{{ uSortOrder === 1 ? '▲' : '▼' }}</span>
+                        }
+                      </th>
+                      <th
+                        class="p-1 sortable-th"
+                        style="width: 220px; border-top: 0"
+                        (click)="sortUserLogics('next_exec')"
+                      >
+                        {{ 'LOGICS.NEXT_EXEC' | translate }}
+                        @if (uSortField === 'next_exec') {
+                          <span class="sort-indicator">{{ uSortOrder === 1 ? '▲' : '▼' }}</span>
+                        }
+                      </th>
+                      <th class="p-1 sortable-th" style="width: 70px; border-top: 0" (click)="sortUserLogics('cycle')">
+                        {{ 'LOGICS.CYCLE' | translate }}
+                        @if (uSortField === 'cycle') {
+                          <span class="sort-indicator">{{ uSortOrder === 1 ? '▲' : '▼' }}</span>
+                        }
+                      </th>
                       <th class="p-1" style="width: 150px; border-top: 0">{{ 'LOGICS.CRONTAB' | translate }}</th>
                       <th class="p-1" style="width: 120px; border-top: 0">{{ 'LOGICS.WATCH_ITEMS' | translate }}</th>
-                      <th class="p-1" style="width: 250px; border-top: 0">{{ 'LOGICS.FILENAME' | translate }}</th>
+                      <th
+                        class="p-1 sortable-th"
+                        style="width: 250px; border-top: 0"
+                        (click)="sortUserLogics('filename')"
+                      >
+                        {{ 'LOGICS.FILENAME' | translate }}
+                        @if (uSortField === 'filename') {
+                          <span class="sort-indicator">{{ uSortOrder === 1 ? '▲' : '▼' }}</span>
+                        }
+                      </th>
                       <th class="p-1" style="width: 260px; border-top: 0">{{ 'LOGICS.ACTIONS' | translate }}</th>
                     </tr>
                   }
@@ -580,12 +638,32 @@
               <thead>
                 <tr class="shng_heading">
                   <th style="width: 30px; border-top: 0"></th>
-                  <th class="p-1" style="width: 320px; border-top: 0">{{ 'LOGICS.LOGIC' | translate }}</th>
-                  <th class="p-1" style="width: 220px; border-top: 0">{{ 'LOGICS.NEXT_EXEC' | translate }}</th>
-                  <th class="p-1" style="width: 250px; border-top: 0">{{ 'LOGICS.CYCLE' | translate }}</th>
+                  <th class="p-1 sortable-th" style="width: 320px; border-top: 0" (click)="sortSysLogics('name')">
+                    {{ 'LOGICS.LOGIC' | translate }}
+                    @if (sSortField === 'name') {
+                      <span class="sort-indicator">{{ sSortOrder === 1 ? '▲' : '▼' }}</span>
+                    }
+                  </th>
+                  <th class="p-1 sortable-th" style="width: 220px; border-top: 0" (click)="sortSysLogics('next_exec')">
+                    {{ 'LOGICS.NEXT_EXEC' | translate }}
+                    @if (sSortField === 'next_exec') {
+                      <span class="sort-indicator">{{ sSortOrder === 1 ? '▲' : '▼' }}</span>
+                    }
+                  </th>
+                  <th class="p-1 sortable-th" style="width: 250px; border-top: 0" (click)="sortSysLogics('cycle')">
+                    {{ 'LOGICS.CYCLE' | translate }}
+                    @if (sSortField === 'cycle') {
+                      <span class="sort-indicator">{{ sSortOrder === 1 ? '▲' : '▼' }}</span>
+                    }
+                  </th>
                   <th class="p-1" style="width: 160px; border-top: 0">{{ 'LOGICS.CRONTAB' | translate }}</th>
                   <th class="p-1" style="width: 150px; border-top: 0">{{ 'LOGICS.WATCH_ITEMS' | translate }}</th>
-                  <th class="p-1" style="width: 250px; border-top: 0">{{ 'LOGICS.FILENAME' | translate }}</th>
+                  <th class="p-1 sortable-th" style="width: 250px; border-top: 0" (click)="sortSysLogics('filename')">
+                    {{ 'LOGICS.FILENAME' | translate }}
+                    @if (sSortField === 'filename') {
+                      <span class="sort-indicator">{{ sSortOrder === 1 ? '▲' : '▼' }}</span>
+                    }
+                  </th>
                   <th class="p-1" style="width: 260px; border-top: 0">{{ 'LOGICS.ACTIONS' | translate }}</th>
                 </tr>
               </thead>

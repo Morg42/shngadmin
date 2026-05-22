@@ -145,6 +145,21 @@ export class ServicesComponent implements OnInit {
   cacheInfo: CacheEntryType[] = [];
   cacheAllChecked!: boolean;
 
+  cacheSortField = '';
+  cacheSortOrder: 1 | -1 = 1;
+
+  sortCache(field: string): void {
+    this.cacheSortOrder = this.cacheSortField === field ? (this.cacheSortOrder === 1 ? -1 : 1) : 1;
+    this.cacheSortField = field;
+    const ord = this.cacheSortOrder;
+    this.cacheInfo.sort((a, b) => {
+      const av = String((a as Record<string, unknown>)[field] ?? '').toLowerCase();
+      const bv = String((b as Record<string, unknown>)[field] ?? '').toLowerCase();
+      return av < bv ? -ord : av > bv ? ord : 0;
+    });
+    this.cdr.markForCheck();
+  }
+
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);
   }

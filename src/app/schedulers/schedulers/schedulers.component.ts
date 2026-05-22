@@ -37,6 +37,21 @@ export class SchedulersComponent implements OnInit {
   schedulerinfo!: SchedulerInfo[];
   developerMode!: boolean;
 
+  sortField = '';
+  sortOrder: 1 | -1 = 1;
+
+  sortBy(field: string): void {
+    this.sortOrder = this.sortField === field ? (this.sortOrder === 1 ? -1 : 1) : 1;
+    this.sortField = field;
+    const ord = this.sortOrder;
+    this.schedulerinfo.sort((a, b) => {
+      const av = String((a as Record<string, unknown>)[field] ?? '').toLowerCase();
+      const bv = String((b as Record<string, unknown>)[field] ?? '').toLowerCase();
+      return av < bv ? -ord : av > bv ? ord : 0;
+    });
+    this.cdr.markForCheck();
+  }
+
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);
   }

@@ -72,6 +72,35 @@ export class LogicsListComponent implements OnInit {
 
   groupdefinitions: Record<string, Record<string, string>> = {};
   groupList!: LogicsGroupType[];
+
+  uSortField = '';
+  uSortOrder: 1 | -1 = 1;
+  sSortField = '';
+  sSortOrder: 1 | -1 = 1;
+
+  sortUserLogics(field: string): void {
+    this.uSortOrder = this.uSortField === field ? (this.uSortOrder === 1 ? -1 : 1) : 1;
+    this.uSortField = field;
+    const ord = this.uSortOrder;
+    this.userlogics.sort((a, b) => {
+      const av = String((a as Record<string, unknown>)[field] ?? '').toLowerCase();
+      const bv = String((b as Record<string, unknown>)[field] ?? '').toLowerCase();
+      return av < bv ? -ord : av > bv ? ord : 0;
+    });
+    this.cdr.markForCheck();
+  }
+
+  sortSysLogics(field: string): void {
+    this.sSortOrder = this.sSortField === field ? (this.sSortOrder === 1 ? -1 : 1) : 1;
+    this.sSortField = field;
+    const ord = this.sSortOrder;
+    this.systemlogics.sort((a, b) => {
+      const av = String((a as Record<string, unknown>)[field] ?? '').toLowerCase();
+      const bv = String((b as Record<string, unknown>)[field] ?? '').toLowerCase();
+      return av < bv ? -ord : av > bv ? ord : 0;
+    });
+    this.cdr.markForCheck();
+  }
   groupExpandedOnStart: number[] = [];
   groupExpanded: number[] = [];
   nogroups: boolean;

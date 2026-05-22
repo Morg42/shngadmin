@@ -368,9 +368,24 @@
                 <thead>
                   <tr class="shng_heading">
                     <th><input [(ngModel)]="cacheAllChecked" (change)="cacheCheckAll()" type="checkbox" /></th>
-                    <th style="width: 550px">{{ 'SERVICES.FILENAME' | translate }}</th>
-                    <th style="min-width: 200px">{{ 'SERVICES.LAST_MODIFICATION' | translate }}</th>
-                    <th style="min-width: 200px">{{ 'SERVICES.CREATION_DATE' | translate }}</th>
+                    <th class="sortable-th" style="width: 550px" (click)="sortCache('filename')">
+                      {{ 'SERVICES.FILENAME' | translate }}
+                      @if (cacheSortField === 'filename') {
+                        <span class="sort-indicator">{{ cacheSortOrder === 1 ? '▲' : '▼' }}</span>
+                      }
+                    </th>
+                    <th class="sortable-th" style="min-width: 200px" (click)="sortCache('last_modified')">
+                      {{ 'SERVICES.LAST_MODIFICATION' | translate }}
+                      @if (cacheSortField === 'last_modified') {
+                        <span class="sort-indicator">{{ cacheSortOrder === 1 ? '▲' : '▼' }}</span>
+                      }
+                    </th>
+                    <th class="sortable-th" style="min-width: 200px" (click)="sortCache('created')">
+                      {{ 'SERVICES.CREATION_DATE' | translate }}
+                      @if (cacheSortField === 'created') {
+                        <span class="sort-indicator">{{ cacheSortOrder === 1 ? '▲' : '▼' }}</span>
+                      }
+                    </th>
                     <th>{{ 'SERVICES.ACTIONS' | translate }}</th>
                   </tr>
                 </thead>

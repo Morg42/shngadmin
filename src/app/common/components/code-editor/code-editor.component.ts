@@ -99,6 +99,9 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
   /** Extra keybindings specific to the hosting component. */
   @Input() extraKeybindings: KeyBinding[] = [];
 
+  /** Emits the new fullscreen state whenever it changes (toggle or ESC exit). */
+  @Output() fullscreenChange = new EventEmitter<boolean>();
+
   /** Optional CM6 completion source for autocomplete (logics-edit). */
   @Input() completionSource?: CmCompletionSource;
 
@@ -183,12 +186,14 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
     } else {
       host.classList.remove('cm-fullscreen');
     }
+    this.fullscreenChange.emit(this._fullscreen);
   }
 
   exitFullscreen() {
     if (this._fullscreen) {
       this._fullscreen = false;
       (this.el.nativeElement as HTMLElement).classList.remove('cm-fullscreen');
+      this.fullscreenChange.emit(false);
     }
   }
 

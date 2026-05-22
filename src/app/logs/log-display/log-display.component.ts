@@ -236,7 +236,12 @@ export class LogDisplayComponent implements OnInit {
 
   toggleEditorFullscreen() {
     this.codeEditor?.toggleFullscreen();
-    this.editorFullscreen = !this.editorFullscreen;
+    // editorFullscreen is kept in sync via (fullscreenChange) binding
+  }
+
+  onFullscreenChange(isFullscreen: boolean) {
+    this.editorFullscreen = isFullscreen;
+    this.cdr.markForCheck();
   }
 
   readLogfile(chunk = 1) {

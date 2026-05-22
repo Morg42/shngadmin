@@ -130,6 +130,7 @@
       [lineNums]="cmLineNumbers"
       [firstLineNumber]="cmFirstLineNumber"
       [value]="logfile_content"
+      (fullscreenChange)="onFullscreenChange($event)"
       style="height: calc(100vh - 160px)"
     ></app-code-editor>
   </div>

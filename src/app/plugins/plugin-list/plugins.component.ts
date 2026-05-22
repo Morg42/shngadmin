@@ -69,8 +69,8 @@ export class PluginsComponent implements OnInit {
     this.sortField = field;
     const ord = this.sortOrder;
     this.plugininfo.sort((a, b) => {
-      const av = String((a as Record<string, unknown>)[field] ?? '').toLowerCase();
-      const bv = String((b as Record<string, unknown>)[field] ?? '').toLowerCase();
+      const av = String((a as unknown as Record<string, unknown>)[field] ?? '').toLowerCase();
+      const bv = String((b as unknown as Record<string, unknown>)[field] ?? '').toLowerCase();
       return av < bv ? -ord : av > bv ? ord : 0;
     });
     this.cdr.markForCheck();

@@ -895,6 +895,23 @@ a.text-shng:hover {
   padding: 0 !important;
 }
 
+/* items-filelist: flex column so p-listbox fills the remaining height */
+.items-filelist {
+  display: flex;
+  flex-direction: column;
+}
+
+.items-filelist .filelist-header {
+  flex-shrink: 0;
+  overflow: hidden; /* contain floated buttons */
+}
+
+.items-filelist p-listbox {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
 /* Code editor wrapper areas: visible border */
 .items-fileeditor {
   border: 1px solid #dee2e6;

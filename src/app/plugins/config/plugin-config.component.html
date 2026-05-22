@@ -18,6 +18,39 @@
         &nbsp;{{ spinner_header }}
       </span>
     }
+    <span
+      style="
+        position: relative;
+        display: inline-block;
+        margin-right: 8px;
+        float-sm-right: right;
+        vertical-align: middle;
+      "
+      class="float-sm-right"
+    >
+      <input
+        pInputText
+        type="text"
+        placeholder="{{ 'BUTTON.FILTER' | translate }}"
+        [value]="filterText"
+        (input)="onFilterChange($any($event.target).value)"
+        style="width: 220px; padding-right: 2rem; margin-top: 5px"
+      />
+      @if (filterText) {
+        <span
+          class="pi pi-times"
+          style="
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--text-muted);
+          "
+          (click)="clearFilter()"
+        ></span>
+      }
+    </span>
     <button
       pButton
       type="button"
@@ -61,7 +94,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (row of configuredplugins; track row.confname) {
+        @for (row of filteredPlugins; track row.confname) {
           <tr style="cursor: pointer" (click)="rowClicked($event, row)">
             <td [style.opacity]="row.loaded ? '1' : '0.5'">
               @if (row['enabled'] === 'true') {
@@ -108,8 +141,8 @@
                   icon="fa fa-upload"
                   (click)="loadPlugin(row.confname)"
                   label="{{ 'BUTTON.LOAD' | translate }}"
-                  class="ui-button-success btn-sm"
-                  class="shng-text-sm"
+                  class="ui-button-success btn-sm shng-text-sm"
+                  style="min-width: 100px"
                 ></button>
               }
               @if (row.loaded) {
@@ -119,8 +152,8 @@
                   icon="fa fa-sync"
                   (click)="reloadPlugin(row.confname)"
                   label="{{ 'BUTTON.RELOAD' | translate }}"
-                  class="ui-button-warning btn-sm"
-                  class="shng-text-sm"
+                  class="ui-button-warning btn-sm shng-text-sm"
+                  style="min-width: 100px"
                 ></button>
               }
             </td>

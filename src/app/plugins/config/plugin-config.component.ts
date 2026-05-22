@@ -141,6 +141,30 @@ export class PluginConfigComponent implements OnInit {
     });
     this.cdr.markForCheck();
   }
+
+  filterText = '';
+
+  onFilterChange(value: string): void {
+    this.filterText = value;
+    this.cdr.markForCheck();
+  }
+
+  clearFilter(): void {
+    this.filterText = '';
+    this.cdr.markForCheck();
+  }
+
+  get filteredPlugins(): ConfiguredPlugin[] {
+    if (!this.filterText) return this.configuredplugins;
+    const f = this.filterText.toLowerCase();
+    return this.configuredplugins.filter(
+      (p) =>
+        p.confname.toLowerCase().includes(f) ||
+        p.plugin.toLowerCase().includes(f) ||
+        p.instance.toLowerCase().includes(f) ||
+        p.desc.toLowerCase().includes(f),
+    );
+  }
   pluginconflist!: PluginsConfig;
   server_info!: ServerInfo;
   lang!: string;

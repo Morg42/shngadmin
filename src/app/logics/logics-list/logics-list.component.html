@@ -1,5 +1,31 @@
 <div class="shngbody">
   <div>
+    <div class="shng_headline" style="margin-top: 5px; margin-left: 8px; min-height: 40px">
+      <span style="position: relative; display: inline-block; vertical-align: middle" class="float-sm-right">
+        <input
+          pInputText
+          type="text"
+          placeholder="{{ 'BUTTON.FILTER' | translate }}"
+          [value]="filterText"
+          (input)="onFilterChange($any($event.target).value)"
+          style="width: 220px; padding-right: 2rem; margin-top: 5px"
+        />
+        @if (filterText) {
+          <span
+            class="pi pi-times"
+            style="
+              position: absolute;
+              right: 0.5rem;
+              top: 50%;
+              transform: translateY(-50%);
+              cursor: pointer;
+              color: var(--text-muted);
+            "
+            (click)="clearFilter()"
+          ></span>
+        }
+      </span>
+    </div>
     <p-tabs value="0">
       <p-tablist>
         <p-tab value="0">{{ 'LOGICS.USERLOGICS' | translate }}</p-tab>
@@ -109,7 +135,7 @@
 
                           <tbody>
                             @if (userlogics.length > 0) {
-                              @for (logic of userlogics; track logic.name) {
+                              @for (logic of filteredUserLogics; track logic.name) {
                                 @if (logic.userlogic === true) {
                                   @if (logic.group != null && logic.group.indexOf(group.name ?? '') > -1) {
                                     <tr>
@@ -425,7 +451,7 @@
 
                 <tbody>
                   @if (userlogics.length > 0) {
-                    @for (logic of userlogics; track logic.name) {
+                    @for (logic of filteredUserLogics; track logic.name) {
                       @if (logic.userlogic === true) {
                         <tr>
                           @if (logic.enabled === true) {
@@ -669,7 +695,7 @@
               </thead>
               <tbody>
                 @if (systemlogics.length > 0) {
-                  @for (logic of systemlogics; track logic.name) {
+                  @for (logic of filteredSysLogics; track logic.name) {
                     @if (logic.userlogic === false) {
                       <tr>
                         <td class="p-1 pl-2">

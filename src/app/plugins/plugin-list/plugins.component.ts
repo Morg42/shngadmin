@@ -21,6 +21,7 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { TranslateDirective, TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Bind } from 'primeng/bind';
 import { Dialog } from 'primeng/dialog';
+import { InputText } from 'primeng/inputtext';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { PlugininfoType } from '../../common/models/plugin-info';
 import { LogService } from '../../common/services/log.service';
@@ -37,6 +38,7 @@ import { PluginsApiService } from '../../common/services/plugins-api.service';
     NgOptimizedImage,
     Bind,
     Dialog,
+    InputText,
     ProgressSpinner,
     TranslateDirective,
     UpperCasePipe,
@@ -74,6 +76,29 @@ export class PluginsComponent implements OnInit {
       return av < bv ? -ord : av > bv ? ord : 0;
     });
     this.cdr.markForCheck();
+  }
+
+  filterText = '';
+
+  onFilterChange(value: string): void {
+    this.filterText = value;
+    this.cdr.markForCheck();
+  }
+
+  clearFilter(): void {
+    this.filterText = '';
+    this.cdr.markForCheck();
+  }
+
+  get filteredPlugins(): PlugininfoType[] {
+    if (!this.filterText) return this.plugininfo;
+    const f = this.filterText.toLowerCase();
+    return this.plugininfo.filter(
+      (p) =>
+        p.configname.toLowerCase().includes(f) ||
+        p.pluginname.toLowerCase().includes(f) ||
+        p.instancename.toLowerCase().includes(f),
+    );
   }
 
   showPluginDetails = false;

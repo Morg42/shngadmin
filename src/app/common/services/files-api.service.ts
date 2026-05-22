@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AppConfigService } from './app-config.service';
 import { LogService } from './log.service';
@@ -55,6 +55,23 @@ export class FilesApiService {
         }
 
         return of('');
+      }),
+    );
+  }
+
+  /**
+   * Create a new file via POST. Unlike saveFile (PUT), the backend will
+   * return HTTP 409 Conflict if a file with that name already exists.
+   */
+  createFile(filetype: string, filename: string, content: string) {
+    const url = this.appConfig.apiUrl + 'files/' + filetype + '/?filename=' + filename;
+    return this.http.post(url, content, { responseType: 'text' }).pipe(
+      map((response) => response),
+      catchError((err: HttpErrorResponse) => {
+        this.log.error(
+          `FilesApiService.createFile: ${err.status} – filetype '${filetype}', filename '${filename}'`,
+        );
+        return throwError(() => err);
       }),
     );
   }

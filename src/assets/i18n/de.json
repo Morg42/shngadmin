@@ -575,5 +575,9 @@
     "RETRYING": "Verbinde…",
     "RETRY_NOW": "Jetzt versuchen",
     "BACK_ONLINE": "Verbunden"
+  },
+  "COMMON": {
+    "FILE_EXISTS_TITLE": "Datei bereits vorhanden",
+    "FILE_EXISTS_HINT": "Eine Datei namens '{{filename}}' ist bereits vorhanden."
   }
 }

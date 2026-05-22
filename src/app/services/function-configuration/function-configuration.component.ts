@@ -11,7 +11,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { PrimeTemplate, SelectItem } from 'primeng/api';
+import { MessageService, PrimeTemplate, SelectItem } from 'primeng/api';
 
 import { NgStyle } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -53,6 +53,7 @@ export class FunctionConfigurationComponent implements OnInit {
   private dataService = inject(ServicesApiService);
   private titleService = inject(Title);
   private readonly log = inject(LogService);
+  private readonly messageService = inject(MessageService);
 
   // -----------------------------------------------------
   //  Vars for the YAML syntax checker
@@ -78,6 +79,7 @@ export class FunctionConfigurationComponent implements OnInit {
   newconfig_display = false;
   newFilename = '';
   add_enabled = false;
+  fileExists = false;
 
   confirmdelete_display: boolean = false;
   delete_param!: {};
@@ -152,13 +154,15 @@ export class FunctionConfigurationComponent implements OnInit {
   }
 
   checkInput() {
+    this.fileExists = false;
     this.add_enabled = false;
     if (this.newFilename.length > 0) {
       this.add_enabled = true;
       for (const filenno in this.filelist) {
-        const fn = this.filelist[filenno].slice(0, -5);
+        const fn = this.filelist[filenno].slice(0, -3); // '.py' = 3 chars
         if (this.newFilename === fn) {
           this.add_enabled = false;
+          this.fileExists = true;
         }
       }
     }
@@ -186,28 +190,45 @@ export class FunctionConfigurationComponent implements OnInit {
         this.cmReadOnly = false;
         this.cdr.markForCheck();
 
-        // save new file before editing
+        // create new file via POST (backend refuses to overwrite existing files)
         this.fileService
-          .saveFile('functions', this.myEditFilename, this.myTextarea)
+          .createFile('functions', this.myEditFilename, this.myTextarea)
           .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe((response2) => {
-            this.myTextareaOrig = this.myTextarea;
-
-            this.functionFiles = [];
-            this.fileService
-              .getfileList('functions')
-              .pipe(takeUntilDestroyed(this.destroyRef))
-              .subscribe((response) => {
-                this.filelist = <string[]>response;
-                for (let i = 0; i < this.filelist.length; i++) {
-                  this.functionFiles = [
-                    ...this.functionFiles,
-                    <SelectItem>{ label: this.filelist[i], value: this.filelist[i] },
-                  ];
-                }
-                this.cdr.markForCheck();
-              });
-            this.cdr.markForCheck();
+          .subscribe({
+            next: () => {
+              this.myTextareaOrig = this.myTextarea;
+              this.functionFiles = [];
+              this.fileService
+                .getfileList('functions')
+                .pipe(takeUntilDestroyed(this.destroyRef))
+                .subscribe((response) => {
+                  this.filelist = <string[]>response;
+                  for (let i = 0; i < this.filelist.length; i++) {
+                    this.functionFiles = [
+                      ...this.functionFiles,
+                      <SelectItem>{ label: this.filelist[i], value: this.filelist[i] },
+                    ];
+                  }
+                  this.cdr.markForCheck();
+                });
+              this.cdr.markForCheck();
+            },
+            error: (err) => {
+              if (err?.status === 409) {
+                this.messageService.add({
+                  severity: 'warn',
+                  summary: this.translate.instant('COMMON.FILE_EXISTS_TITLE'),
+                  detail: this.translate.instant('COMMON.FILE_EXISTS_HINT', {
+                    filename: this.myEditFilename,
+                  }),
+                  life: 5000,
+                });
+              }
+              this.myEditFilename = '';
+              this.myTextarea = '';
+              this.cmReadOnly = true;
+              this.cdr.markForCheck();
+            },
           });
       });
   }

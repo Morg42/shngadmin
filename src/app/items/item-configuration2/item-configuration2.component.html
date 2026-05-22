@@ -119,6 +119,11 @@
       autofocus
     />
   </div>
+  @if (fileExists) {
+    <small class="p-error" style="display: block; margin-top: 6px">
+      {{ 'COMMON.FILE_EXISTS_HINT' | translate: { filename: newFilename } }}
+    </small>
+  }
   <br />
   <ng-template pTemplate="footer">
     <button

@@ -574,5 +574,9 @@
     "RETRYING": "Reconnexion…",
     "RETRY_NOW": "Réessayer",
     "BACK_ONLINE": "Reconnecté"
+  },
+  "COMMON": {
+    "FILE_EXISTS_TITLE": "Fichier déjà existant",
+    "FILE_EXISTS_HINT": "Un fichier nommé '{{filename}}' existe déjà."
   }
 }

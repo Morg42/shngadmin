@@ -26,6 +26,8 @@
   margin-top: 60px;
   float: left;
   border: 1px;
+  height: calc(100vh - 210px);
+  overflow: hidden;
 }
 
 .items-fileeditor {

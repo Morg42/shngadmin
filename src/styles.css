@@ -895,6 +895,14 @@ a.text-shng:hover {
   padding: 0 !important;
 }
 
+/* Code editor host: block display with visible border */
+app-code-editor {
+  display: block;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
 /* Offline banner */
 .offline-banner {
   position: sticky;

@@ -83,8 +83,8 @@ export class LogicsListComponent implements OnInit {
     this.uSortField = field;
     const ord = this.uSortOrder;
     this.userlogics.sort((a, b) => {
-      const av = String((a as Record<string, unknown>)[field] ?? '').toLowerCase();
-      const bv = String((b as Record<string, unknown>)[field] ?? '').toLowerCase();
+      const av = String((a as unknown as Record<string, unknown>)[field] ?? '').toLowerCase();
+      const bv = String((b as unknown as Record<string, unknown>)[field] ?? '').toLowerCase();
       return av < bv ? -ord : av > bv ? ord : 0;
     });
     this.cdr.markForCheck();
@@ -95,8 +95,8 @@ export class LogicsListComponent implements OnInit {
     this.sSortField = field;
     const ord = this.sSortOrder;
     this.systemlogics.sort((a, b) => {
-      const av = String((a as Record<string, unknown>)[field] ?? '').toLowerCase();
-      const bv = String((b as Record<string, unknown>)[field] ?? '').toLowerCase();
+      const av = String((a as unknown as Record<string, unknown>)[field] ?? '').toLowerCase();
+      const bv = String((b as unknown as Record<string, unknown>)[field] ?? '').toLowerCase();
       return av < bv ? -ord : av > bv ? ord : 0;
     });
     this.cdr.markForCheck();

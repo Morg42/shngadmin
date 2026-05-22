@@ -895,9 +895,14 @@ a.text-shng:hover {
   padding: 0 !important;
 }
 
-/* Code editor host: block display with visible border */
-app-code-editor {
-  display: block;
+/* Code editor wrapper areas: visible border */
+.items-fileeditor {
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+}
+
+.editor-area,
+.tab-editor-area {
   border: 1px solid #dee2e6;
   border-radius: 4px;
   overflow: hidden;

@@ -201,10 +201,8 @@ export class SystemComponent implements OnDestroy, OnInit {
     //
     this.initCharts();
 
-    let filepath = '/3rdpartylicenses.txt';
-    const hostip = this.appConfig.hostIp;
+    const filepath = 'assets/3rdpartylicenses.txt';
     const disclosureText = document.getElementById('disclosuretext');
-    // filepath = '/admin' + filepath;
     this.http
       .get(filepath, { responseType: 'text' })
       .pipe(takeUntilDestroyed(this.destroyRef))

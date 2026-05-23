@@ -71,6 +71,7 @@ export class SystemComponent implements OnDestroy, OnInit {
   faCheckCircle = faCheckCircle;
 
   loading: boolean = true;
+  licenseText = '';
   pypiPending = false;
   private readonly pypiPollStop$ = new Subject<void>();
 
@@ -201,23 +202,17 @@ export class SystemComponent implements OnDestroy, OnInit {
     //
     this.initCharts();
 
-    const filepath = 'assets/3rdpartylicenses.txt';
-    const disclosureText = document.getElementById('disclosuretext');
     this.http
-      .get(filepath, { responseType: 'text' })
+      .get('assets/3rdpartylicenses.txt', { responseType: 'text' })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
-          const message = response.toString();
-          if (disclosureText) {
-            disclosureText.textContent = message;
-          }
+          this.licenseText = response;
+          this.cdr.markForCheck();
         },
         error: (error) => {
-          if (disclosureText) {
-            disclosureText.textContent =
-              '\nERROR ' + error.status + ':\n\n    ' + error.url + '   ' + error.statusText;
-          }
+          this.licenseText = `ERROR ${error.status}:\n\n    ${error.url}   ${error.statusText}`;
+          this.cdr.markForCheck();
         },
       });
   }

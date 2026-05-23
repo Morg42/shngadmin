@@ -83,9 +83,7 @@ export class SharedService {
       const date = dateparts[2] + '.' + dateparts[1] + '.' + dateparts[0];
       const time = datetime.split(' ')[1].split('.')[0];
       const tz = is_dst ? this.appConfig.tznameDST : this.appConfig.tzname;
-      if (!tz) {
-        this.log.warn('SharedService.displayDateTime: tz could not be read from AppConfigService');
-      }
+      // tz is '' until server info loads; the fallback (no suffix) is intentional
       return date + ' ' + time + (tz ? ' ' + tz : '');
     } else {
       return datetime;

@@ -103,7 +103,7 @@ export class ServerApiService {
           clickDropdownHeader: this.shng_serverinfo.click_dropdown_header,
           fallbackLanguageOrder: fallbackOrder,
           wsHost: this.appConfig.hostIp,
-          wsPort: this.shng_serverinfo.websocket_port,
+          wsPort: this.shng_serverinfo.websocket_port ?? '',
         });
 
         if (!this.userPrefs.language && this.shng_serverinfo.default_language) {

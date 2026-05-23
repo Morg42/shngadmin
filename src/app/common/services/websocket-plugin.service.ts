@@ -186,6 +186,13 @@ export class WebsocketPluginService {
   };
 
   connect() {
+    if (!this.appConfig.wsHost || !this.appConfig.wsPort) {
+      this.log.warn(
+        'WebsocketPluginService.connect(): wsHost or wsPort not yet available — skipping connect',
+      );
+      return;
+    }
+
     const adm_url = 'ws://' + this.appConfig.wsHost + ':' + this.appConfig.wsPort + '/adm';
 
     if (this.appConfig.hostIp === null) {

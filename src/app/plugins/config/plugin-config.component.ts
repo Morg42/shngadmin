@@ -194,6 +194,50 @@ export class PluginConfigComponent implements OnInit {
   plugins_installed!: PluginsInstalled;
   plugins_installed_list!: string[];
 
+  addDialogFilter = '';
+  addDialogFlatView = false;
+
+  onAddFilterChange(value: string): void {
+    this.addDialogFilter = value;
+    this.cdr.markForCheck();
+  }
+
+  clearAddFilter(): void {
+    this.addDialogFilter = '';
+    this.cdr.markForCheck();
+  }
+
+  get addDialogFilteredList(): string[] {
+    const f = this.addDialogFilter.toLowerCase();
+    const list = f
+      ? this.plugins_installed_list.filter(
+          (name) =>
+            name.toLowerCase().includes(f) ||
+            (this.plugins_installed[name]?.disp_description ?? '').toLowerCase().includes(f),
+        )
+      : [...this.plugins_installed_list];
+    return list.sort((a, b) => a.localeCompare(b));
+  }
+
+  matchesAddFilter(name: string): boolean {
+    if (!this.addDialogFilter) return true;
+    const f = this.addDialogFilter.toLowerCase();
+    return (
+      name.toLowerCase().includes(f) ||
+      (this.plugins_installed[name]?.disp_description ?? '').toLowerCase().includes(f)
+    );
+  }
+
+  hasMatchingPlugins(plugintype: string): boolean {
+    return this.plugins_installed_list.some((name) => {
+      const inType =
+        this.plugins_installed[name]?.type === plugintype ||
+        (plugintype === 'unclassified' &&
+          this.plugintypes.indexOf(this.plugins_installed[name]?.type) === -1);
+      return inType && this.matchesAddFilter(name);
+    });
+  }
+
   // set configuration name dialog
   setconfig_display = false;
   selected_plugin!: string;

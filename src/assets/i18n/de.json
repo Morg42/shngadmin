@@ -322,6 +322,8 @@
     "GATEWAY": "Gateway Plugin",
     "CLASSIC": "Classic Plugin",
     "ADD": "Plugin hinzufügen",
+    "CATEGORIES": "Kategorien",
+    "FLAT_LIST": "Flache Liste",
     "ENABLED": "Aktiviert",
     "DISABLED": "Deaktiviert",
     "TYPE": "Typ",

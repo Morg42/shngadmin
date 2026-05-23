@@ -195,7 +195,7 @@ export class PluginConfigComponent implements OnInit {
   plugins_installed_list!: string[];
 
   addDialogFilter = '';
-  addDialogFlatView = false;
+  addDialogCategorized = true;
 
   onAddFilterChange(value: string): void {
     this.addDialogFilter = value;

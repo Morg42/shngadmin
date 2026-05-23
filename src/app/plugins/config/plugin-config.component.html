@@ -31,7 +31,7 @@
       <input
         pInputText
         type="text"
-        placeholder="{{ 'BUTTON.FILTER' | translate }}"
+        placeholder="Filter..."
         [value]="filterText"
         (input)="onFilterChange($any($event.target).value)"
         style="width: 220px; padding-right: 2rem; margin-top: 5px"
@@ -433,7 +433,7 @@
       <input
         pInputText
         type="text"
-        placeholder="{{ 'BUTTON.FILTER' | translate }}"
+        placeholder="Filter..."
         [value]="addDialogFilter"
         (input)="onAddFilterChange($any($event.target).value)"
         style="width: 260px; padding-right: 2rem"
@@ -454,14 +454,13 @@
       }
     </span>
     <div style="display: flex; align-items: center; gap: 6px; margin-left: auto">
+      <p-toggleSwitch [(ngModel)]="addDialogCategorized"></p-toggleSwitch>
       <span style="font-size: 0.9em; color: var(--text-muted)">{{ 'PLUGIN.CATEGORIES' | translate }}</span>
-      <p-toggleSwitch [(ngModel)]="addDialogFlatView"></p-toggleSwitch>
-      <span style="font-size: 0.9em; color: var(--text-muted)">{{ 'PLUGIN.FLAT_LIST' | translate }}</span>
     </div>
   </div>
 
   <!-- categorized accordion view -->
-  @if (!addDialogFlatView) {
+  @if (addDialogCategorized) {
     <p-accordion [multiple]="true">
       @for (plugintype of plugintypes; track plugintype; let i = $index) {
         @if (!addDialogFilter || hasMatchingPlugins(plugintype)) {
@@ -542,7 +541,7 @@
   }
 
   <!-- flat list view -->
-  @if (addDialogFlatView) {
+  @if (!addDialogCategorized) {
     <table class="table table-striped table-hover">
       <colgroup>
         <col style="min-width: 200px" />

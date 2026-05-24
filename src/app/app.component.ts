@@ -10,7 +10,14 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 
-import { RouterOutlet } from '@angular/router';
+import {
+  NavigationCancel,
+  NavigationEnd,
+  NavigationError,
+  NavigationStart,
+  Router,
+  RouterOutlet,
+} from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { Toast } from 'primeng/toast';
@@ -56,9 +63,25 @@ export class AppComponent implements OnInit {
   public APP_VERSION = APP_VERSION;
 
   title = 'shngadmin';
+  navigating = false;
 
   constructor() {
     this.log.log('AppComponent.constructor:');
+
+    inject(Router)
+      .events.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        if (event instanceof NavigationStart) {
+          this.navigating = true;
+        } else if (
+          event instanceof NavigationEnd ||
+          event instanceof NavigationCancel ||
+          event instanceof NavigationError
+        ) {
+          this.navigating = false;
+        }
+        this.cdr.markForCheck();
+      });
 
     this.translate.addLangs(['en', 'de', 'fr']);
 

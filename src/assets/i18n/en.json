@@ -1,4 +1,7 @@
 {
+  "APP": {
+    "SERVER_CONNECTING": "Connecting to server…"
+  },
   "MENU": {
     "SYSTEM": "System",
     "SYSTEM_PROPERTIES": "System Properties",

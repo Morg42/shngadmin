@@ -1,4 +1,7 @@
 {
+  "APP": {
+    "SERVER_CONNECTING": "Connexion au serveur en cours…"
+  },
   "MENU": {
     "SYSTEM": "Système",
     "SYSTEM_PROPERTIES": "Propriétés du système",

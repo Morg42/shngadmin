@@ -2,4 +2,10 @@
 <app-top-navigation></app-top-navigation>
 <app-offline-banner></app-offline-banner>
 
+@if (navigating) {
+  <div class="app-nav-loading">
+    <span class="pi pi-spin pi-spinner app-nav-spinner"></span>
+    <span>{{ 'APP.SERVER_CONNECTING' | translate }}</span>
+  </div>
+}
 <router-outlet></router-outlet>

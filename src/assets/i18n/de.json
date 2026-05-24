@@ -1,4 +1,7 @@
 {
+  "APP": {
+    "SERVER_CONNECTING": "Verbindung zum Server wird hergestellt…"
+  },
   "MENU": {
     "SYSTEM": "System",
     "SYSTEM_PROPERTIES": "System Eigenschaften",

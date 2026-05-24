@@ -233,6 +233,18 @@
     "STRUCT_TEMPLATES": "Structure d'objets: modèles",
     "STRUCT_CONFIGFILE": "Configuration de la structure d'objets"
   },
+  "STRUCT_CONFIG": {
+    "DEFINITION_FILES": "Fichiers de définition de structures",
+    "CONFIG_FILE": "Fichier de configuration",
+    "FILE_NOT_FOUND": "Fichier pas trouvé!",
+    "FILETYPE_UNSUPPORTED": "Format de fichier non supporté!",
+    "CONFIG_ERROR": "Erreur de configuration - Configuration non enregistrée!",
+    "CONFIG_ERROR_TEXT": "Erreur trouvé dans fichier de configuration.\nFormat invalide du fichier de configuration.\n",
+    "NAME_CONFIGURATION": "Choisir nom pour nouveau fichier de structure",
+    "UNIQUE_NAME": "Nom de fichier unique (sans extension)",
+    "DELETE_CONFIG": "Confirmation de la suppression",
+    "DELETE_CONFIG_FILE": "Confirmer la suppression du fichier de structure '{{config}}' ?"
+  },
   "ITEM_CONFIG": {
     "DEFINITION_FILES": "Fichiers de définition d'objets",
     "CONFIG_FILE": "Fichier de définition d'objets",

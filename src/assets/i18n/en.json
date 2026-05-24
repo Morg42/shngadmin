@@ -229,6 +229,18 @@
     "STRUCT_TEMPLATES": "Item-Structure Templates",
     "STRUCT_CONFIGFILE": "Item-Structure Configuration"
   },
+  "STRUCT_CONFIG": {
+    "DEFINITION_FILES": "Struct-Definition Files",
+    "CONFIG_FILE": "Configuration-File",
+    "FILE_NOT_FOUND": "File not found!",
+    "FILETYPE_UNSUPPORTED": "Filetype not supported!",
+    "CONFIG_ERROR": "Configuration Error - Configuration data not saved!",
+    "CONFIG_ERROR_TEXT": "Error found in configuration file.\nInvalid format of configuration file. \n",
+    "NAME_CONFIGURATION": "Select a name for the new struct configuration file",
+    "UNIQUE_NAME": "Unique filename (without extension)",
+    "DELETE_CONFIG": "Confirm delete configuration",
+    "DELETE_CONFIG_FILE": "Please confirm, that you want to delete the struct configuration file '{{config}}'"
+  },
   "ITEM_CONFIG": {
     "DEFINITION_FILES": "Item-Definition Files",
     "CONFIG_FILE": "Configuration-File",

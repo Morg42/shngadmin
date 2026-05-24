@@ -229,6 +229,18 @@
     "STRUCT_TEMPLATES": "Item-Struktur Templates",
     "STRUCT_CONFIGFILE": "Item-Struktur Konfiguration"
   },
+  "STRUCT_CONFIG": {
+    "DEFINITION_FILES": "Struktur-Definitionsdateien",
+    "CONFIG_FILE": "Konfigurationsdatei",
+    "FILE_NOT_FOUND": "Datei nicht gefunden!",
+    "FILETYPE_UNSUPPORTED": "Dateityp nicht unterstützt!",
+    "CONFIG_ERROR": "Konfigurations-Fehler - Konfiguration nicht gespeichert!",
+    "CONFIG_ERROR_TEXT": "Fehler in der Konfigurationsdatei gefunden.\nUngültiges Format der Konfigurationsdatei.\n",
+    "NAME_CONFIGURATION": "Dateinamen für die neue Struktur-Konfigurationsdatei wählen",
+    "UNIQUE_NAME": "Eindeutiger Dateiname (ohne Erweiterung)",
+    "DELETE_CONFIG": "Löschen der Konfiguration bestätigen",
+    "DELETE_CONFIG_FILE": "Soll die Struktur-Konfigurationsdatei '{{config}}' wirklich gelöscht werden?"
+  },
   "ITEM_CONFIG": {
     "DEFINITION_FILES": "Item Definitionsdateien",
     "CONFIG_FILE": "Konfigurationsdatei",

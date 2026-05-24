@@ -799,6 +799,7 @@ a.text-shng:hover {
   border: none !important;
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-normal);
+  padding: 0.25rem !important; /* Aura default is 1rem — reduce the outer whitebox */
 }
 
 .p-tree-root {
@@ -860,6 +861,7 @@ a.text-shng:hover {
 .p-accordionheader {
   justify-content: flex-start !important;
   gap: 0.4rem;
+  padding: 0.35rem 0.75rem !important; /* Aura default is 1.125rem (18 px) — compress to ~6 px */
   background-color: rgba(0, 0, 0, 0.09) !important;
   border-radius: 4px;
   transition: background-color 0.15s ease;
@@ -885,6 +887,23 @@ a.text-shng:hover {
 }
 .p-accordionheader[data-p-active='true']::before {
   content: '▼';
+}
+
+/* Accordion content — Aura default is "0 1.125rem 1.125rem 1.125rem" (18 px).
+   Reduce to a modest inset so tables/trees inside don't feel over-padded. */
+.p-accordioncontent-content {
+  padding: 0.35rem 0.75rem !important;
+}
+
+/* ================================================================
+   Compact list table
+   Apply class="shng-list-table" to any <table> that should show
+   dense rows (same target density as btn-sm, ~28 px rows).
+   The !important beats Bootstrap's and Primeng's per-cell defaults.
+   ================================================================ */
+.shng-list-table td,
+.shng-list-table th {
+  padding: 2px 4px !important;
 }
 
 /* Tighten p-tree node row spacing */

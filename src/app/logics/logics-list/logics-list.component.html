@@ -31,7 +31,9 @@
           style="display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; margin-right: 12px"
         >
           <p-toggleswitch [(ngModel)]="grouped"></p-toggleswitch>
-          <label style="cursor: pointer; user-select: none" (click)="grouped = !grouped">Grouped</label>
+          <label style="cursor: pointer; user-select: none" (click)="grouped = !grouped">{{
+            'LOGICS.GROUPED' | translate
+          }}</label>
         </span>
       }
     </div>

@@ -246,6 +246,7 @@
     "USERLOGICS": "Logiques utilisateur",
     "SYSTEMLOGICS": "Logiques système",
     "GROUP": "groupe",
+    "GROUPED": "groupé",
     "GROUPS": "groupes logiques",
     "NOGROUP_TITLE": "Logique sans appartenance à un groupe",
     "LOGIC": "Logique",

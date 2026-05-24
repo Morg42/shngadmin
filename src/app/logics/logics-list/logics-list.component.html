@@ -25,6 +25,15 @@
           ></span>
         }
       </span>
+      @if (nogroups === false) {
+        <span
+          class="float-sm-right"
+          style="display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; margin-right: 12px"
+        >
+          <p-toggleswitch [(ngModel)]="grouped"></p-toggleswitch>
+          <label style="cursor: pointer; user-select: none" (click)="grouped = !grouped">Grouped</label>
+        </span>
+      }
     </div>
     <p-tabs value="0">
       <p-tablist>
@@ -33,7 +42,7 @@
       </p-tablist>
       <p-tabpanels>
         <p-tabpanel value="0">
-          @if (nogroups === false) {
+          @if (nogroups === false && grouped) {
             <div style="height: 45px; width: 200px">
               <button
                 pButton
@@ -49,10 +58,10 @@
             </div>
           }
 
-          @if (nogroups === false) {
+          @if (nogroups === false && grouped) {
             <div style="max-width: 1425px">
               <p-accordion
-                [value]="groupExpandedOnStart"
+                [value]="effectiveExpanded"
                 [multiple]="true"
                 (onOpen)="groupOpened($event)"
                 (onClose)="groupClosed($event)"
@@ -389,7 +398,7 @@
             </table>
           }
 
-          @if (nogroups === true) {
+          @if (nogroups === true || !grouped) {
             <div style="height: 45px; width: 200px">
               <button
                 pButton

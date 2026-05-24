@@ -25,6 +25,7 @@ import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { Ripple } from 'primeng/ripple';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
+import { ToggleSwitch } from 'primeng/toggleswitch';
 import { LogicsGroupType, LogicsinfoType } from '../../common/models/logics-info';
 import { LogicsWatchItem } from '../../common/models/logics-watch-item';
 import { LogService } from '../../common/services/log.service';
@@ -55,6 +56,7 @@ import { LogicsApiService } from '../../common/services/logics-api.service';
     InputText,
     NgStyle,
     Message,
+    ToggleSwitch,
     TranslatePipe,
   ],
 })
@@ -79,6 +81,7 @@ export class LogicsListComponent implements OnInit {
   sSortOrder: 1 | -1 = 1;
 
   filterText = '';
+  grouped = true;
 
   onFilterChange(value: string): void {
     this.filterText = value;
@@ -88,6 +91,14 @@ export class LogicsListComponent implements OnInit {
   clearFilter(): void {
     this.filterText = '';
     this.cdr.markForCheck();
+  }
+
+  /** When a filter is active, expand all accordion panels so no match is hidden. */
+  get effectiveExpanded(): number[] {
+    if (this.filterText) {
+      return this.groupList?.map((_, i) => i) ?? [];
+    }
+    return this.groupExpanded;
   }
 
   get filteredUserLogics(): LogicsinfoType[] {

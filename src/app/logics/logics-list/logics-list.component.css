@@ -2,6 +2,34 @@
   margin: 0;
 }
 
+/* Tab bar + controls share the same horizontal strip */
+.logics-tab-wrapper {
+  position: relative;
+}
+
+.logics-tab-controls {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  /* Height matches Aura tab padding (1rem top + 1rem bottom) + ~1rem font = 48px */
+  height: 48px;
+  padding-right: 4px;
+}
+
+/* On narrow screens fall back to a full-width row above the tabs */
+@media (max-width: 600px) {
+  .logics-tab-controls {
+    position: static;
+    justify-content: flex-end;
+    height: auto;
+    padding: 4px 4px 0;
+  }
+}
+
 .shngbody {
   height: calc(100vh - var(--navbar-height));
   width: 100%;

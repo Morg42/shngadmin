@@ -1,14 +1,22 @@
 <div class="shngbody">
-  <div>
-    <div class="shng_headline" style="margin-top: 5px; margin-left: 8px; min-height: 40px; display: flow-root">
-      <span style="position: relative; display: inline-block; vertical-align: middle" class="float-sm-right">
+  <div class="logics-tab-wrapper">
+    <div class="logics-tab-controls">
+      @if (nogroups === false) {
+        <span style="display: inline-flex; align-items: center; gap: 6px">
+          <p-toggleswitch [(ngModel)]="grouped"></p-toggleswitch>
+          <label style="cursor: pointer; user-select: none" (click)="grouped = !grouped">{{
+            'LOGICS.GROUPED' | translate
+          }}</label>
+        </span>
+      }
+      <span style="position: relative; display: inline-block">
         <input
           pInputText
           type="text"
           placeholder="Filter..."
           [value]="filterText"
           (input)="onFilterChange($any($event.target).value)"
-          style="width: 220px; padding-right: 2rem; margin-top: 5px"
+          style="width: 220px; padding-right: 2rem"
         />
         @if (filterText) {
           <span
@@ -25,17 +33,6 @@
           ></span>
         }
       </span>
-      @if (nogroups === false) {
-        <span
-          class="float-sm-right"
-          style="display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; margin-right: 12px"
-        >
-          <p-toggleswitch [(ngModel)]="grouped"></p-toggleswitch>
-          <label style="cursor: pointer; user-select: none" (click)="grouped = !grouped">{{
-            'LOGICS.GROUPED' | translate
-          }}</label>
-        </span>
-      }
     </div>
     <p-tabs value="0">
       <p-tablist>

@@ -80,4 +80,84 @@ describe('LogicsListComponent', () => {
     // fixture has logics with groups: the groupList should be non-empty
     expect(component.groupList.length).toBeGreaterThan(0);
   });
+
+  // -------------------------------------------------------------------------
+  // Filter: onFilterChange, clearFilter, filteredUserLogics, filteredSysLogics
+  // -------------------------------------------------------------------------
+
+  it('filterText starts empty', () => {
+    expect(component.filterText).toBe('');
+  });
+
+  it('onFilterChange() sets filterText', () => {
+    component.onFilterChange('gate');
+    expect(component.filterText).toBe('gate');
+  });
+
+  it('clearFilter() resets filterText to empty string', () => {
+    component.filterText = 'gate';
+    component.clearFilter();
+    expect(component.filterText).toBe('');
+  });
+
+  it('filteredUserLogics returns all user logics when filter is empty', () => {
+    component.filterText = '';
+    expect(component.filteredUserLogics.length).toBe(component.userlogics.length);
+  });
+
+  it('filteredSysLogics returns all system logics when filter is empty', () => {
+    component.filterText = '';
+    expect(component.filteredSysLogics.length).toBe(component.systemlogics.length);
+  });
+
+  it('filteredUserLogics filters by logic name (case-insensitive)', () => {
+    // fixture contains 'AutomaticGateControlLogicDay' — search for 'gate'
+    component.onFilterChange('gate');
+    const results = component.filteredUserLogics;
+    expect(results.length).toBeGreaterThan(0);
+    expect(
+      results.every(
+        (l) =>
+          l.name.toLowerCase().includes('gate') ||
+          (l.filename ?? '').toLowerCase().includes('gate'),
+      ),
+    ).toBe(true);
+  });
+
+  it('filteredUserLogics filters by filename', () => {
+    // fixture contains 'automatic_gate_control_day.py' — search for 'control'
+    component.onFilterChange('control');
+    const results = component.filteredUserLogics;
+    expect(results.length).toBeGreaterThan(0);
+  });
+
+  it('filteredUserLogics returns empty when no logic matches', () => {
+    component.onFilterChange('zzznomatch');
+    expect(component.filteredUserLogics.length).toBe(0);
+  });
+
+  // -------------------------------------------------------------------------
+  // sortUserLogics / sortSysLogics: field sorting and direction toggle
+  // -------------------------------------------------------------------------
+
+  it('sortUserLogics() sorts user logics ascending by the given field', () => {
+    component.sortUserLogics('name');
+    const names = component.userlogics.map((l) => l.name.toLowerCase());
+    expect(names).toEqual([...names].sort());
+  });
+
+  it('sortUserLogics() toggles sort direction on second call with same field', () => {
+    component.sortUserLogics('name');
+    const asc = component.userlogics.map((l) => l.name.toLowerCase());
+    component.sortUserLogics('name'); // descending
+    const desc = component.userlogics.map((l) => l.name.toLowerCase());
+    expect(desc).toEqual([...asc].reverse());
+  });
+
+  it('sortSysLogics() sorts system logics ascending by the given field', () => {
+    if (component.systemlogics.length < 2) return; // skip if fixture has <2 sys logics
+    component.sortSysLogics('name');
+    const names = component.systemlogics.map((l) => l.name.toLowerCase());
+    expect(names).toEqual([...names].sort());
+  });
 });

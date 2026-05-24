@@ -75,4 +75,73 @@ describe('PluginsComponent', () => {
     });
     expect(component.plugininfo[0].configname).toBe(sorted[0].configname);
   });
+
+  // -------------------------------------------------------------------------
+  // Filter: onFilterChange, clearFilter, filteredPlugins
+  // -------------------------------------------------------------------------
+
+  it('filterText starts empty', () => {
+    expect(component.filterText).toBe('');
+  });
+
+  it('onFilterChange() sets filterText', () => {
+    component.onFilterChange('avm');
+    expect(component.filterText).toBe('avm');
+  });
+
+  it('clearFilter() resets filterText to empty string', () => {
+    component.filterText = 'avm';
+    component.clearFilter();
+    expect(component.filterText).toBe('');
+  });
+
+  it('filteredPlugins returns all plugins when filterText is empty', () => {
+    component.filterText = '';
+    expect(component.filteredPlugins.length).toBe(component.plugininfo.length);
+  });
+
+  it('filteredPlugins filters by configname (case-insensitive)', () => {
+    // 'avm' appears in configname of two fixture entries (willy_tel, Fritzbox_wz)
+    component.onFilterChange('avm');
+    const results = component.filteredPlugins;
+    expect(results.length).toBeGreaterThan(0);
+    expect(
+      results.every(
+        (p) =>
+          p.configname.toLowerCase().includes('avm') ||
+          p.pluginname.toLowerCase().includes('avm') ||
+          p.instancename.toLowerCase().includes('avm'),
+      ),
+    ).toBe(true);
+  });
+
+  it('filteredPlugins returns empty array when no plugin matches', () => {
+    component.onFilterChange('zzznomatch');
+    expect(component.filteredPlugins.length).toBe(0);
+  });
+
+  // -------------------------------------------------------------------------
+  // sortBy: field sorting and direction toggle
+  // -------------------------------------------------------------------------
+
+  it('sortBy() sorts plugins ascending by the given field', () => {
+    component.sortBy('configname');
+    const names = component.plugininfo.map((p) => p.configname.toLowerCase());
+    expect(names).toEqual([...names].sort());
+  });
+
+  it('sortBy() toggles sort direction on second call with same field', () => {
+    component.sortBy('pluginname');
+    const asc = component.plugininfo.map((p) => p.pluginname.toLowerCase());
+    component.sortBy('pluginname'); // second call → descending
+    const desc = component.plugininfo.map((p) => p.pluginname.toLowerCase());
+    expect(desc).toEqual([...asc].reverse());
+  });
+
+  it('sortBy() resets to ascending when switching to a different field', () => {
+    component.sortBy('pluginname');
+    component.sortBy('pluginname'); // now descending
+    component.sortBy('configname'); // new field → ascending again
+    expect(component.sortOrder).toBe(1);
+  });
 });

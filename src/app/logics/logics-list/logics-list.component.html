@@ -419,9 +419,15 @@
                   @if (userlogics.length > 0) {
                     <tr class="shng_heading">
                       <th style="width: 30px; border-top: 0"></th>
-                      <th class="p-1 sortable-th" style="width: 320px; border-top: 0" (click)="sortUserLogics('name')">
+                      <th class="p-1 sortable-th" style="width: 280px; border-top: 0" (click)="sortUserLogics('name')">
                         {{ 'LOGICS.LOGIC' | translate }}
                         @if (uSortField === 'name') {
+                          <span class="sort-indicator">{{ uSortOrder === 1 ? '▲' : '▼' }}</span>
+                        }
+                      </th>
+                      <th class="p-1 sortable-th" style="width: 140px; border-top: 0" (click)="sortUserLogics('group')">
+                        {{ 'LOGICS.GROUP' | translate }}
+                        @if (uSortField === 'group') {
                           <span class="sort-indicator">{{ uSortOrder === 1 ? '▲' : '▼' }}</span>
                         }
                       </th>
@@ -471,6 +477,7 @@
                               ></span>
                             </td>
                             <td class="p-1">{{ logic.name }}</td>
+                            <td class="p-1 shng-text-xs">{{ groupLabel(logic) }}</td>
                             <td class="p-1">{{ logic.next_exec }}</td>
                             <td class="p-1">{{ logic.cycle }}</td>
                             <td class="p-1">{{ logic.crontab }}</td>
@@ -482,6 +489,7 @@
                               ></span>
                             </td>
                             <td class="p-1">{{ logic.name }}</td>
+                            <td class="p-1 shng-text-xs shng-color-disabled">{{ groupLabel(logic) }}</td>
                             <td class="p-1 shng-color-disabled">{{ logic.next_exec }}</td>
                             <td class="p-1 shng-color-disabled">{{ logic.cycle }}</td>
                             <td class="p-1 shng-color-disabled">{{ logic.crontab }}</td>
@@ -619,6 +627,7 @@
                           }
                         </td>
                         <td class="p-1">{{ logic.name }}</td>
+                        <td class="p-1 shng-text-xs">{{ groupLabel(logic) }}</td>
                         <td class="p-1"></td>
                         <td class="p-1"></td>
                         <td class="p-1"></td>

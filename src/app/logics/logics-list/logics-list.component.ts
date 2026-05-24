@@ -93,6 +93,13 @@ export class LogicsListComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
+  /** Returns a comma-separated list of non-empty group names for display in the flat table. */
+  groupLabel(logic: LogicsinfoType): string {
+    if (!logic.group) return '';
+    const groups = Array.isArray(logic.group) ? logic.group : [logic.group];
+    return groups.filter((g) => g !== '').join(', ');
+  }
+
   /** When a filter is active, expand all accordion panels so no match is hidden. */
   get effectiveExpanded(): number[] {
     if (this.filterText) {

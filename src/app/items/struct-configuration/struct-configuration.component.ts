@@ -58,6 +58,7 @@ export class StructConfigurationComponent implements OnInit {
   filelist!: string[];
   structFiles!: SelectItem[];
   selectedStructfile!: SelectItem;
+  structsDir = './structs'; // updated from backend on init
 
   myEditFilename = '';
   myTextarea = '';
@@ -90,7 +91,9 @@ export class StructConfigurationComponent implements OnInit {
       .getfileList('structs')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        this.filelist = <string[]>response;
+        const r = response as { dir: string; files: string[] };
+        this.structsDir = r.dir;
+        this.filelist = r.files;
         this.structFiles = this.filelist.map((fn) => <SelectItem>{ label: fn, value: fn });
         this.cdr.markForCheck();
       });
@@ -157,7 +160,9 @@ export class StructConfigurationComponent implements OnInit {
             .getfileList('structs')
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((response) => {
-              this.filelist = <string[]>response;
+              const r = response as { dir: string; files: string[] };
+              this.structsDir = r.dir;
+              this.filelist = r.files;
               this.structFiles = this.filelist.map((fn) => <SelectItem>{ label: fn, value: fn });
               this.cdr.markForCheck();
             });

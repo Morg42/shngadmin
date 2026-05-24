@@ -53,7 +53,7 @@
       class="float-sm-right ui-button-success"
     ></button>
     @if (myEditFilename !== '') {
-      {{ 'STRUCT_CONFIG.CONFIG_FILE' | translate }}: <strong>./structs/{{ myEditFilename }}.yaml</strong>
+      {{ 'STRUCT_CONFIG.CONFIG_FILE' | translate }}: <strong>{{ structsDir }}/{{ myEditFilename }}.yaml</strong>
     }
   </div>
 

@@ -38,7 +38,13 @@ import {
   unfoldAll,
 } from '@codemirror/language';
 import { searchKeymap } from '@codemirror/search';
-import { Compartment, EditorState, Extension, Transaction } from '@codemirror/state';
+import {
+  Compartment,
+  EditorSelection,
+  EditorState,
+  Extension,
+  Transaction,
+} from '@codemirror/state';
 import {
   EditorView,
   KeyBinding,
@@ -245,6 +251,12 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
 
   private _buildState(doc: string): EditorState {
     const self = this;
+    const useSpacesForTab = this.language === 'yaml' || this.language === 'python';
+
+    // Pre-process loaded content: replace any existing tabs with 4 spaces
+    if (useSpacesForTab) {
+      doc = doc.replaceAll('\t', '    ');
+    }
 
     const builtinKeys: KeyBinding[] = [
       {
@@ -282,7 +294,21 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
           return true;
         },
       },
-      { key: 'Tab', run: insertTab, shift: indentLess },
+      {
+        key: 'Tab',
+        run: useSpacesForTab
+          ? (view) => {
+              view.dispatch(
+                view.state.changeByRange((range) => ({
+                  changes: { from: range.from, to: range.to, insert: '    ' },
+                  range: EditorSelection.cursor(range.from + 4),
+                })),
+              );
+              return true;
+            }
+          : insertTab,
+        shift: indentLess,
+      },
       { key: 'Shift-Tab', run: indentLess },
     ];
 
@@ -331,6 +357,24 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
             }
           });
           return allowed ? tr : [];
+        }),
+      );
+    }
+
+    if (useSpacesForTab) {
+      extensions.push(
+        EditorState.transactionFilter.of((tr: Transaction) => {
+          if (!tr.docChanged) return tr;
+          let hasTab = false;
+          tr.changes.iterChanges((_a, _b, _c, _d, inserted) => {
+            if (inserted.toString().includes('\t')) hasTab = true;
+          });
+          if (!hasTab) return tr;
+          const specs: { from: number; to: number; insert: string }[] = [];
+          tr.changes.iterChanges((from, to, _fromB, _toB, inserted) => {
+            specs.push({ from, to, insert: inserted.toString().replaceAll('\t', '    ') });
+          });
+          return { changes: specs, scrollIntoView: tr.scrollIntoView };
         }),
       );
     }

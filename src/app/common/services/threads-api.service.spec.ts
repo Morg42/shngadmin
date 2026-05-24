@@ -1,3 +1,10 @@
+/**
+ * ThreadsApiService tests
+ *
+ * Covers:
+ *   - getThreads() — GET /api/threads/
+ *     Returns the response; of({}) on HTTP error
+ */
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
@@ -28,10 +35,26 @@ describe('ThreadsApiService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('getThreads() sends a GET to /api/threads/', () => {
+  it('getThreads() sends GET /api/threads/', () => {
     service.getThreads().subscribe();
     const req = http.expectOne('/api/threads/');
     expect(req.request.method).toBe('GET');
     req.flush([]);
+  });
+
+  it('getThreads() returns the response', () => {
+    let result: unknown;
+    service.getThreads().subscribe((r) => (result = r));
+    http.expectOne('/api/threads/').flush([{ name: 'main', state: 'running' }]);
+    expect(result).toEqual([{ name: 'main', state: 'running' }]);
+  });
+
+  it('getThreads() returns {} on HTTP error', () => {
+    let result: unknown;
+    service.getThreads().subscribe((r) => (result = r));
+    http
+      .expectOne('/api/threads/')
+      .flush({ error: 'err' }, { status: 500, statusText: 'Server Error' });
+    expect(result).toEqual({});
   });
 });

@@ -226,6 +226,8 @@ export class SystemComponent implements OnDestroy, OnInit {
       this.startPypiPoll();
     } else {
       this.pypiPollStop$.next();
+      this.pypiPending = false;
+      this.cdr.markForCheck();
     }
   }
 

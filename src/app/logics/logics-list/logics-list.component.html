@@ -42,11 +42,10 @@
       <p-tabpanels>
         <p-tabpanel value="0">
           @if (nogroups === false && grouped) {
-            <div style="height: 45px; width: 200px">
+            <div style="padding: 6px 0 6px 10px">
               <button
                 pButton
                 type="button"
-                style="margin-left: 0; margin-left: 10px; margin-top: 10px"
                 id="newLogicButton"
                 [disabled]="false"
                 (click)="newLogic()"
@@ -398,11 +397,10 @@
           }
 
           @if (nogroups === true || !grouped) {
-            <div style="height: 45px; width: 200px">
+            <div style="padding: 6px 0 6px 10px">
               <button
                 pButton
                 type="button"
-                style="margin-left: 0; margin-left: 10px; margin-top: 10px"
                 id="newLogicButton_ng"
                 [disabled]="false"
                 (click)="newLogic()"

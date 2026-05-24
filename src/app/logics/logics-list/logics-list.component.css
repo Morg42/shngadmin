@@ -21,7 +21,7 @@
 }
 
 /* On narrow screens fall back to a full-width row above the tabs */
-@media (max-width: 600px) {
+@media (max-width: 650px) {
   .logics-tab-controls {
     position: static;
     justify-content: flex-end;

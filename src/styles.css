@@ -904,6 +904,12 @@ a.text-shng:hover {
 .shng-list-table td,
 .shng-list-table th {
   padding: 2px 4px !important;
+  vertical-align: middle !important;
+}
+
+/* Suppress Bootstrap paragraph margin inside compact table cells */
+.shng-list-table td p {
+  margin-bottom: 0;
 }
 
 /* Tighten p-tree node row spacing */

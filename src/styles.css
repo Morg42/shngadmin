@@ -920,6 +920,15 @@ a.text-shng:hover {
   padding: 0 !important;
 }
 
+/* Item-tree view (/items): plain-text labels only — halve the leading */
+.item-tree .p-tree-node-content {
+  padding: 0 4px !important;
+  line-height: 1.1 !important;
+}
+.item-tree .p-tree-node-toggle-button {
+  height: 1.1em !important;
+}
+
 /* PrimeNG DataTable column headers: left-align text */
 .p-datatable th {
   text-align: left;

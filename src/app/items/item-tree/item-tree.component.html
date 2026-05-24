@@ -98,6 +98,7 @@
                         selectionMode="single"
                         [(selection)]="selectedFile"
                         emptyMessage="{{ 'ITEMS.NO ITEMS' | translate }}"
+                        styleClass="item-tree"
                       >
                         <ng-template let-node pTemplate="default">
                           @if (node.tags[0] > 0 && !this.treeIsFiltered) {

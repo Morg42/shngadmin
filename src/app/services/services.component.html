@@ -143,15 +143,18 @@
                     {{ 'SERVICES.PASSWORD_HASH' | translate }}
                   </td>
                   <td>
-                    <input
-                      class="form-control"
-                      [(ngModel)]="pwd_clear"
-                      [type]="pwd_show ? 'text' : 'password'"
-                      id="plainpass"
-                      size="20"
-                      maxlength="50"
-                      style="width: 250px"
-                    />
+                    <form autocomplete="off" style="display: inline">
+                      <input
+                        class="form-control"
+                        [(ngModel)]="pwd_clear"
+                        name="pwd_clear"
+                        [type]="pwd_show ? 'text' : 'password'"
+                        id="plainpass"
+                        size="20"
+                        maxlength="50"
+                        style="width: 250px"
+                      />
+                    </form>
                     <!-- ToDo set style in next line, was 'style="..." -->
                     <input type="checkbox" [(ngModel)]="pwd_show" id="showtext" onclick="this.pwd_show = true" />
                     {{ 'SERVICES.SHOW_PASSWORD' | translate }}

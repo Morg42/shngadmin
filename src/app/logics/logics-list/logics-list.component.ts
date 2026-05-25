@@ -28,7 +28,6 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 import { LogicsGroupType, LogicsinfoType } from '../../common/models/logics-info';
 import { LogicsWatchItem } from '../../common/models/logics-watch-item';
-import { LogService } from '../../common/services/log.service';
 import { LogicsApiService } from '../../common/services/logics-api.service';
 @Component({
   selector: 'app-logics',
@@ -70,7 +69,6 @@ export class LogicsListComponent implements OnInit {
   private translate = inject(TranslateService);
   private titleService = inject(Title);
   private renderer = inject(Renderer2);
-  private readonly log = inject(LogService);
 
   groupdefinitions: Record<string, Record<string, string>> = {};
   groupList!: LogicsGroupType[];
@@ -178,9 +176,6 @@ export class LogicsListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.log.log('LogicsListComponent.ngOnInit');
-
-    this.log.warn('logics-list:ngOnInit');
     this.groupExpandedOnStart = this.dataService.groupExpanded;
     this.groupExpanded = this.dataService.groupExpanded;
 
@@ -215,31 +210,21 @@ export class LogicsListComponent implements OnInit {
 
   groupOpened(event: { index: number }) {
     const index = event['index'];
-    this.log.warn('groupOpened', { index });
-
-    this.log.log('this.groupExpanded', this.groupExpanded);
-    this.log.log('this.groupExpandedOnStart', this.groupExpandedOnStart);
-
     if (this.groupExpanded.indexOf(index) === -1) {
       this.groupExpanded.push(index);
       this.dataService.groupExpanded = this.groupExpanded;
     }
-    this.log.log('this.groupExpanded', this.groupExpanded);
   }
 
   groupClosed(event: { index: number }) {
     const index = event['index'];
-    this.log.warn('groupClosed', { index });
     if (this.groupExpanded === undefined) {
       this.groupExpanded = [];
     }
-    this.log.log('this.groupExpanded', this.groupExpanded);
-
     if (this.groupExpanded.indexOf(index) > -1) {
       this.groupExpanded.splice(this.groupExpanded.indexOf(index), 1);
       this.dataService.groupExpanded = this.groupExpanded;
     }
-    this.log.log('this.groupExpanded', this.groupExpanded);
   }
 
   sortGroupList() {
@@ -372,7 +357,6 @@ export class LogicsListComponent implements OnInit {
   }
 
   newLogic() {
-    this.log.log('newLogic');
     this.newlogic_name = '';
     this.newlogic_filename = '';
     this.newlogic_add_enabled = false;
@@ -380,16 +364,11 @@ export class LogicsListComponent implements OnInit {
     this.newlogic_display = true;
   }
 
-  onShow() {
-    this.log.warn('onShow');
-  }
+  onShow() {}
 
-  onBlur() {
-    this.log.warn('onBlur');
-  }
+  onBlur() {}
 
   onFocus() {
-    this.log.warn('onFocus');
     if (this.newlogic_filename === '') {
       this.newlogic_filename = this.newlogic_name;
       if (this.newlogic_name !== '') {
@@ -435,7 +414,6 @@ export class LogicsListComponent implements OnInit {
   }
 
   createLogic() {
-    this.log.warn('createLogic', this.newlogic_name, this.newlogic_filename);
     this.newlogic_display = false;
     this.dataService
       .setLogicState(this.newlogic_name, 'create', this.newlogic_filename)

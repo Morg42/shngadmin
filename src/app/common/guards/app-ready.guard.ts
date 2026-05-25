@@ -8,9 +8,15 @@ import { AppConfigService } from '../services/app-config.service';
  * Delays route activation until the server config (wsPort, wsHost, etc.) has
  * been received from /api/server.  Falls back after 5 s so a slow or
  * unreachable backend never blocks navigation permanently.
+ *
+ * On subsequent navigations the config is already populated, so the snapshot
+ * check returns true synchronously and skips the observable entirely.
  */
 export const appReadyGuard: CanActivateFn = () => {
   const appConfig = inject(AppConfigService);
+  if (appConfig.snapshot.wsPort !== '') {
+    return true;
+  }
   return appConfig.serverReady$.pipe(
     timeout({ first: 5000, with: () => of(appConfig.snapshot) }),
     take(1),

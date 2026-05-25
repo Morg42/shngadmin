@@ -193,7 +193,8 @@ export class WebsocketPluginService {
       return;
     }
 
-    const adm_url = 'ws://' + this.appConfig.wsHost + ':' + this.appConfig.wsPort + '/adm';
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+    const adm_url = wsProtocol + this.appConfig.wsHost + ':' + this.appConfig.wsPort + '/adm';
 
     if (this.appConfig.hostIp === null) {
       this.log.log(

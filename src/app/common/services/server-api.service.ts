@@ -57,7 +57,7 @@ export class ServerApiService {
 
         this.appConfig.patch({
           clientIp: result.client_ip,
-          wsHost: this.appConfig.hostIp,
+          wsHost: this._resolveWsHost(result.websocket_host),
           loginRequired: result.login_required ?? false,
         });
 
@@ -102,7 +102,7 @@ export class ServerApiService {
           developerMode: this.shng_serverinfo.developer_mode,
           clickDropdownHeader: this.shng_serverinfo.click_dropdown_header,
           fallbackLanguageOrder: fallbackOrder,
-          wsHost: this.appConfig.hostIp,
+          wsHost: this._resolveWsHost(this.shng_serverinfo.websocket_host),
           wsPort: this.shng_serverinfo.websocket_port ?? '',
         });
 
@@ -186,6 +186,19 @@ export class ServerApiService {
         return of([]);
       }),
     );
+  }
+
+  /**
+   * Returns the host to use for the WebSocket connection.
+   * Prefers the backend-configured websocket_host when it is a real address
+   * (not a wildcard bind address). Falls back to the HTTP server's hostname
+   * so that single-host deployments without an explicit websocket_host work.
+   */
+  private _resolveWsHost(websocketHost: string | undefined | null): string {
+    if (websocketHost && websocketHost !== '0.0.0.0' && websocketHost !== '::') {
+      return websocketHost;
+    }
+    return this.appConfig.hostIp;
   }
 
   downloadConfigBackup() {

@@ -27,6 +27,7 @@
   min-width: 16px;
   margin-top: 20px;
   overflow: hidden;
+  height: calc(100vh - 160px);
 }
 
 .items-fileeditor {

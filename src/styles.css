@@ -967,7 +967,9 @@ a.text-shng:hover {
 }
 
 /* PrimeNG renders p-listbox → div.p-listbox → div.p-listbox-list-container → ul.
-   Cascade the height through those rendered elements so the list fills the cell. */
+   Cascade the height through those rendered elements so the list fills the cell.
+   PrimeNG binds scrollHeight (default 14rem) as an inline style.max-height on
+   p-listbox-list-container; !important is required to override that inline style. */
 .items-filelist .p-listbox {
   height: 100%;
   display: flex;
@@ -978,6 +980,7 @@ a.text-shng:hover {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
+  max-height: unset !important;
 }
 
 /* Code editor wrapper areas: visible border */

@@ -966,6 +966,20 @@ a.text-shng:hover {
   overflow: hidden;
 }
 
+/* PrimeNG renders p-listbox → div.p-listbox → div.p-listbox-list-container → ul.
+   Cascade the height through those rendered elements so the list fills the cell. */
+.items-filelist .p-listbox {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.items-filelist .p-listbox-list-container {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
 /* Code editor wrapper areas: visible border */
 .items-fileeditor {
   border: 1px solid #dee2e6;

@@ -1,7 +1,7 @@
 [ "$(whoami)" = "sh" ] || exit 0
 
 SHNG_DIR="$HOME/shng"
-SHNG_BRANCH="develop-adminui"
+SHNG_BRANCH="develop"
 REQUIRED_BRANCH="develop"
 FORCE=false   # --force: skip the shng-branch guard and always run
 

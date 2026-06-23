@@ -3,7 +3,7 @@
 #
 # Hook mode (default — called by husky after every commit):
 #   Runs only on the 'develop' branch.
-#   Requires shng to be checked out on 'develop-adminui'.
+#   Requires shng to be checked out on 'develop' (override with --shng-branch=).
 #   Returns to the 'work' branch when done.
 #
 # Release mode (called by release.sh):
@@ -38,7 +38,7 @@ if $RELEASE_MODE; then
     LOG_TAG="[sa-deploy --release]"
 else
     REQUIRED_BRANCH="develop"
-    SHNG_BRANCH="${SHNG_BRANCH_OVERRIDE:-develop-adminui}"
+    SHNG_BRANCH="${SHNG_BRANCH_OVERRIDE:-develop}"
     LOG_TAG="[sa-deploy]"
     # Hook guard: only run for the repo owner
     [ "$(whoami)" = "sh" ] || exit 0

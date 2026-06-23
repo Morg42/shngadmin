@@ -195,7 +195,7 @@ dl {
 textarea {
   white-space: pre;
   overflow-wrap: normal;
-  overflow-x: scroll;
+  overflow-x: auto;
   font-family: var(--font-family-mono) !important;
 }
 

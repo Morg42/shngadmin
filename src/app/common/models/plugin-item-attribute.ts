@@ -1,4 +1,5 @@
-export interface PluginItemAttribute {
+import { ItemAttributeInfo } from './item-attribute-info';
+
+export interface PluginItemAttribute extends ItemAttributeInfo {
   name: string;
-  type: string;
 }

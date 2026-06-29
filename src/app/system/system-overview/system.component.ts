@@ -26,13 +26,7 @@ import { UIChart } from 'primeng/chart';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { Ripple } from 'primeng/ripple';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
-import {
-  APP_BUILD_PATH,
-  APP_NAME,
-  APP_VERSION,
-  APP_VERSION_DETAIL,
-  APP_VERSION_REF,
-} from '../../app.component';
+import { APP_NAME, APP_VERSION, APP_VERSION_DETAIL, APP_VERSION_REF } from '../../app.component';
 import { PypiInfo } from '../../common/models/pypi-info';
 import { SystemInfo } from '../../common/models/system-info';
 import { LogService } from '../../common/services/log.service';
@@ -164,7 +158,6 @@ export class SystemComponent implements OnDestroy, OnInit {
   appVersion = 'v' + APP_VERSION; // short form used in page titles / navbar
   appVersionDetail = APP_VERSION_DETAIL; // v{semver}-{commit}.{branch}
   appVersionRef = APP_VERSION_REF; // (heads/branch)
-  appBuildPath = APP_BUILD_PATH; // absolute path to the frontend repo
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);

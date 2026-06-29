@@ -270,7 +270,7 @@ textarea {
 }
 .btn-primary:hover {
   color: #fff;
-  background-color: #286090;
+  background-color: #286090 !important;
   border-color: #204d74;
 }
 
@@ -537,7 +537,14 @@ a.text-shng:hover {
   border-color: var(--shng-red);
 }
 
-.btn-shng-danger:hover {
+.btn-shng-danger:disabled,
+.btn-shng-danger[disabled] {
+  color: #fff;
+  background-color: #d99a9a;
+  border-color: #d99a9a;
+}
+
+.btn-shng-danger:hover:enabled {
   color: #fff;
   background-color: #b34700;
   border-color: #b34700;

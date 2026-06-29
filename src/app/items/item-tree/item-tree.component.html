@@ -35,6 +35,541 @@
           </ng-template>
         </p-dialog>
 
+        <!------------------------------------------>
+        <!--   New item dialog   -->
+        <!------------------------------------------>
+        <p-dialog
+          header="{{ 'ITEMS.NEW ITEM' | translate }}"
+          [(visible)]="newItem_display"
+          [modal]="true"
+          [style]="{ width: '700px', minWidth: '400px', height: '780px' }"
+          [baseZIndex]="10000"
+        >
+          <table style="width: 100%">
+            <tr>
+              <td class="py-1">{{ 'ITEMS.PARENT' | translate }}</td>
+              <td class="py-1">
+                <input type="text" pInputText [(ngModel)]="newItemParent" style="width: 100%" />
+              </td>
+            </tr>
+            <tr>
+              <td class="py-1">{{ 'ITEMS.NAME' | translate }}</td>
+              <td class="py-1">
+                <input type="text" pInputText [(ngModel)]="newItemName" style="width: 100%" />
+              </td>
+            </tr>
+            <tr>
+              <td class="py-1">{{ 'ITEMS.FULL PATH' | translate }}</td>
+              <td class="py-1">
+                <code>{{ newItemFullPath }}</code>
+              </td>
+            </tr>
+            <tr>
+              <td class="py-1">{{ 'ITEMS.TYPE' | translate }}</td>
+              <td class="py-1">
+                <p-select
+                  [options]="itemTypeOptions"
+                  [(ngModel)]="newItemType"
+                  [appendTo]="'body'"
+                  [autoOptionFocus]="true"
+                  style="width: 100%"
+                ></p-select>
+              </td>
+            </tr>
+            <tr>
+              <td class="py-1">{{ 'ITEMS.PERSIST' | translate }}</td>
+              <td class="py-1">
+                <p-toggleSwitch [(ngModel)]="newItemPersist"></p-toggleSwitch>
+              </td>
+            </tr>
+            @if (newItemPersist) {
+              <tr>
+                <td class="py-1">{{ 'ITEMS.FILENAME' | translate }}</td>
+                <td class="py-1">
+                  <p-autoComplete
+                    [(ngModel)]="newItemFilename"
+                    [suggestions]="filteredItemFiles"
+                    (completeMethod)="searchItemFiles($event)"
+                    placeholder="{{ 'ITEMS.FILENAME_PLACEHOLDER' | translate }}"
+                    [appendTo]="'body'"
+                    [inputStyle]="{ width: '100%' }"
+                    style="width: 100%"
+                  ></p-autoComplete>
+                </td>
+              </tr>
+            }
+          </table>
+
+          <p></p>
+          <strong style="display: block; margin-bottom: 6px">{{ 'ITEMS.ADDITIONAL ATTRIBUTES' | translate }}</strong>
+          @for (attr of newItemAttributes; track $index) {
+            <div style="margin-top: 6px">
+              <div style="display: flex; align-items: center; gap: 6px">
+                <p-autoComplete
+                  #attrNameInput
+                  [(ngModel)]="attr.key"
+                  [suggestions]="filteredAttributeNames"
+                  (completeMethod)="searchAttributeNames($event)"
+                  placeholder="{{ 'ITEMS.ATTRIBUTE' | translate }}"
+                  [appendTo]="'body'"
+                  [inputStyle]="{ width: '100%' }"
+                  style="flex: 1"
+                ></p-autoComplete>
+                <app-attribute-value-input
+                  [type]="attributeType(attr.key)"
+                  [validList]="attributeValidList(attr.key)"
+                  [value]="attr.value"
+                  (valueChange)="attr.value = $event"
+                  style="flex: 1"
+                ></app-attribute-value-input>
+                <button type="button" class="btn btn-shng btn-sm" (click)="removeAttributeRow($index)">
+                  <fa-icon [icon]="faTrashAlt"></fa-icon>
+                </button>
+              </div>
+              @if (attributeDescription(attr.key)) {
+                <small style="color: var(--text-muted)">{{ attributeDescription(attr.key) }}</small>
+              }
+            </div>
+          }
+          <div style="display: flex; gap: 8px; margin-top: 8px">
+            <button type="button" class="btn btn-shng btn-sm" (click)="addAttributeRow()">
+              <fa-icon [icon]="faPlus"></fa-icon> {{ 'ITEMS.ADD ATTRIBUTE' | translate }}
+            </button>
+            <button type="button" class="btn btn-shng btn-sm" (click)="openAttributeBrowser()">
+              <fa-icon [icon]="faList"></fa-icon> {{ 'ITEMS.BROWSE ATTRIBUTES' | translate }}
+            </button>
+          </div>
+
+          @if (newItemError !== '') {
+            <p style="color: var(--shng-orange)">{{ newItemError }}</p>
+          }
+
+          <ng-template #footer>
+            <button type="button" class="btn btn-shng btn-sm" (click)="newItem_display = false">
+              {{ 'BUTTON.ABORT' | translate }}
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary btn-sm btn-shng"
+              [disabled]="!newItemNameValid"
+              (click)="submitNewItem()"
+            >
+              {{ 'BUTTON.CREATE' | translate }}
+            </button>
+          </ng-template>
+        </p-dialog>
+
+        <!------------------------------------------>
+        <!--   Attribute browser dialog   -->
+        <!------------------------------------------>
+        <p-dialog
+          header="{{ 'ITEMS.BROWSE_ATTRIBUTES_TITLE' | translate }}"
+          [(visible)]="attributeBrowser_display"
+          [modal]="true"
+          [style]="{ width: '600px', minWidth: '350px', height: '600px' }"
+          [baseZIndex]="10001"
+        >
+          <input
+            type="text"
+            pInputText
+            [(ngModel)]="attributeBrowserSearch"
+            placeholder="{{ 'ITEMS.ATTRIBUTE_SEARCH_PLACEHOLDER' | translate }}"
+            style="width: 100%; margin-bottom: 10px"
+          />
+          @if (filteredAttributeGroups.length === 0) {
+            <p>{{ 'ITEMS.NO_MATCHING_ATTRIBUTES' | translate }}</p>
+          }
+          @for (group of filteredAttributeGroups; track group.source) {
+            <strong>{{ group.source === 'core' ? ('ITEMS.SOURCE_CORE' | translate) : group.source }}</strong>
+            @for (item of group.entries; track item.name) {
+              <div
+                style="padding: 4px 6px; cursor: pointer; border-radius: 4px"
+                (click)="selectAttributeFromBrowser(item.name)"
+              >
+                <code>{{ item.name }}</code>
+                <span style="color: var(--text-muted)"> ({{ item.entry.type }})</span>
+                @if (attributeDescription(item.name)) {
+                  <div style="color: var(--text-muted)">
+                    <small>{{ attributeDescription(item.name) }}</small>
+                  </div>
+                }
+              </div>
+            }
+          }
+          <ng-template #footer>
+            <button type="button" class="btn btn-shng btn-sm" (click)="attributeBrowser_display = false">
+              {{ 'BUTTON.CLOSE' | translate }}
+            </button>
+          </ng-template>
+        </p-dialog>
+
+        <!------------------------------------------>
+        <!--   Edit item attributes dialog   -->
+        <!------------------------------------------>
+        <p-dialog
+          header="{{ 'ITEMS.EDIT_ITEM_ATTRIBUTES' | translate }}"
+          [(visible)]="editItem_display"
+          [modal]="true"
+          [style]="{ width: '700px', minWidth: '400px', height: '780px' }"
+          [baseZIndex]="10000"
+        >
+          <table style="width: 100%">
+            <tr>
+              <td class="py-1">{{ 'ITEMS.FULL PATH' | translate }}</td>
+              <td class="py-1">
+                <code>{{ itemdetails.path }}</code>
+              </td>
+            </tr>
+            <tr>
+              <td class="py-1">{{ 'ITEMS.TYPE' | translate }}</td>
+              <td class="py-1">
+                <p-select
+                  [options]="itemTypeOptions"
+                  [(ngModel)]="editItemType"
+                  [appendTo]="'body'"
+                  [autoOptionFocus]="true"
+                  style="width: 100%"
+                ></p-select>
+              </td>
+            </tr>
+          </table>
+
+          <p></p>
+          <strong style="display: block; margin-bottom: 6px">{{ 'ITEMS.ADDITIONAL ATTRIBUTES' | translate }}</strong>
+          @for (attr of editItemAttributes; track $index) {
+            <div style="margin-top: 6px">
+              <div style="display: flex; align-items: center; gap: 6px">
+                <p-autoComplete
+                  #editAttrNameInput
+                  [(ngModel)]="attr.key"
+                  [suggestions]="filteredAttributeNames"
+                  (completeMethod)="searchAttributeNames($event)"
+                  placeholder="{{ 'ITEMS.ATTRIBUTE' | translate }}"
+                  [appendTo]="'body'"
+                  [inputStyle]="{ width: '100%' }"
+                  style="flex: 1"
+                ></p-autoComplete>
+                <app-attribute-value-input
+                  [type]="attributeType(attr.key)"
+                  [validList]="attributeValidList(attr.key)"
+                  [value]="attr.value"
+                  (valueChange)="attr.value = $event"
+                  style="flex: 1"
+                ></app-attribute-value-input>
+                <button type="button" class="btn btn-shng btn-sm" (click)="removeEditAttributeRow($index)">
+                  <fa-icon [icon]="faTrashAlt"></fa-icon>
+                </button>
+              </div>
+              @if (attributeDescription(attr.key)) {
+                <small style="color: var(--text-muted)">{{ attributeDescription(attr.key) }}</small>
+              }
+            </div>
+          }
+          <div style="display: flex; gap: 8px; margin-top: 8px">
+            <button type="button" class="btn btn-shng btn-sm" (click)="addEditAttributeRow()">
+              <fa-icon [icon]="faPlus"></fa-icon> {{ 'ITEMS.ADD ATTRIBUTE' | translate }}
+            </button>
+            <button type="button" class="btn btn-shng btn-sm" (click)="openAttributeBrowser()">
+              <fa-icon [icon]="faList"></fa-icon> {{ 'ITEMS.BROWSE ATTRIBUTES' | translate }}
+            </button>
+          </div>
+
+          @if (editItemError !== '') {
+            <p style="color: var(--shng-orange)">{{ editItemError }}</p>
+          }
+
+          <ng-template #footer>
+            <button type="button" class="btn btn-shng btn-sm" (click)="editItem_display = false">
+              {{ 'BUTTON.ABORT' | translate }}
+            </button>
+            <button type="button" class="btn btn-primary btn-sm btn-shng" (click)="submitEditItem()">
+              {{ 'BUTTON.SAVE' | translate }}
+            </button>
+          </ng-template>
+        </p-dialog>
+
+        <!------------------------------------------>
+        <!--   Rename / move item dialog   -->
+        <!------------------------------------------>
+        <p-dialog
+          header="{{ 'BUTTON.RENAME' | translate }}"
+          [(visible)]="renameItem_display"
+          [modal]="true"
+          [style]="{ width: '750px', minWidth: '450px' }"
+          [baseZIndex]="10000"
+        >
+          <table style="width: 100%; table-layout: fixed">
+            <colgroup>
+              <col style="width: 140px" />
+              <col />
+            </colgroup>
+            <tr>
+              <td class="py-1">{{ 'ITEMS.CURRENT_PATH' | translate }}</td>
+              <td class="py-1">
+                <code>{{ itemdetails.path }}</code>
+              </td>
+            </tr>
+            <tr>
+              <td class="py-1">{{ 'ITEMS.NAME_OR_PATH' | translate }}</td>
+              <td class="py-1">
+                <input
+                  type="text"
+                  pInputText
+                  [(ngModel)]="renameItemNewPathInput"
+                  [disabled]="renameItemSubmitting"
+                  style="width: 100%"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td class="py-1">{{ 'ITEMS.NEW_PATH' | translate }}</td>
+              <td class="py-1">
+                <code>{{ renameItemNewPath }}</code>
+              </td>
+            </tr>
+          </table>
+
+          <p></p>
+          <strong style="display: block; margin-bottom: 6px">{{ 'ITEMS.PICK_NEW_PARENT' | translate }}</strong>
+          <div
+            [style]="{
+              height: '380px',
+              overflow: 'auto',
+              border: '1px solid var(--surface-border)',
+              'pointer-events': renameItemSubmitting ? 'none' : 'auto',
+              opacity: renameItemSubmitting ? 0.6 : 1,
+            }"
+          >
+            <p-tree
+              [value]="renameItemParentTreeNodes"
+              (onNodeSelect)="selectRenameParent($event)"
+              selectionMode="single"
+              [(selection)]="renameItemSelectedParentNode"
+              emptyMessage="{{ 'ITEMS.NO ITEMS' | translate }}"
+              styleClass="item-tree"
+            ></p-tree>
+          </div>
+
+          <ng-template #footer>
+            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 12px">
+              @if (renameItemSubmitting) {
+                <span
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    min-width: 0;
+                    flex: 1 1 auto;
+                    color: var(--text-muted);
+                    text-align: left;
+                    overflow-wrap: anywhere;
+                    font-size: var(--font-size-sm, 0.875rem);
+                  "
+                >
+                  <p-progressSpinner
+                    [style]="{ width: '18px', height: '18px', flexShrink: '0' }"
+                    styleClass="plugin-loading-spinner"
+                  ></p-progressSpinner>
+                  <span>{{ 'ITEMS.RENAME_IN_PROGRESS' | translate }}</span>
+                </span>
+              } @else {
+                <span
+                  style="
+                    min-width: 0;
+                    flex: 1 1 auto;
+                    color: var(--shng-orange);
+                    text-align: left;
+                    overflow-wrap: anywhere;
+                  "
+                  >{{ renameItemError }}</span
+                >
+              }
+              <div style="display: flex; gap: 8px; flex-shrink: 0">
+                <button
+                  type="button"
+                  class="btn btn-shng btn-sm"
+                  [disabled]="renameItemSubmitting"
+                  (click)="renameItem_display = false"
+                >
+                  {{ 'BUTTON.ABORT' | translate }}
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm btn-shng"
+                  [disabled]="!renameItemNewPathValid || renameItemSubmitting"
+                  (click)="submitRenameItem()"
+                >
+                  {{ 'BUTTON.RENAME' | translate }}
+                </button>
+              </div>
+            </div>
+          </ng-template>
+        </p-dialog>
+
+        <!------------------------------------------>
+        <!--   Rename: missing parent(s) confirm dialog   -->
+        <!------------------------------------------>
+        <p-dialog
+          header="{{ 'ITEMS.MISSING_PARENTS_TITLE' | translate }}"
+          [(visible)]="renameItemConfirmCreateParents_display"
+          [modal]="true"
+          [style]="{ width: '550px', minWidth: '350px' }"
+          [baseZIndex]="10001"
+        >
+          <p>{{ 'ITEMS.MISSING_PARENTS_INTRO' | translate }}</p>
+          <ul>
+            @for (ancestor of renameItemMissingAncestors; track ancestor) {
+              <li>
+                <code>{{ ancestor }}</code>
+              </li>
+            }
+          </ul>
+          <p>{{ 'ITEMS.MISSING_PARENTS_QUESTION' | translate }}</p>
+          <ng-template #footer>
+            <button type="button" class="btn btn-shng btn-sm" (click)="renameItemConfirmCreateParents_display = false">
+              {{ 'BUTTON.ABORT' | translate }}
+            </button>
+            <button type="button" class="btn btn-primary btn-sm btn-shng" (click)="confirmCreateMissingParents()">
+              {{ 'ITEMS.MISSING_PARENTS_CREATE' | translate }}
+            </button>
+          </ng-template>
+        </p-dialog>
+
+        <!------------------------------------------>
+        <!--   Rename failed-references detail dialog   -->
+        <!------------------------------------------>
+        <p-dialog
+          header="{{ 'ITEMS.RENAME_FAILED_REFERENCES_TITLE' | translate }}"
+          [(visible)]="renameFailedReferencesDetail_display"
+          [modal]="true"
+          [style]="{ width: '600px', minWidth: '350px' }"
+          [baseZIndex]="10000"
+        >
+          <table style="width: 100%">
+            <thead>
+              <tr>
+                <th>{{ 'ITEMS.REFERENCE_ITEM' | translate }}</th>
+                <th>{{ 'ITEMS.ERROR' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (entry of renameItemLastFailedReferences; track entry[0]) {
+                <tr>
+                  <td class="py-1">{{ entry[0] }}</td>
+                  <td class="py-1">{{ entry[1] }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+          <ng-template #footer>
+            <button type="button" class="btn btn-shng btn-sm" (click)="renameFailedReferencesDetail_display = false">
+              {{ 'BUTTON.CLOSE' | translate }}
+            </button>
+          </ng-template>
+        </p-dialog>
+
+        <!------------------------------------------>
+        <!--   Delete item dialog   -->
+        <!------------------------------------------>
+        <p-dialog
+          header="{{ 'ITEMS.DELETE ITEM' | translate }}"
+          [(visible)]="deleteItem_display"
+          [modal]="true"
+          [style]="{ width: '950px', minWidth: '500px' }"
+          [baseZIndex]="10000"
+        >
+          <p>
+            {{ 'ITEMS.DELETE_CONFIRM' | translate }} <code>{{ itemdetails.path }}</code
+            >?
+          </p>
+
+          @if (deleteItemHasFile) {
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px">
+              <p-toggleSwitch [(ngModel)]="deleteItemPersist"></p-toggleSwitch>
+              <span>{{ 'ITEMS.DELETE_PERSIST' | translate }}</span>
+            </div>
+            @if (!deleteItemPersist) {
+              <p style="color: var(--shng-orange)">
+                {{ 'ITEMS.DELETE_PERSIST_WARNING' | translate: { filename: definedInFilename } }}
+              </p>
+            }
+          }
+
+          @if (deleteItemReferencesFailed) {
+            <p style="color: var(--shng-orange)">{{ 'ITEMS.REFERENCE_CHECK_FAILED' | translate }}</p>
+          } @else if (deleteItemReferences === null) {
+            <p>{{ 'ITEMS.REFERENCE_CHECK_RUNNING' | translate }}</p>
+          } @else if (deleteItemReferences.length === 0) {
+            <p>{{ 'ITEMS.NO_REFERENCES_FOUND' | translate }}</p>
+          } @else {
+            <p style="color: var(--shng-orange)">
+              {{ 'ITEMS.REFERENCES_FOUND' | translate: { count: deleteItemReferences.length } }}
+            </p>
+            <div style="overflow-x: auto">
+              <table style="width: 100%; table-layout: fixed">
+                <colgroup>
+                  <col style="width: 28%" />
+                  <col style="width: 14%" />
+                  <col style="width: 38%" />
+                  <col style="width: 20%" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>{{ 'ITEMS.REFERENCE_ITEM' | translate }}</th>
+                    <th>{{ 'ITEMS.ATTRIBUTE' | translate }}</th>
+                    <th>{{ 'ITEMS.VALUE' | translate }}</th>
+                    <th title="{{ 'ITEMS.REFERENCE_OUTCOME_HINT' | translate }}">
+                      {{ 'ITEMS.REFERENCE_OUTCOME' | translate }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (ref of deleteItemReferences; track ref.item + ref.attribute) {
+                    <tr>
+                      <td class="py-1" style="overflow-wrap: anywhere">{{ ref.item }}</td>
+                      <td class="py-1" style="overflow-wrap: anywhere">{{ ref.attribute }}</td>
+                      <td class="py-1" style="overflow-wrap: anywhere">{{ ref.value }}</td>
+                      <td class="py-1" [style.color]="ref.unambiguous ? 'var(--shng-blue)' : 'var(--shng-orange)'">
+                        {{
+                          (ref.unambiguous ? 'ITEMS.REFERENCE_OUTCOME_AUTO' : 'ITEMS.REFERENCE_OUTCOME_MANUAL')
+                            | translate
+                        }}
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px">
+              <p-toggleSwitch [(ngModel)]="deleteItemCleanupReferences"></p-toggleSwitch>
+              <span>{{ 'ITEMS.DELETE_CLEANUP_REFERENCES' | translate }}</span>
+            </div>
+          }
+
+          @if (deleteItemCleanupFailed) {
+            <p style="color: var(--shng-orange)">{{ 'ITEMS.REFERENCE_CLEANUP_FAILED' | translate }}</p>
+          }
+
+          @if (deleteItemError !== '') {
+            <p style="color: var(--shng-orange)">{{ deleteItemError }}</p>
+          }
+
+          <ng-template #footer>
+            <button type="button" class="btn btn-shng btn-sm" (click)="deleteItem_display = false">
+              {{ 'BUTTON.ABORT' | translate }}
+            </button>
+            <button
+              type="button"
+              class="btn btn-shng-danger btn-sm"
+              [disabled]="deleteItemReferences === null && !deleteItemReferencesFailed"
+              (click)="confirmDeleteItem()"
+            >
+              {{ 'ITEMS.DELETE ITEM' | translate }}
+            </button>
+          </ng-template>
+        </p-dialog>
+
         <div class="container-fluid navBorder" style="overflow: hidden; border-top: 0">
           <div>
             <div class="row">
@@ -81,6 +616,9 @@
                   (click)="collapseAll()"
                 >
                   <fa-icon [icon]="faFolder"></fa-icon> {{ 'ITEMS.REDUCE ALL' | translate }}
+                </button>
+                <button type="button" class="btn btn-shng btn-sm" id="btn-new-item" (click)="openNewItemDialog()">
+                  <fa-icon [icon]="faPlus"></fa-icon> {{ 'ITEMS.NEW ITEM' | translate }}
                 </button>
               </div>
             </div>
@@ -153,6 +691,48 @@
                       ></span>
                       {{ 'ITEMS.MONITORED' | translate }}
                     </button>
+                  }
+                  <button
+                    type="button"
+                    class="float-sm-right btn btn-shng-danger btn-sm"
+                    style="margin-left: 5px"
+                    id="btn-delete-item"
+                    [disabled]="itemdetails.path === undefined"
+                    (click)="openDeleteItemDialog()"
+                  >
+                    <fa-icon [icon]="faTrashAlt"></fa-icon> {{ 'BUTTON.DELETE' | translate }}
+                  </button>
+                  <button
+                    type="button"
+                    class="float-sm-right btn btn-shng btn-sm"
+                    style="margin-left: 5px"
+                    id="btn-edit-item"
+                    [disabled]="itemdetails.path === undefined"
+                    (click)="openEditItemDialog()"
+                  >
+                    <fa-icon [icon]="faPen"></fa-icon> {{ 'BUTTON.EDIT' | translate }}
+                  </button>
+                  <button
+                    type="button"
+                    class="float-sm-right btn btn-shng btn-sm"
+                    style="margin-left: 5px"
+                    id="btn-rename-item"
+                    [disabled]="itemdetails.path === undefined"
+                    (click)="openRenameItemDialog()"
+                  >
+                    <fa-icon [icon]="faRightLeft"></fa-icon> {{ 'BUTTON.RENAME' | translate }}
+                  </button>
+                  @if (renameItemLastFailedReferences.length > 0) {
+                    <span
+                      class="float-sm-right"
+                      style="margin-left: 5px; color: var(--shng-orange); cursor: pointer"
+                      title="{{ 'ITEMS.RENAME_FAILED_REFERENCES_HINT' | translate }}"
+                      (click)="renameFailedReferencesDetail_display = true"
+                    >
+                      {{
+                        'ITEMS.RENAME_FAILED_REFERENCES' | translate: { count: renameItemLastFailedReferences.length }
+                      }}
+                    </span>
                   }
                   <strong>{{ 'ITEMS.ITEM DETAILS' | translate }}</strong>
                 </div>
@@ -494,7 +1074,7 @@
                                   {{ 'ITEMS.DEFINED IN' | translate }}
                                 </td>
                                 <td class="py-1" style="height: 45px; vertical-align: bottom">
-                                  {{ itemdetails.filename }}
+                                  {{ definedInFilename }}
                                 </td>
                               </tr>
                             }

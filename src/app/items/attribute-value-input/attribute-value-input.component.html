@@ -1,0 +1,85 @@
+@switch (inputKind) {
+  @case ('select') {
+    <p-select
+      [options]="validList"
+      [showClear]="true"
+      [(ngModel)]="value"
+      (ngModelChange)="emitValue($event)"
+      [style]="{ width: '100%' }"
+    ></p-select>
+  }
+  @case ('toggle') {
+    <p-toggleSwitch [(ngModel)]="value" (ngModelChange)="emitValue($event)"></p-toggleSwitch>
+  }
+  @case ('number') {
+    <input type="text" pInputText [(ngModel)]="value" (ngModelChange)="emitValue($event)" style="width: 100%" />
+  }
+  @case ('password') {
+    <input type="password" pInputText [(ngModel)]="value" (ngModelChange)="emitValue($event)" style="width: 100%" />
+  }
+  @case ('autocomplete') {
+    <p-autoComplete
+      [(ngModel)]="value"
+      [suggestions]="filteredItemPaths"
+      (completeMethod)="searchItemPaths($event)"
+      (ngModelChange)="emitValue($event)"
+      [appendTo]="'body'"
+      [inputStyle]="{ width: '100%' }"
+      style="width: 100%"
+    ></p-autoComplete>
+  }
+  @case ('list') {
+    <div>
+      @for (row of listRows; track $index) {
+        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px">
+          <input
+            type="text"
+            pInputText
+            [ngModel]="row"
+            (ngModelChange)="updateListRow($index, $event)"
+            style="flex: 1"
+          />
+          <button type="button" class="btn btn-shng btn-sm" (click)="removeListRow($index)">
+            <fa-icon [icon]="faTrashAlt"></fa-icon>
+          </button>
+        </div>
+      }
+      <button type="button" class="btn btn-shng btn-sm" (click)="addListRow()">
+        <fa-icon [icon]="faPlus"></fa-icon>
+      </button>
+    </div>
+  }
+  @case ('dict') {
+    <div>
+      @for (row of dictRows; track $index) {
+        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px">
+          <input
+            type="text"
+            pInputText
+            [ngModel]="row.key"
+            (ngModelChange)="updateDictRowKey($index, $event)"
+            placeholder="key"
+            style="flex: 1"
+          />
+          <input
+            type="text"
+            pInputText
+            [ngModel]="row.value"
+            (ngModelChange)="updateDictRowValue($index, $event)"
+            placeholder="value"
+            style="flex: 1"
+          />
+          <button type="button" class="btn btn-shng btn-sm" (click)="removeDictRow($index)">
+            <fa-icon [icon]="faTrashAlt"></fa-icon>
+          </button>
+        </div>
+      }
+      <button type="button" class="btn btn-shng btn-sm" (click)="addDictRow()">
+        <fa-icon [icon]="faPlus"></fa-icon>
+      </button>
+    </div>
+  }
+  @default {
+    <input type="text" pInputText [(ngModel)]="value" (ngModelChange)="emitValue($event)" style="width: 100%" />
+  }
+}

@@ -28,7 +28,6 @@ const shortHash = git('rev-parse --short HEAD') || 'unknown';
 const branch    = git('rev-parse --abbrev-ref HEAD') || 'unknown';
 // symbolic-ref gives e.g. "refs/heads/work"; strip "refs/" → "heads/work"
 const fullRef   = (git('symbolic-ref HEAD') || '').replace(/^refs\//, '') || branch;
-const repoPath  = path.resolve(__dirname, '..');
 
 const output = `\
 // Auto-generated at build time by scripts/generate-version.js — do not edit.
@@ -37,7 +36,6 @@ export const APP_VERSION = '${appVersion}';
 export const GIT_COMMIT = '${shortHash}';
 export const GIT_BRANCH = '${branch}';
 export const GIT_REF    = '${fullRef}';   // e.g. "heads/work"
-export const BUILD_PATH = '${repoPath}';
 `;
 
 const dest = path.join(__dirname, '..', 'src', 'app', 'git-version.auto.ts');

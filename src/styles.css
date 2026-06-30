@@ -36,7 +36,9 @@ input::-webkit-inner-spin-button {
   --navbar-height: 60px;
   --tab-height: 41px;
   --page-padding: 18px; /* outer spacing: left / bottom / right of every page body */
-  --grid-gutter: 15px; /* Bootstrap grid gutter — set to var(--page-padding) to link with outer spacing */
+  --grid-gutter: var(
+    --page-padding
+  ); /* Bootstrap grid gutter — linked to outer spacing so every page's margin matches */
 
   /* Brand / status colours */
   --shng-blue: #709cc2;
@@ -876,9 +878,16 @@ a.text-shng:hover {
   padding: 0.25rem !important; /* Aura default is 1rem — reduce the outer whitebox */
 }
 
-.p-tree-root {
+/* :not(.p-virtualscroller) — a virtual-scroll tree's .p-tree-root IS the
+   CDK virtual-scroll viewport; forcing overflow:visible on it (as below,
+   for the normal case) breaks its ability to scroll at all. */
+.p-tree-root:not(.p-virtualscroller) {
   background: #ffffff;
   overflow: visible !important; /* PrimeNG injects overflow:auto — prevent inner scrollbar */
+}
+
+.p-tree-root.p-virtualscroller {
+  background: #ffffff;
 }
 
 .p-tree-node-content {
@@ -986,17 +995,36 @@ a.text-shng:hover {
   margin-bottom: 0;
 }
 
-/* Tighten p-tree node row spacing */
-.p-tree .p-tree-node-content {
+/* Tighten p-tree node row spacing.
+   In virtual-scroll mode PrimeNG flattens the node hierarchy (no nested
+   .p-tree-node-children wrappers to indent via DOM nesting like the
+   normal case) and instead encodes each node's indentation as an inline
+   padding-left on this same element — :not(:has(.p-virtualscroller))
+   below excludes that case from the padding-left this rule would
+   otherwise force via the shorthand, and the second rule sets only the
+   other three sides so the inline indentation comes through. */
+.p-tree:not(:has(.p-virtualscroller)) .p-tree-node-content {
   padding: 1px 4px !important;
+}
+.p-tree .p-virtualscroller .p-tree-node-content {
+  padding-top: 1px !important;
+  padding-right: 4px !important;
+  padding-bottom: 1px !important;
 }
 .p-tree li.p-tree-node {
   padding: 0 !important;
 }
 
-/* Item-tree view (/items): plain-text labels only — halve the leading */
-.item-tree .p-tree-node-content {
+/* Item-tree view (/items): plain-text labels only — halve the leading.
+   Same virtual-scroll indentation caveat as above. */
+.item-tree:not(:has(.p-virtualscroller)) .p-tree-node-content {
   padding: 0 4px !important;
+  line-height: 1.1 !important;
+}
+.item-tree .p-virtualscroller .p-tree-node-content {
+  padding-top: 0 !important;
+  padding-right: 4px !important;
+  padding-bottom: 0 !important;
   line-height: 1.1 !important;
 }
 .item-tree .p-tree-node-toggle-button {

@@ -2,42 +2,117 @@
 
 .shngbody {
   height: calc(100vh - var(--navbar-height));
-  /* No left/right padding — the inner container-fluid already provides side spacing */
-  padding-bottom: var(--page-padding);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Pure-CSS flex/grid layout (mirrors file-editor-layout.component.css's
+   pattern) — no JS measuring/resize-event logic, and no calc() that has
+   to guess the tablist's pixel height (that's what --tab-height was
+   doing, and the real rendered tablist doesn't match it, which is what
+   made the bottom margin come out wrong). Sizing instead rides the
+   global .p-tabs/.p-tabpanels/.p-tabpanel flex-fill chain in styles.css
+   (see the comment there) — .items-outer just takes height: 100% of its
+   already-correctly-sized .p-tabpanel ancestor. margin/gap are tied to
+   the same --page-padding/--grid-gutter variables every other page
+   uses, so this page's margins stay consistent with the rest of the app
+   at any window size, and the tree/detail panels' scroll areas size
+   themselves automatically by cascading flex:1; min-height:0 down to
+   the actual scrollable element instead of computing pixel heights in
+   JS. */
+.items-outer {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 0 var(--page-padding) var(--page-padding) var(--page-padding);
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
 
-/*
- * Constrain the item tree and detail panel to the visible viewport so
- * they scroll internally rather than letting the page scroll.
- *
- * Offset breakdown (navbar=60px, tab-bar=41px):
- *   #tree      — fixed overhead above tree: navbar-height + tab-height accounted separately;
- *               remaining fixed overhead = 85px (search row + card border/padding + gaps).
- *   #tree_detail — fixed overhead = 128px (same + card-header ~43px).
- *   Both subtract page-padding for the outer bottom gap.
- */
+.items-toolbar {
+  flex: 0 0 auto;
+}
+
+.items-body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: var(--grid-gutter);
+}
+
+.items-tree-panel,
+.items-detail-panel {
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.items-tree-panel > .card,
+.items-detail-panel > .card {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.items-tree-panel .card-body,
+.items-detail-panel .card-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* #tree IS the tree panel's .card-body (see item-tree.component.html) —
+   <p-tree [scrollHeight]="'flex'"> fills it via PrimeNG's own
+   .p-tree-flex-scrollable CSS, which needs this ancestor chain to
+   resolve to a definite height through flex, not a JS-computed one. */
 #tree {
-  height: calc(100vh - var(--navbar-height) - var(--tab-height) - 90px - var(--page-padding));
-  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.items-detail-panel .card-header {
+  flex: 0 0 auto;
+}
+
+.items-detail-panel .card-text {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 #tree_detail {
-  height: calc(100vh - var(--navbar-height) - var(--tab-height) - 133px - var(--page-padding));
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: auto;
 }
 
 /* Monitored items tab: scrollable area matching the page bottom boundary.
-   Left/right margin matches the container-fluid gutter used by tab 0.
-   Top padding provides a small visual gap below the tab bar. */
+   height: 100% of the .p-tabpanel ancestor (global flex-fill chain, see
+   styles.css) rather than a calc() guessing the tablist's pixel height —
+   same reasoning as .items-outer above. Left/right margin matches the
+   grid gutter used by tab 0 (now linked to --page-padding, so it's the
+   same value everywhere). Top padding provides a small visual gap below
+   the tab bar; bottom padding is the equivalent gap above the viewport
+   boundary, included in the box via box-sizing so it doesn't push the
+   element past its 100%-height boundary. */
 .monitored-container {
-  height: calc(100vh - var(--navbar-height) - var(--tab-height) - var(--page-padding) - 10px);
+  height: 100%;
+  box-sizing: border-box;
   overflow-y: auto;
   overflow-x: auto;
-  padding-top: 10px;
-  box-sizing: border-box;
-  margin: 0 var(--grid-gutter);
+  padding: 10px 0 var(--page-padding) 0;
+  margin: 0 var(--page-padding);
   border: 1px solid var(--shng-border);
   border-top: 0;
 }

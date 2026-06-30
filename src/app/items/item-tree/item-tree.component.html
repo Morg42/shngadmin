@@ -570,8 +570,8 @@
           </ng-template>
         </p-dialog>
 
-        <div class="container-fluid navBorder" style="overflow: hidden; border-top: 0">
-          <div>
+        <div class="items-outer">
+          <div class="items-toolbar">
             <div class="row">
               <div class="col shng_headline">
                 <div class="form-group">
@@ -624,36 +624,35 @@
             </div>
           </div>
 
-          <div class="row">
-            <div class="col" style="max-width: 50%">
+          <div class="items-body">
+            <div class="items-tree-panel">
               <div class="card">
-                <div class="card-body p-1">
-                  <div #treeEl id="tree">
-                    <div class="col-sm-12">
-                      <p-tree
-                        [value]="filteredTree"
-                        (onNodeSelect)="nodeSelect($event)"
-                        selectionMode="single"
-                        [(selection)]="selectedFile"
-                        emptyMessage="{{ 'ITEMS.NO ITEMS' | translate }}"
-                        styleClass="item-tree"
-                      >
-                        <ng-template let-node pTemplate="default">
-                          @if (node.tags[0] > 0 && !this.treeIsFiltered) {
-                            {{ node.label }} &nbsp;
-                            <span style="background: #dadada"> &nbsp; {{ node.tags[0] }} &nbsp; </span>
-                          }
-                          @if (node.tags[0] === 0 || this.treeIsFiltered) {
-                            <span style="float: left">{{ node.label }}</span>
-                          }
-                        </ng-template>
-                      </p-tree>
-                    </div>
-                  </div>
+                <div class="card-body p-1" id="tree">
+                  <p-tree
+                    [value]="filteredTree"
+                    (onNodeSelect)="nodeSelect($event)"
+                    selectionMode="single"
+                    [(selection)]="selectedFile"
+                    emptyMessage="{{ 'ITEMS.NO ITEMS' | translate }}"
+                    styleClass="item-tree"
+                    [virtualScroll]="true"
+                    [virtualScrollItemSize]="treeVirtualScrollItemSize"
+                    [scrollHeight]="'flex'"
+                  >
+                    <ng-template let-node pTemplate="default">
+                      @if (node.tags[0] > 0 && !this.treeIsFiltered) {
+                        {{ node.label }} &nbsp;
+                        <span style="background: #dadada"> &nbsp; {{ node.tags[0] }} &nbsp; </span>
+                      }
+                      @if (node.tags[0] === 0 || this.treeIsFiltered) {
+                        <span style="float: left">{{ node.label }}</span>
+                      }
+                    </ng-template>
+                  </p-tree>
                 </div>
               </div>
             </div>
-            <div class="col" style="max-width: 50%">
+            <div class="items-detail-panel">
               <div class="card">
                 <div class="card-header p-1 shng_heading">
                   <button
@@ -741,12 +740,7 @@
                     <div id="cardOverlay" class="cardOverlay" style="position: relative; top: 45%; left: 45%">
                       <span id="reload-element" class="fas fa-sync fa-4x"></span>
                     </div>
-                    <div
-                      #treeDetailEl
-                      id="tree_detail"
-                      class="data-container refresh-data pre-scrollable"
-                      style="overflow-x: auto"
-                    >
+                    <div id="tree_detail" class="data-container refresh-data pre-scrollable" style="overflow-x: auto">
                       @if (itemdetailsloaded === false) {
                         <span> {{ 'ITEMS.CHOOSE ITEM IN TREE' | translate }}<br /> </span>
                       }

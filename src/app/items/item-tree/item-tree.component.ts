@@ -8,7 +8,6 @@ import {
   OnDestroy,
   OnInit,
   QueryList,
-  ViewChild,
   ViewChildren,
 } from '@angular/core';
 import { AppConfigService } from '../../common/services/app-config.service';
@@ -114,8 +113,6 @@ interface AttributeGroup {
   ],
 })
 export class ItemTreeComponent implements OnDestroy, OnInit {
-  @ViewChild('treeEl') private treeEl!: ElementRef<HTMLElement>;
-  @ViewChild('treeDetailEl') private treeDetailEl!: ElementRef<HTMLElement>;
   @ViewChildren('attrNameInput', { read: ElementRef })
   private attrNameInputs!: QueryList<ElementRef<HTMLElement>>;
   /** Separate from attrNameInputs — PrimeNG dialogs may keep their content
@@ -220,7 +217,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
         ...ItemTreeComponent.TOP_LEVEL_TREE_NODE,
         label: this.translate.instant('ITEMS.TOP_LEVEL'),
       },
-      ...this.filteredTree,
+      ...(this.filteredTree ?? []),
     ];
   }
 
@@ -292,6 +289,11 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
   searchStart_param = {};
   treeIsFiltered = false;
   selectedFile!: TreeNode;
+  /** Average rendered row height (px) of a .p-tree-node-content, used
+   *  by [virtualScrollItemSize] to compute how many rows fit in the
+   *  viewport — measured at the default font size; rows don't wrap, so
+   *  it stays accurate across the responsive font-size breakpoints too. */
+  readonly treeVirtualScrollItemSize = 18;
 
   item_val!: { value: unknown };
   alertText = '';
@@ -325,26 +327,6 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
 
   showItemAlert = false;
 
-  private readonly resizeHandler = () => this.resizeItemTree();
-
-  resizeItemTree() {
-    const browserHeight = window.innerHeight;
-    const tree = this.treeEl?.nativeElement;
-    const treeDetail = this.treeDetailEl?.nativeElement;
-
-    // initially offsetTop is off by a number of pixels — correction via fixed offset
-    const offsetTop = 167;
-    const offsetTopDetail = 200;
-    const height = String(Math.round(-1 * offsetTop - 35 + browserHeight) + 'px');
-    const heightDetail = String(Math.round(-1 * offsetTopDetail - 35 + browserHeight) + 'px');
-    if (tree && treeDetail) {
-      tree.style.height = height;
-      tree.style.maxHeight = height;
-      treeDetail.style.height = heightDetail;
-      treeDetail.style.maxHeight = heightDetail;
-    }
-  }
-
   static htmlDecode(input: string): string {
     if (!input) return '';
     // DOMParser creates an inert document — scripts are not executed and
@@ -362,9 +344,6 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
     this.setTitle(this.translate.instant('ITEMS.ITEMS'));
     this.getItemtree();
     this.loadAttributeCatalog();
-
-    window.addEventListener('resize', this.resizeHandler, false);
-    this.resizeItemTree();
 
     // Defer the WebSocket connection until wsPort is available (same reasoning
     // as system.component — see serverReady$ comment there).
@@ -384,7 +363,6 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
   }
 
   ngOnDestroy(): void {
-    window.removeEventListener('resize', this.resizeHandler, false);
     this.monitoredItemsUpdateSubscription?.unsubscribe();
     this.websocketPluginService.disconnect();
   }
@@ -471,7 +449,9 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
           this.itemcount = itemcount;
           this.filesTree0 = tree as unknown as {}[];
           this.filterNodes('');
-          this.searchStart_param = { number: String(this.appConfig.itemtreeSearchstart) };
+          this.searchStart_param = {
+            number: String(Number(this.appConfig.itemtreeSearchstart) || 3),
+          };
           if (selectPath) {
             this.selectNodeByPath(selectPath);
           }
@@ -750,8 +730,14 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
    * For PrimeNG Tree:
    */
 
+  /** appConfig.itemtreeSearchstart is undefined until the async
+   *  /api/server/info response patches it in — Number(undefined) is
+   *  NaN, and every comparison with NaN is false, so typing before that
+   *  response lands would silently never filter at all. Falls back to
+   *  AppConfigService's own DEFAULT_CONFIG value (3) for that window. */
   filterTree(treeModel: unknown, value: string) {
-    if (value.length >= Number(this.appConfig.itemtreeSearchstart)) {
+    const threshold = Number(this.appConfig.itemtreeSearchstart) || 3;
+    if (value.length >= threshold) {
       this.filterNodes(value);
     } else {
       this.filterNodes('');
@@ -775,24 +761,28 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
     this.itemdetailsloaded = false;
   }
 
-  prune(array: TreeNode[], filter: string) {
+  /** Removes every node (and its whole subtree) that neither matches
+   *  *filter* itself nor has any descendant that does, mutating *array*
+   *  in place. Recurses into children BEFORE deciding whether to keep
+   *  the node, and never returns early out of the loop — every sibling
+   *  at every level gets evaluated, regardless of where a match is
+   *  found elsewhere in the tree. */
+  prune(array: TreeNode[], filter: string): boolean {
+    let anyKept = false;
     for (let i = array.length - 1; i >= 0; i--) {
       const obj = array[i];
       if (obj.children) {
-        if (this.prune(obj.children, filter)) {
-          if (obj.children.length === 0) {
-            array.splice(i, 1);
-          }
-          return true;
-        }
+        this.prune(obj.children, filter);
       }
-      if ((obj.label ?? '').toLowerCase().indexOf(filter) === -1) {
-        if ((obj.children ?? []).length === 0) {
-          array.splice(i, 1);
-        }
+      const ownMatch = (obj.label ?? '').toLowerCase().indexOf(filter) !== -1;
+      const hasMatchingChildren = (obj.children?.length ?? 0) > 0;
+      if (ownMatch || hasMatchingChildren) {
+        anyKept = true;
+      } else {
+        array.splice(i, 1);
       }
     }
-    return false;
+    return anyKept;
   }
 
   nodeSelect(event: TreeNodeSelectEvent) {

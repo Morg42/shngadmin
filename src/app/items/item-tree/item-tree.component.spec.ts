@@ -5,6 +5,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
+import { Tree } from 'primeng/tree';
 import { BehaviorSubject, of, Subject, throwError } from 'rxjs';
 import {
   createMockAppConfigService,
@@ -83,7 +84,7 @@ describe('ItemTreeComponent', () => {
     })
       .overrideComponent(ItemTreeComponent, {
         set: {
-          imports: [TranslatePipe],
+          imports: [TranslatePipe, Tree],
           // Component declares its own providers; override them with mocks so the
           // real WebsocketPluginService constructor doesn't run and build a ws:// URL
           providers: [
@@ -608,7 +609,7 @@ describe('ItemTreeComponent attribute catalog', () => {
     })
       .overrideComponent(ItemTreeComponent, {
         set: {
-          imports: [TranslatePipe],
+          imports: [TranslatePipe, Tree],
           providers: [
             { provide: WebsocketService, useValue: createMockWebsocketService() },
             { provide: WebsocketPluginService, useValue: mockWebsocketPlugin },

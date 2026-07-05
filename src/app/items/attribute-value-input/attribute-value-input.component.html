@@ -39,7 +39,7 @@
             (ngModelChange)="updateListRow($index, $event)"
             style="flex: 1"
           />
-          <button type="button" class="btn btn-shng btn-sm" (click)="removeListRow($index)">
+          <button type="button" class="btn btn-shng-danger btn-sm" (click)="removeListRow($index)">
             <fa-icon [icon]="faTrashAlt"></fa-icon>
           </button>
         </div>
@@ -69,7 +69,7 @@
             placeholder="value"
             style="flex: 1"
           />
-          <button type="button" class="btn btn-shng btn-sm" (click)="removeDictRow($index)">
+          <button type="button" class="btn btn-shng-danger btn-sm" (click)="removeDictRow($index)">
             <fa-icon [icon]="faTrashAlt"></fa-icon>
           </button>
         </div>

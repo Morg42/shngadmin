@@ -46,6 +46,35 @@
       <a class="logout" (click)="logout()"><i class="fas fa-sign-out-alt"></i>{{ 'BUTTON.LOGOUT' | translate }}</a>
       <a class="logout-small" (click)="logout()"><i class="fas fa-sign-out-alt"></i></a>
     }
+
+    @if (helpLocalAvailable || nonMasterBranch) {
+      <div class="help">
+        <button class="help-btn"><i class="fas fa-question-circle"></i>{{ 'MENU.HELP' | translate }}</button>
+        <div class="help-dropdown-content">
+          @if (helpLocalAvailable) {
+            <a [href]="helpUrlLocal" target="_blank" rel="noopener">{{ 'MENU.HELP_LOCAL' | translate }}</a>
+            <a [href]="helpUrlOfficial" target="_blank" rel="noopener">{{ 'MENU.HELP_OFFICIAL' | translate }}</a>
+          } @else {
+            <a [href]="helpUrlOfficial" target="_blank" rel="noopener">{{ 'MENU.HELP' | translate }}</a>
+          }
+          @if (nonMasterBranch) {
+            <a [href]="helpUrlDev" target="_blank" rel="noopener">{{ 'MENU.HELP_DEVELOP' | translate }}</a>
+          }
+        </div>
+      </div>
+    } @else {
+      <a class="help" [href]="helpUrl" target="_blank" rel="noopener">
+        <i class="fas fa-question-circle"></i>{{ 'MENU.HELP' | translate }}
+      </a>
+    }
+
+    <button
+      class="theme-toggle"
+      (click)="theme.toggle()"
+      [attr.title]="(theme.darkMode ? 'THEME.SWITCH_TO_LIGHT' : 'THEME.SWITCH_TO_DARK') | translate"
+    >
+      <i class="fas" [class.fa-sun]="!theme.darkMode" [class.fa-moon]="theme.darkMode"></i>
+    </button>
   </div>
 
   <!-- Mobile controls: shown only at ≤720px -->
@@ -56,6 +85,14 @@
     @if (loggedIn && loginRequired) {
       <a (click)="logout()"><i class="fas fa-sign-out-alt"></i></a>
     }
+    <a [href]="helpUrl" target="_blank" rel="noopener"><i class="fas fa-question-circle"></i></a>
+    <button
+      class="theme-toggle"
+      (click)="theme.toggle()"
+      [attr.title]="(theme.darkMode ? 'THEME.SWITCH_TO_LIGHT' : 'THEME.SWITCH_TO_DARK') | translate"
+    >
+      <i class="fas" [class.fa-sun]="!theme.darkMode" [class.fa-moon]="theme.darkMode"></i>
+    </button>
     <button class="hamburger" (click)="toggleDrawer()" aria-label="Menu">&#9776;</button>
   </div>
 </div>
@@ -95,13 +132,20 @@
     }
   }
 
-  @if (loggedIn && loginRequired) {
-    <div class="drawer-footer">
+  <div class="drawer-footer">
+    <a class="drawer-logout-link" [href]="helpUrl" target="_blank" rel="noopener">
+      <i class="fas fa-question-circle"></i> {{ 'MENU.HELP' | translate }}
+    </a>
+    <a class="drawer-logout-link" (click)="theme.toggle()">
+      <i class="fas" [class.fa-sun]="!theme.darkMode" [class.fa-moon]="theme.darkMode"></i>
+      {{ (theme.darkMode ? 'THEME.SWITCH_TO_LIGHT' : 'THEME.SWITCH_TO_DARK') | translate }}
+    </a>
+    @if (loggedIn && loginRequired) {
       <a class="drawer-logout-link" (click)="logout(); closeDrawer()">
         <i class="fas fa-sign-out-alt"></i> {{ 'BUTTON.LOGOUT' | translate }}
       </a>
-    </div>
-  }
+    }
+  </div>
 </nav>
 
 <!-- Backdrop: dims content when drawer is open -->

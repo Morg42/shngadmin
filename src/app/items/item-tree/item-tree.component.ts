@@ -254,6 +254,12 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
   deleteItemPersist = true;
   deleteItemCleanupReferences = true;
   deleteItemCleanupFailed = false;
+  /** Separate, unchecked-by-default acknowledgement — deleting sub-items
+   *  loses real, possibly substantial existing config, unlike the
+   *  auto-created (always-empty) ancestors on the create-item side, so
+   *  this needs an explicit opt-in rather than just a button-label
+   *  change. */
+  deleteItemConfirmChildren = false;
 
   /** trigger/hysteresis_input matches are always unambiguous by construction
    *  (a bare-path attribute either matches or it doesn't — no partial
@@ -704,6 +710,30 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
     return !!filename && filename !== 'None';
   }
 
+  /** selectedFile is the tree node for whatever's currently shown in the
+   *  details pane — same node the delete dialog operates on — so its own
+   *  children array (already loaded with the rest of the tree, no extra
+   *  fetch needed) is a reliable source for "does this item have
+   *  sub-items". */
+  get deleteItemHasChildren(): boolean {
+    return (this.selectedFile?.children?.length ?? 0) > 0;
+  }
+
+  /** Total sub-items across the whole subtree, not just direct children —
+   *  a chain of auto-created ancestors (e.g. from create-item's mkdir -p
+   *  path) can nest several levels deep, and the delete confirmation must
+   *  reflect everything that's actually about to be removed, including
+   *  deeper descendants that may carry real config (unlike the empty
+   *  intermediate levels above them). */
+  get deleteItemDescendantCount(): number {
+    return this.selectedFile ? ItemTreeComponent.countDescendants(this.selectedFile) : 0;
+  }
+
+  private static countDescendants(node: TreeNode): number {
+    const children = node.children ?? [];
+    return children.reduce((sum, child) => sum + 1 + ItemTreeComponent.countDescendants(child), 0);
+  }
+
   showDetails(response?: unknown) {
     this.log.log('showDetails:');
     this.log.log({ response });
@@ -821,9 +851,27 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
     return this.newItemParent ? this.newItemParent + '.' + this.newItemName : this.newItemName;
   }
 
+  /** No dot in the full path: identical to the original single-segment
+   *  check. A dot present (parent, name, or both contributing extra
+   *  levels — e.g. typing a multi-level path directly into Name): every
+   *  dot-separated segment of the whole path must independently be a
+   *  legal item name, since each one is either an existing item (already
+   *  valid by construction) or gets auto-created as a new one. */
   get newItemNameValid(): boolean {
-    return /^[A-Za-z][A-Za-z0-9_]*$/.test(this.newItemName);
+    return /^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)*$/.test(this.newItemFullPath);
   }
+
+  /** Ancestors of newItemFullPath that don't exist yet — e.g. typing a
+   *  parent path several levels deep in one go, mkdir -p style. Computed
+   *  against a snapshot fetched once when the dialog opens (see
+   *  openNewItemDialog()); a stale snapshot just means a chain-creation
+   *  step below fails with a normal collision error, same "no rollback,
+   *  no special-case" tradeoff as rename's identical mechanism. */
+  get newItemMissingAncestors(): string[] {
+    return ItemTreeComponent.computeMissingAncestors(this.newItemFullPath, this.newItemKnownPaths);
+  }
+
+  private newItemKnownPaths = new Set<string>();
 
   openNewItemDialog() {
     this.activeAttributeDialog = 'create';
@@ -839,6 +887,14 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
     this.newItemAttributes = [];
     this.newItemError = '';
     this.newItem_display = true;
+
+    this.itemsApi
+      .getItemList()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((paths) => {
+        this.newItemKnownPaths = new Set(paths as string[]);
+        this.cdr.markForCheck();
+      });
 
     if (this.itemFilenames.length === 0) {
       this.filesApi
@@ -929,8 +985,27 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
 
     const createdPath = this.newItemFullPath;
     this.newItemError = '';
+    // Missing ancestors are auto-created server-side in the same request
+    // (create_missing_parents) — one call, and any collision along the
+    // chain (which can't be reliably checked client-side, it depends on
+    // live Python object introspection) comes back as a normal error on
+    // this same request instead of needing separate per-step handling.
+    this.createLeafItem(createdPath, config, this.newItemMissingAncestors.length > 0);
+  }
+
+  private createLeafItem(
+    createdPath: string,
+    config: Record<string, unknown>,
+    createMissingParents = false,
+  ) {
     this.itemsApi
-      .createItem(createdPath, config, this.newItemPersist, this.newItemFilename || undefined)
+      .createItem(
+        createdPath,
+        config,
+        this.newItemPersist,
+        this.newItemFilename || undefined,
+        createMissingParents,
+      )
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -1128,62 +1203,87 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
   /** Matches Items.rename_item()'s "cannot become a child of itself" message. */
   private static readonly CYCLE_PATTERN = /cannot become a child of itself/;
 
+  /** Walks *path*'s dot-separated ancestor chain (excluding the leaf
+   *  itself, which always gets created fresh, never treated as an
+   *  "ancestor") and returns the ones not present in *known*, shallow to
+   *  deep — the order createItemChain() needs to create them in. */
+  private static computeMissingAncestors(path: string, known: Set<string>): string[] {
+    const segments = path.split('.');
+    segments.pop();
+    const missing: string[] = [];
+    let current = '';
+    for (const segment of segments) {
+      current = current ? current + '.' + segment : segment;
+      if (!known.has(current)) missing.push(current);
+    }
+    return missing;
+  }
+
   private checkMissingAncestors(newPath: string) {
     this.itemsApi
       .getItemList()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((paths) => {
-        const known = new Set(paths as string[]);
-        const segments = newPath.split('.');
-        segments.pop(); // the leaf itself always gets created fresh, never an "ancestor"
-        const missing: string[] = [];
-        let current = '';
-        for (const segment of segments) {
-          current = current ? current + '.' + segment : segment;
-          if (!known.has(current)) missing.push(current);
-        }
-        this.renameItemMissingAncestors = missing;
+        this.renameItemMissingAncestors = ItemTreeComponent.computeMissingAncestors(
+          newPath,
+          new Set(paths as string[]),
+        );
         this.renameItemSubmitting = false;
         this.renameItemConfirmCreateParents_display = true;
         this.cdr.markForCheck();
       });
   }
 
-  /** Structural-only items (type 'foo') matching the moved item's own
-   *  persistence — created in the same file it's already in, so the
-   *  whole chain stays consistent once the rename actually moves it
-   *  underneath them (see ~/.claude/handoff/shng-rename-item-design.md's
-   *  "which file" priority rule on the backend side). */
+  /** Structural-only items (no explicit type — Item.__init__ defaults an
+   *  untyped item to type 'foo' itself, see lib/item/item.py) matching the
+   *  moved item's own persistence — created in the same file it's already
+   *  in, so the whole chain stays consistent once the rename actually
+   *  moves it underneath them (see
+   *  ~/.claude/handoff/shng-rename-item-design.md's "which file" priority
+   *  rule on the backend side). */
   confirmCreateMissingParents() {
     this.renameItemConfirmCreateParents_display = false;
     this.renameItemSubmitting = true;
     const filename = this.itemdetails.filename;
     const persist = !!filename && filename !== 'None';
-    this.createMissingAncestors(
+    this.createItemChain(
       [...this.renameItemMissingAncestors],
       persist,
       persist ? filename : undefined,
+      () => this.attemptRenameItem(),
+      (err: HttpErrorResponse) => {
+        this.renameItemSubmitting = false;
+        this.renameItemError =
+          (err.error?.error as string | undefined) ?? this.translate.instant('ITEMS.RENAME_FAILED');
+        this.cdr.markForCheck();
+      },
     );
   }
 
-  private createMissingAncestors(remaining: string[], persist: boolean, filename?: string) {
+  /** Creates each path in *remaining*, in order (shallow to deep), as an
+   *  empty structural item — used both by rename's missing-ancestor
+   *  recovery and by create-item's up-front path auto-vivification. No
+   *  rollback on a mid-chain failure: whatever was already created stays
+   *  (they're valid, harmless structural items either way — same as if a
+   *  user had created them by hand ahead of time). */
+  private createItemChain(
+    remaining: string[],
+    persist: boolean,
+    filename: string | undefined,
+    onDone: () => void,
+    onError: (err: HttpErrorResponse) => void,
+  ) {
     if (remaining.length === 0) {
-      this.attemptRenameItem();
+      onDone();
       return;
     }
     const [next, ...rest] = remaining;
     this.itemsApi
-      .createItem(next, { type: 'foo' }, persist, filename)
+      .createItem(next, {}, persist, filename)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => this.createMissingAncestors(rest, persist, filename),
-        error: (err: HttpErrorResponse) => {
-          this.renameItemSubmitting = false;
-          this.renameItemError =
-            (err.error?.error as string | undefined) ??
-            this.translate.instant('ITEMS.RENAME_FAILED');
-          this.cdr.markForCheck();
-        },
+        next: () => this.createItemChain(rest, persist, filename, onDone, onError),
+        error: onError,
       });
   }
 
@@ -1199,6 +1299,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
     this.deleteItemCleanupReferences = true;
     this.deleteItemCleanupFailed = false;
     this.deleteItemPersist = this.deleteItemHasFile;
+    this.deleteItemConfirmChildren = false;
     this.deleteItem_display = true;
 
     this.itemsApi
@@ -1243,7 +1344,11 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
 
   private performDelete(path: string) {
     this.itemsApi
-      .deleteItem(path, this.deleteItemPersist)
+      .deleteItem(
+        path,
+        this.deleteItemPersist,
+        this.deleteItemHasChildren && this.deleteItemConfirmChildren,
+      )
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {

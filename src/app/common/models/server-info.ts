@@ -19,6 +19,8 @@ export interface ServerInfo {
   log_chunksize: number;
   developer_mode: boolean;
   click_dropdown_header: boolean;
+  help_local_available: boolean;
+  dark_mode: boolean;
   daemon_knx: string;
   daemon_ow: string;
   daemon_mqtt: string;

@@ -182,6 +182,7 @@ describe('ItemTreeComponent', () => {
     expect(TestBed.inject(ItemsApiService).deleteItem).toHaveBeenCalledWith(
       'a',
       component.deleteItemPersist,
+      false,
     );
   });
 
@@ -198,6 +199,7 @@ describe('ItemTreeComponent', () => {
     expect(TestBed.inject(ItemsApiService).deleteItem).toHaveBeenCalledWith(
       'a',
       component.deleteItemPersist,
+      false,
     );
   });
 
@@ -214,6 +216,7 @@ describe('ItemTreeComponent', () => {
     expect(TestBed.inject(ItemsApiService).deleteItem).toHaveBeenCalledWith(
       'a',
       component.deleteItemPersist,
+      false,
     );
   });
 
@@ -232,6 +235,98 @@ describe('ItemTreeComponent', () => {
 
     expect(component.deleteItemCleanupFailed).toBe(true);
     expect(TestBed.inject(ItemsApiService).deleteItem).not.toHaveBeenCalled();
+  });
+
+  it('deleteItemHasChildren is false when the selected tree node has no children', () => {
+    component.selectedFile = { children: [] } as never;
+    expect(component.deleteItemHasChildren).toBe(false);
+  });
+
+  it('deleteItemHasChildren is false when selectedFile is not set', () => {
+    component.selectedFile = undefined as never;
+    expect(component.deleteItemHasChildren).toBe(false);
+  });
+
+  it('deleteItemHasChildren is true when the selected tree node has children', () => {
+    component.selectedFile = { children: [{ label: 'child' }] } as never;
+    expect(component.deleteItemHasChildren).toBe(true);
+  });
+
+  it('deleteItemDescendantCount is 0 when selectedFile is not set', () => {
+    component.selectedFile = undefined as never;
+    expect(component.deleteItemDescendantCount).toBe(0);
+  });
+
+  it('deleteItemDescendantCount counts the whole subtree, not just direct children', () => {
+    // a chain like create-item's mkdir -p auto-created ancestors:
+    // abd -> cef -> ghi -> jkl -> mno (4 descendants below abd)
+    component.selectedFile = {
+      label: 'abd',
+      children: [
+        {
+          label: 'cef',
+          children: [
+            {
+              label: 'ghi',
+              children: [{ label: 'jkl', children: [{ label: 'mno', children: [] }] }],
+            },
+          ],
+        },
+      ],
+    } as never;
+
+    expect(component.deleteItemDescendantCount).toBe(4);
+  });
+
+  it('deleteItemDescendantCount sums across multiple branches', () => {
+    component.selectedFile = {
+      label: 'root',
+      children: [
+        { label: 'a', children: [{ label: 'a.a', children: [] }] },
+        { label: 'b', children: [] },
+      ],
+    } as never;
+
+    expect(component.deleteItemDescendantCount).toBe(3);
+  });
+
+  it('openDeleteItemDialog() resets deleteItemConfirmChildren to false', () => {
+    component.itemdetails = { path: 'a', filename: 'created' } as never;
+    component.deleteItemConfirmChildren = true;
+
+    component.openDeleteItemDialog();
+
+    expect(component.deleteItemConfirmChildren).toBe(false);
+  });
+
+  it('confirmDeleteItem() passes recursive:true only when the item has children AND the user confirmed', () => {
+    component.itemdetails = { path: 'a', filename: 'created' } as never;
+    component.deleteItemReferences = [];
+    component.selectedFile = { children: [{ label: 'child' }] } as never;
+    component.deleteItemConfirmChildren = true;
+
+    component.confirmDeleteItem();
+
+    expect(TestBed.inject(ItemsApiService).deleteItem).toHaveBeenCalledWith(
+      'a',
+      component.deleteItemPersist,
+      true,
+    );
+  });
+
+  it('confirmDeleteItem() passes recursive:false when the item has children but the user has not confirmed', () => {
+    component.itemdetails = { path: 'a', filename: 'created' } as never;
+    component.deleteItemReferences = [];
+    component.selectedFile = { children: [{ label: 'child' }] } as never;
+    component.deleteItemConfirmChildren = false;
+
+    component.confirmDeleteItem();
+
+    expect(TestBed.inject(ItemsApiService).deleteItem).toHaveBeenCalledWith(
+      'a',
+      component.deleteItemPersist,
+      false,
+    );
   });
 
   it('openEditItemDialog() pre-populates from editable_config, excluding type', () => {
@@ -511,7 +606,7 @@ describe('ItemTreeComponent', () => {
     expect(component.renameItemError).toBe('');
   });
 
-  it('confirmCreateMissingParents() creates each missing ancestor as type foo, then retries the rename', () => {
+  it('confirmCreateMissingParents() creates each missing ancestor as an untyped structural item, then retries the rename', () => {
     component.itemdetails = { path: 'old', filename: 'created' } as never;
     component.renameItemNewPathInput = 'a.b.d.newname';
     component.renameItemMissingAncestors = ['a.b', 'a.b.d'];
@@ -520,8 +615,8 @@ describe('ItemTreeComponent', () => {
 
     component.confirmCreateMissingParents();
 
-    expect(createItemMock).toHaveBeenNthCalledWith(1, 'a.b', { type: 'foo' }, true, 'created');
-    expect(createItemMock).toHaveBeenNthCalledWith(2, 'a.b.d', { type: 'foo' }, true, 'created');
+    expect(createItemMock).toHaveBeenNthCalledWith(1, 'a.b', {}, true, 'created');
+    expect(createItemMock).toHaveBeenNthCalledWith(2, 'a.b.d', {}, true, 'created');
     expect(TestBed.inject(ItemsApiService).renameItem).toHaveBeenCalledWith('old', 'a.b.d.newname');
     expect(component.renameItemConfirmCreateParents_display).toBe(false);
   });
@@ -535,7 +630,7 @@ describe('ItemTreeComponent', () => {
 
     component.confirmCreateMissingParents();
 
-    expect(createItemMock).toHaveBeenCalledWith('a', { type: 'foo' }, false, undefined);
+    expect(createItemMock).toHaveBeenCalledWith('a', {}, false, undefined);
   });
 });
 
@@ -706,7 +801,101 @@ describe('ItemTreeComponent attribute catalog', () => {
       { type: 'str', cache: true, mylist: ['a', 'b'], mydict: { k: 'v' } },
       true,
       undefined,
+      false,
     );
+  });
+
+  it('newItemNameValid: no dot in the full path behaves exactly as the original single-segment check', () => {
+    component.newItemParent = '';
+    component.newItemName = 'mynewitem';
+    expect(component.newItemNameValid).toBe(true);
+
+    component.newItemName = '1invalid';
+    expect(component.newItemNameValid).toBe(false);
+  });
+
+  it('newItemNameValid: every dot-separated segment of the full path must be individually valid', () => {
+    component.newItemParent = '';
+    component.newItemName = 'x.y.newitem';
+    expect(component.newItemNameValid).toBe(true);
+
+    component.newItemName = 'x.1y.newitem';
+    expect(component.newItemNameValid).toBe(false);
+  });
+
+  it('newItemNameValid: an existing multi-level parent contributing the extra dots is also validated', () => {
+    component.newItemParent = 'a.b';
+    component.newItemName = 'newitem';
+    expect(component.newItemNameValid).toBe(true);
+
+    component.newItemName = '';
+    expect(component.newItemNameValid).toBe(false);
+  });
+
+  it('openNewItemDialog() fetches known item paths, newItemMissingAncestors reflects what is actually missing', () => {
+    (TestBed.inject(ItemsApiService).getItemList as jest.Mock) = jest
+      .fn()
+      .mockReturnValue(of(['a', 'a.b']));
+    component.openNewItemDialog();
+    component.newItemParent = 'a.b.c';
+    component.newItemName = 'newitem';
+
+    expect(component.newItemMissingAncestors).toEqual(['a.b.c']);
+  });
+
+  it('submitNewItem() with no missing ancestors creates the item directly, createMissingParents false', () => {
+    component.newItemParent = '';
+    component.newItemName = 'mynewitem';
+
+    component.submitNewItem();
+
+    const createItemMock = TestBed.inject(ItemsApiService).createItem as jest.Mock;
+    expect(createItemMock).toHaveBeenCalledTimes(1);
+    expect(createItemMock).toHaveBeenCalledWith(
+      'mynewitem',
+      { type: 'str' },
+      true,
+      undefined,
+      false,
+    );
+  });
+
+  it('submitNewItem() with missing ancestors makes a single request with createMissingParents true', () => {
+    (TestBed.inject(ItemsApiService).getItemList as jest.Mock) = jest
+      .fn()
+      .mockReturnValue(of(['a']));
+    component.openNewItemDialog();
+    component.newItemParent = 'a.b.c';
+    component.newItemName = 'newitem';
+    component.newItemAttributes = [{ key: 'cache', value: true }];
+
+    const createItemMock = TestBed.inject(ItemsApiService).createItem as jest.Mock;
+    createItemMock.mockReturnValue(of({}));
+
+    component.submitNewItem();
+
+    expect(createItemMock).toHaveBeenCalledTimes(1);
+    expect(createItemMock).toHaveBeenCalledWith(
+      'a.b.c.newitem',
+      { type: 'str', cache: true },
+      true,
+      undefined,
+      true,
+    );
+  });
+
+  it('submitNewItem() surfaces a server-side collision error (e.g. on an auto-created ancestor) as newItemError', () => {
+    (TestBed.inject(ItemsApiService).getItemList as jest.Mock) = jest.fn().mockReturnValue(of([]));
+    component.openNewItemDialog();
+    component.newItemParent = 'a.b';
+    component.newItemName = 'newitem';
+
+    const createItemMock = TestBed.inject(ItemsApiService).createItem as jest.Mock;
+    createItemMock.mockReturnValue(throwError(() => ({ error: { error: 'boom' } })));
+
+    component.submitNewItem();
+
+    expect(component.newItemError).toBe('boom');
   });
 
   it('selectAttributeFromBrowser() fills the first empty row and closes the browser', () => {

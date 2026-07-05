@@ -1,3 +1,4 @@
+import { NgOptimizedImage, UpperCasePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -7,17 +8,14 @@ import {
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Title } from '@angular/platform-browser';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
   faExclamationTriangle,
   faLaptopCode,
   faPauseCircle,
   faPlayCircle,
 } from '@fortawesome/free-solid-svg-icons';
-import { AppConfigService } from '../../common/services/app-config.service';
-
-import { NgOptimizedImage, UpperCasePipe } from '@angular/common';
-import { Title } from '@angular/platform-browser';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { TranslateDirective, TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Bind } from 'primeng/bind';
 import { Dialog } from 'primeng/dialog';
@@ -51,7 +49,6 @@ export class PluginsComponent implements OnInit {
   private pluginsDataService = inject(PluginsApiService);
   private translate = inject(TranslateService);
   private titleService = inject(Title);
-  private appConfig = inject(AppConfigService);
   private readonly log = inject(LogService);
 
   faPlayCircle = faPlayCircle;
@@ -60,7 +57,6 @@ export class PluginsComponent implements OnInit {
   faCode = faLaptopCode; // signal plugin in state "develop"
 
   plugininfo!: PlugininfoType[];
-  developerMode!: boolean;
   loading = true;
 
   sortField = '';
@@ -112,7 +108,6 @@ export class PluginsComponent implements OnInit {
     this.log.log('PluginsComponent.ngOnInit');
 
     this.setTitle(this.translate.instant('MENU.PLUGINS_LIST'));
-    this.developerMode = this.appConfig.developerMode;
     this.getPlugins();
   }
 
@@ -173,17 +168,6 @@ export class PluginsComponent implements OnInit {
 
     this.pluginsDataService
       .setPluginState(pluginConfigName, 'start')
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((response) => {
-        this.getPlugins();
-      });
-  }
-
-  reloadPlugin(pluginConfigName: string) {
-    // this.log.log('reloadPlugin', {pluginConfigName});
-
-    this.pluginsDataService
-      .setPluginState(pluginConfigName, 'reload')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
         this.getPlugins();

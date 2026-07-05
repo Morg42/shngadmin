@@ -54,8 +54,8 @@
 }
 
 @if (!loggerActive) {
-  <td class="py-1" style="color: darkgrey">{{ loggerName }}</td>
-  <td class="py-1" style="color: darkgrey">
+  <td class="py-1 shng-text-muted">{{ loggerName }}</td>
+  <td class="py-1 shng-text-muted">
     <a>{{ logger.active.level }}</a>
     <!--
         <p-select [options]="levelOptions" [showClear]="false" placeholder="{{levelDefault}}" [(ngModel)]="loggers[l].active.level" (ngModelChange)="levelChanged(l, $event)"></p-select>
@@ -63,12 +63,12 @@
   </td>
 
   @if (logger.handlers === undefined || logger.handlers.length === 0) {
-    <td class="py-1" colspan="2" style="color: darkgrey">
+    <td class="py-1 shng-text-muted" colspan="2">
       <a>( --> logger '{{ getParent(loggerName) }}' )</a>
     </td>
   }
   @if (!(logger.handlers === undefined || logger.handlers.length === 0)) {
-    <td class="py-1" style="color: darkgrey">
+    <td class="py-1 shng-text-muted">
       @for (h of logger.handlers; track h; let i = $index) {
         <a>{{ h }}</a>
         @if (h !== '' && i < logger.handlers.length - 1) {
@@ -76,7 +76,7 @@
         }
       }
     </td>
-    <td class="py-1" style="color: darkgrey">
+    <td class="py-1 shng-text-muted">
       @for (ah of logger.active.handlers; track ah; let i = $index) {
         <a>{{ ah }}</a>
         @if (ah !== '' && i < logger.active.handlers.length - 1) {
@@ -115,7 +115,7 @@
       class="btn btn-outline-danger btn-sm mr-1"
       (click)="deleteLogger(loggerName)"
     >
-      <i class="far fa-trash-alt" aria-hidden="true" style="color: var(--shng-red)"></i>
+      <i class="far fa-trash-alt" aria-hidden="true"></i>
     </button>
   }
 </td>
@@ -177,7 +177,7 @@
     <br />
     <span style="display: inline-block; width: 120px">{{ 'LOGGERS.HANDLERS' | translate }}:</span>
     <label style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 10px">
-      <div class="col1" style="border: 0.5px solid lightgrey">
+      <div class="col1" style="border: 0.5px solid var(--shng-border)">
         @for (hndlr of choosableHandlers1; track hndlr.key) {
           <div>
             &nbsp;
@@ -188,7 +188,7 @@
               [disabled]="hndlr.disabled && logger.propagate !== false"
               [inputId]="hndlr.key"
             ></p-checkbox>
-            <label [style.color]="hndlr.disabled && logger.propagate !== false ? 'darkgrey' : null" [for]="hndlr.key">
+            <label [class.shng-text-muted]="hndlr.disabled && logger.propagate !== false" [for]="hndlr.key">
               {{ hndlr.name }}
               @if (hndlr.disabled && logger.propagate !== false) {
                 <span style="font-size: 0.8em">&nbsp;({{ 'LOGGERS.FROM_PARENT' | translate }})</span>
@@ -197,7 +197,7 @@
           </div>
         }
       </div>
-      <div class="col2" style="border: 0.5px solid lightgrey">
+      <div class="col2" style="border: 0.5px solid var(--shng-border)">
         @for (hndlr of choosableHandlers2; track hndlr.key) {
           <div>
             &nbsp;
@@ -208,7 +208,7 @@
               [disabled]="hndlr.disabled && logger.propagate !== false"
               [inputId]="hndlr.key"
             ></p-checkbox>
-            <label [style.color]="hndlr.disabled && logger.propagate !== false ? 'darkgrey' : null" [for]="hndlr.key">
+            <label [class.shng-text-muted]="hndlr.disabled && logger.propagate !== false" [for]="hndlr.key">
               {{ hndlr.name }}
               @if (hndlr.disabled && logger.propagate !== false) {
                 <span style="font-size: 0.8em">&nbsp;({{ 'LOGGERS.FROM_PARENT' | translate }})</span>

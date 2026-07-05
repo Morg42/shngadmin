@@ -127,6 +127,14 @@ export class PluginConfigComponent implements OnInit {
   configuredplugins!: ConfiguredPlugin[];
   cols!: TableColumn[];
 
+  // Getter, not a field set once in ngOnInit: this component isn't OnPush, so
+  // it re-checks on every tick, but AppConfigService.developerMode is only
+  // populated once TopNavigationComponent's getServerinfo() call resolves —
+  // which can race a direct/deep-linked navigation to this route.
+  get developerMode(): boolean {
+    return this.appConfig.developerMode;
+  }
+
   sortField = '';
   sortOrder: 1 | -1 = 1;
 

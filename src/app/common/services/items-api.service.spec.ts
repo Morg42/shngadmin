@@ -260,6 +260,24 @@ describe('ItemsApiService', () => {
     req.flush({ result: 'ok' });
   });
 
+  it('createItem() includes create_missing_parents:true in body when given', () => {
+    service.createItem('a.b.c', { type: 'bool' }, true, undefined, true).subscribe();
+    const req = http.expectOne('/api/items/a.b.c');
+    expect(JSON.parse(req.request.body)).toEqual({
+      config: { type: 'bool' },
+      persist: true,
+      create_missing_parents: true,
+    });
+    req.flush({ result: 'ok' });
+  });
+
+  it('createItem() omits create_missing_parents from body when not given (default false)', () => {
+    service.createItem('home.light.switch', { type: 'bool' }).subscribe();
+    const req = http.expectOne('/api/items/home.light.switch');
+    expect(Object.keys(JSON.parse(req.request.body))).not.toContain('create_missing_parents');
+    req.flush({ result: 'ok' });
+  });
+
   it('createItem() returns the response', () => {
     let result: unknown;
     service.createItem('home.light.switch', { type: 'bool' }).subscribe((r) => (result = r));
@@ -371,21 +389,29 @@ describe('ItemsApiService', () => {
 
   it('deleteItem() sends DELETE /api/items/{itemPath}?persist=true by default', () => {
     service.deleteItem('home.light.switch').subscribe();
-    const req = http.expectOne('/api/items/home.light.switch?persist=true');
+    const req = http.expectOne('/api/items/home.light.switch?persist=true&recursive=false');
     expect(req.request.method).toBe('DELETE');
     req.flush({ result: 'ok' });
   });
 
   it('deleteItem() sends persist=false as a query param when given', () => {
     service.deleteItem('home.light.switch', false).subscribe();
-    const req = http.expectOne('/api/items/home.light.switch?persist=false');
+    const req = http.expectOne('/api/items/home.light.switch?persist=false&recursive=false');
+    req.flush({ result: 'ok' });
+  });
+
+  it('deleteItem() sends recursive=true as a query param when given', () => {
+    service.deleteItem('home.light.switch', true, true).subscribe();
+    const req = http.expectOne('/api/items/home.light.switch?persist=true&recursive=true');
     req.flush({ result: 'ok' });
   });
 
   it('deleteItem() returns the response', () => {
     let result: unknown;
     service.deleteItem('home.light.switch').subscribe((r) => (result = r));
-    http.expectOne('/api/items/home.light.switch?persist=true').flush({ result: 'ok' });
+    http
+      .expectOne('/api/items/home.light.switch?persist=true&recursive=false')
+      .flush({ result: 'ok' });
     expect(result).toEqual({ result: 'ok' });
   });
 
@@ -395,7 +421,7 @@ describe('ItemsApiService', () => {
       error: (e) => (error = e),
     });
     http
-      .expectOne('/api/items/home.light.switch?persist=true')
+      .expectOne('/api/items/home.light.switch?persist=true&recursive=false')
       .flush({ error: 'refused' }, { status: 409, statusText: 'Conflict' });
     expect(error).toBeTruthy();
   });

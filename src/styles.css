@@ -46,12 +46,18 @@ input::-webkit-inner-spin-button {
   --shng-green: green;
   --shng-warning: #e3d304;
   --shng-orange: #ff8000;
+  /* Disruptive-but-not-destructive action buttons (stop/unload a plugin,
+     restart SmartHomeNG) — deliberately distinct from --shng-orange
+     (already used app-wide for error/warning TEXT) so a routine
+     operational button doesn't read as an alarm. */
+  --shng-amber: #c9820c;
 
   --shng-disabled: #bbb;
   --shng-border: #dee2e5;
   --shng-secondary-button: #e0e0e0;
   --shng-toggle-off: #a9a9a9;
   --shng-cell-alt-bg: #f7f7f7;
+  --shng-page-bg: #ffffff; /* page/tree/card surfaces */
 
   /* ── Typography ─────────────────────────────── */
   --font-family-base:
@@ -101,6 +107,7 @@ body {
   font-weight: var(--font-weight-normal);
   line-height: var(--line-height-base);
   color: var(--text-primary);
+  background-color: var(--shng-page-bg);
   min-width: 600px; /* prevent layout collapse on narrow viewports; viewport scrollbar handles the rest */
   overflow-x: auto; /* show horizontal scrollbar when content exceeds viewport width */
 }
@@ -173,7 +180,7 @@ dl {
 /* Mimics the p-tablist bar: sits above .shng-page-body and provides
    the same visual breathing room as a real tab row. */
 .shng-page-header {
-  background: #ffffff;
+  background: var(--shng-page-bg);
   border-bottom: 1px solid var(--shng-border);
   display: flex;
   align-items: center;
@@ -188,7 +195,7 @@ dl {
 /* Mimics the p-tabpanel area: l / r / b border, no top border
    (the page-header's bottom border acts as the visual divider). */
 .shng-page-body {
-  background: #ffffff;
+  background: var(--shng-page-bg);
   border: 1px solid var(--shng-border);
   border-top: 0;
   overflow: auto;
@@ -279,16 +286,42 @@ textarea {
 .ui-button-success {
   background-color: var(--shng-blue) !important;
 }
+.ui-button-success:hover:not([disabled]) {
+  background-color: #286090 !important;
+  border-color: #204d74 !important;
+}
 
 .ui-button-secondary {
   background-color: var(--shng-secondary-button) !important;
   border-color: #cccccc !important;
   color: #555555 !important;
 }
+.ui-button-secondary:hover:not([disabled]) {
+  background-color: #868e96 !important;
+  border-color: #868e96 !important;
+  color: #fff !important;
+}
 
 .ui-button-danger {
   background-color: var(--shng-red) !important;
   border-color: #cccccc !important;
+}
+.ui-button-danger:hover:not([disabled]) {
+  background-color: #8f0606 !important;
+  border-color: #8f0606 !important;
+}
+
+/* Disruptive-but-not-destructive actions (reload/unload a running plugin
+   or logic, restart SmartHomeNG) — a middle step between confirm (blue)
+   and delete (red). */
+.ui-button-warning {
+  background-color: var(--shng-amber) !important;
+  border-color: var(--shng-amber) !important;
+  color: #fff !important;
+}
+.ui-button-warning:hover:not([disabled]) {
+  background-color: #9c6709 !important;
+  border-color: #9c6709 !important;
 }
 
 .ui-button-secondary2 {
@@ -708,18 +741,18 @@ a.text-shng:hover {
 .table {
   width: 100%;
   margin-bottom: 1rem;
-  color: #212529;
+  color: var(--text-primary);
   border-collapse: collapse;
 }
 .table th,
 .table td {
   padding: 0.75rem;
   vertical-align: middle;
-  border-top: 1px solid #dee2e6;
+  border-top: 1px solid var(--shng-border);
 }
 .table thead th {
   vertical-align: bottom;
-  border-bottom: 2px solid #dee2e6;
+  border-bottom: 2px solid var(--shng-border);
 }
 .table-striped tbody tr:nth-of-type(odd) {
   background-color: rgba(0, 0, 0, 0.05);
@@ -737,7 +770,7 @@ a.text-shng:hover {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  background-color: #fff;
+  background-color: var(--shng-page-bg);
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 0.25rem;
 }
@@ -765,9 +798,9 @@ a.text-shng:hover {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-normal);
   line-height: var(--line-height-base);
-  color: #495057;
-  background-color: #fff;
-  border: 1px solid #ced4da;
+  color: var(--text-primary);
+  background-color: var(--shng-page-bg);
+  border: 1px solid var(--shng-border);
   border-radius: 0.25rem;
 }
 .form-control:focus {
@@ -839,25 +872,36 @@ a.text-shng:hover {
 }
 
 .btn-outline-danger {
-  color: #dc3545;
+  color: var(--shng-red);
   background-color: transparent;
-  border-color: #dc3545;
+  border-color: var(--shng-red);
 }
 .btn-outline-danger:hover:not([disabled]) {
   color: #fff;
-  background-color: #dc3545;
-  border-color: #dc3545;
+  background-color: var(--shng-red);
+  border-color: var(--shng-red);
 }
 
 .btn-outline-primary {
-  color: #007bff;
+  color: var(--shng-blue);
   background-color: transparent;
-  border-color: #007bff;
+  border-color: var(--shng-blue);
 }
 .btn-outline-primary:hover:not([disabled]) {
   color: #fff;
-  background-color: #007bff;
-  border-color: #007bff;
+  background-color: var(--shng-blue);
+  border-color: var(--shng-blue);
+}
+
+.btn-outline-warning {
+  color: var(--shng-amber);
+  background-color: transparent;
+  border-color: var(--shng-amber);
+}
+.btn-outline-warning:hover:not([disabled]) {
+  color: #fff;
+  background-color: var(--shng-amber);
+  border-color: var(--shng-amber);
 }
 
 .btn-outline {
@@ -882,12 +926,12 @@ a.text-shng:hover {
    CDK virtual-scroll viewport; forcing overflow:visible on it (as below,
    for the normal case) breaks its ability to scroll at all. */
 .p-tree-root:not(.p-virtualscroller) {
-  background: #ffffff;
+  background: var(--shng-page-bg);
   overflow: visible !important; /* PrimeNG injects overflow:auto — prevent inner scrollbar */
 }
 
 .p-tree-root.p-virtualscroller {
-  background: #ffffff;
+  background: var(--shng-page-bg);
 }
 
 .p-tree-node-content {
@@ -899,7 +943,7 @@ a.text-shng:hover {
 }
 
 .p-tree-node-content.p-highlight {
-  background-color: #709cc2;
+  background-color: var(--shng-blue);
   color: #ffffff;
 }
 
@@ -1087,13 +1131,13 @@ a.text-shng:hover {
 
 /* Code editor wrapper areas: visible border */
 .items-fileeditor {
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--shng-border);
   border-radius: 4px;
 }
 
 .editor-area,
 .tab-editor-area {
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--shng-border);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -1177,6 +1221,75 @@ a.text-shng:hover {
 }
 .shng-cell-alt {
   background-color: var(--shng-cell-alt-bg);
+}
+
+/* ================================================================
+   Dark mode
+   Applied via a `dark-mode` class on <html> (ThemeService). PrimeNG's
+   own component tokens are handled separately via the preset's
+   darkModeSelector (main.ts) — this section only covers app-owned
+   semantic variables plus the handful of hardcoded light-only colours
+   (mostly black-tint rgba() overlays, which read as barely-visible on
+   a dark background and need a white-tint equivalent instead).
+   Deliberately does NOT touch: brand-coloured buttons (.ui-button-*,
+   .btn-shng-*) — already high-contrast on both backgrounds — or the
+   "legacy" .ui-table/plugin-webinterface sections, which exist for
+   markup injected by third-party plugin webinterfaces, not this app.
+   ================================================================ */
+.dark-mode {
+  color-scheme: dark;
+
+  --shng-page-bg: #1e1e1e;
+  --shng-border: #444444;
+  --shng-disabled: #5a5a5a;
+  --shng-secondary-button: #3a3a3a;
+  --shng-toggle-off: #666666;
+  --shng-cell-alt-bg: #272727;
+
+  --text-primary: #e0e0e0;
+  --text-secondary: #c0c0c0;
+  --text-muted: #9a9a9a;
+  --text-caption: #a0a0a0;
+  --text-placeholder: #6b6b6b;
+  --text-link: #6fa8dc;
+}
+
+.dark-mode .ui-button-secondary {
+  color: #ddd !important;
+}
+
+.dark-mode .table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .card,
+.dark-mode .card-header,
+.dark-mode .item-box {
+  border-color: rgba(255, 255, 255, 0.125);
+}
+.dark-mode .card-header {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+.dark-mode .item-box {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.dark-mode .table .shng_heading th {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark-mode .p-accordionheader {
+  background-color: rgba(255, 255, 255, 0.09) !important;
+}
+.dark-mode .p-accordionheader:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+.dark-mode .p-accordionheader[data-p-active='true']:hover {
+  background-color: rgba(255, 255, 255, 0.09) !important;
+}
+
+.dark-mode .sortable-th:hover {
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 /* ================================================================

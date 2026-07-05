@@ -227,4 +227,20 @@ describe('FilesApiService', () => {
       .flush({ error: 'err' }, { status: 500, statusText: 'Server Error' });
     expect(result).toEqual({});
   });
+
+  it('getfileList() strips "._*" AppleDouble sidecar files from a plain array response', () => {
+    let result: unknown;
+    service.getfileList('items').subscribe((r) => (result = r));
+    http.expectOne('/api/files/items/').flush(['foo.yaml', '._foo.yaml', 'bar.yaml']);
+    expect(result).toEqual(['foo.yaml', 'bar.yaml']);
+  });
+
+  it('getfileList() strips "._*" AppleDouble sidecar files from a {dir, files} response', () => {
+    let result: unknown;
+    service.getfileList('structs').subscribe((r) => (result = r));
+    http
+      .expectOne('/api/files/structs/')
+      .flush({ dir: '/etc/structs', files: ['a.yaml', '._a.yaml'] });
+    expect(result).toEqual({ dir: '/etc/structs', files: ['a.yaml'] });
+  });
 });

@@ -49,6 +49,9 @@ export function createMockAppConfigService() {
     itemtreeFullpath: true,
     itemtreeSearchstart: 3,
     developerMode: false,
+    helpLocalAvailable: false,
+    coreBranch: 'master',
+    pluginsBranch: 'master',
     config$: new BehaviorSubject({
       loginRequired: null,
       apiUrl: '/api/',
@@ -67,6 +70,7 @@ export function createMockAppConfigService() {
       itemtreeSearchstart: 3,
       developerMode: false,
       clickDropdownHeader: true,
+      helpLocalAvailable: false,
       fallbackLanguageOrder: ['en', 'de'],
       dataUrl: '',
     }).asObservable(),

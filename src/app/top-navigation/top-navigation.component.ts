@@ -12,13 +12,15 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { filter } from 'rxjs/operators';
 import { AppConfigService } from '../common/services/app-config.service';
 import { AuthService } from '../common/services/auth.service';
 import { LogService } from '../common/services/log.service';
 import { ServerApiService } from '../common/services/server-api.service';
 import { SharedService } from '../common/services/shared.service';
+import { ThemeService } from '../common/services/theme.service';
 
 interface MenuEntry {
   label: string;
@@ -30,6 +32,21 @@ interface MenuItem {
   visible: boolean;
   items: MenuEntry[];
 }
+
+// Maps the first URL segment (Angular route) to the matching Sphinx docs
+// page under doc/user/source/admin/*.rst, so the Help link opens the page
+// relevant to whatever section of the AdminUI the user is currently in.
+const HELP_PAGE_BY_ROUTE: Record<string, string> = {
+  system: 'system',
+  services: 'dienste',
+  items: 'items',
+  logics: 'logiken',
+  schedulers: 'scheduler',
+  threads: 'threads',
+  plugins: 'plugins',
+  scenes: 'scenes',
+  logs: 'logs',
+};
 
 @Component({
   selector: 'app-top-navigation',
@@ -51,6 +68,7 @@ export class TopNavigationComponent implements OnInit {
   private readonly log = inject(LogService);
   private readonly renderer = inject(Renderer2);
   private readonly el = inject(ElementRef);
+  protected theme = inject(ThemeService);
 
   @ViewChild('topnav') private topnavEl!: ElementRef<HTMLElement>;
 
@@ -59,7 +77,6 @@ export class TopNavigationComponent implements OnInit {
   loggedIn = false;
   loginRequired = false;
 
-  developerMode = false;
   isTouchDevice = false;
 
   constructor() {
@@ -75,8 +92,8 @@ export class TopNavigationComponent implements OnInit {
       .getServerinfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
-        this.developerMode = this.appConfig.developerMode;
         this.isTouchDevice = !this.appConfig.clickDropdownHeader;
+        this.theme.applyServerDefault();
 
         this.setTitle(this.translate.instant('SmartHomeNG'));
 
@@ -110,6 +127,24 @@ export class TopNavigationComponent implements OnInit {
       if (this.translate.currentLang) {
         this.buildMenu();
       }
+      this.cdr.markForCheck();
+    });
+
+    // The Help link's URL depends on the current route (context-sensitive help).
+    // This component is OnPush and otherwise only marks for check on login/lang
+    // changes, so without this the Help link would go stale after navigating.
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => this.cdr.markForCheck());
+
+    // Keep the toggle's own icon/label in sync — ThemeService can be changed
+    // from applyServerDefault() above (async, after this component's own
+    // click-triggered checks have already run) or, in principle, from
+    // elsewhere entirely.
+    this.theme.darkMode$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.cdr.markForCheck();
     });
 
@@ -299,5 +334,37 @@ export class TopNavigationComponent implements OnInit {
       this.router.navigate(['/login']);
       this.authService.logout();
     }
+  }
+
+  get helpLocalAvailable(): boolean {
+    return this.appConfig.helpLocalAvailable;
+  }
+
+  // The develop-branch docs are only relevant if the running instance is
+  // actually on unreleased code — independent of developer mode, which
+  // just controls exposure of advanced/riskier UI controls.
+  get nonMasterBranch(): boolean {
+    return this.appConfig.coreBranch !== 'master' || this.appConfig.pluginsBranch !== 'master';
+  }
+
+  private get helpPage(): string {
+    const segment = this.router.url.split('/')[1];
+    return HELP_PAGE_BY_ROUTE[segment] ?? 'admin';
+  }
+
+  get helpUrlOfficial(): string {
+    return `https://smarthomeng.github.io/smarthome/admin/${this.helpPage}.html`;
+  }
+
+  get helpUrlLocal(): string {
+    return new URL(`help/admin/${this.helpPage}.html`, document.baseURI).toString();
+  }
+
+  get helpUrlDev(): string {
+    return `https://smarthomeng.github.io/dev_doc/admin/${this.helpPage}.html`;
+  }
+
+  get helpUrl(): string {
+    return this.helpLocalAvailable ? this.helpUrlLocal : this.helpUrlOfficial;
   }
 }

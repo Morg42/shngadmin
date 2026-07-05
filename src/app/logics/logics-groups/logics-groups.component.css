@@ -205,7 +205,7 @@
   height: 120px;
   overflow: auto;
   border: 1px solid var(--shng-border);
-  background-color: white;
+  background-color: var(--shng-page-bg);
 }
 
 .description-text {

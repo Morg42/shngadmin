@@ -2,6 +2,7 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
   EventEmitter,
   HostBinding,
@@ -16,6 +17,7 @@ import {
   ViewEncapsulation,
   inject,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   CompletionContext,
   CompletionResult,
@@ -46,6 +48,7 @@ import {
   Extension,
   Transaction,
 } from '@codemirror/state';
+import { oneDark } from '@codemirror/theme-one-dark';
 import {
   EditorView,
   KeyBinding,
@@ -57,6 +60,7 @@ import {
   keymap,
   lineNumbers,
 } from '@codemirror/view';
+import { ThemeService } from '../../services/theme.service';
 
 export type CmLanguage = 'python' | 'yaml' | 'javascript' | 'xml' | 'text';
 export type CmCompletionSource = (
@@ -92,6 +96,8 @@ export type CmCompletionSource = (
 export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   private readonly el = inject(ElementRef);
   private readonly zone = inject(NgZone);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly themeService = inject(ThemeService);
 
   @ViewChild('host', { static: true }) private hostRef!: ElementRef<HTMLDivElement>;
 
@@ -127,6 +133,7 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
   private lineNumComp = new Compartment();
   private lineWrapComp = new Compartment();
   private completionComp = new Compartment();
+  private themeComp = new Compartment();
 
   private _view?: EditorView;
 
@@ -165,6 +172,12 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
     });
     document.addEventListener('keydown', this._onDocKeydown, true);
     document.addEventListener('fullscreenchange', this._onFullscreenChange);
+
+    this.themeService.darkMode$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this._view?.dispatch({
+        effects: this.themeComp.reconfigure(this._themeExtension()),
+      });
+    });
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -299,6 +312,15 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
     return autocompletion({ override: [this.completionSource] });
   }
 
+  /** oneDark bundles its own colour theme + syntax highlighting; the default
+   * highlighting is only correct against a light background, so the two are
+   * swapped as a pair rather than layered. */
+  private _themeExtension(): Extension {
+    return this.themeService.darkMode
+      ? oneDark
+      : syntaxHighlighting(defaultHighlightStyle, { fallback: true });
+  }
+
   private _buildState(doc: string): EditorState {
     const self = this;
     const useSpacesForTab = this.language === 'yaml' || this.language === 'python';
@@ -369,7 +391,7 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
       this.lineWrapComp.of(this._lineWrapping ? EditorView.lineWrapping : []),
       this.completionComp.of(this._completionExtension()),
       this._languageExtension(),
-      syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+      this.themeComp.of(this._themeExtension()),
       history(),
       drawSelection(),
       highlightSpecialChars(),

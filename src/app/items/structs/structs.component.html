@@ -48,7 +48,7 @@
                           style="margin-right: 5px; margin-bottom: 4px"
                           icon="fa fa-folder"
                           (click)="collapseAll(displayTrees[struct], struct)"
-                          class="ui-button-success"
+                          class="ui-button-secondary"
                         ></button>
                         <button
                           pButton
@@ -57,7 +57,7 @@
                           style="margin-right: 5px; margin-bottom: 4px"
                           icon="fa fa-folder-open"
                           (click)="expandAll(displayTrees[struct], struct)"
-                          class="ui-button-success"
+                          class="ui-button-secondary"
                         ></button>
 
                         <p-tree
@@ -95,8 +95,8 @@
           }
 
           @if (structExpanded[struct] === true) {
-            <button pButton label="{{ 'ITEMS.REDUCE ALL'|translate }}" type="button" style="margin-right: 5px" icon="fa fa-folder" (click)="$event.stopPropagation(); collapseAll(displayTrees[struct])" class="float-sm-right ui-button-success"></button>
-            <button pButton label="{{ 'ITEMS.EXPAND ALL'|translate }}" type="button" style="margin-right: 5px" icon="fa fa-folder-open" (click)="$event.stopPropagation(); expandAll(displayTrees[struct])" class="float-sm-right ui-button-success"></button>
+            <button pButton label="{{ 'ITEMS.REDUCE ALL'|translate }}" type="button" style="margin-right: 5px" icon="fa fa-folder" (click)="$event.stopPropagation(); collapseAll(displayTrees[struct])" class="float-sm-right ui-button-secondary"></button>
+            <button pButton label="{{ 'ITEMS.EXPAND ALL'|translate }}" type="button" style="margin-right: 5px" icon="fa fa-folder-open" (click)="$event.stopPropagation(); expandAll(displayTrees[struct])" class="float-sm-right ui-button-secondary"></button>
           }
 
         </ng-template>

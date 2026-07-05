@@ -89,8 +89,9 @@
             }
           </th>
           <th style="border: 0">{{ 'PLUGIN.DESCRIPTION' | translate }}</th>
-          <th style="width: 110px; border: 0; text-align: center"></th>
-          <th style="width: 110px; border: 0; text-align: center"></th>
+          @if (developerMode) {
+            <th style="width: 110px; border: 0; text-align: right">{{ 'PLUGIN.ACTIONS' | translate }}</th>
+          }
         </tr>
       </thead>
       <tbody>
@@ -133,43 +134,38 @@
             </td>
             <td [style.opacity]="row.loaded ? '1' : '0.5'">{{ row['instance'] }}</td>
             <td [style.opacity]="row.loaded ? '1' : '0.5'"><div [innerHTML]="row['desc']"></div></td>
-            <td style="text-align: center; white-space: nowrap" (click)="$event.stopPropagation()">
-              @if (!row.loaded) {
-                <button
-                  pButton
-                  type="button"
-                  icon="fa fa-upload"
-                  (click)="loadPlugin(row.confname)"
-                  label="{{ 'BUTTON.LOAD' | translate }}"
-                  class="ui-button-success btn-sm shng-text-sm"
-                  style="width: 8em"
-                ></button>
-              }
-              @if (row.loaded) {
-                <button
-                  pButton
-                  type="button"
-                  icon="fa fa-sync"
-                  (click)="reloadPlugin(row.confname)"
-                  label="{{ 'BUTTON.RELOAD' | translate }}"
-                  class="ui-button-warning btn-sm shng-text-sm"
-                  style="width: 8em"
-                ></button>
-              }
-            </td>
-            <td style="text-align: center; white-space: nowrap" (click)="$event.stopPropagation()">
-              @if (row.loaded) {
-                <button
-                  pButton
-                  type="button"
-                  icon="fa fa-eject"
-                  (click)="unloadPlugin(row.confname)"
-                  label="{{ 'BUTTON.UNLOAD' | translate }}"
-                  class="ui-button-secondary btn-sm"
-                  class="shng-text-sm"
-                ></button>
-              }
-            </td>
+            @if (developerMode) {
+              <td style="text-align: right; white-space: nowrap" (click)="$event.stopPropagation()">
+                @if (!row.loaded) {
+                  <button
+                    name="load"
+                    title="{{ 'BUTTON.LOAD' | translate }}"
+                    class="btn btn-outline-primary btn-sm mr-1"
+                    (click)="loadPlugin(row.confname)"
+                  >
+                    <i class="fas fa-upload"></i>
+                  </button>
+                }
+                @if (row.loaded) {
+                  <button
+                    name="reload"
+                    title="{{ 'BUTTON.RELOAD' | translate }}"
+                    class="btn btn-outline-warning btn-sm mr-1"
+                    (click)="reloadPlugin(row.confname)"
+                  >
+                    <i class="fas fa-sync"></i>
+                  </button>
+                  <button
+                    name="unload"
+                    title="{{ 'BUTTON.UNLOAD' | translate }}"
+                    class="btn btn-outline-warning btn-sm mr-1"
+                    (click)="unloadPlugin(row.confname)"
+                  >
+                    <i class="fas fa-eject"></i>
+                  </button>
+                }
+              </td>
+            }
           </tr>
         }
       </tbody>
@@ -322,7 +318,7 @@
           label="{{ 'BUTTON.DELETE' | translate }}"
           class="ui-button-danger float-sm-left"
         ></button>
-        @if (rowclicked_foredit && !rowclicked_foredit.loaded) {
+        @if (developerMode && rowclicked_foredit && !rowclicked_foredit.loaded) {
           <button
             pButton
             type="button"
@@ -332,7 +328,7 @@
             class="ui-button-success float-sm-left"
           ></button>
         }
-        @if (rowclicked_foredit && rowclicked_foredit.loaded) {
+        @if (developerMode && rowclicked_foredit && rowclicked_foredit.loaded) {
           <button
             pButton
             type="button"
@@ -347,7 +343,7 @@
             icon="fa fa-eject"
             (click)="unloadPlugin()"
             label="{{ 'BUTTON.UNLOAD' | translate }}"
-            class="ui-button-secondary float-sm-left"
+            class="ui-button-warning float-sm-left"
           ></button>
         }
       }

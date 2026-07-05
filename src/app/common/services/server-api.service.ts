@@ -149,6 +149,8 @@ export class ServerApiService {
           pluginsBranch: this.shng_serverinfo.plugins_branch,
           developerMode: this.shng_serverinfo.developer_mode,
           clickDropdownHeader: this.shng_serverinfo.click_dropdown_header,
+          helpLocalAvailable: this.shng_serverinfo.help_local_available,
+          darkModeDefault: this.shng_serverinfo.dark_mode,
           fallbackLanguageOrder: fallbackOrder,
           wsHost: this._resolveWsHost(this.shng_serverinfo.websocket_host),
           wsPort: this.shng_serverinfo.websocket_port ?? '',

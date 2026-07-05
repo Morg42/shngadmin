@@ -9,7 +9,7 @@ export interface UserPreferences {
    * Never written by the user — overwritten by every successful server response.
    */
   cachedServerLanguage?: string;
-  /** Reserved for a future dark-mode toggle. */
+  /** Dark mode, chosen via the title-bar toggle. Undefined = follow the server's canonical default. */
   darkMode?: boolean;
 }
 
@@ -54,6 +54,11 @@ export class UserPreferencesService {
     return this.prefs.cachedServerLanguage;
   }
 
+  /** Saved dark-mode preference, or undefined if the user hasn't chosen one. */
+  get darkMode(): boolean | undefined {
+    return this.prefs.darkMode;
+  }
+
   // ----------------------------------------------------------------
   // Writes
   // ----------------------------------------------------------------
@@ -66,6 +71,11 @@ export class UserPreferencesService {
   /** Called after a successful server response to persist the server's preferred language. */
   cacheServerLanguage(lang: string): void {
     this.prefs = { ...this.prefs, cachedServerLanguage: lang };
+    this.persist();
+  }
+
+  setDarkMode(darkMode: boolean): void {
+    this.prefs = { ...this.prefs, darkMode };
     this.persist();
   }
 

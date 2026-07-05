@@ -30,6 +30,11 @@ export interface AppConfig {
   itemtreeSearchstart: number;
   developerMode: boolean;
   clickDropdownHeader: boolean;
+  helpLocalAvailable: boolean;
+  // Server-side canonical default (etc/module.yaml admin: dark_mode). Seeds
+  // the theme for browsers that haven't set a local override yet — see
+  // ThemeService for the local-preference layer that takes precedence.
+  darkModeDefault: boolean;
   fallbackLanguageOrder: string[];
 
   // Language (may be updated by the user at runtime)
@@ -54,6 +59,8 @@ const DEFAULT_CONFIG: AppConfig = {
   itemtreeSearchstart: 3,
   developerMode: false,
   clickDropdownHeader: true,
+  helpLocalAvailable: false,
+  darkModeDefault: false,
   fallbackLanguageOrder: ['en', 'de'],
   defaultLanguage: 'en',
 };
@@ -140,6 +147,18 @@ export class AppConfigService {
   }
   get developerMode(): boolean {
     return this.snapshot.developerMode;
+  }
+  get helpLocalAvailable(): boolean {
+    return this.snapshot.helpLocalAvailable;
+  }
+  get darkModeDefault(): boolean {
+    return this.snapshot.darkModeDefault;
+  }
+  get coreBranch(): string {
+    return this.snapshot.coreBranch;
+  }
+  get pluginsBranch(): string {
+    return this.snapshot.pluginsBranch;
   }
   get clickDropdownHeader(): boolean {
     return this.snapshot.clickDropdownHeader;

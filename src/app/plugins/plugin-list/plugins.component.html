@@ -69,9 +69,7 @@
             </th>
             <th style="width: 40px; border-top: 0">{{ 'PLUGIN.WEBIF' | translate }}</th>
             <th style="min-width: 160px; width: 220px; border-top: 0">{{ 'PLUGIN.HELP' | translate }}</th>
-            @if (developerMode) {
-              <th style="min-width: 100px; width: 200px; border-top: 0">{{ 'PLUGIN.ACTIONS' | translate }}</th>
-            }
+            <th style="min-width: 100px; width: 200px; border-top: 0">{{ 'PLUGIN.ACTIONS' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -80,14 +78,14 @@
               <td class="py-1">
                 @if (plugin.stopped === true) {
                   <fa-icon
-                    style="color: red"
+                    style="color: var(--shng-red)"
                     [icon]="faPauseCircle"
                     title="{{ 'PLUGIN.DISABLED' | translate }}"
                   ></fa-icon>
                 }
                 @if (plugin.stopped !== true) {
                   <fa-icon
-                    style="color: green"
+                    style="color: var(--shng-green)"
                     [icon]="faPlayCircle"
                     title="{{ 'PLUGIN.ENABLED' | translate }}"
                   ></fa-icon>
@@ -235,49 +233,29 @@
                 }
               </td>
 
-              @if (developerMode) {
-                <td class="py-1" (click)="$event.stopPropagation()">
-                  @if (plugin.stoppable) {
-                    @if (plugin.stopped) {
-                      <button
-                        disabled="true"
-                        name="reload"
-                        title="{{ 'PLUGIN.RELOAD' | translate }}"
-                        class="btn btn-outline-dark btn-sm mr-1"
-                        (click)="reloadPlugin(plugin.configname)"
-                      >
-                        <i class="fas fa-sync"></i>
-                      </button>
-                      <button
-                        name="enable"
-                        title="{{ 'PLUGIN.START' | translate }}"
-                        class="btn btn-outline-dark btn-sm mr-1"
-                        (click)="startPlugin(plugin.configname)"
-                      >
-                        <i class="fas fa-play"></i>
-                      </button>
-                    } @else {
-                      <button
-                        disabled="true"
-                        name="reload"
-                        title="{{ 'PLUGIN.RELOAD' | translate }}"
-                        class="btn btn-outline-dark btn-sm mr-1"
-                        (click)="reloadPlugin(plugin.configname)"
-                      >
-                        <i class="fas fa-sync"></i>
-                      </button>
-                      <button
-                        name="disable"
-                        title="{{ 'PLUGIN.STOP' | translate }}"
-                        class="btn btn-outline-dark btn-sm mr-1"
-                        (click)="stopPlugin(plugin.configname)"
-                      >
-                        <i class="fas fa-pause"></i>
-                      </button>
-                    }
+              <td class="py-1" (click)="$event.stopPropagation()">
+                @if (plugin.stoppable) {
+                  @if (plugin.stopped) {
+                    <button
+                      name="enable"
+                      title="{{ 'PLUGIN.START' | translate }}"
+                      class="btn btn-outline-primary btn-sm mr-1"
+                      (click)="startPlugin(plugin.configname)"
+                    >
+                      <i class="fas fa-play"></i>
+                    </button>
+                  } @else {
+                    <button
+                      name="disable"
+                      title="{{ 'PLUGIN.STOP' | translate }}"
+                      class="btn btn-outline-warning btn-sm mr-1"
+                      (click)="stopPlugin(plugin.configname)"
+                    >
+                      <i class="fas fa-pause"></i>
+                    </button>
                   }
-                </td>
-              }
+                }
+              </td>
             </tr>
           }
         </tbody>

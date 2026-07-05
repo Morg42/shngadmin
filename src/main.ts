@@ -110,6 +110,10 @@ bootstrapApplication(AppComponent, {
     TranslateService,
     provideAnimationsAsync(),
     provideHttpClient(withInterceptorsFromDi(), withInterceptors([connectivityInterceptor])),
-    providePrimeNG({ theme: { preset: ShngPreset, options: { darkModeSelector: false } } }),
+    // '.dark-mode' (rather than the default 'system'/media-query-driven
+    // selector) since dark mode here is an explicit user/admin choice, not
+    // OS-preference-driven — see ThemeService, which toggles this class on
+    // <html>.
+    providePrimeNG({ theme: { preset: ShngPreset, options: { darkModeSelector: '.dark-mode' } } }),
   ],
 }).catch((err) => console.log(err));

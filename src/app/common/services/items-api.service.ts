@@ -90,14 +90,27 @@ export class ItemsApiService {
     );
   }
 
-  /** No catchError — callers need the real error (e.g. duplicate path) to react to.
-   *  filename is left out of the body entirely (rather than sent as '') when undefined,
-   *  so the backend's own default (sh._created_items_file) applies cleanly. */
-  createItem(itemPath: string, config: Record<string, unknown>, persist = true, filename?: string) {
+  /** No catchError — callers need the real error (e.g. duplicate path, or a
+   *  name collision on an auto-created ancestor) to react to. filename is
+   *  left out of the body entirely (rather than sent as '') when
+   *  undefined, so the backend's own default (sh._created_items_file)
+   *  applies cleanly. createMissingParents auto-creates the whole missing
+   *  ancestor chain server-side (each as an empty item) instead of the
+   *  default 400 on a missing immediate parent. */
+  createItem(
+    itemPath: string,
+    config: Record<string, unknown>,
+    persist = true,
+    filename?: string,
+    createMissingParents = false,
+  ) {
     const url = this.appConfig.apiUrl + 'items/' + itemPath;
     const body: Record<string, unknown> = { config, persist };
     if (filename) {
       body['filename'] = filename;
+    }
+    if (createMissingParents) {
+      body['create_missing_parents'] = true;
     }
     return this.http.post(url, JSON.stringify(body)).pipe(map((response) => response));
   }
@@ -126,11 +139,20 @@ export class ItemsApiService {
       .pipe(map((response) => response as ItemRenameResult));
   }
 
-  /** No catchError — callers need the real error (e.g. plugin refused removal) to react to.
-   *  persist is sent as a query param, not a JSON body — cherrypy doesn't run its
-   *  normal body-processing for DELETE requests, so a body would never be read. */
-  deleteItem(itemPath: string, persist = true) {
-    const url = this.appConfig.apiUrl + 'items/' + itemPath + '?persist=' + persist;
+  /** No catchError — callers need the real error (e.g. plugin refused
+   *  removal, or the item has sub-items and recursive wasn't set) to
+   *  react to. persist/recursive are sent as query params, not a JSON
+   *  body — cherrypy doesn't run its normal body-processing for DELETE
+   *  requests, so a body would never be read. */
+  deleteItem(itemPath: string, persist = true, recursive = false) {
+    const url =
+      this.appConfig.apiUrl +
+      'items/' +
+      itemPath +
+      '?persist=' +
+      persist +
+      '&recursive=' +
+      recursive;
     return this.http.delete(url).pipe(map((response) => response));
   }
 

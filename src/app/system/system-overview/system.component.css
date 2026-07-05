@@ -38,7 +38,7 @@ p-tabs {
   height: 100%;
   width: 100%;
 
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--shng-border);
   border-top: 0;
 
   display: grid;
@@ -101,7 +101,7 @@ p-tabs {
   min-height: 50px;
   padding: 12px 0;
   align-self: stretch;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--shng-border);
   width: 100%;
 }
 
@@ -115,7 +115,7 @@ p-tabs {
 .info-content > span:nth-child(6n + 1),
 .info-content > span:nth-child(6n + 2),
 .info-content > span:nth-child(6n + 3) {
-  background: #f7f7f7;
+  background: var(--shng-cell-alt-bg);
 }
 
 .shngsysinfo > span > img {
@@ -128,7 +128,7 @@ p-tabs {
   min-height: 50px;
   padding: 12px 0;
   align-self: stretch;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--shng-border);
 }
 
 /* Padding for Icons */
@@ -141,7 +141,7 @@ p-tabs {
 .shngsysinfo > span:nth-child(6n + 4),
 .shngsysinfo > span:nth-child(6n + 5),
 .shngsysinfo > span:nth-child(6n + 6) {
-  background: #f7f7f7;
+  background: var(--shng-cell-alt-bg);
 }
 
 /* css for SmartHomeNG Charts tab */
@@ -149,7 +149,7 @@ p-tabs {
   height: 100%;
   width: 100%;
 
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--shng-border);
   border-top: 0;
 
   display: grid;
@@ -192,7 +192,7 @@ p-tabs {
   height: 100%;
   width: 100%;
 
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--shng-border);
   border-top: 0;
 
   display: grid;
@@ -236,12 +236,12 @@ p-tabs {
 
 .shngpypitable {
   width: 100%;
-  color: #212529;
+  color: var(--text-primary);
 
-  border-color: grey;
+  border-color: var(--shng-border);
 }
 .shngpypitable td {
-  border-top: 1px solid #dee2e6;
+  border-top: 1px solid var(--shng-border);
   border-spacing: 2px;
 }
 
@@ -258,7 +258,7 @@ p-tabs {
   height: 100%;
   overflow-y: auto;
   white-space: pre-wrap;
-  background: white;
-  border: 1px solid #dee2e6;
+  background: var(--shng-page-bg);
+  border: 1px solid var(--shng-border);
   padding: 5px;
 }

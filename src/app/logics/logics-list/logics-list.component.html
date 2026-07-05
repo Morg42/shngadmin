@@ -269,7 +269,7 @@
                                               <button
                                                 name="enable"
                                                 title="{{ 'LOGICS.ENABLE' | translate }}"
-                                                class="btn btn-outline-dark btn-sm mr-1"
+                                                class="btn btn-outline-primary btn-sm mr-1"
                                                 (click)="enableLogic(logic.name)"
                                               >
                                                 <i class="fas fa-play"></i>
@@ -297,7 +297,7 @@
                                               class="btn btn-outline-danger btn-sm"
                                               (click)="deleteLogic(logic.name, logic.filename)"
                                             >
-                                              <i class="far fa-trash-alt shng-color-danger" aria-hidden="true"></i>
+                                              <i class="far fa-trash-alt" aria-hidden="true"></i>
                                             </button>
                                           </td>
                                         </tr>
@@ -389,7 +389,7 @@
                                   name="add"
                                   title="{{ 'LOGICS.ADD' | translate }}"
                                   type="submit"
-                                  class="btn btn-outline-dark btn-sm mr-1"
+                                  class="btn btn-outline-primary btn-sm mr-1"
                                   (click)="loadLogic(logic.name)"
                                 >
                                   <i class="fas fa-plus"></i>
@@ -401,7 +401,7 @@
                                 class="btn btn-outline-danger btn-sm"
                                 (click)="deleteLogic(logic.name, logic.filename)"
                               >
-                                <i class="far fa-trash-alt shng-color-danger" aria-hidden="true"></i>
+                                <i class="far fa-trash-alt" aria-hidden="true"></i>
                               </button>
                             </td>
                           </tr>
@@ -630,7 +630,7 @@
                                 <button
                                   name="enable"
                                   title="{{ 'LOGICS.ENABLE' | translate }}"
-                                  class="btn btn-outline-dark btn-sm mr-1"
+                                  class="btn btn-outline-primary btn-sm mr-1"
                                   (click)="enableLogic(logic.name)"
                                 >
                                   <i class="fas fa-play"></i>
@@ -658,7 +658,7 @@
                                 class="btn btn-outline-danger btn-sm"
                                 (click)="deleteLogic(logic.name, logic.filename)"
                               >
-                                <i class="far fa-trash-alt shng-color-danger" aria-hidden="true"></i>
+                                <i class="far fa-trash-alt" aria-hidden="true"></i>
                               </button>
                             </td>
                           </tr>
@@ -713,7 +713,7 @@
                                 name="add"
                                 title="{{ 'LOGICS.ADD' | translate }}"
                                 type="submit"
-                                class="btn btn-outline-dark btn-sm mr-1"
+                                class="btn btn-outline-primary btn-sm mr-1"
                                 (click)="loadLogic(logic.name)"
                               >
                                 <i class="fas fa-plus"></i>
@@ -725,7 +725,7 @@
                               class="btn btn-outline-danger btn-sm"
                               (click)="deleteLogic(logic.name, logic.filename)"
                             >
-                              <i class="far fa-trash-alt shng-color-danger" aria-hidden="true"></i>
+                              <i class="far fa-trash-alt" aria-hidden="true"></i>
                             </button>
                           </td>
                         </tr>
@@ -781,13 +781,13 @@
                         <td class="p-1 pl-2">
                           @if (logic.enabled === true) {
                             <span
-                              style="color: green"
+                              style="color: var(--shng-green)"
                               title="{{ 'LOGICS.ENABLED' | translate }}"
                               class="fas fa-play-circle"
                             ></span>
                           } @else {
                             <span
-                              style="color: red"
+                              style="color: var(--shng-red)"
                               title="{{ 'LOGICS.DISABLED' | translate }}"
                               class="fas fa-pause-circle"
                             ></span>
@@ -871,7 +871,7 @@
       icon="fa fa-trash-alt"
       (click)="deleteLogicConfirm(false)"
       label="{{ 'BUTTON.DELETE_CONFIG' | translate }}"
-      class="ui-button-success"
+      class="ui-button-danger"
     ></button>
     <button
       pButton

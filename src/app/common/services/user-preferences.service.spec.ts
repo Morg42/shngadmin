@@ -45,6 +45,22 @@ describe('UserPreferencesService (empty storage)', () => {
     expect(service.language).toBeUndefined();
     expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
   });
+
+  it('darkMode is undefined when nothing is stored', () => {
+    expect(service.darkMode).toBeUndefined();
+  });
+
+  it('setDarkMode persists the preference to localStorage', () => {
+    service.setDarkMode(true);
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
+    expect(stored.darkMode).toBe(true);
+    expect(service.darkMode).toBe(true);
+  });
+
+  it('setDarkMode(false) is distinguishable from never having set it', () => {
+    service.setDarkMode(false);
+    expect(service.darkMode).toBe(false);
+  });
 });
 
 describe('UserPreferencesService (pre-existing storage)', () => {

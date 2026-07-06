@@ -68,13 +68,22 @@
       </a>
     }
 
-    <button
-      class="theme-toggle"
-      (click)="theme.toggle()"
-      [attr.title]="(theme.darkMode ? 'THEME.SWITCH_TO_LIGHT' : 'THEME.SWITCH_TO_DARK') | translate"
-    >
-      <i class="fas" [class.fa-sun]="!theme.darkMode" [class.fa-moon]="theme.darkMode"></i>
-    </button>
+    <div class="theme">
+      <button class="theme-btn" [attr.title]="'THEME.TITLE' | translate">
+        <i class="fas" [class.fa-sun]="!theme.darkMode" [class.fa-moon]="theme.darkMode"></i>
+      </button>
+      <div class="theme-dropdown-content">
+        <a (click)="theme.setPreference('light')" [class.active]="theme.preference === 'light'">
+          <i class="fas fa-sun"></i> {{ 'THEME.LIGHT' | translate }}
+        </a>
+        <a (click)="theme.setPreference('dark')" [class.active]="theme.preference === 'dark'">
+          <i class="fas fa-moon"></i> {{ 'THEME.DARK' | translate }}
+        </a>
+        <a (click)="theme.setPreference('system')" [class.active]="theme.preference === 'system'">
+          <i class="fas fa-desktop"></i> {{ 'THEME.SYSTEM' | translate }}
+        </a>
+      </div>
+    </div>
   </div>
 
   <!-- Mobile controls: shown only at ≤720px -->
@@ -87,11 +96,16 @@
     }
     <a [href]="helpUrl" target="_blank" rel="noopener"><i class="fas fa-question-circle"></i></a>
     <button
-      class="theme-toggle"
-      (click)="theme.toggle()"
-      [attr.title]="(theme.darkMode ? 'THEME.SWITCH_TO_LIGHT' : 'THEME.SWITCH_TO_DARK') | translate"
+      class="theme-btn"
+      (click)="theme.cycle()"
+      [attr.title]="'THEME.' + theme.preference.toUpperCase() | translate"
     >
-      <i class="fas" [class.fa-sun]="!theme.darkMode" [class.fa-moon]="theme.darkMode"></i>
+      <i
+        class="fas"
+        [class.fa-sun]="theme.preference === 'light'"
+        [class.fa-moon]="theme.preference === 'dark'"
+        [class.fa-desktop]="theme.preference === 'system'"
+      ></i>
     </button>
     <button class="hamburger" (click)="toggleDrawer()" aria-label="Menu">&#9776;</button>
   </div>
@@ -136,9 +150,18 @@
     <a class="drawer-logout-link" [href]="helpUrl" target="_blank" rel="noopener">
       <i class="fas fa-question-circle"></i> {{ 'MENU.HELP' | translate }}
     </a>
-    <a class="drawer-logout-link" (click)="theme.toggle()">
-      <i class="fas" [class.fa-sun]="!theme.darkMode" [class.fa-moon]="theme.darkMode"></i>
-      {{ (theme.darkMode ? 'THEME.SWITCH_TO_LIGHT' : 'THEME.SWITCH_TO_DARK') | translate }}
+    <a class="drawer-logout-link" [class.active]="theme.preference === 'light'" (click)="theme.setPreference('light')">
+      <i class="fas fa-sun"></i> {{ 'THEME.LIGHT' | translate }}
+    </a>
+    <a class="drawer-logout-link" [class.active]="theme.preference === 'dark'" (click)="theme.setPreference('dark')">
+      <i class="fas fa-moon"></i> {{ 'THEME.DARK' | translate }}
+    </a>
+    <a
+      class="drawer-logout-link"
+      [class.active]="theme.preference === 'system'"
+      (click)="theme.setPreference('system')"
+    >
+      <i class="fas fa-desktop"></i> {{ 'THEME.SYSTEM' | translate }}
     </a>
     @if (loggedIn && loginRequired) {
       <a class="drawer-logout-link" (click)="logout(); closeDrawer()">

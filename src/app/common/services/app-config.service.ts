@@ -35,6 +35,16 @@ export interface AppConfig {
   // the theme for browsers that haven't set a local override yet — see
   // ThemeService for the local-preference layer that takes precedence.
   darkModeDefault: boolean;
+  // Server-side default (etc/module.yaml admin: resource_graph_period) for the
+  // initial time span requested by the System page's resource graphs, e.g.
+  // '1h'/'6h'/'24h'. A shorter span means more frequent live updates, since
+  // the backend's push interval is tied to the number of plotted points.
+  resourceGraphPeriod: string;
+  // True if the backend is running in a mode (foreground/debug/interactive)
+  // where "Restart Core" cannot actually restart the process - it can only
+  // stop it (see lib/smarthome.py SmartHome.restart()). Used to relabel the
+  // restart button so it doesn't promise a restart it can't deliver.
+  restartStopsOnly: boolean;
   fallbackLanguageOrder: string[];
 
   // Language (may be updated by the user at runtime)
@@ -61,6 +71,8 @@ const DEFAULT_CONFIG: AppConfig = {
   clickDropdownHeader: true,
   helpLocalAvailable: false,
   darkModeDefault: false,
+  resourceGraphPeriod: '24h',
+  restartStopsOnly: false,
   fallbackLanguageOrder: ['en', 'de'],
   defaultLanguage: 'en',
 };
@@ -153,6 +165,12 @@ export class AppConfigService {
   }
   get darkModeDefault(): boolean {
     return this.snapshot.darkModeDefault;
+  }
+  get resourceGraphPeriod(): string {
+    return this.snapshot.resourceGraphPeriod;
+  }
+  get restartStopsOnly(): boolean {
+    return this.snapshot.restartStopsOnly;
   }
   get coreBranch(): string {
     return this.snapshot.coreBranch;

@@ -63,9 +63,19 @@ body {
 }
 
 .topnav {
-  overflow: hidden;
   background-color: var(--menu-background-color);
   width: 100%;
+}
+
+/* Clearfix for the floated children (.dropdown/.help/.theme/.logout etc) —
+   deliberately not overflow:hidden: .help/.theme are position:relative so
+   their dropdown's containing block is that (small, predictable) wrapper
+   rather than an ancestor further up, and overflow:hidden here would clip
+   that dropdown at the 55px navbar height. */
+.topnav::after {
+  content: '';
+  display: table;
+  clear: both;
 }
 
 .dropdown .show-caret {
@@ -89,7 +99,8 @@ body {
 }
 
 .dropdown .dropbtn,
-.help-btn {
+.help-btn,
+.theme-btn {
   font-size: var(--font-size-nav);
   border: none;
   outline: none;
@@ -101,7 +112,8 @@ body {
 }
 
 .dropdown-content,
-.help-dropdown-content {
+.help-dropdown-content,
+.theme-dropdown-content {
   display: none;
   position: absolute;
   background-color: var(--dropdown-bg);
@@ -114,12 +126,15 @@ body {
   margin-left: 15px;
 }
 
-.help-dropdown-content {
+.help-dropdown-content,
+.theme-dropdown-content {
+  top: 100%;
   right: 0;
 }
 
 .dropdown-content a,
-.help-dropdown-content a {
+.help-dropdown-content a,
+.theme-dropdown-content a {
   float: none;
   color: var(--menu-textcolor);
   padding: 12px 16px;
@@ -138,19 +153,22 @@ body {
 
 .topnav a:hover,
 .dropdown:hover .dropbtn,
-.help:hover .help-btn {
+.help:hover .help-btn,
+.theme:hover .theme-btn {
   background-color: var(--menu-background-color-hover);
   color: var(--menu-textcolor-hover);
 }
 
 .dropdown-content a:hover,
-.help-dropdown-content a:hover {
+.help-dropdown-content a:hover,
+.theme-dropdown-content a:hover {
   background-color: var(--dropdown-hover-bg);
   color: var(--dropdown-hover-color);
 }
 
 .dropdown:hover .dropdown-content,
-.help:hover .help-dropdown-content {
+.help:hover .help-dropdown-content,
+.theme:hover .theme-dropdown-content {
   display: block;
 }
 
@@ -216,7 +234,8 @@ body {
   background-color: var(--menu-background-color-active);
 }
 
-.dropdown-content a.active {
+.dropdown-content a.active,
+.theme-dropdown-content a.active {
   background-color: var(--menu-background-color-active);
 }
 
@@ -246,9 +265,7 @@ body {
 .topnav .help {
   margin-right: 5px;
   float: right;
-  /* Deliberately not positioned (like .dropdown): .help-dropdown-content's
-     containing block must escape to the viewport, otherwise .topnav's
-     overflow:hidden clips the dropdown at the 55px navbar height. */
+  position: relative;
 }
 
 .topnav a.help i,
@@ -256,26 +273,15 @@ body {
   margin-right: 4px;
 }
 
-.help-btn {
+.help-btn,
+.theme-btn {
   cursor: pointer;
 }
 
-.topnav .theme-toggle {
+.topnav .theme {
   margin-right: 5px;
   float: right;
-  border: none;
-  outline: none;
-  color: var(--menu-textcolor);
-  padding: 14px 10px;
-  background-color: inherit;
-  font-family: inherit;
-  font-size: var(--font-size-nav);
-  cursor: pointer;
-}
-
-.topnav .theme-toggle:hover {
-  background-color: var(--menu-background-color-hover);
-  color: var(--menu-textcolor-hover);
+  position: relative;
 }
 
 /* Mobile controls bar (hamburger + logout icon) — hidden on desktop */
@@ -305,7 +311,7 @@ body {
 }
 
 .hamburger,
-.navbar-mobile .theme-toggle {
+.navbar-mobile .theme-btn {
   background: none;
   border: none;
   font-size: 1.4rem;
@@ -319,7 +325,7 @@ body {
 }
 
 .hamburger:hover,
-.navbar-mobile .theme-toggle:hover {
+.navbar-mobile .theme-btn:hover {
   background-color: var(--menu-background-color-hover);
   color: var(--menu-textcolor-hover);
 }

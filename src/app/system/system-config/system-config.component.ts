@@ -90,7 +90,7 @@ export class SystemConfigComponent implements OnInit {
   private shared = inject(SharedService);
   private translate = inject(TranslateService);
   private titleService = inject(Title);
-  private appConfig = inject(AppConfigService);
+  protected appConfig = inject(AppConfigService);
   private readonly log = inject(LogService);
 
   config!: SystemConfig;

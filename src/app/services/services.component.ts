@@ -85,7 +85,7 @@ export class ServicesComponent implements OnInit {
   private readonly messageService = inject(MessageService);
   private dataServiceServer = inject(ServerApiService);
   private titleService = inject(Title);
-  private appConfig = inject(AppConfigService);
+  protected appConfig = inject(AppConfigService);
   private userPrefs = inject(UserPreferencesService);
   private readonly log = inject(LogService);
 

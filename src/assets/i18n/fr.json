@@ -3,8 +3,10 @@
     "SERVER_CONNECTING": "Connexion au serveur en cours…"
   },
   "THEME": {
-    "SWITCH_TO_DARK": "Passer en mode sombre",
-    "SWITCH_TO_LIGHT": "Passer en mode clair"
+    "TITLE": "Thème",
+    "LIGHT": "Clair",
+    "DARK": "Sombre",
+    "SYSTEM": "Suivre le système"
   },
   "MENU": {
     "SYSTEM": "Système",
@@ -604,6 +606,7 @@
     "UNLOAD": "Décharger",
     "RELOAD": "Recharger",
     "RELOAD_LOG": "Recharger le journal",
+    "QUIT_SHNG_INTERACTIVE": "Quitter le Core (interactif)",
     "RESTART_SHNG": "Redémarrer",
     "SAVE_SETTINGS": "Enregistrer les paramètres",
     "CHECK": "Vérifier",

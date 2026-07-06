@@ -673,7 +673,7 @@
                     <ng-template let-node pTemplate="default">
                       @if (node.tags[0] > 0 && !this.treeIsFiltered) {
                         {{ node.label }} &nbsp;
-                        <span style="background: #dadada"> &nbsp; {{ node.tags[0] }} &nbsp; </span>
+                        <span class="shng-badge"> &nbsp; {{ node.tags[0] }} &nbsp; </span>
                       }
                       @if (node.tags[0] === 0 || this.treeIsFiltered) {
                         <span style="float: left">{{ node.label }}</span>

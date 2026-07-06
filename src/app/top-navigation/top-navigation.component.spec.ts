@@ -103,4 +103,14 @@ describe('TopNavigationComponent', () => {
     await TestBed.inject(Router).navigateByUrl('/items');
     expect(markForCheck).toHaveBeenCalled();
   });
+
+  it('forces an immediate check when the theme changes, so the toggle icon never goes stale', () => {
+    // detectChanges (not markForCheck) is required here: this component
+    // observed markForCheck alone leave the icon stale when the theme
+    // changes from deep inside the getServerinfo()/login() async chain,
+    // where nothing else guarantees a following zone tick actually runs.
+    const detectChanges = jest.spyOn(component['cdr'], 'detectChanges');
+    component['theme'].setPreference('dark');
+    expect(detectChanges).toHaveBeenCalled();
+  });
 });

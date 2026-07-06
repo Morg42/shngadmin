@@ -46,20 +46,47 @@ describe('UserPreferencesService (empty storage)', () => {
     expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
   });
 
-  it('darkMode is undefined when nothing is stored', () => {
-    expect(service.darkMode).toBeUndefined();
+  it('themePreference is undefined when nothing is stored', () => {
+    expect(service.themePreference).toBeUndefined();
   });
 
-  it('setDarkMode persists the preference to localStorage', () => {
-    service.setDarkMode(true);
+  it('setThemePreference persists the preference to localStorage', () => {
+    service.setThemePreference('dark');
     const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
-    expect(stored.darkMode).toBe(true);
-    expect(service.darkMode).toBe(true);
+    expect(stored.themePreference).toBe('dark');
+    expect(service.themePreference).toBe('dark');
   });
 
-  it('setDarkMode(false) is distinguishable from never having set it', () => {
-    service.setDarkMode(false);
-    expect(service.darkMode).toBe(false);
+  it('setThemePreference(light) is distinguishable from never having set it', () => {
+    service.setThemePreference('light');
+    expect(service.themePreference).toBe('light');
+  });
+
+  it('setThemePreference accepts system', () => {
+    service.setThemePreference('system');
+    expect(service.themePreference).toBe('system');
+  });
+});
+
+describe('UserPreferencesService (legacy darkMode storage)', () => {
+  let service: UserPreferencesService;
+
+  afterEach(() => localStorage.clear());
+
+  it('migrates a legacy darkMode:true to themePreference:dark', () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ darkMode: true }));
+    TestBed.configureTestingModule({ providers: [UserPreferencesService] });
+    service = TestBed.inject(UserPreferencesService);
+    expect(service.themePreference).toBe('dark');
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
+    expect(stored.darkMode).toBeUndefined();
+  });
+
+  it('migrates a legacy darkMode:false to themePreference:light', () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ darkMode: false }));
+    TestBed.configureTestingModule({ providers: [UserPreferencesService] });
+    service = TestBed.inject(UserPreferencesService);
+    expect(service.themePreference).toBe('light');
   });
 });
 

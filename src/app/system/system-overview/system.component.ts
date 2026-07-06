@@ -433,14 +433,15 @@ export class SystemComponent implements OnDestroy, OnInit {
     // serverReady$ emits once wsPort becomes non-empty, which is the correct
     // moment to open the connection and start requesting chart series data.
     this.appConfig.serverReady$.pipe(take(1), takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      const period = this.appConfig.resourceGraphPeriod;
       this.websocketPluginService.connect();
-      this.websocketPluginService.getSeriesLoad();
-      this.websocketPluginService.getSeriesSystemMemory();
-      this.websocketPluginService.getSeriesSwap();
-      this.websocketPluginService.getSeriesMemory();
-      this.websocketPluginService.getSeriesThreads();
-      this.websocketPluginService.getSeriesWorkerThreads();
-      this.websocketPluginService.getSeriesDisk();
+      this.websocketPluginService.getSeriesLoad(period);
+      this.websocketPluginService.getSeriesSystemMemory(period);
+      this.websocketPluginService.getSeriesSwap(period);
+      this.websocketPluginService.getSeriesMemory(period);
+      this.websocketPluginService.getSeriesThreads(period);
+      this.websocketPluginService.getSeriesWorkerThreads(period);
+      this.websocketPluginService.getSeriesDisk(period);
       this.drawCharts();
     });
   }

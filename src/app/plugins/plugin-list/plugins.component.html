@@ -285,20 +285,22 @@
 
     @if (selectedPlugin.metadata.state && selectedPlugin.metadata.state.toLowerCase() === 'deprecated') {
       <fa-icon style="color: var(--shng-warning)" [icon]="faExclamationTriangle"></fa-icon>
-      <a style="width: 50%; padding: 0; background-color: #ffffff; border: 0"
+      <a style="width: 50%; padding: 0; background-color: var(--shng-page-bg); border: 0"
         ><strong>&nbsp; {{ 'PLUGIN.DEPRECATED' | translate }}:</strong></a
       >
       <br />
-      <p style="padding: 0; background-color: #f2f2f2; border: 0">{{ 'PLUGIN.DEPRECATED_TEXT' | translate }}</p>
+      <p style="padding: 0; background-color: var(--shng-cell-alt-bg); border: 0">
+        {{ 'PLUGIN.DEPRECATED_TEXT' | translate }}
+      </p>
     }
 
     @if (selectedPlugin.parameters && selectedPlugin.parameters.length !== 0) {
       <table class="table" style="padding: 0">
         <tr>
-          <td style="width: 50%; padding: 0; background-color: #ffffff; border: 0">
+          <td style="width: 50%; padding: 0; background-color: var(--shng-page-bg); border: 0">
             <strong>{{ 'PLUGIN.PARAMETERS' | translate }}:</strong>
           </td>
-          <td style="width: 50%; padding: 0; background-color: #ffffff; border: 0"></td>
+          <td style="width: 50%; padding: 0; background-color: var(--shng-page-bg); border: 0"></td>
         </tr>
         <tr>
           <!-- Parameters: left column -->
@@ -348,11 +350,11 @@
     @if (selectedPlugin.attributes && selectedPlugin.attributes.length !== 0) {
       <table class="table">
         <tr>
-          <td style="width: 33%; padding: 0; background-color: #ffffff; border: 0">
+          <td style="width: 33%; padding: 0; background-color: var(--shng-page-bg); border: 0">
             <strong>{{ 'PLUGIN.ITEM ATTRIBUTES' | translate }}:</strong>
           </td>
-          <td style="width: 33%; padding: 0; background-color: #ffffff; border: 0"></td>
-          <td style="width: 33%; padding: 0; background-color: #ffffff; border: 0"></td>
+          <td style="width: 33%; padding: 0; background-color: var(--shng-page-bg); border: 0"></td>
+          <td style="width: 33%; padding: 0; background-color: var(--shng-page-bg); border: 0"></td>
         </tr>
         <tr>
           <!-- Item Attributes: left column -->

@@ -58,6 +58,8 @@ input::-webkit-inner-spin-button {
   --shng-toggle-off: #a9a9a9;
   --shng-cell-alt-bg: #f7f7f7;
   --shng-page-bg: #ffffff; /* page/tree/card surfaces */
+  --shng-badge-bg: #dadada; /* e.g. item-tree child-count pill */
+  --shng-badge-text: #212529;
 
   /* ── Typography ─────────────────────────────── */
   --font-family-base:
@@ -1223,6 +1225,13 @@ a.text-shng:hover {
   background-color: var(--shng-cell-alt-bg);
 }
 
+/* Small count/status pill — e.g. the item-tree child-count badge */
+.shng-badge {
+  background-color: var(--shng-badge-bg);
+  color: var(--shng-badge-text);
+  border-radius: 3px;
+}
+
 /* ================================================================
    Dark mode
    Applied via a `dark-mode` class on <html> (ThemeService). PrimeNG's
@@ -1245,6 +1254,8 @@ a.text-shng:hover {
   --shng-secondary-button: #3a3a3a;
   --shng-toggle-off: #666666;
   --shng-cell-alt-bg: #272727;
+  --shng-badge-bg: #4a4a4a;
+  --shng-badge-text: #e0e0e0;
 
   --text-primary: #e0e0e0;
   --text-secondary: #c0c0c0;

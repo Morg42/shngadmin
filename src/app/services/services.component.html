@@ -55,7 +55,10 @@
                       icon="fa fa-circle-notch"
                       [disabled]="shng_statuscode !== 20"
                       (click)="this.restartShng()"
-                      label="{{ 'BUTTON.RESTART_SHNG' | translate }}"
+                      label="{{
+                        (appConfig.restartStopsOnly ? 'BUTTON.QUIT_SHNG_INTERACTIVE' : 'BUTTON.RESTART_SHNG')
+                          | translate
+                      }}"
                       class="ui-button-warning"
                     ></button>
                   </td>

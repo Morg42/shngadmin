@@ -324,6 +324,7 @@ export class WebsocketPluginService {
         graphdata.series.shift();
       }
       graphdata.series[0][0] = tstampOldest;
+      graphdata.series[0][2] = this.shared.getTimeStamp(new Date(tstampOldest));
     }
     graphdata.series.push(...(data.series as SeriesEntry[]));
   }

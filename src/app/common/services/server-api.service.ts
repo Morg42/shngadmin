@@ -151,6 +151,8 @@ export class ServerApiService {
           clickDropdownHeader: this.shng_serverinfo.click_dropdown_header,
           helpLocalAvailable: this.shng_serverinfo.help_local_available,
           darkModeDefault: this.shng_serverinfo.dark_mode,
+          resourceGraphPeriod: this.shng_serverinfo.resource_graph_period,
+          restartStopsOnly: this.shng_serverinfo.restart_stops_only,
           fallbackLanguageOrder: fallbackOrder,
           wsHost: this._resolveWsHost(this.shng_serverinfo.websocket_host),
           wsPort: this.shng_serverinfo.websocket_port ?? '',

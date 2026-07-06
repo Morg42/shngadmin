@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 
+export type ThemePreference = 'light' | 'dark' | 'system';
+
 export interface UserPreferences {
   /** ISO 639-1 language code chosen by the user (e.g. 'de', 'en', 'fr'). */
   language?: string;
@@ -9,7 +11,14 @@ export interface UserPreferences {
    * Never written by the user — overwritten by every successful server response.
    */
   cachedServerLanguage?: string;
-  /** Dark mode, chosen via the title-bar toggle. Undefined = follow the server's canonical default. */
+  /**
+   * Theme, chosen via the title-bar menu. 'system' follows the OS's
+   * prefers-color-scheme live; undefined (never chosen) also behaves as
+   * 'system' but is kept distinct from an explicit 'system' choice so a
+   * future default change doesn't look like a user pick either way.
+   */
+  themePreference?: ThemePreference;
+  /** @deprecated Replaced by themePreference. Only read once, to migrate. */
   darkMode?: boolean;
 }
 
@@ -38,6 +47,14 @@ export class UserPreferencesService {
       // Corrupt or unreadable entry — start from a clean slate.
       localStorage.removeItem(UserPreferencesService.STORAGE_KEY);
     }
+
+    // Migrate the old boolean toggle (true/false were always explicit
+    // choices, never "follow system") to the new tri-state preference.
+    if (this.prefs.themePreference === undefined && this.prefs.darkMode !== undefined) {
+      const { darkMode, ...rest } = this.prefs;
+      this.prefs = { ...rest, themePreference: darkMode ? 'dark' : 'light' };
+      this.persist();
+    }
   }
 
   // ----------------------------------------------------------------
@@ -54,9 +71,9 @@ export class UserPreferencesService {
     return this.prefs.cachedServerLanguage;
   }
 
-  /** Saved dark-mode preference, or undefined if the user hasn't chosen one. */
-  get darkMode(): boolean | undefined {
-    return this.prefs.darkMode;
+  /** Saved theme preference, or undefined if the user has never chosen one. */
+  get themePreference(): ThemePreference | undefined {
+    return this.prefs.themePreference;
   }
 
   // ----------------------------------------------------------------
@@ -74,8 +91,8 @@ export class UserPreferencesService {
     this.persist();
   }
 
-  setDarkMode(darkMode: boolean): void {
-    this.prefs = { ...this.prefs, darkMode };
+  setThemePreference(themePreference: ThemePreference): void {
+    this.prefs = { ...this.prefs, themePreference };
     this.persist();
   }
 

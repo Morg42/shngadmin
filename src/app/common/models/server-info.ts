@@ -21,6 +21,8 @@ export interface ServerInfo {
   click_dropdown_header: boolean;
   help_local_available: boolean;
   dark_mode: boolean;
+  resource_graph_period: string;
+  restart_stops_only: boolean;
   daemon_knx: string;
   daemon_ow: string;
   daemon_mqtt: string;

@@ -3,8 +3,10 @@
     "SERVER_CONNECTING": "Verbindung zum Server wird hergestellt…"
   },
   "THEME": {
-    "SWITCH_TO_DARK": "Zum Dark Mode wechseln",
-    "SWITCH_TO_LIGHT": "Zum hellen Modus wechseln"
+    "TITLE": "Farbschema",
+    "LIGHT": "Hell",
+    "DARK": "Dunkel",
+    "SYSTEM": "System folgen"
   },
   "MENU": {
     "SYSTEM": "System",
@@ -615,6 +617,7 @@
     "UNLOAD": "Entladen",
     "RELOAD": "Neu laden",
     "RELOAD_LOG": "Log aktualisieren",
+    "QUIT_SHNG_INTERACTIVE": "Core beenden (interaktiv)",
     "RESTART_SHNG": "Core neu starten",
     "SAVE_SETTINGS": "Einstellungen sichern",
     "CHECK": "Prüfen",

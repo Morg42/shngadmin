@@ -303,7 +303,7 @@
       [disabled]="!restart_core_button"
       (click)="restartShng()"
       icon="fa fa-circle-notch"
-      label="{{ 'BUTTON.RESTART_SHNG' | translate }}"
+      label="{{ (appConfig.restartStopsOnly ? 'BUTTON.QUIT_SHNG_INTERACTIVE' : 'BUTTON.RESTART_SHNG') | translate }}"
     ></button>
     <button
       pButton

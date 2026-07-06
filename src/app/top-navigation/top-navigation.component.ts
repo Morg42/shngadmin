@@ -143,9 +143,15 @@ export class TopNavigationComponent implements OnInit {
     // Keep the toggle's own icon/label in sync — ThemeService can be changed
     // from applyServerDefault() above (async, after this component's own
     // click-triggered checks have already run) or, in principle, from
-    // elsewhere entirely.
+    // elsewhere entirely. Uses detectChanges() rather than markForCheck():
+    // this fires from deep inside the getServerinfo()/login() async chain,
+    // where relying on some later ambient zone tick to actually flush the
+    // dirty flag is not reliable — verified live that the icon can stay
+    // stale (still showing the old theme) after markForCheck() alone here,
+    // even though the DOM's dark-mode class and ThemeService's own state
+    // are already correct at that point.
     this.theme.darkMode$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      this.cdr.markForCheck();
+      this.cdr.detectChanges();
     });
 
     this.log.log('TopNavigationComponent.ngOnInit() leaving');

@@ -3,8 +3,10 @@
     "SERVER_CONNECTING": "Connecting to server…"
   },
   "THEME": {
-    "SWITCH_TO_DARK": "Switch to dark mode",
-    "SWITCH_TO_LIGHT": "Switch to light mode"
+    "TITLE": "Theme",
+    "LIGHT": "Light",
+    "DARK": "Dark",
+    "SYSTEM": "Follow system"
   },
   "MENU": {
     "SYSTEM": "System",
@@ -615,6 +617,7 @@
     "UNLOAD": "Unload",
     "RELOAD": "Reload",
     "RELOAD_LOG": "Reload Log",
+    "QUIT_SHNG_INTERACTIVE": "Quit Core (interactive)",
     "RESTART_SHNG": "Restart Core",
     "SAVE_SETTINGS": "Save Settings",
     "CHECK": "Check",

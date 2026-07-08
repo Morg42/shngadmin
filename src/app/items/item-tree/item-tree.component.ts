@@ -919,9 +919,13 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
     this.newItemAttributes = this.newItemAttributes.filter((_, i) => i !== index);
   }
 
-  searchAttributeNames(event: { query: string }) {
+  /** currentRow is the row being typed into - excluded from the "already
+   *  used elsewhere" check, otherwise its own live-typed value (e.g. typing
+   *  "cache" updates attr.key to "cache" as you type) would hide the exact
+   *  match from its own suggestions, showing only longer/different names. */
+  searchAttributeNames(event: { query: string }, currentRow?: { key: string; value: unknown }) {
     const q = event.query.toLowerCase();
-    const used = this.activeAttributeRows.map((a) => a.key);
+    const used = this.activeAttributeRows.filter((a) => a !== currentRow).map((a) => a.key);
     this.filteredAttributeNames = Object.keys(this.attributeCatalog).filter(
       (a) =>
         a.toLowerCase().includes(q) &&

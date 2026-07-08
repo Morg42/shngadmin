@@ -120,7 +120,7 @@
                   #attrNameInput
                   [(ngModel)]="attr.key"
                   [suggestions]="filteredAttributeNames"
-                  (completeMethod)="searchAttributeNames($event)"
+                  (completeMethod)="searchAttributeNames($event, attr)"
                   placeholder="{{ 'ITEMS.ATTRIBUTE' | translate }}"
                   [appendTo]="'body'"
                   [inputStyle]="{ width: '100%' }"
@@ -254,7 +254,7 @@
                   #editAttrNameInput
                   [(ngModel)]="attr.key"
                   [suggestions]="filteredAttributeNames"
-                  (completeMethod)="searchAttributeNames($event)"
+                  (completeMethod)="searchAttributeNames($event, attr)"
                   placeholder="{{ 'ITEMS.ATTRIBUTE' | translate }}"
                   [appendTo]="'body'"
                   [inputStyle]="{ width: '100%' }"

@@ -697,6 +697,7 @@
   [closable]="false"
   [maximizable]="false"
   [style]="{ width: '480px', minWidth: '480px' }"
+  (document:keydown.escape)="rename_display && (rename_display = false)"
 >
   <ng-template pTemplate="header">
     {{ 'LOGIC_EDIT.RENAME' | translate }}

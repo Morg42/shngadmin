@@ -164,6 +164,7 @@
   [maximizable]="false"
   [minY]="100"
   [style]="{ width: '720px', minWidth: '600px', minHeight: '450px' }"
+  (document:keydown.escape)="chooseHandlers_display && (chooseHandlers_display = false)"
 >
   <ng-template pTemplate="header">
     {{ 'LOGGERS.CHOOSE_HANDLERS' | translate: header_param }}

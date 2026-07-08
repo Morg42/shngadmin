@@ -186,6 +186,7 @@
   [maximizable]="true"
   [minY]="100"
   [style]="{ minWidth: '600px', minHeight: '300px', maxHeight: '98%' }"
+  (document:keydown.escape)="dialog_display && closeDialog()"
 >
   <ng-template pTemplate="header">
     <span>

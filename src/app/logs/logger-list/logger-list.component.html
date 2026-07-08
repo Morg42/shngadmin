@@ -299,10 +299,10 @@
   [modal]="true"
   blockScroll="true"
   [closable]="false"
-  [closeOnEscape]="true"
   [maximizable]="false"
   [minY]="100"
   [style]="{ width: '600px', minWidth: '600px', minHeight: '450px' }"
+  (document:keydown.escape)="newlogger_display && (newlogger_display = false)"
 >
   <ng-template pTemplate="header">
     {{ 'LOGGERS.CREATE_LOGGER' | translate }}

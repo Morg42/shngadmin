@@ -230,7 +230,14 @@
 <!--
   -- Error dialog
   -->
-<p-dialog header="" [(visible)]="error_display" [closable]="false" [modal]="true" blockScroll="true">
+<p-dialog
+  header=""
+  [(visible)]="error_display"
+  [closable]="false"
+  [modal]="true"
+  blockScroll="true"
+  (document:keydown.escape)="error_display && (error_display = false)"
+>
   <ng-template pTemplate="header">
     {{ 'ITEM_CONFIG.CONFIG_ERROR' | translate }}
   </ng-template>
@@ -293,6 +300,7 @@
   blockScroll="true"
   [closable]="false"
   [style]="{ minWidth: '480px', minHeight: '260px' }"
+  (document:keydown.escape)="mergeDialog && (mergeDialog = false)"
 >
   <ng-template pTemplate="header">
     {{ 'LOGIC_GROUPS.MERGE_DIALOG_TITLE' | translate }}

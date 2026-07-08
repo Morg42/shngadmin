@@ -149,7 +149,14 @@
 <!--
   -- YAML error dialog
   -->
-<p-dialog header="" [(visible)]="error_display" [closable]="false" [modal]="true" blockScroll="true">
+<p-dialog
+  header=""
+  [(visible)]="error_display"
+  [closable]="false"
+  [modal]="true"
+  blockScroll="true"
+  (document:keydown.escape)="error_display && (error_display = false)"
+>
   <ng-template pTemplate="header">
     {{ 'STRUCT_CONFIG.CONFIG_ERROR' | translate }}
   </ng-template>

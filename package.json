@@ -1,6 +1,6 @@
 {
   "name": "shngadmin",
-  "version": "1.12.1",
+  "version": "1.12.2",
   "internalVersion": "1.12.2.1",
   "scripts": {
     "ng": "ng",

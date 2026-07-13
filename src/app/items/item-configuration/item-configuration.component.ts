@@ -1,11 +1,11 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   DestroyRef,
   inject,
   OnInit,
-  ViewChild,
+  signal,
+  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -47,7 +47,6 @@ import { ServicesApiService } from '../../common/services/services-api.service';
 })
 export class ItemConfigurationComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
-  private readonly cdr = inject(ChangeDetectorRef);
   private translate = inject(TranslateService);
   private fileService = inject(FilesApiService);
   private dataService = inject(ServicesApiService);
@@ -58,21 +57,21 @@ export class ItemConfigurationComponent implements OnInit {
   // -----------------------------------------------------
   //  Vars for the YAML syntax checker
   //
-  @ViewChild('codeeditor') codeEditor?: CodeEditorComponent;
+  readonly codeEditor = viewChild<CodeEditorComponent>('codeeditor');
 
-  filelist!: string[];
-  itemFiles!: SelectItem[];
+  readonly filelist = signal<string[]>([]);
+  readonly itemFiles = signal<SelectItem[]>([]);
   selectedItemfile!: SelectItem;
 
-  myEditFilename = '';
-  myTextarea = '';
-  myTextareaOrig = '';
+  readonly myEditFilename = signal('');
+  readonly myTextarea = signal('');
+  readonly myTextareaOrig = signal('');
 
-  cmReadOnly = true;
+  readonly cmReadOnly = signal(true);
 
   editorHelp_display = false;
-  error_display = false;
-  myTextOutput = '';
+  readonly error_display = signal(false);
+  readonly myTextOutput = signal('');
   newconfig_display = false;
   newFilename = '';
   add_enabled = false;
@@ -90,32 +89,19 @@ export class ItemConfigurationComponent implements OnInit {
 
     this.getItemFile('');
 
-    this.itemFiles = [];
-
     this.setTitle(this.translate.instant('MENU.ITEM_CONFIGURATION'));
+    this.loadFileList();
+  }
+
+  private loadFileList() {
     this.fileService
       .getfileList('items')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        this.filelist = <string[]>response;
-        for (let i = 0; i < this.filelist.length; i++) {
-          //
-          // I get it. The sample code here and in the docs is wrong, it should read like this:
-          //
-          // fails
-          //   this.cities.push({name:'New York', code: 'NY'});
-          //
-          // correct
-          //   this.cities = [...this.cities, {name:'New York', code: 'NY'}];
-          //
-          this.itemFiles = [
-            ...this.itemFiles,
-            <SelectItem>{ label: this.filelist[i], value: this.filelist[i] },
-          ];
-        }
-        this.cdr.markForCheck();
+        const files = <string[]>response;
+        this.filelist.set(files);
+        this.itemFiles.set(files.map((f) => <SelectItem>{ label: f, value: f }));
       });
-    // this.getItemFile('q21_09Bad');
   }
 
   newConfig() {
@@ -124,7 +110,7 @@ export class ItemConfigurationComponent implements OnInit {
   }
 
   deleteConfig() {
-    this.delete_param = { config: this.myEditFilename };
+    this.delete_param = { config: this.myEditFilename() };
     this.confirmdelete_display = true;
   }
 
@@ -136,7 +122,7 @@ export class ItemConfigurationComponent implements OnInit {
 
     // delete on backend server
     this.fileService
-      .deleteFile('items', this.myEditFilename)
+      .deleteFile('items', this.myEditFilename())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response: unknown) => {
         if (response) {
@@ -144,8 +130,6 @@ export class ItemConfigurationComponent implements OnInit {
           this.confirmdelete_display = false;
           this.log.log('ItemConfigurationComponent.DeleteConfigConfirm(): call ngOnInit()');
           this.ngOnInit();
-          //            this.restart_core_button = true;
-          this.cdr.markForCheck();
         }
       });
 
@@ -157,8 +141,8 @@ export class ItemConfigurationComponent implements OnInit {
     this.add_enabled = false;
     if (this.newFilename.length > 0) {
       this.add_enabled = true;
-      for (const filenno in this.filelist) {
-        const fn = this.filelist[filenno].slice(0, -5); // '.yaml' = 5 chars
+      for (const fname of this.filelist()) {
+        const fn = fname.slice(0, -5); // '.yaml' = 5 chars
         if (this.newFilename === fn) {
           this.add_enabled = false;
           this.fileExists = true;
@@ -170,32 +154,19 @@ export class ItemConfigurationComponent implements OnInit {
   addFile() {
     this.newconfig_display = false;
 
-    this.myTextarea = '# ' + this.newFilename + '.yaml\n';
-    this.myTextareaOrig = this.myTextarea;
-    this.myEditFilename = this.newFilename;
-    this.cmReadOnly = false;
+    const text = '# ' + this.newFilename + '.yaml\n';
+    this.myTextarea.set(text);
+    this.myTextareaOrig.set(text);
+    this.myEditFilename.set(this.newFilename);
+    this.cmReadOnly.set(false);
 
     this.fileService
-      .createFile('items', this.myEditFilename, this.myTextarea)
+      .createFile('items', this.myEditFilename(), this.myTextarea())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.myTextareaOrig = this.myTextarea;
-          this.itemFiles = [];
-          this.fileService
-            .getfileList('items')
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe((response) => {
-              this.filelist = <string[]>response;
-              for (let i = 0; i < this.filelist.length; i++) {
-                this.itemFiles = [
-                  ...this.itemFiles,
-                  <SelectItem>{ label: this.filelist[i], value: this.filelist[i] },
-                ];
-              }
-              this.cdr.markForCheck();
-            });
-          this.cdr.markForCheck();
+          this.myTextareaOrig.set(this.myTextarea());
+          this.loadFileList();
         },
         error: (err) => {
           if (err?.status === 409) {
@@ -203,15 +174,14 @@ export class ItemConfigurationComponent implements OnInit {
               severity: 'warn',
               summary: this.translate.instant('COMMON.FILE_EXISTS_TITLE'),
               detail: this.translate.instant('COMMON.FILE_EXISTS_HINT', {
-                filename: this.myEditFilename,
+                filename: this.myEditFilename(),
               }),
               life: 5000,
             });
           }
-          this.myEditFilename = '';
-          this.myTextarea = '';
-          this.cmReadOnly = true;
-          this.cdr.markForCheck();
+          this.myEditFilename.set('');
+          this.myTextarea.set('');
+          this.cmReadOnly.set(true);
         },
       });
   }
@@ -223,17 +193,16 @@ export class ItemConfigurationComponent implements OnInit {
       // this.log.log('itemFileSelected()' , {filename});
       this.getItemFile(filename);
     } else {
-      this.myEditFilename = '';
-      this.myTextarea = '';
-      this.cmReadOnly = true;
-      this.myTextarea = this.translate.instant('ITEM_CONFIG.FILETYPE_UNSUPPORTED');
+      this.myEditFilename.set('');
+      this.cmReadOnly.set(true);
+      this.myTextarea.set(this.translate.instant('ITEM_CONFIG.FILETYPE_UNSUPPORTED'));
     }
   }
 
   getItemFile(filename: string) {
-    this.myEditFilename = '';
-    this.myTextarea = '';
-    this.cmReadOnly = true;
+    this.myEditFilename.set('');
+    this.myTextarea.set('');
+    this.cmReadOnly.set(true);
     if (filename === '') {
       return;
     }
@@ -243,15 +212,13 @@ export class ItemConfigurationComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
-          this.myTextarea = response;
-          this.myTextareaOrig = response;
-          this.myEditFilename = filename;
-          this.cmReadOnly = false;
-          this.cdr.markForCheck();
+          this.myTextarea.set(response);
+          this.myTextareaOrig.set(response);
+          this.myEditFilename.set(filename);
+          this.cmReadOnly.set(false);
         },
         error: () => {
-          this.myTextarea = this.translate.instant('ITEM_CONFIG.FILE_NOT_FOUND');
-          this.cdr.markForCheck();
+          this.myTextarea.set(this.translate.instant('ITEM_CONFIG.FILE_NOT_FOUND'));
         },
       });
   }
@@ -260,22 +227,20 @@ export class ItemConfigurationComponent implements OnInit {
     // this.log.log('LoggingConfigurationComponent.saveConfig');
 
     this.dataService
-      .CheckYamlText(this.myTextarea)
+      .CheckYamlText(this.myTextarea())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        this.myTextOutput = response as string;
-        if (this.myTextOutput.startsWith('ERROR:')) {
-          this.error_display = true;
+        this.myTextOutput.set(response as string);
+        if (this.myTextOutput().startsWith('ERROR:')) {
+          this.error_display.set(true);
         } else {
           this.fileService
-            .saveFile('items', this.myEditFilename, this.myTextarea)
+            .saveFile('items', this.myEditFilename(), this.myTextarea())
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe((response2) => {
-              this.myTextareaOrig = this.myTextarea;
-              this.cdr.markForCheck();
+            .subscribe(() => {
+              this.myTextareaOrig.set(this.myTextarea());
             });
         }
-        this.cdr.markForCheck();
       });
   }
 }

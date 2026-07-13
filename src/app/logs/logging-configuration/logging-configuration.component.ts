@@ -1,11 +1,11 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   DestroyRef,
   inject,
   OnInit,
-  ViewChild,
+  signal,
+  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -38,7 +38,6 @@ import { ServicesApiService } from '../../common/services/services-api.service';
 })
 export class LoggingConfigurationComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
-  private readonly cdr = inject(ChangeDetectorRef);
   private fileService = inject(FilesApiService);
   private dataService = inject(ServicesApiService);
   private translate = inject(TranslateService);
@@ -47,67 +46,56 @@ export class LoggingConfigurationComponent implements OnInit {
   // -----------------------------------------------------
   //  Vars for the YAML syntax checker
   //
-  @ViewChild('codeeditor') codeEditor?: CodeEditorComponent;
+  readonly codeEditor = viewChild<CodeEditorComponent>('codeeditor');
 
-  myEditFilename!: string;
-  myTextarea = '';
-  myTextareaOrig = '';
+  myEditFilename = 'logging';
+  readonly myTextarea = signal('');
+  readonly myTextareaOrig = signal('');
 
-  editorHelp_display = false;
-  error_display = false;
-  myTextOutput = '';
+  readonly editorHelp_display = signal(false);
+  readonly error_display = signal(false);
+  readonly myTextOutput = signal('');
 
-  saveResult: LoggingConfigSaveResult | null = null;
-
-  public setTitle(newTitle: string) {
-    this.titleService.setTitle(newTitle);
-  }
+  readonly saveResult = signal<LoggingConfigSaveResult | null>(null);
 
   ngOnInit() {
-    // console.log('LoggingConfigurationComponent.ngOnInit');
-
-    this.myEditFilename = 'logging';
-
-    this.setTitle(this.translate.instant('MENU.LOGGING_CONFIGURATION'));
+    this.titleService.setTitle(this.translate.instant('MENU.LOGGING_CONFIGURATION'));
 
     this.fileService
       .readFile('logging')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response2) => {
-          this.myTextarea = response2;
-          this.myTextareaOrig = response2;
-          this.cdr.markForCheck();
+          this.myTextarea.set(response2);
+          this.myTextareaOrig.set(response2);
         },
         error: () => {
-          this.cdr.markForCheck();
+          // error already logged by the service; nothing to update here
         },
       });
   }
 
   saveConfig() {
-    this.saveResult = null;
+    this.saveResult.set(null);
 
     this.dataService
-      .CheckYamlText(this.myTextarea)
+      .CheckYamlText(this.myTextarea())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        this.myTextOutput = response as string;
-        if (this.myTextOutput.startsWith('ERROR:')) {
-          this.error_display = true;
-          this.cdr.markForCheck();
+        this.myTextOutput.set(response as string);
+        if (this.myTextOutput().startsWith('ERROR:')) {
+          this.error_display.set(true);
           return;
         }
 
         this.fileService
-          .saveLoggingConfig(this.myTextarea)
+          .saveLoggingConfig(this.myTextarea())
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe((result) => {
-            this.saveResult = result;
+            this.saveResult.set(result);
             if (result.result === 'ok') {
-              this.myTextareaOrig = this.myTextarea;
+              this.myTextareaOrig.set(this.myTextarea());
             }
-            this.cdr.markForCheck();
           });
       });
   }

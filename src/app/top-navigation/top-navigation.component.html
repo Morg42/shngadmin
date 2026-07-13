@@ -2,8 +2,8 @@
   <img class="logo" ngSrc="assets/img/logo_long.png" height="29" width="125" priority />
   <img class="logo-small" ngSrc="assets/img/logo_small_32x32.png" height="32" width="32" />
   <div #topnav class="topnav" id="myTopnav">
-    @for (menuEntry of this.menu; track menuEntry.label) {
-      @if (menuEntry.visible === true && this.loggedIn) {
+    @for (menuEntry of this.menu(); track menuEntry.label) {
+      @if (menuEntry.visible === true && this.loggedIn()) {
         @if (menuEntry.items.length === 0) {
           <a
             (click)="disableResponsiveMenu(menuEntry, false)"
@@ -36,13 +36,13 @@
       }
     }
 
-    @if (!(loggedIn && loginRequired)) {
+    @if (!(loggedIn() && loginRequired())) {
       <a class="logout" style="color: var(--text-caption)"
         ><i class="fas fa-sign-out-alt"></i>{{ 'BUTTON.LOGOUT' | translate }}</a
       >
       <a class="logout-small" style="color: var(--text-caption)"><i class="fas fa-sign-out-alt"></i></a>
     }
-    @if (loggedIn && loginRequired) {
+    @if (loggedIn() && loginRequired()) {
       <a class="logout" (click)="logout()"><i class="fas fa-sign-out-alt"></i>{{ 'BUTTON.LOGOUT' | translate }}</a>
       <a class="logout-small" (click)="logout()"><i class="fas fa-sign-out-alt"></i></a>
     }
@@ -88,10 +88,10 @@
 
   <!-- Mobile controls: shown only at ≤720px -->
   <div class="navbar-mobile">
-    @if (!(loggedIn && loginRequired)) {
+    @if (!(loggedIn() && loginRequired())) {
       <a style="color: var(--text-caption)"><i class="fas fa-sign-out-alt"></i></a>
     }
-    @if (loggedIn && loginRequired) {
+    @if (loggedIn() && loginRequired()) {
       <a (click)="logout()"><i class="fas fa-sign-out-alt"></i></a>
     }
     <a [href]="helpUrl" target="_blank" rel="noopener"><i class="fas fa-question-circle"></i></a>
@@ -113,8 +113,8 @@
 
 <!-- Side drawer (mobile only, always in DOM, off-screen when closed) -->
 <nav class="drawer" [class.drawer-open]="drawerOpen" aria-label="Main navigation">
-  @for (menuEntry of this.menu; track menuEntry.label) {
-    @if (menuEntry.visible === true && this.loggedIn) {
+  @for (menuEntry of this.menu(); track menuEntry.label) {
+    @if (menuEntry.visible === true && this.loggedIn()) {
       @if (menuEntry.items.length === 0) {
         <a
           (click)="closeDrawer()"
@@ -163,7 +163,7 @@
     >
       <i class="fas fa-desktop"></i> {{ 'THEME.SYSTEM' | translate }}
     </a>
-    @if (loggedIn && loginRequired) {
+    @if (loggedIn() && loginRequired()) {
       <a class="drawer-logout-link" (click)="logout(); closeDrawer()">
         <i class="fas fa-sign-out-alt"></i> {{ 'BUTTON.LOGOUT' | translate }}
       </a>

@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   DestroyRef,
   inject,
   OnInit,
+  signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
@@ -56,7 +56,6 @@ export const APP_VERSION_REF = `(${GIT_REF})`;
 })
 export class AppComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
-  private readonly cdr = inject(ChangeDetectorRef);
   private readonly log = inject(LogService);
   private translate = inject(TranslateService);
   public authService = inject(AuthService);
@@ -69,20 +68,20 @@ export class AppComponent implements OnInit {
   public APP_VERSION = APP_VERSION;
 
   title = 'shngadmin';
-  navigating = false;
+  readonly navigating = signal(false);
 
   constructor() {
     this.log.log('AppComponent.constructor:');
 
     this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
       if (event instanceof NavigationStart) {
-        this.navigating = true;
+        this.navigating.set(true);
       } else if (
         event instanceof NavigationEnd ||
         event instanceof NavigationCancel ||
         event instanceof NavigationError
       ) {
-        this.navigating = false;
+        this.navigating.set(false);
 
         // Strip the cache-busting _cb parameter injected by checkForUpdate()
         // after a stale-frontend reload.  Use Location.replaceState (not
@@ -97,7 +96,6 @@ export class AppComponent implements OnInit {
           this.location.replaceState(clean);
         }
       }
-      this.cdr.markForCheck();
     });
 
     this.translate.addLangs(['en', 'de', 'fr']);

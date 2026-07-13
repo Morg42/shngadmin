@@ -1,14 +1,17 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   DestroyRef,
-  inject,
   OnInit,
   ViewEncapsulation,
+  computed,
+  inject,
+  signal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
+import { Subject, merge, of } from 'rxjs';
+import { filter, switchMap } from 'rxjs/operators';
 
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
@@ -53,57 +56,56 @@ import { LoggerLineComponent } from '../logger-line/logger-line.component';
 })
 export class LoggerListComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
-  private readonly cdr = inject(ChangeDetectorRef);
   private dataService = inject(LoggersApiService);
   protected router = inject(Router);
   private translate = inject(TranslateService);
   private titleService = inject(Title);
   private readonly log = inject(LogService);
 
-  loggers!: LoggersType;
-  active_plugins!: string[];
-  active_logics!: string[];
-  loggersList: string[] = [];
-  definedHandlers: string[] = [];
+  /** Emits to re-fetch the logger list (after create/delete/modify). */
+  private readonly refresh$ = new Subject<void>();
+
+  /** Fetches once on construction and again on every refresh$ emission;
+   *  responses without a loggers key (error shape) are dropped so the last
+   *  good state stays on screen. */
+  private readonly loggersResponse = toSignal(
+    merge(of(undefined), this.refresh$).pipe(
+      switchMap(() => this.dataService.getLoggers()),
+      filter((r): r is LoggersApiResponse => !!r && typeof r === 'object' && 'loggers' in r),
+    ),
+    {
+      initialValue: {
+        loggers: {} as LoggersType,
+        active_plugins: [],
+        active_logics: [],
+        defined_handlers: [],
+      } as LoggersApiResponse,
+    },
+  );
+
+  readonly loggers = computed(() => this.loggersResponse().loggers);
+  readonly active_plugins = computed(() => this.loggersResponse().active_plugins);
+  readonly active_logics = computed(() => this.loggersResponse().active_logics);
+  readonly loggersList = computed(() => Object.keys(this.loggers()).sort());
+  readonly definedHandlers = computed(() => this.loggersResponse().defined_handlers);
 
   loggerOptions: {}[] = [];
 
-  newlogger_display: boolean = false;
+  readonly newlogger_display = signal(false);
   newlogger_name: string = '';
   newlogger_filename: string = '';
-  newlogger_add_enabled: boolean = false;
-  noLoggerToAdd: boolean = false;
-  //  confirmdelete_display: boolean = false;
-  //  delete_param: {};
+  readonly newlogger_add_enabled = signal(false);
+  readonly noLoggerToAdd = signal(false);
 
   levelDefault: string = '?';
 
-  public setTitle(newTitle: string) {
-    this.titleService.setTitle(newTitle);
-  }
-
   ngOnInit() {
     this.log.log('LoggerListComponent.ngOnInit');
-    this.setTitle(this.translate.instant('MENU.LOGGER_CONFIGURATION'));
-    this.refreshLoggers();
-  }
-
-  private applyLoggersResponse(r: LoggersApiResponse) {
-    this.loggers = r.loggers;
-    this.active_plugins = r.active_plugins;
-    this.active_logics = r.active_logics;
-    this.loggersList = Object.keys(r.loggers).sort();
-    this.definedHandlers = r.defined_handlers;
-    this.cdr.markForCheck();
+    this.titleService.setTitle(this.translate.instant('MENU.LOGGER_CONFIGURATION'));
   }
 
   private refreshLoggers() {
-    this.dataService
-      .getLoggers()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((r) => {
-        if (r && 'loggers' in r) this.applyLoggersResponse(r as LoggersApiResponse);
-      });
+    this.refresh$.next();
   }
 
   baseName(str: string, withExtension = true) {
@@ -117,13 +119,13 @@ export class LoggerListComponent implements OnInit {
 
   levelChanged(logger: string, level: string | null) {
     if (level === null) {
-      this.loggers[logger].active.level = this.levelDefault;
+      this.loggers()[logger].active.level = this.levelDefault;
     }
     this.log.log(
       "levelChanged: Logger '" + logger + "' from ",
-      this.loggers[logger].level + ' to ' + level,
+      this.loggers()[logger].level + ' to ' + level,
     );
-    this.loggers[logger].level = this.loggers[logger].active.level;
+    this.loggers()[logger].level = this.loggers()[logger].active.level;
 
     this.dataService
       .setLoggerLevel(logger, level ?? '')
@@ -137,7 +139,7 @@ export class LoggerListComponent implements OnInit {
         }
       });
 
-    this.loggers[logger].level = this.loggers[logger].active.level;
+    this.loggers()[logger].level = this.loggers()[logger].active.level;
   }
 
   // ------------------------------------------------------------------------------
@@ -149,7 +151,7 @@ export class LoggerListComponent implements OnInit {
       return true;
     }
     if (logger.startsWith('logics.')) {
-      if (this.active_logics.includes(logger.slice(7))) {
+      if (this.active_logics().includes(logger.slice(7))) {
         return true;
       }
     }
@@ -158,17 +160,17 @@ export class LoggerListComponent implements OnInit {
 
   newLogicLogger() {
     this.loggerOptions = [{ label: '', value: '' }];
-    for (let i = 0; i < this.active_logics.length; i++) {
-      const lg = 'logics.' + this.active_logics[i];
-      if (!this.loggersList.includes(lg) || this.loggers[lg].not_conf === true) {
+    for (let i = 0; i < this.active_logics().length; i++) {
+      const lg = 'logics.' + this.active_logics()[i];
+      if (!this.loggersList().includes(lg) || this.loggers()[lg].not_conf === true) {
         this.loggerOptions.push({ label: lg, value: lg });
       }
     }
 
     this.newlogger_name = '';
     this.newlogger_filename = '';
-    this.newlogger_display = true;
-    this.noLoggerToAdd = this.loggerOptions.length === 1;
+    this.newlogger_display.set(true);
+    this.noLoggerToAdd.set(this.loggerOptions.length === 1);
   }
 
   // ------------------------------------------------------------------------------
@@ -180,7 +182,7 @@ export class LoggerListComponent implements OnInit {
       return true;
     }
     if (logger.startsWith('plugins.')) {
-      if (this.active_plugins.includes(logger.slice(8).split('.')[0])) {
+      if (this.active_plugins().includes(logger.slice(8).split('.')[0])) {
         return true;
       }
     }
@@ -189,17 +191,17 @@ export class LoggerListComponent implements OnInit {
 
   newPluginLogger() {
     this.loggerOptions = [{ label: '', value: '' }];
-    for (let i = 0; i < this.active_plugins.length; i++) {
-      const lg = 'plugins.' + this.active_plugins[i];
-      if (!this.loggersList.includes(lg) || this.loggers[lg].not_conf === true) {
+    for (let i = 0; i < this.active_plugins().length; i++) {
+      const lg = 'plugins.' + this.active_plugins()[i];
+      if (!this.loggersList().includes(lg) || this.loggers()[lg].not_conf === true) {
         this.loggerOptions.push({ label: lg, value: lg });
       }
     }
 
     this.newlogger_name = '';
     this.newlogger_filename = '';
-    this.newlogger_display = true;
-    this.noLoggerToAdd = this.loggerOptions.length === 1;
+    this.newlogger_display.set(true);
+    this.noLoggerToAdd.set(this.loggerOptions.length === 1);
   }
 
   pluginLoggerIsDeletable(logger: string) {
@@ -207,7 +209,7 @@ export class LoggerListComponent implements OnInit {
       return false;
     }
     if (logger.startsWith('plugins.')) {
-      if (this.loggersList.includes(logger)) {
+      if (this.loggersList().includes(logger)) {
         return true;
       }
     }
@@ -222,10 +224,10 @@ export class LoggerListComponent implements OnInit {
     this.log.log('newItemLogger');
 
     this.loggerOptions = [{ label: '', value: '' }];
-    for (let i = 0; i < this.loggersList.length; i++) {
-      if (this.loggersList[i].startsWith('items.')) {
-        const lg = this.loggersList[i];
-        if (this.loggers[lg].level === undefined || this.loggers[lg].not_conf === true) {
+    for (let i = 0; i < this.loggersList().length; i++) {
+      if (this.loggersList()[i].startsWith('items.')) {
+        const lg = this.loggersList()[i];
+        if (this.loggers()[lg].level === undefined || this.loggers()[lg].not_conf === true) {
           this.loggerOptions.push({ label: lg, value: lg });
         }
       }
@@ -233,8 +235,8 @@ export class LoggerListComponent implements OnInit {
 
     this.newlogger_name = '';
     this.newlogger_filename = '';
-    this.newlogger_display = true;
-    this.noLoggerToAdd = this.loggerOptions.length === 1;
+    this.newlogger_display.set(true);
+    this.noLoggerToAdd.set(this.loggerOptions.length === 1);
   }
 
   // ------------------------------------------------------------------------------
@@ -243,14 +245,14 @@ export class LoggerListComponent implements OnInit {
 
   newAdvancedLogger() {
     this.loggerOptions = [{ label: '', value: '' }];
-    for (let i = 0; i < this.loggersList.length; i++) {
+    for (let i = 0; i < this.loggersList().length; i++) {
       if (
-        this.loggersList[i].startsWith('functions.') ||
-        this.loggersList[i].startsWith('lib.') ||
-        this.loggersList[i].startsWith('modules.')
+        this.loggersList()[i].startsWith('functions.') ||
+        this.loggersList()[i].startsWith('lib.') ||
+        this.loggersList()[i].startsWith('modules.')
       ) {
-        const lg = this.loggersList[i];
-        if (this.loggers[lg].level === undefined || this.loggers[lg].not_conf === true) {
+        const lg = this.loggersList()[i];
+        if (this.loggers()[lg].level === undefined || this.loggers()[lg].not_conf === true) {
           this.loggerOptions.push({ label: lg, value: lg });
         }
       }
@@ -258,8 +260,8 @@ export class LoggerListComponent implements OnInit {
 
     this.newlogger_name = '';
     this.newlogger_filename = '';
-    this.newlogger_display = true;
-    this.noLoggerToAdd = this.loggerOptions.length === 1;
+    this.newlogger_display.set(true);
+    this.noLoggerToAdd.set(this.loggerOptions.length === 1);
   }
 
   // ------------------------------------------------------------------------------
@@ -273,11 +275,11 @@ export class LoggerListComponent implements OnInit {
   }
 
   newLoggerSelected(loggerOption: string) {
-    this.newlogger_add_enabled = loggerOption !== '';
+    this.newlogger_add_enabled.set(loggerOption !== '');
   }
 
   createLogger() {
-    this.newlogger_display = false;
+    this.newlogger_display.set(false);
 
     this.dataService
       .addLogger(this.newlogger_name)

@@ -3,7 +3,7 @@
     <form class="form-signin" #f="ngForm" (ngSubmit)="signIn(f.value)">
       <h2 class="form-signin-heading">{{ 'LOGIN.PLEASE_SIGN_IN' | translate }}</h2>
 
-      @if (invalidLogin) {
+      @if (invalidLogin()) {
         <p-message severity="error" [text]="'LOGIN.INVALID_SIGNIN' | translate"></p-message>
       }
       @if (authService.expiredLogin) {

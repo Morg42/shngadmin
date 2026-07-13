@@ -70,18 +70,18 @@ describe('SceneConfigurationComponent', () => {
   });
 
   it('should populate filelist from fixture', () => {
-    expect(component.filelist.length).toBe(fixtureFileList.length);
+    expect(component.filelist().length).toBe(fixtureFileList.length);
   });
 
   it('should populate sceneFiles SelectItem list with fixture entries', () => {
-    expect(component.sceneFiles.length).toBe(fixtureFileList.length);
+    expect(component.sceneFiles().length).toBe(fixtureFileList.length);
   });
 
   it('should set first sceneFile label to first fixture filename', () => {
-    expect(component.sceneFiles[0].label).toBe(fixtureFileList[0]);
+    expect(component.sceneFiles()[0].label).toBe(fixtureFileList[0]);
   });
 
   it('should set first sceneFile value to first fixture filename', () => {
-    expect(component.sceneFiles[0].value).toBe(fixtureFileList[0]);
+    expect(component.sceneFiles()[0].value).toBe(fixtureFileList[0]);
   });
 });

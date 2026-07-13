@@ -82,18 +82,18 @@ describe('ServicesComponent', () => {
   });
 
   it('should load serverInfo with backup_stem from ServerApiService', () => {
-    expect(component.serverInfo.backup_stem).toBe(serverInfoStub.backup_stem);
+    expect(component.serverInfo().backup_stem).toBe(serverInfoStub.backup_stem);
   });
 
   it('should populate cacheInfo from getCacheOrphans fixture', () => {
-    expect(component.cacheInfo.length).toBe(cacheFixture.length);
+    expect(component.cacheInfo().length).toBe(cacheFixture.length);
   });
 
   it('should set the first cache entry filename correctly', () => {
-    expect(component.cacheInfo[0].filename).toBe(cacheFixture[0].filename);
+    expect(component.cacheInfo()[0].filename).toBe(cacheFixture[0].filename);
   });
 
   it('should build valid_languagelist with 3 language options', () => {
-    expect(component.valid_languagelist.length).toBe(3);
+    expect(component.valid_languagelist().length).toBe(3);
   });
 });

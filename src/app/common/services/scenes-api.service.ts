@@ -18,10 +18,6 @@ export class ScenesApiService {
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'scenes/';
     return this.http.get(url).pipe(
-      map((response) => {
-        const result = response;
-        return result;
-      }),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'ScenesApiService (getScenes): Could not read scenes data' + ' - ' + err.error.error,
@@ -33,7 +29,7 @@ export class ScenesApiService {
 
   reloadScene(name: string) {
     const apiUrl = this.appConfig.apiUrl;
-    const url = apiUrl + 'scenes/reload/' + name;
+    const url = apiUrl + 'scenes/reload/' + encodeURIComponent(name);
 
     return this.http.put(url, '', { responseType: 'text' }).pipe(
       map((response) => {

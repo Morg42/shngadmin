@@ -38,15 +38,15 @@
                 </tr>
               </thead>
               <tbody>
-                @for (l of loggersList; track l) {
+                @for (l of loggersList(); track l) {
                   @if (l.startsWith('logics.') || l === 'logics') {
-                    @if (loggers[l].level !== undefined) {
+                    @if (loggers()[l].level !== undefined) {
                       <tr>
                         <app-logger-line
                           [loggerName]="l"
-                          [logger]="loggers[l]"
+                          [logger]="loggers()[l]"
                           [loggerActive]="logic_loaded(l)"
-                          [definedHandlers]="definedHandlers"
+                          [definedHandlers]="definedHandlers()"
                           (levelChange)="levelChanged(l, $event)"
                           (loggerDelete)="loggerDelete(l)"
                           (modifyHandlers)="modifyHandlers(l, $event)"
@@ -88,15 +88,15 @@
                 </tr>
               </thead>
               <tbody>
-                @for (l of loggersList; track l) {
+                @for (l of loggersList(); track l) {
                   @if (l.startsWith('plugins.') || l === 'plugins') {
-                    @if (loggers[l].level !== undefined) {
+                    @if (loggers()[l].level !== undefined) {
                       <tr>
                         <app-logger-line
                           [loggerName]="l"
-                          [logger]="loggers[l]"
+                          [logger]="loggers()[l]"
                           [loggerActive]="plugin_loaded(l)"
-                          [definedHandlers]="definedHandlers"
+                          [definedHandlers]="definedHandlers()"
                           (levelChange)="levelChanged(l, $event)"
                           (loggerDelete)="loggerDelete(l)"
                         ></app-logger-line>
@@ -137,15 +137,15 @@
                 </tr>
               </thead>
               <tbody>
-                @for (l of loggersList; track l) {
+                @for (l of loggersList(); track l) {
                   @if (l.startsWith('items.') || l === 'items') {
-                    @if (loggers[l].level !== undefined) {
+                    @if (loggers()[l].level !== undefined) {
                       <tr>
                         <app-logger-line
                           [loggerName]="l"
-                          [logger]="loggers[l]"
+                          [logger]="loggers()[l]"
                           [loggerActive]="true"
-                          [definedHandlers]="definedHandlers"
+                          [definedHandlers]="definedHandlers()"
                           (levelChange)="levelChanged(l, $event)"
                           (loggerDelete)="loggerDelete(l)"
                         ></app-logger-line>
@@ -190,16 +190,16 @@
                   <tr>
                     <app-logger-line
                       [loggerName]="'root'"
-                      [logger]="loggers['root']"
+                      [logger]="loggers()['root']"
                       [loggerActive]="true"
-                      [definedHandlers]="definedHandlers"
+                      [definedHandlers]="definedHandlers()"
                       (levelChange)="levelChanged('root', $event)"
                       (loggerDelete)="loggerDelete('root')"
                     ></app-logger-line>
                   </tr>
                 }
 
-                @for (l of loggersList; track l) {
+                @for (l of loggersList(); track l) {
                   @if (
                     l.startsWith('functions.') ||
                     l.startsWith('lib.') ||
@@ -209,13 +209,13 @@
                     l === 'modules' ||
                     l === '__main__'
                   ) {
-                    @if (loggers[l].level !== undefined) {
+                    @if (loggers()[l].level !== undefined) {
                       <tr>
                         <app-logger-line
                           [loggerName]="l"
-                          [logger]="loggers[l]"
+                          [logger]="loggers()[l]"
                           [loggerActive]="true"
-                          [definedHandlers]="definedHandlers"
+                          [definedHandlers]="definedHandlers()"
                           (levelChange)="levelChanged(l, $event)"
                           (loggerDelete)="loggerDelete(l)"
                         ></app-logger-line>
@@ -244,7 +244,7 @@
                 </tr>
               </thead>
               <tbody>
-                @for (l of loggersList; track l) {
+                @for (l of loggersList(); track l) {
                   @if (
                     !(
                       l === 'functions' ||
@@ -263,13 +263,13 @@
                       l === '__main__'
                     )
                   ) {
-                    @if (loggers[l].active !== undefined) {
+                    @if (loggers()[l].active !== undefined) {
                       <tr>
                         <app-logger-line
                           [loggerName]="l"
-                          [logger]="loggers[l]"
+                          [logger]="loggers()[l]"
                           [loggerActive]="true"
-                          [definedHandlers]="definedHandlers"
+                          [definedHandlers]="definedHandlers()"
                           (levelChange)="levelChanged(l, $event)"
                           (loggerDelete)="loggerDelete(l)"
                         ></app-logger-line>
@@ -295,14 +295,15 @@
 
 <p-dialog
   header=""
-  [(visible)]="newlogger_display"
+  [visible]="newlogger_display()"
+  (visibleChange)="newlogger_display.set($event)"
   [modal]="true"
   blockScroll="true"
   [closable]="false"
   [maximizable]="false"
   [minY]="100"
   [style]="{ width: '600px', minWidth: '600px', minHeight: '450px' }"
-  (document:keydown.escape)="newlogger_display && (newlogger_display = false)"
+  (document:keydown.escape)="newlogger_display() && newlogger_display.set(false)"
 >
   <ng-template pTemplate="header">
     {{ 'LOGGERS.CREATE_LOGGER' | translate }}
@@ -320,7 +321,7 @@
       placeholder="{{ 'none selected' }}"
       [(ngModel)]="this.newlogger_name"
       (ngModelChange)="newLoggerSelected($event)"
-      (keydown.enter)="newlogger_add_enabled && createLogger()"
+      (keydown.enter)="newlogger_add_enabled() && createLogger()"
     ></p-select>
     <!--
     <input [(ngModel)]="newlogger_name" id="nlog" type="text" (input)="checkNewLogicInput();" pInputText placeholder="" style="position: absolute; margin-left: 60px; width: 250px" [ngStyle]="{'width': 30}" autofocus/>
@@ -331,12 +332,12 @@
   <br /><br />
   <br /><br />
   <br />
-  @if (this.noLoggerToAdd) {
+  @if (noLoggerToAdd()) {
     <p-message
       severity="error"
       [text]="'LOGGERS.NO_LOGGER_TO_ADD' | translate"
       [closable]="true"
-      (onClose)="this.noLoggerToAdd = false"
+      (onClose)="noLoggerToAdd.set(false)"
       styleClass="mt-2"
     ></p-message>
   }
@@ -347,7 +348,7 @@
       id="createLoggerButton"
       icon="pi pi-check"
       (click)="this.createLogger()"
-      [disabled]="!newlogger_add_enabled"
+      [disabled]="!newlogger_add_enabled()"
       label="{{ 'BUTTON.CREATE' | translate }}"
       class="ui-button-success"
       autofocus
@@ -357,7 +358,7 @@
       type="button"
       id="cancleCreateLoggerButton"
       icon="pi pi-times"
-      (click)="newlogger_display = false"
+      (click)="newlogger_display.set(false)"
       label="{{ 'BUTTON.ABORT' | translate }}"
       class="ui-button-secondary"
     ></button>

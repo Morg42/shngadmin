@@ -54,11 +54,11 @@ describe('PluginsComponent', () => {
   });
 
   it('should populate plugininfo with all plugins from fixture', () => {
-    expect(component.plugininfo.length).toBe(fixtureData.length);
+    expect(component.plugininfo().length).toBe(fixtureData.length);
   });
 
   it('should set loading to false after data arrives', () => {
-    expect(component.loading).toBe(false);
+    expect(component.loading()).toBe(false);
   });
 
   it('should render one tbody row per plugin', () => {
@@ -73,7 +73,7 @@ describe('PluginsComponent', () => {
       const kb = b.pluginname + b.configname.toLowerCase();
       return ka > kb ? 1 : kb > ka ? -1 : 0;
     });
-    expect(component.plugininfo[0].configname).toBe(sorted[0].configname);
+    expect(component.plugininfo()[0].configname).toBe(sorted[0].configname);
   });
 
   // -------------------------------------------------------------------------
@@ -81,29 +81,29 @@ describe('PluginsComponent', () => {
   // -------------------------------------------------------------------------
 
   it('filterText starts empty', () => {
-    expect(component.filterText).toBe('');
+    expect(component.filterText()).toBe('');
   });
 
   it('onFilterChange() sets filterText', () => {
     component.onFilterChange('avm');
-    expect(component.filterText).toBe('avm');
+    expect(component.filterText()).toBe('avm');
   });
 
   it('clearFilter() resets filterText to empty string', () => {
-    component.filterText = 'avm';
+    component.filterText.set('avm');
     component.clearFilter();
-    expect(component.filterText).toBe('');
+    expect(component.filterText()).toBe('');
   });
 
   it('filteredPlugins returns all plugins when filterText is empty', () => {
-    component.filterText = '';
-    expect(component.filteredPlugins.length).toBe(component.plugininfo.length);
+    component.filterText.set('');
+    expect(component.filteredPlugins().length).toBe(component.plugininfo().length);
   });
 
   it('filteredPlugins filters by configname (case-insensitive)', () => {
     // 'avm' appears in configname of two fixture entries (willy_tel, Fritzbox_wz)
     component.onFilterChange('avm');
-    const results = component.filteredPlugins;
+    const results = component.filteredPlugins();
     expect(results.length).toBeGreaterThan(0);
     expect(
       results.every(
@@ -117,7 +117,7 @@ describe('PluginsComponent', () => {
 
   it('filteredPlugins returns empty array when no plugin matches', () => {
     component.onFilterChange('zzznomatch');
-    expect(component.filteredPlugins.length).toBe(0);
+    expect(component.filteredPlugins().length).toBe(0);
   });
 
   // -------------------------------------------------------------------------
@@ -126,15 +126,15 @@ describe('PluginsComponent', () => {
 
   it('sortBy() sorts plugins ascending by the given field', () => {
     component.sortBy('configname');
-    const names = component.plugininfo.map((p) => p.configname.toLowerCase());
+    const names = component.plugininfo().map((p) => p.configname.toLowerCase());
     expect(names).toEqual([...names].sort());
   });
 
   it('sortBy() toggles sort direction on second call with same field', () => {
     component.sortBy('pluginname');
-    const asc = component.plugininfo.map((p) => p.pluginname.toLowerCase());
+    const asc = component.plugininfo().map((p) => p.pluginname.toLowerCase());
     component.sortBy('pluginname'); // second call → descending
-    const desc = component.plugininfo.map((p) => p.pluginname.toLowerCase());
+    const desc = component.plugininfo().map((p) => p.pluginname.toLowerCase());
     expect(desc).toEqual([...asc].reverse());
   });
 
@@ -142,6 +142,6 @@ describe('PluginsComponent', () => {
     component.sortBy('pluginname');
     component.sortBy('pluginname'); // now descending
     component.sortBy('configname'); // new field → ascending again
-    expect(component.sortOrder).toBe(1);
+    expect(component.sortOrder()).toBe(1);
   });
 });

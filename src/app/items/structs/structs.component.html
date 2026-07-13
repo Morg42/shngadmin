@@ -1,12 +1,8 @@
 <div class="shngbody">
   <div class="shng-page-header">{{ 'MENU.ITEM_STRUCTS' | translate }}</div>
   <div class="shng-page-body page-body">
-    <p-accordion
-      [multiple]="true"
-      (onOpen)="groupExpanded[structsGroups[$event.index]] = true"
-      (onClose)="groupExpanded[structsGroups[$event.index]] = false"
-    >
-      @for (group of structsGroups; track group) {
+    <p-accordion [multiple]="true">
+      @for (group of structsGroups(); track group) {
         <p-accordion-panel [value]="$index">
           <p-accordion-header>
             @if (group === 'my') {
@@ -17,26 +13,16 @@
             }
           </p-accordion-header>
           <p-accordion-content>
-            <p-accordion
-              [multiple]="true"
-              (onOpen)="
-                structExpanded2[1000 * structsGroups.indexOf(group) + $event.index] = true;
-                doConsoleLog(group + ':' + structsList[$event.index])
-              "
-              (onClose)="
-                structExpanded2[1000 * structsGroups.indexOf(group) + $event.index] = false;
-                doConsoleLog(-1 * (1000 * structsGroups.indexOf(group) + $event.index))
-              "
-            >
+            <p-accordion [multiple]="true">
               @for (struct of getStructListByGroup(group); track struct) {
                 @if (struct.indexOf(group + '.') === 0 || group === globalStructsID || group === 'my') {
                   <p-accordion-panel [value]="$index">
                     <p-accordion-header>
-                      @if (structsDict[struct]['name'] === undefined) {
+                      @if (structsDict()[struct]['name'] === undefined) {
                         <span>{{ struct }}</span>
                       }
-                      @if (structsDict[struct]['name'] !== undefined) {
-                        <span>{{ struct }}</span> &nbsp; &nbsp; ({{ structsDict[struct]['name'] }})
+                      @if (structsDict()[struct]['name'] !== undefined) {
+                        <span>{{ struct }}</span> &nbsp; &nbsp; ({{ structsDict()[struct]['name'] }})
                       }
                     </p-accordion-header>
                     <p-accordion-content>
@@ -47,7 +33,7 @@
                           type="button"
                           style="margin-right: 5px; margin-bottom: 4px"
                           icon="fa fa-folder"
-                          (click)="collapseAll(displayTrees[struct], struct)"
+                          (click)="collapseAll(displayTrees()[struct], struct)"
                           class="ui-button-secondary"
                         ></button>
                         <button
@@ -56,12 +42,12 @@
                           type="button"
                           style="margin-right: 5px; margin-bottom: 4px"
                           icon="fa fa-folder-open"
-                          (click)="expandAll(displayTrees[struct], struct)"
+                          (click)="expandAll(displayTrees()[struct], struct)"
                           class="ui-button-secondary"
                         ></button>
 
                         <p-tree
-                          [value]="displayTrees[struct]"
+                          [value]="displayTrees()[struct]"
                           selectionMode="single"
                           [(selection)]="selectedItem"
                           emptyMessage="{{ 'ITEMS.NO ITEMS' | translate }}"
@@ -80,42 +66,4 @@
       }
     </p-accordion>
   </div>
-
-  <!--
-  <h4 style="margin-left: 15px; margin-top: 5px;">{{ 'ITEMS.STRUCT_TEMPLATES'|translate }}</h4>
-  <p-accordion [multiple]="true" (onOpen)="structExpanded[structsList[$event.index]]=true"  (onClose)="structExpanded[structsList[$event.index]]=false">
-    @for (struct of structsList; track struct) {
-      <p-accordionTab>
-        <ng-template pTemplate="header">
-          @if (structsDict[struct]['name'] === undefined) {
-            <span style="font-size: large; font-weight: bold; ">{{struct}}</span>
-          }
-          @if (structsDict[struct]['name'] !== undefined) {
-            <span style="font-size: large; font-weight: bold; ">{{struct}}</span> &nbsp; &nbsp; ({{structsDict[struct]['name']}})
-          }
-
-          @if (structExpanded[struct] === true) {
-            <button pButton label="{{ 'ITEMS.REDUCE ALL'|translate }}" type="button" style="margin-right: 5px" icon="fa fa-folder" (click)="$event.stopPropagation(); collapseAll(displayTrees[struct])" class="float-sm-right ui-button-secondary"></button>
-            <button pButton label="{{ 'ITEMS.EXPAND ALL'|translate }}" type="button" style="margin-right: 5px" icon="fa fa-folder-open" (click)="$event.stopPropagation(); expandAll(displayTrees[struct])" class="float-sm-right ui-button-secondary"></button>
-          }
-
-        </ng-template>
-
-        <div style="margin-left: 17px;">
-
-          <p-tree [value]="displayTrees[struct]"
-                  selectionMode="single"
-                  [(selection)]="selectedItem"
-                  emptyMessage="{{'ITEMS.NO ITEMS'|translate}}"
-                  [style]="{width: '100%'}">
-            <ng-template let-node  pTemplate="default">
-              {{node.label}} &nbsp;
-            </ng-template>
-
-          </p-tree>
-
-        </div>
-      </p-accordionTab>
-    }
-  </p-accordion>
---></div>
+</div>

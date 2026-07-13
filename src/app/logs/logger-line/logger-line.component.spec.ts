@@ -22,8 +22,8 @@ describe('LoggerLineComponent', () => {
     component = fixture.componentInstance;
     // All @Input() fields are required by the template
     component.loggerName = 'plugins.test';
-    component.loggerActive = false;
-    component.definedHandlers = [];
+    fixture.componentRef.setInput('loggerActive', false);
+    fixture.componentRef.setInput('definedHandlers', []);
     component.logger = { level: 'DEFAULT', active: { level: 'DEFAULT' }, propagate: true } as any;
     fixture.detectChanges();
   });

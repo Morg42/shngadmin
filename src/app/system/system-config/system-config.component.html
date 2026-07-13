@@ -14,7 +14,7 @@
       <p-tabpanels>
         <p-tabpanel value="0">
           <div class="tab-content">
-            <p-table [columns]="common_parameter_cols" [value]="common_parameters" selectionMode="single">
+            <p-table [columns]="common_parameter_cols()" [value]="common_parameters()" selectionMode="single">
               <ng-template pTemplate="header" let-columns>
                 <tr>
                   @for (col of columns; track col.field) {
@@ -46,7 +46,7 @@
                             type="button"
                             class="btn-shng btn btn-sm"
                             style="width: 100%"
-                            [disabled]="configEtcChecking"
+                            [disabled]="configEtcChecking()"
                             (click)="checkConfigEtc(true)"
                             icon="fas fa-search"
                             label="{{ 'SYSTEM.CONFIG_ETC_CHECK' | translate }}"
@@ -56,16 +56,16 @@
                         <!-- config_etc description cell: module.yaml text + status on second line -->
                         <div [innerHTML]="rowData[col.field]"></div>
                         <div style="margin-top: 6px">
-                          @if (configEtcChecking) {
+                          @if (configEtcChecking()) {
                             <i class="pi pi-spin pi-spinner"></i>
                           } @else if (configEtcActive) {
                             <p-message severity="success" [text]="'SYSTEM.CONFIG_ETC_ACTIVE' | translate"></p-message>
-                          } @else if (configEtcCheckResult?.['safe'] === true) {
+                          } @else if (configEtcCheckResult()?.['safe'] === true) {
                             <p-message
                               severity="info"
                               [text]="'SYSTEM.CONFIG_ETC_INACTIVE_SAFE' | translate"
                             ></p-message>
-                          } @else if (configEtcCheckResult !== null) {
+                          } @else if (configEtcCheckResult() !== null) {
                             <p-message
                               severity="warn"
                               [text]="'SYSTEM.CONFIG_ETC_INACTIVE_UNSAFE' | translate"
@@ -87,7 +87,7 @@
 
         <p-tabpanel value="1">
           <div class="tab-content">
-            <p-table [columns]="http_parameter_cols" [value]="http_parameters" selectionMode="single">
+            <p-table [columns]="http_parameter_cols()" [value]="http_parameters()" selectionMode="single">
               <ng-template pTemplate="header" let-columns>
                 <tr>
                   @for (col of columns; track col.field) {
@@ -146,7 +146,7 @@
 
         <p-tabpanel value="2">
           <div class="tab-content">
-            <p-table [columns]="websocket_parameter_cols" [value]="websocket_parameters" selectionMode="single">
+            <p-table [columns]="websocket_parameter_cols()" [value]="websocket_parameters()" selectionMode="single">
               <ng-template pTemplate="header" let-columns>
                 <tr>
                   @for (col of columns; track col.field) {
@@ -209,7 +209,7 @@
 
         <p-tabpanel value="3">
           <div class="tab-content">
-            <p-table [columns]="admin_parameter_cols" [value]="admin_parameters" selectionMode="single">
+            <p-table [columns]="admin_parameter_cols()" [value]="admin_parameters()" selectionMode="single">
               <ng-template pTemplate="header" let-columns>
                 <tr>
                   @for (col of columns; track col.field) {
@@ -248,7 +248,7 @@
 
         <p-tabpanel value="4">
           <div class="tab-content">
-            <p-table [columns]="mqtt_parameter_cols" [value]="mqtt_parameters" selectionMode="single">
+            <p-table [columns]="mqtt_parameter_cols()" [value]="mqtt_parameters()" selectionMode="single">
               <ng-template pTemplate="header" let-columns>
                 <tr>
                   @for (col of columns; track col.field) {
@@ -288,10 +288,10 @@
     </p-tabs>
   </div>
   <div class="body-footer">
-    @if (dialog_readonly === false && restart_core_button) {
+    @if (dialog_readonly === false && restart_core_button()) {
       <a class="shng-text-sm">{{ 'RESTART FOR CHANGES' | translate }}</a>
     }
-    @if (dialog_readonly === false && !restart_core_button) {
+    @if (dialog_readonly === false && !restart_core_button()) {
       <a class="shng-text-sm">&nbsp;</a>
     }
     <br />
@@ -300,7 +300,7 @@
       type="button"
       class="float-sm-left btn btn-sm ui-button-warning"
       style="float: left"
-      [disabled]="!restart_core_button"
+      [disabled]="!restart_core_button()"
       (click)="restartShng()"
       icon="fa fa-circle-notch"
       label="{{ (appConfig.restartStopsOnly ? 'BUTTON.QUIT_SHNG_INTERACTIVE' : 'BUTTON.RESTART_SHNG') | translate }}"
@@ -312,13 +312,13 @@
       autofocus="autofocus"
       class="btn btn-primary btn-sm btn-shng"
       style="float: right"
-      [disabled]="!this.data_changed"
+      [disabled]="!data_changed()"
       (click)="saveSettings()"
       icon="fas fa-check"
       label="{{ 'BUTTON.SAVE_SETTINGS' | translate }}"
     ></button>
     <!--
-      <button pButton type="button" tabindex="1" autofocus="autofocus" class="btn btn-primary btn-sm btn-shng" style="float: right;" [disabled]="!this.data_changed" (click)="saveSettings()"><i class="fas fa-check"></i> {{'BUTTON.SAVE_SETTINGS'|translate}}</button>
+      <button pButton type="button" tabindex="1" autofocus="autofocus" class="btn btn-primary btn-sm btn-shng" style="float: right;" [disabled]="!data_changed()" (click)="saveSettings()"><i class="fas fa-check"></i> {{'BUTTON.SAVE_SETTINGS'|translate}}</button>
 -->
   </div>
 </div>
@@ -365,8 +365,8 @@
     {{ 'SYSTEM.CONFIG_ETC_CHECK_TITLE' | translate }}
   </ng-template>
 
-  @if (configEtcCheckResult) {
-    @if (configEtcCheckResult['safe']) {
+  @if (configEtcCheckResult()) {
+    @if (configEtcCheckResult()!['safe']) {
       <p-message severity="success" [text]="'SYSTEM.CONFIG_ETC_SAFE' | translate"></p-message>
     } @else {
       <p-message severity="error" [text]="'SYSTEM.CONFIG_ETC_CONFLICTS' | translate"></p-message>
@@ -394,21 +394,21 @@
       </div>
     }
 
-    @if (configEtcCheckResult['already_done']?.length > 0) {
+    @if (configEtcCheckResult()!['already_done']?.length > 0) {
       <div style="margin-top: 12px">
         <b>{{ 'SYSTEM.CONFIG_ETC_ALREADY_DONE' | translate }}</b
-        >: {{ configEtcCheckResult['already_done'].join(', ') }}
+        >: {{ configEtcCheckResult()!['already_done'].join(', ') }}
       </div>
     }
   }
 
   <ng-template pTemplate="footer">
-    @if (configEtcCheckResult?.['safe'] && !configEtcActive) {
+    @if (configEtcCheckResult()?.['safe'] && !configEtcActive) {
       <button
         pButton
         type="button"
         icon="pi pi-check"
-        [disabled]="configEtcEnabling"
+        [disabled]="configEtcEnabling()"
         (click)="enableConfigEtc()"
         label="{{ 'SYSTEM.CONFIG_ETC_ENABLE' | translate }}"
         class="ui-button-success"
@@ -418,7 +418,7 @@
       pButton
       type="button"
       icon="pi pi-times"
-      (click)="configEtcCheckDialogVisible = false"
+      (click)="configEtcCheckDialogVisible.set(false)"
       label="{{ 'BUTTON.CLOSE' | translate }}"
       class="ui-button-secondary"
     ></button>

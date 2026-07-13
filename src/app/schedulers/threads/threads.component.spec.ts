@@ -56,11 +56,11 @@ describe('ThreadsComponent', () => {
   });
 
   it('should populate threads_count from fixture[0]', () => {
-    expect(component.threads_count).toBe(threadCount);
+    expect(component.threads_count()).toBe(threadCount);
   });
 
   it('should populate threadsList with fixture[1] array', () => {
-    expect(component.threadsList.length).toBe(threadList.length);
+    expect(component.threadsList().length).toBe(threadList.length);
   });
 
   it('should render one tbody row per thread in fixture', () => {
@@ -73,5 +73,22 @@ describe('ThreadsComponent', () => {
     expect(firstRow).toBeTruthy();
     const firstCell = firstRow.querySelector('td');
     expect(firstCell.textContent.trim()).toBe(threadList[0].name);
+  });
+
+  it('should sort by name ascending, then descending on second click', () => {
+    component.sortBy('name');
+    const ascending = component.threadsList().map((t) => t.name.toLowerCase());
+    expect(ascending).toEqual([...ascending].sort());
+
+    component.sortBy('name');
+    const descending = component.threadsList().map((t) => t.name.toLowerCase());
+    expect(descending).toEqual([...ascending].reverse());
+  });
+
+  it('should not mutate the unsorted list when sorting', () => {
+    const before = component.threadsList();
+    component.sortBy('name');
+    component.sortField.set('');
+    expect(component.threadsList()).toEqual(before);
   });
 });

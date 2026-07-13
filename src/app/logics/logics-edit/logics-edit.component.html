@@ -10,26 +10,26 @@
           <div class="tab-header"></div>
           <div class="tab-content">
             <div class="tab-button-row">
-              @if (logic && logic.enabled && myLogicIsLoaded) {
+              @if (logic() && logic().enabled && myLogicIsLoaded()) {
                 <span
                   style="color: var(--shng-green)"
                   class="fas fa-play-circle"
                   title="{{ 'LOGIC_EDIT.ACTIVE' | translate }}"
                 ></span>
               }
-              @if (logic && (!logic.enabled || !myLogicIsLoaded)) {
+              @if (logic() && (!logic().enabled || !myLogicIsLoaded())) {
                 <span
                   style="color: var(--shng-red)"
                   class="fas fa-pause-circle"
                   title="{{ 'LOGIC_EDIT.INACTIVE' | translate }}"
                 ></span>
               }
-              {{ 'LOGIC_EDIT.FILENAME' | translate }}: <strong>../logics/{{ myEditFilename }}</strong>
+              {{ 'LOGIC_EDIT.FILENAME' | translate }}: <strong>../logics/{{ myEditFilename() }}</strong>
               <button
                 pButton
                 label="{{ 'BUTTON.SAVE_LOAD' | translate }}"
                 type="button"
-                [disabled]="!this.logicChanged"
+                [disabled]="!this.logicChanged()"
                 icon="fa fa-check"
                 style="margin-right: 0"
                 (click)="saveLogic(true)"
@@ -39,7 +39,7 @@
                 pButton
                 label="{{ 'BUTTON.SAVE' | translate }}"
                 type="button"
-                [disabled]="!this.logicChanged"
+                [disabled]="!this.logicChanged()"
                 icon="fa fa-check"
                 style="margin-right: 5px"
                 (click)="saveLogic()"
@@ -49,7 +49,7 @@
                 pButton
                 label="{{ 'BUTTON.DISCARD' | translate }}"
                 type="button"
-                [disabled]="myEditFilename === '' || !this.logicChanged"
+                [disabled]="myEditFilename() === '' || !this.logicChanged()"
                 icon="fa fa-times"
                 style="margin-right: 5px"
                 (click)="discardChanges()"
@@ -62,27 +62,27 @@
                 [disabled]="false"
                 icon="fa fa-info"
                 style="margin-left: 20px; margin-right: 5px"
-                (click)="editorHelp_display = true"
+                (click)="editorHelp_display.set(true)"
                 class="float-sm-right ui-button-success"
               ></button>
               <button
                 pButton
                 label="{{ 'LOGIC_EDIT.RENAME' | translate }}"
                 type="button"
-                [disabled]="myEditFilename === ''"
+                [disabled]="myEditFilename() === ''"
                 icon="fa fa-pen"
                 style="margin-left: 5px; margin-right: 5px"
                 (click)="openRenameDialog()"
                 class="float-sm-right ui-button-secondary"
               ></button>
 
-              @if (this.myLogicIsLoaded) {
-                @if (logic.enabled) {
+              @if (this.myLogicIsLoaded()) {
+                @if (logic().enabled) {
                   <button
                     name="disable"
                     title="{{ 'LOGICS.DISABLE' | translate }}"
                     class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
-                    (click)="disableLogic(logic.name)"
+                    (click)="disableLogic(logic().name)"
                   >
                     <i class="fas fa-pause"></i>
                   </button>
@@ -90,7 +90,7 @@
                     name="reload"
                     title="{{ 'LOGICS.RELOAD' | translate }}"
                     class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
-                    (click)="reloadLogic(logic.name)"
+                    (click)="reloadLogic(logic().name)"
                   >
                     <i class="fas fa-sync"></i>
                   </button>
@@ -107,7 +107,7 @@
                     name="enable"
                     title="{{ 'LOGICS.ENABLE' | translate }}"
                     class="btn btn-outline-primary btn-sm float-sm-right"
-                    (click)="enableLogic(logic.name)"
+                    (click)="enableLogic(logic().name)"
                   >
                     <i class="fas fa-play"></i>
                   </button>
@@ -115,7 +115,7 @@
                     name="reload"
                     title="{{ 'LOGICS.RELOAD' | translate }}"
                     class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
-                    (click)="reloadLogic(logic.name)"
+                    (click)="reloadLogic(logic().name)"
                   >
                     <i class="fas fa-sync"></i>
                   </button>
@@ -134,7 +134,7 @@
                   name="enable"
                   title="{{ 'LOGICS.ENABLE' | translate }}"
                   class="btn btn-outline-primary btn-sm float-sm-right"
-                  (click)="enableLogic(logic.name)"
+                  (click)="enableLogic(logic().name)"
                 >
                   <i class="fas fa-play"></i>
                 </button>
@@ -143,7 +143,7 @@
                   name="reload"
                   title="{{ 'LOGICS.RELOAD' | translate }}"
                   class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
-                  (click)="reloadLogic(logic.name)"
+                  (click)="reloadLogic(logic().name)"
                 >
                   <i class="fas fa-sync"></i>
                 </button>
@@ -165,7 +165,7 @@
                 [completionSource]="mainCompletionSource"
                 [extraKeybindings]="editorExtraKeys"
                 [(value)]="myTextarea"
-                (valueChange)="logicChanged = hasLogicChanged()"
+                (valueChange)="logicChanged.set(hasLogicChanged())"
               ></app-code-editor>
             </div>
           </div>
@@ -173,14 +173,14 @@
 
         <p-tabpanel value="1">
           <div class="tab-header-parameter">
-            @if (logic) {
-              {{ 'LOGIC_EDIT.LOGICNAME' | translate }}: <strong>{{ logic.name }}</strong>
+            @if (logic()) {
+              {{ 'LOGIC_EDIT.LOGICNAME' | translate }}: <strong>{{ logic().name }}</strong>
             }
             <button
               pButton
               label="{{ 'BUTTON.SAVE_LOAD' | translate }}"
               type="button"
-              [disabled]="!this.logicChanged"
+              [disabled]="!this.logicChanged()"
               icon="fa fa-check"
               style="margin-right: 0"
               (click)="saveLogic(true)"
@@ -190,7 +190,7 @@
               pButton
               label="{{ 'BUTTON.SAVE' | translate }}"
               type="button"
-              [disabled]="!this.logicChanged"
+              [disabled]="!this.logicChanged()"
               icon="fa fa-check"
               style="margin-right: 5px"
               (click)="saveLogic()"
@@ -200,7 +200,7 @@
               pButton
               label="{{ 'BUTTON.DISCARD' | translate }}"
               type="button"
-              [disabled]="myEditFilename === '' || !this.logicChanged"
+              [disabled]="myEditFilename() === '' || !this.logicChanged()"
               icon="fa fa-times"
               style="margin-right: 5px"
               (click)="discardChanges()"
@@ -213,17 +213,17 @@
               [disabled]="false"
               icon="fa fa-info"
               style="margin-left: 20px; margin-right: 5px"
-              (click)="editorHelp_display = true"
+              (click)="editorHelp_display.set(true)"
               class="float-sm-right ui-button-success"
             ></button>
 
-            @if (this.myLogicIsLoaded) {
-              @if (logic.enabled) {
+            @if (this.myLogicIsLoaded()) {
+              @if (logic().enabled) {
                 <button
                   name="disable"
                   title="{{ 'LOGICS.DISABLE' | translate }}"
                   class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
-                  (click)="disableLogic(logic.name)"
+                  (click)="disableLogic(logic().name)"
                 >
                   <i class="fas fa-pause"></i>
                 </button>
@@ -231,7 +231,7 @@
                   name="reload"
                   title="{{ 'LOGICS.RELOAD' | translate }}"
                   class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
-                  (click)="reloadLogic(logic.name)"
+                  (click)="reloadLogic(logic().name)"
                 >
                   <i class="fas fa-sync"></i>
                 </button>
@@ -248,7 +248,7 @@
                   name="enable"
                   title="{{ 'LOGICS.ENABLE' | translate }}"
                   class="btn btn-outline-primary btn-sm float-sm-right"
-                  (click)="enableLogic(logic.name)"
+                  (click)="enableLogic(logic().name)"
                 >
                   <i class="fas fa-play"></i>
                 </button>
@@ -256,7 +256,7 @@
                   name="reload"
                   title="{{ 'LOGICS.RELOAD' | translate }}"
                   class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
-                  (click)="reloadLogic(logic.name)"
+                  (click)="reloadLogic(logic().name)"
                 >
                   <i class="fas fa-sync"></i>
                 </button>
@@ -275,7 +275,7 @@
                 name="enable"
                 title="{{ 'LOGICS.ENABLE' | translate }}"
                 class="btn btn-outline-primary btn-sm float-sm-right"
-                (click)="enableLogic(logic.name)"
+                (click)="enableLogic(logic().name)"
               >
                 <i class="fas fa-play"></i>
               </button>
@@ -284,7 +284,7 @@
                 name="reload"
                 title="{{ 'LOGICS.RELOAD' | translate }}"
                 class="btn btn-outline-dark btn-sm mr-1 float-sm-right"
-                (click)="reloadLogic(logic.name)"
+                (click)="reloadLogic(logic().name)"
               >
                 <i class="fas fa-sync"></i>
               </button>
@@ -304,8 +304,8 @@
                 <td>{{ 'LOGIC_EDIT.DESCRIPTION' | translate }}</td>
                 <td colspan="3">
                   <input
-                    [(ngModel)]="logic.logic_description"
-                    (keyup)="this.logicChanged = hasLogicChanged()"
+                    [(ngModel)]="logic().logic_description"
+                    (keyup)="logicChanged.set(hasLogicChanged())"
                     type="text"
                     pInputText
                     placeholder=""
@@ -337,8 +337,8 @@
                     styleClass="group-autocomplete"
                   >
                     <ng-template #selecteditem let-g>
-                      <span [style.color]="allGroupNames.includes(g) ? '' : 'var(--shng-orange)'">
-                        @if (!allGroupNames.includes(g)) {
+                      <span [style.color]="allGroupNames().includes(g) ? '' : 'var(--shng-orange)'">
+                        @if (!allGroupNames().includes(g)) {
                           <i class="fa fa-exclamation-triangle" style="margin-right: 3px"></i>
                         }
                         {{ g }}</span
@@ -349,13 +349,13 @@
               </tr>
               <tr>
                 <td width="15%">{{ 'LOGIC_EDIT.STATUS' | translate }}</td>
-                @if (logic && logic.enabled) {
+                @if (logic() && logic().enabled) {
                   <td width="35%">
                     <span style="color: var(--shng-green); vertical-align: middle" class="fas fa-play-circle"></span>
                     {{ 'LOGIC_EDIT.ACTIVE' | translate }}
                   </td>
                 }
-                @if (logic && !logic.enabled) {
+                @if (logic() && !logic().enabled) {
                   <td width="35%">
                     <span style="color: var(--shng-red); vertical-align: middle" class="fas fa-play-circle"></span>
                     {{ 'LOGIC_EDIT.INACTIVE' | translate }}
@@ -367,14 +367,14 @@
               <tr>
                 <td>{{ 'LOGIC_EDIT.LAST_EXEC' | translate }}</td>
                 <td>
-                  @if (logic) {
-                    {{ logic.last_run }}
+                  @if (logic()) {
+                    {{ logic().last_run }}
                   }
                 </td>
                 <td>{{ 'LOGIC_EDIT.NEXT_EXEC' | translate }}</td>
                 <td>
-                  @if (logic) {
-                    {{ logic.next_exec }}
+                  @if (logic()) {
+                    {{ logic().next_exec }}
                   }
                 </td>
               </tr>
@@ -394,8 +394,8 @@
                 <td>Cycle</td>
                 <td colspan="3">
                   <input
-                    [(ngModel)]="logic.cycle"
-                    (keyup)="this.logicChanged = hasLogicChanged()"
+                    [(ngModel)]="logic().cycle"
+                    (keyup)="logicChanged.set(hasLogicChanged())"
                     type="number"
                     min="1"
                     max="65535"
@@ -412,8 +412,8 @@
                 <td>Crontab(s)</td>
                 <td colspan="3">
                   <input
-                    [(ngModel)]="logic.crontab"
-                    (keyup)="this.logicChanged = hasLogicChanged()"
+                    [(ngModel)]="logic().crontab"
+                    (keyup)="logicChanged.set(hasLogicChanged())"
                     type="text"
                     pInputText
                     placeholder=""
@@ -427,13 +427,13 @@
               <tr>
                 <td>
                   Watch Item(s)
-                  @if (this.logic.watch_item !== undefined) {
-                    : {{ this.logic.watch_item.length }}
+                  @if (logic().watch_item !== undefined) {
+                    : {{ logic().watch_item.length }}
                   }
                 </td>
                 <td colspan="3">
-                  @if (this.logic.watch_item !== undefined) {
-                    @for (watch_item of this.logic.watch_item; track watch_item.path) {
+                  @if (logic().watch_item !== undefined) {
+                    @for (watch_item of logic().watch_item; track watch_item.path) {
                       <button
                         pButton
                         label="{{ watch_item }}"
@@ -444,16 +444,16 @@
                         class="float-sm-left ui-button-secondary mr-2 mb-2"
                       ></button>
                     }
-                    @if (this.logic.watch_item.length > 0) {
+                    @if (logic().watch_item.length > 0) {
                       <br style="clear: both" />
                     }
                   }
-                  @if (this.wrongWatchItem) {
+                  @if (this.wrongWatchItem()) {
                     <p-message
                       severity="error"
                       [text]="'LOGIC_EDIT.ITEM_INVALID' | translate"
                       [closable]="true"
-                      (onClose)="this.wrongWatchItem = false"
+                      (onClose)="wrongWatchItem.set(false)"
                     ></p-message>
                   }
                   <div>
@@ -488,7 +488,7 @@
               <strong>{{ 'LOGIC_EDIT.PLUGIN_SPECIFIC' | translate }}</strong>
             </div>
 
-            <p-table [columns]="parameter_cols" [value]="parameters" selectionMode="single">
+            <p-table [columns]="parameter_cols()" [value]="parameters()" selectionMode="single">
               <ng-template pTemplate="header" let-columns>
                 <tr>
                   @for (col of columns; track col.field) {
@@ -514,7 +514,7 @@
                         <app-dynamic-field
                           [row]="rowData"
                           [col]="col"
-                          (changed)="this.logicChanged = hasLogicChanged()"
+                          (changed)="logicChanged.set(hasLogicChanged())"
                         ></app-dynamic-field>
                       }
 
@@ -616,7 +616,7 @@
     <button
       pButton
       type="button"
-      (click)="editorHelp_display = false"
+      (click)="editorHelp_display.set(false)"
       label="{{ 'BUTTON.CLOSE' | translate }}"
       class="ui-button-success"
     ></button>
@@ -697,7 +697,7 @@
   [closable]="false"
   [maximizable]="false"
   [style]="{ width: '480px', minWidth: '480px' }"
-  (document:keydown.escape)="rename_display && (rename_display = false)"
+  (document:keydown.escape)="rename_display() && rename_display.set(false)"
 >
   <ng-template pTemplate="header">
     {{ 'LOGIC_EDIT.RENAME' | translate }}
@@ -731,7 +731,7 @@
       pButton
       type="button"
       icon="pi pi-times"
-      (click)="rename_display = false"
+      (click)="rename_display.set(false)"
       label="{{ 'BUTTON.ABORT' | translate }}"
       class="ui-button-secondary"
     ></button>

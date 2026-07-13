@@ -4,6 +4,7 @@ import { Injectable, inject } from '@angular/core';
 import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { ItemAttributeInfo } from '../models/item-attribute-info';
+import { ItemCopyResult } from '../models/item-copy-result';
 import { ItemReference } from '../models/item-reference';
 import { ItemRemoveReferencesResult } from '../models/item-remove-references-result';
 import { ItemRenameResult } from '../models/item-rename-result';
@@ -21,7 +22,6 @@ export class ItemsApiService {
   getItemList() {
     const url = this.appConfig.apiUrl + 'items/list/';
     return this.http.get(url).pipe(
-      map((response) => response),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'ItemsApiService.getItemList(): Could not read item list - ' + err.error?.error,
@@ -34,7 +34,6 @@ export class ItemsApiService {
   getItemTree() {
     const url = this.appConfig.apiUrl + 'items/tree';
     return this.http.get(url).pipe(
-      map((response) => response),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'ItemsApiService.getItemTree(): Could not read item tree - ' + err.error?.error,
@@ -59,9 +58,8 @@ export class ItemsApiService {
   }
 
   getItemDetails(itemPath: string) {
-    const url = this.appConfig.apiUrl + 'items/' + itemPath;
+    const url = this.appConfig.apiUrl + 'items/' + encodeURIComponent(itemPath);
     return this.http.get(url).pipe(
-      map((response) => response),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'ItemsApiService.getItemDetails(' +
@@ -75,9 +73,8 @@ export class ItemsApiService {
   }
 
   changeItemValue(itemPath: string, value: string | number | boolean) {
-    const url = this.appConfig.apiUrl + 'items/' + itemPath;
+    const url = this.appConfig.apiUrl + 'items/' + encodeURIComponent(itemPath);
     return this.http.put(url, JSON.stringify({ value })).pipe(
-      map((response) => response),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'ItemsApiService.changeItemValue(' +
@@ -104,7 +101,7 @@ export class ItemsApiService {
     filename?: string,
     createMissingParents = false,
   ) {
-    const url = this.appConfig.apiUrl + 'items/' + itemPath;
+    const url = this.appConfig.apiUrl + 'items/' + encodeURIComponent(itemPath);
     const body: Record<string, unknown> = { config, persist };
     if (filename) {
       body['filename'] = filename;
@@ -112,7 +109,7 @@ export class ItemsApiService {
     if (createMissingParents) {
       body['create_missing_parents'] = true;
     }
-    return this.http.post(url, JSON.stringify(body)).pipe(map((response) => response));
+    return this.http.post(url, JSON.stringify(body));
   }
 
   /** No catchError — callers need the real error (e.g. name collision while
@@ -120,8 +117,8 @@ export class ItemsApiService {
    *  COMPLETE new attribute set (same convention as createItem()'s config) —
    *  omitting a key resets it to its default, there's no partial-patch. */
   editItem(itemPath: string, config: Record<string, unknown>) {
-    const url = this.appConfig.apiUrl + 'items/' + itemPath;
-    return this.http.patch(url, JSON.stringify({ config })).pipe(map((response) => response));
+    const url = this.appConfig.apiUrl + 'items/' + encodeURIComponent(itemPath);
+    return this.http.patch(url, JSON.stringify({ config }));
   }
 
   /** No catchError — callers need the real error (e.g. name collision,
@@ -129,7 +126,7 @@ export class ItemsApiService {
    *  to. A new_path whose parent segment differs from the current one
    *  triggers a move — same endpoint, no separate move method/route. */
   renameItem(itemPath: string, newPath: string, filename?: string) {
-    const url = this.appConfig.apiUrl + 'items/' + itemPath + '/rename';
+    const url = this.appConfig.apiUrl + 'items/' + encodeURIComponent(itemPath) + '/rename';
     const body: Record<string, unknown> = { new_path: newPath };
     if (filename) {
       body['filename'] = filename;
@@ -137,6 +134,26 @@ export class ItemsApiService {
     return this.http
       .post(url, JSON.stringify(body))
       .pipe(map((response) => response as ItemRenameResult));
+  }
+
+  /** No catchError — callers need the real error (e.g. name collision, target
+   *  parent not found, or the source item not being persisted) to react to.
+   *  Only persisted items can be copied — see Items.copy_item(). The copy is
+   *  written to the SOURCE item's own file by default (not the new parent's),
+   *  so its config stays "the same, elsewhere". includeChildren defaults to
+   *  true (the whole subtree); set false to copy only the item itself. */
+  copyItem(itemPath: string, newPath: string, filename?: string, includeChildren = true) {
+    const url = this.appConfig.apiUrl + 'items/' + encodeURIComponent(itemPath) + '/copy';
+    const body: Record<string, unknown> = { new_path: newPath };
+    if (filename) {
+      body['filename'] = filename;
+    }
+    if (!includeChildren) {
+      body['include_children'] = false;
+    }
+    return this.http
+      .post(url, JSON.stringify(body))
+      .pipe(map((response) => response as ItemCopyResult));
   }
 
   /** No catchError — callers need the real error (e.g. plugin refused
@@ -148,24 +165,25 @@ export class ItemsApiService {
     const url =
       this.appConfig.apiUrl +
       'items/' +
-      itemPath +
+      encodeURIComponent(itemPath) +
       '?persist=' +
       persist +
       '&recursive=' +
       recursive;
-    return this.http.delete(url).pipe(map((response) => response));
+    return this.http.delete(url);
   }
 
   /** No catchError — callers need to know if this failed (vs. succeeded with
    *  some skipped_ambiguous entries, which is a normal outcome, not an error)
    *  so they can decide whether to still proceed with a subsequent delete. */
   removeReferences(itemPath: string) {
-    const url = this.appConfig.apiUrl + 'items/' + itemPath + '/remove_references';
+    const url =
+      this.appConfig.apiUrl + 'items/' + encodeURIComponent(itemPath) + '/remove_references';
     return this.http.post(url, '').pipe(map((response) => response as ItemRemoveReferencesResult));
   }
 
   getItemReferences(itemPath: string) {
-    const url = this.appConfig.apiUrl + 'items/' + itemPath + '/references';
+    const url = this.appConfig.apiUrl + 'items/' + encodeURIComponent(itemPath) + '/references';
     return this.http.get(url).pipe(
       map((response) => response as ItemReference[]),
       catchError((err: HttpErrorResponse) => {

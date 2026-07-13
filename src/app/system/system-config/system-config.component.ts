@@ -1,10 +1,10 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   DestroyRef,
   inject,
   OnInit,
+  signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AppConfigService } from '../../common/services/app-config.service';
@@ -84,7 +84,6 @@ interface SystemConfig {
 })
 export class SystemConfigComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
-  private readonly cdr = inject(ChangeDetectorRef);
   private dataService = inject(ConfigApiService);
   private dataServiceServer = inject(ServerApiService);
   private shared = inject(SharedService);
@@ -93,31 +92,31 @@ export class SystemConfigComponent implements OnInit {
   protected appConfig = inject(AppConfigService);
   private readonly log = inject(LogService);
 
-  config!: SystemConfig;
+  readonly config = signal<SystemConfig | null>(null);
   lang!: string;
 
-  common_parameters!: ConfigParameter[];
-  common_parameter_cols!: TableColumn[];
+  readonly common_parameters = signal<ConfigParameter[]>([]);
+  readonly common_parameter_cols = signal<TableColumn[]>([]);
   common_parameters_beforeEdit!: ConfigParameter[];
 
-  http_parameters!: ConfigParameter[];
-  http_parameter_cols!: TableColumn[];
+  readonly http_parameters = signal<ConfigParameter[]>([]);
+  readonly http_parameter_cols = signal<TableColumn[]>([]);
   http_parameters_beforeEdit!: ConfigParameter[];
 
-  websocket_parameters!: ConfigParameter[];
-  websocket_parameter_cols!: TableColumn[];
+  readonly websocket_parameters = signal<ConfigParameter[]>([]);
+  readonly websocket_parameter_cols = signal<TableColumn[]>([]);
   websocket_parameters_beforeEdit!: ConfigParameter[];
 
-  admin_parameters!: ConfigParameter[];
-  admin_parameter_cols!: TableColumn[];
+  readonly admin_parameters = signal<ConfigParameter[]>([]);
+  readonly admin_parameter_cols = signal<TableColumn[]>([]);
   admin_parameters_beforeEdit!: ConfigParameter[];
 
-  mqtt_parameters!: ConfigParameter[];
-  mqtt_parameter_cols!: TableColumn[];
+  readonly mqtt_parameters = signal<ConfigParameter[]>([]);
+  readonly mqtt_parameter_cols = signal<TableColumn[]>([]);
   mqtt_parameters_beforeEdit!: ConfigParameter[];
 
-  data_changed = false;
-  restart_core_button = false;
+  readonly data_changed = signal(false);
+  readonly restart_core_button = signal(false);
 
   dialog_readonly = false;
 
@@ -141,26 +140,26 @@ export class SystemConfigComponent implements OnInit {
   validation_dialog_text!: string[];
 
   // config_etc migration check
-  configEtcCheckResult: Record<string, any> | null = null;
-  configEtcCheckDialogVisible = false;
-  configEtcChecking = true; // auto-check starts in ngOnInit
-  configEtcEnabling = false;
+  readonly configEtcCheckResult = signal<Record<string, any> | null>(null);
+  readonly configEtcCheckDialogVisible = signal(false);
+  readonly configEtcChecking = signal(true); // auto-check starts in ngOnInit
+  readonly configEtcEnabling = signal(false);
 
   get configEtcActive(): boolean {
-    return this.config?.common?.data?.['config_etc'] === true;
+    return this.config()?.common?.data?.['config_etc'] === true;
   }
 
   get configEtcConflictDirs(): { dir: string; files: string[] }[] {
-    if (!this.configEtcCheckResult?.['conflicts']) return [];
-    return Object.entries(this.configEtcCheckResult['conflicts']).map(([dir, files]) => ({
+    if (!this.configEtcCheckResult()?.['conflicts']) return [];
+    return Object.entries(this.configEtcCheckResult()!['conflicts']).map(([dir, files]) => ({
       dir,
       files: files as string[],
     }));
   }
 
   get configEtcMigrateDirs(): { dir: string; files: string[] }[] {
-    if (!this.configEtcCheckResult?.['to_migrate']) return [];
-    return Object.entries(this.configEtcCheckResult['to_migrate']).map(([dir, files]) => ({
+    if (!this.configEtcCheckResult()?.['to_migrate']) return [];
+    return Object.entries(this.configEtcCheckResult()!['to_migrate']).map(([dir, files]) => ({
       dir,
       files: files as string[],
     }));
@@ -182,10 +181,9 @@ export class SystemConfigComponent implements OnInit {
       .getConfig()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((configResponse) => {
-        this.config = configResponse as SystemConfig;
+        this.config.set(configResponse as SystemConfig);
         // this.log.log({configResponse});
         this.fillDialogData();
-        this.cdr.markForCheck();
       });
   }
 
@@ -300,51 +298,50 @@ export class SystemConfigComponent implements OnInit {
   }
 
   fillCommonDialogData() {
-    this.common_parameter_cols = this.columnDefinitions();
-    this.common_parameters = this.buildSectionParams(this.config.common);
+    this.common_parameter_cols.set(this.columnDefinitions());
+    const params = this.buildSectionParams(this.config()!.common);
 
     // Move config_etc to just after deprecated_warnings for logical grouping
-    const cfgIdx = this.common_parameters.findIndex((p) => p.name === 'config_etc');
-    const anchorIdx = this.common_parameters.findIndex((p) => p.name === 'deprecated_warnings');
+    const cfgIdx = params.findIndex((p) => p.name === 'config_etc');
+    const anchorIdx = params.findIndex((p) => p.name === 'deprecated_warnings');
     if (cfgIdx > -1 && anchorIdx > -1 && cfgIdx !== anchorIdx + 1) {
-      const [cfgEntry] = this.common_parameters.splice(cfgIdx, 1);
-      const newAnchor = this.common_parameters.findIndex((p) => p.name === 'deprecated_warnings');
-      this.common_parameters.splice(newAnchor + 1, 0, cfgEntry);
+      const [cfgEntry] = params.splice(cfgIdx, 1);
+      const newAnchor = params.findIndex((p) => p.name === 'deprecated_warnings');
+      params.splice(newAnchor + 1, 0, cfgEntry);
     }
 
-    this.common_parameters_beforeEdit = JSON.parse(JSON.stringify(this.common_parameters));
+    this.common_parameters.set(params);
+    this.common_parameters_beforeEdit = JSON.parse(JSON.stringify(params));
   }
 
   fillHttpDialogData() {
-    this.hashPlainPasswords(this.config.http.data);
-    this.http_parameter_cols = this.columnDefinitions();
-    this.http_parameters = this.buildSectionParams(this.config.http, [
-      'password',
-      'service_password',
-    ]);
-    this.http_parameters_beforeEdit = JSON.parse(JSON.stringify(this.http_parameters));
+    this.hashPlainPasswords(this.config()!.http.data);
+    this.http_parameter_cols.set(this.columnDefinitions());
+    this.http_parameters.set(
+      this.buildSectionParams(this.config()!.http, ['password', 'service_password']),
+    );
+    this.http_parameters_beforeEdit = JSON.parse(JSON.stringify(this.http_parameters()));
   }
 
   fillWebsocketDialogData() {
-    this.hashPlainPasswords(this.config.websocket.data);
-    this.websocket_parameter_cols = this.columnDefinitions();
-    this.websocket_parameters = this.buildSectionParams(this.config.websocket, [
-      'password',
-      'service_password',
-    ]);
-    this.websocket_parameters_beforeEdit = JSON.parse(JSON.stringify(this.websocket_parameters));
+    this.hashPlainPasswords(this.config()!.websocket.data);
+    this.websocket_parameter_cols.set(this.columnDefinitions());
+    this.websocket_parameters.set(
+      this.buildSectionParams(this.config()!.websocket, ['password', 'service_password']),
+    );
+    this.websocket_parameters_beforeEdit = JSON.parse(JSON.stringify(this.websocket_parameters()));
   }
 
   fillAdminDialogData() {
-    this.admin_parameter_cols = this.columnDefinitions();
-    this.admin_parameters = this.buildSectionParams(this.config.admin);
-    this.admin_parameters_beforeEdit = JSON.parse(JSON.stringify(this.admin_parameters));
+    this.admin_parameter_cols.set(this.columnDefinitions());
+    this.admin_parameters.set(this.buildSectionParams(this.config()!.admin));
+    this.admin_parameters_beforeEdit = JSON.parse(JSON.stringify(this.admin_parameters()));
   }
 
   fillMqttDialogData() {
-    this.mqtt_parameter_cols = this.columnDefinitions();
-    this.mqtt_parameters = this.buildSectionParams(this.config.mqtt);
-    this.mqtt_parameters_beforeEdit = JSON.parse(JSON.stringify(this.mqtt_parameters));
+    this.mqtt_parameter_cols.set(this.columnDefinitions());
+    this.mqtt_parameters.set(this.buildSectionParams(this.config()!.mqtt));
+    this.mqtt_parameters_beforeEdit = JSON.parse(JSON.stringify(this.mqtt_parameters()));
   }
 
   // ---------------------------------------------------------
@@ -402,44 +399,46 @@ export class SystemConfigComponent implements OnInit {
   }
 
   check_values(_type?: string) {
-    this.data_changed = false;
-    for (const p in this.common_parameters) {
-      if (this.common_parameters.hasOwnProperty(p)) {
-        if (this.common_parameters[p].value !== this.common_parameters_beforeEdit[p].value) {
-          this.data_changed = true;
-          // this.log.log(this.common_parameters[p]);
+    this.data_changed.set(false);
+    for (const p in this.common_parameters()) {
+      if (this.common_parameters().hasOwnProperty(p)) {
+        if (this.common_parameters()[p].value !== this.common_parameters_beforeEdit[p].value) {
+          this.data_changed.set(true);
+          // this.log.log(this.common_parameters()[p]);
         }
       }
     }
-    for (const p in this.http_parameters) {
-      if (this.http_parameters.hasOwnProperty(p)) {
-        if (this.http_parameters[p].value !== this.http_parameters_beforeEdit[p].value) {
-          this.data_changed = true;
-          // this.log.log(this.http_parameters[p]);
+    for (const p in this.http_parameters()) {
+      if (this.http_parameters().hasOwnProperty(p)) {
+        if (this.http_parameters()[p].value !== this.http_parameters_beforeEdit[p].value) {
+          this.data_changed.set(true);
+          // this.log.log(this.http_parameters()[p]);
         }
       }
     }
-    for (const p in this.websocket_parameters) {
-      if (this.websocket_parameters.hasOwnProperty(p)) {
-        if (this.websocket_parameters[p].value !== this.websocket_parameters_beforeEdit[p].value) {
-          this.data_changed = true;
-          // this.log.log(this.websocket_parameters[p]);
+    for (const p in this.websocket_parameters()) {
+      if (this.websocket_parameters().hasOwnProperty(p)) {
+        if (
+          this.websocket_parameters()[p].value !== this.websocket_parameters_beforeEdit[p].value
+        ) {
+          this.data_changed.set(true);
+          // this.log.log(this.websocket_parameters()[p]);
         }
       }
     }
-    for (const p in this.admin_parameters) {
-      if (this.admin_parameters.hasOwnProperty(p)) {
-        if (this.admin_parameters[p].value !== this.admin_parameters_beforeEdit[p].value) {
-          this.data_changed = true;
-          // this.log.log(this.admin_parameters[p]);
+    for (const p in this.admin_parameters()) {
+      if (this.admin_parameters().hasOwnProperty(p)) {
+        if (this.admin_parameters()[p].value !== this.admin_parameters_beforeEdit[p].value) {
+          this.data_changed.set(true);
+          // this.log.log(this.admin_parameters()[p]);
         }
       }
     }
-    for (const p in this.mqtt_parameters) {
-      if (this.mqtt_parameters.hasOwnProperty(p)) {
-        if (this.mqtt_parameters[p].value !== this.mqtt_parameters_beforeEdit[p].value) {
-          this.data_changed = true;
-          // this.log.log(this.admin_parameters[p]);
+    for (const p in this.mqtt_parameters()) {
+      if (this.mqtt_parameters().hasOwnProperty(p)) {
+        if (this.mqtt_parameters()[p].value !== this.mqtt_parameters_beforeEdit[p].value) {
+          this.data_changed.set(true);
+          // this.log.log(this.admin_parameters()[p]);
         }
       }
     }
@@ -525,37 +524,37 @@ export class SystemConfigComponent implements OnInit {
     let errors_found = false;
     this.validation_dialog_text = [];
 
-    for (const p in this.common_parameters) {
-      if (this.common_parameters.hasOwnProperty(p)) {
-        if (!this.check_value_restrictions(this.common_parameters[p])) {
+    for (const p in this.common_parameters()) {
+      if (this.common_parameters().hasOwnProperty(p)) {
+        if (!this.check_value_restrictions(this.common_parameters()[p])) {
           errors_found = true;
         }
       }
     }
-    for (const p in this.http_parameters) {
-      if (this.http_parameters.hasOwnProperty(p)) {
-        if (!this.check_value_restrictions(this.http_parameters[p])) {
+    for (const p in this.http_parameters()) {
+      if (this.http_parameters().hasOwnProperty(p)) {
+        if (!this.check_value_restrictions(this.http_parameters()[p])) {
           errors_found = true;
         }
       }
     }
-    for (const p in this.websocket_parameters) {
-      if (this.websocket_parameters.hasOwnProperty(p)) {
-        if (!this.check_value_restrictions(this.websocket_parameters[p])) {
+    for (const p in this.websocket_parameters()) {
+      if (this.websocket_parameters().hasOwnProperty(p)) {
+        if (!this.check_value_restrictions(this.websocket_parameters()[p])) {
           errors_found = true;
         }
       }
     }
-    for (const p in this.admin_parameters) {
-      if (this.admin_parameters.hasOwnProperty(p)) {
-        if (!this.check_value_restrictions(this.admin_parameters[p])) {
+    for (const p in this.admin_parameters()) {
+      if (this.admin_parameters().hasOwnProperty(p)) {
+        if (!this.check_value_restrictions(this.admin_parameters()[p])) {
           errors_found = true;
         }
       }
     }
-    for (const p in this.mqtt_parameters) {
-      if (this.mqtt_parameters.hasOwnProperty(p)) {
-        if (!this.check_value_restrictions(this.mqtt_parameters[p])) {
+    for (const p in this.mqtt_parameters()) {
+      if (this.mqtt_parameters().hasOwnProperty(p)) {
+        if (!this.check_value_restrictions(this.mqtt_parameters()[p])) {
           errors_found = true;
         }
       }
@@ -568,23 +567,27 @@ export class SystemConfigComponent implements OnInit {
     const data: Record<string, any> = {};
     data['common'] = {};
     data['common']['data'] = {};
-    for (const p in this.common_parameters) {
-      if (this.common_parameters.hasOwnProperty(p)) {
-        if (this.common_parameters[p].value === '' && this.common_parameters[p].type === 'str') {
-          this.common_parameters[p].value = null;
+    for (const p in this.common_parameters()) {
+      if (this.common_parameters().hasOwnProperty(p)) {
+        if (
+          this.common_parameters()[p].value === '' &&
+          this.common_parameters()[p].type === 'str'
+        ) {
+          this.common_parameters()[p].value = null;
         }
-        data['common']['data'][this.common_parameters[p].name] = this.common_parameters[p].value;
+        data['common']['data'][this.common_parameters()[p].name] =
+          this.common_parameters()[p].value;
       }
     }
 
     data['http'] = {};
     data['http']['data'] = {};
-    for (const p in this.http_parameters) {
-      if (this.http_parameters.hasOwnProperty(p)) {
-        if (this.http_parameters[p].value === '' && this.http_parameters[p].type === 'str') {
-          this.http_parameters[p].value = null;
+    for (const p in this.http_parameters()) {
+      if (this.http_parameters().hasOwnProperty(p)) {
+        if (this.http_parameters()[p].value === '' && this.http_parameters()[p].type === 'str') {
+          this.http_parameters()[p].value = null;
         }
-        data['http']['data'][this.http_parameters[p].name] = this.http_parameters[p].value;
+        data['http']['data'][this.http_parameters()[p].name] = this.http_parameters()[p].value;
       }
     }
     // remove plain passwords
@@ -593,39 +596,39 @@ export class SystemConfigComponent implements OnInit {
 
     data['websocket'] = {};
     data['websocket']['data'] = {};
-    for (const p in this.websocket_parameters) {
-      if (this.websocket_parameters.hasOwnProperty(p)) {
+    for (const p in this.websocket_parameters()) {
+      if (this.websocket_parameters().hasOwnProperty(p)) {
         if (
-          this.websocket_parameters[p].value === '' &&
-          this.websocket_parameters[p].type === 'str'
+          this.websocket_parameters()[p].value === '' &&
+          this.websocket_parameters()[p].type === 'str'
         ) {
-          this.websocket_parameters[p].value = null;
+          this.websocket_parameters()[p].value = null;
         }
-        data['websocket']['data'][this.websocket_parameters[p].name] =
-          this.websocket_parameters[p].value;
+        data['websocket']['data'][this.websocket_parameters()[p].name] =
+          this.websocket_parameters()[p].value;
       }
     }
 
     data['admin'] = {};
     data['admin']['data'] = {};
-    for (const p in this.admin_parameters) {
-      if (this.admin_parameters.hasOwnProperty(p)) {
-        if (this.admin_parameters[p].value === '' && this.admin_parameters[p].type === 'str') {
-          this.admin_parameters[p].value = null;
+    for (const p in this.admin_parameters()) {
+      if (this.admin_parameters().hasOwnProperty(p)) {
+        if (this.admin_parameters()[p].value === '' && this.admin_parameters()[p].type === 'str') {
+          this.admin_parameters()[p].value = null;
         }
-        data['admin']['data'][this.admin_parameters[p].name] = this.admin_parameters[p].value;
+        data['admin']['data'][this.admin_parameters()[p].name] = this.admin_parameters()[p].value;
       }
     }
 
     data['mqtt'] = {};
     data['mqtt']['data'] = {};
-    for (const p in this.mqtt_parameters) {
-      if (this.mqtt_parameters.hasOwnProperty(p)) {
-        if (this.mqtt_parameters[p].value === '' && this.mqtt_parameters[p].type === 'str') {
-          this.mqtt_parameters[p].value = null;
+    for (const p in this.mqtt_parameters()) {
+      if (this.mqtt_parameters().hasOwnProperty(p)) {
+        if (this.mqtt_parameters()[p].value === '' && this.mqtt_parameters()[p].type === 'str') {
+          this.mqtt_parameters()[p].value = null;
         }
-        data['mqtt']['data'][this.mqtt_parameters[p].name] = this.mqtt_parameters[p].value;
-        // this.log.warn(this.mqtt_parameters[p].name, this.mqtt_parameters[p].type, this.mqtt_parameters[p].value);
+        data['mqtt']['data'][this.mqtt_parameters()[p].name] = this.mqtt_parameters()[p].value;
+        // this.log.warn(this.mqtt_parameters()[p].name, this.mqtt_parameters()[p].type, this.mqtt_parameters()[p].value);
       }
     }
 
@@ -636,17 +639,16 @@ export class SystemConfigComponent implements OnInit {
         if (result) {
           this.log.log('saveSettings', 'success');
 
-          this.common_parameters_beforeEdit = JSON.parse(JSON.stringify(this.common_parameters));
-          this.http_parameters_beforeEdit = JSON.parse(JSON.stringify(this.http_parameters));
+          this.common_parameters_beforeEdit = JSON.parse(JSON.stringify(this.common_parameters()));
+          this.http_parameters_beforeEdit = JSON.parse(JSON.stringify(this.http_parameters()));
           this.websocket_parameters_beforeEdit = JSON.parse(
-            JSON.stringify(this.websocket_parameters),
+            JSON.stringify(this.websocket_parameters()),
           );
-          this.admin_parameters_beforeEdit = JSON.parse(JSON.stringify(this.admin_parameters));
-          this.mqtt_parameters_beforeEdit = JSON.parse(JSON.stringify(this.mqtt_parameters));
+          this.admin_parameters_beforeEdit = JSON.parse(JSON.stringify(this.admin_parameters()));
+          this.mqtt_parameters_beforeEdit = JSON.parse(JSON.stringify(this.mqtt_parameters()));
 
-          this.data_changed = false;
-          this.restart_core_button = true;
-          this.cdr.markForCheck();
+          this.data_changed.set(false);
+          this.restart_core_button.set(true);
         } else {
           this.log.warn('saveSettings', 'fail');
         }
@@ -654,37 +656,35 @@ export class SystemConfigComponent implements OnInit {
   }
 
   checkConfigEtc(showDialog = false) {
-    this.configEtcChecking = true;
+    this.configEtcChecking.set(true);
     this.dataService
       .checkConfigEtc()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((result) => {
-        this.configEtcCheckResult = result as Record<string, any>;
-        this.configEtcChecking = false;
+        this.configEtcCheckResult.set(result as Record<string, any>);
+        this.configEtcChecking.set(false);
         if (showDialog) {
-          this.configEtcCheckDialogVisible = true;
+          this.configEtcCheckDialogVisible.set(true);
         }
-        this.cdr.markForCheck();
       });
   }
 
   enableConfigEtc() {
-    this.configEtcEnabling = true;
+    this.configEtcEnabling.set(true);
     this.dataService
       .enableConfigEtc()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((result) => {
-        this.configEtcEnabling = false;
+        this.configEtcEnabling.set(false);
         const r = result as Record<string, any>;
         if (r?.['result'] === 'ok') {
-          this.config.common.data['config_etc'] = true;
+          this.config()!.common.data['config_etc'] = true;
           // keep the table row value in sync so saveSettings sends the correct value
-          const cfgParam = this.common_parameters?.find((p) => p.name === 'config_etc');
+          const cfgParam = this.common_parameters()?.find((p) => p.name === 'config_etc');
           if (cfgParam) cfgParam.value = true;
-          this.configEtcCheckDialogVisible = false;
-          this.restart_core_button = true;
+          this.configEtcCheckDialogVisible.set(false);
+          this.restart_core_button.set(true);
         }
-        this.cdr.markForCheck();
       });
   }
 
@@ -696,6 +696,6 @@ export class SystemConfigComponent implements OnInit {
         const res = response as { result?: string };
         this.log.log('restartShng', res.result);
       });
-    this.restart_core_button = false;
+    this.restart_core_button.set(false);
   }
 }

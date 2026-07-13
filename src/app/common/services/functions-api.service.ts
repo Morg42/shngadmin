@@ -18,10 +18,6 @@ export class FunctionsApiService {
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'functions/';
     return this.http.get(url).pipe(
-      map((response) => {
-        const result = response;
-        return result;
-      }),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'FunctionsApiService (getFunctions): Could not read function data' +
@@ -35,7 +31,7 @@ export class FunctionsApiService {
 
   reloadFunction(name: string) {
     const apiUrl = this.appConfig.apiUrl;
-    const url = apiUrl + 'functions/reload/' + name;
+    const url = apiUrl + 'functions/reload/' + encodeURIComponent(name);
 
     return this.http.put(url, '', { responseType: 'text' }).pipe(
       map((response) => {

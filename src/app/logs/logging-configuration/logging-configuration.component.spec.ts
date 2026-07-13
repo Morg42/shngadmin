@@ -65,11 +65,11 @@ describe('LoggingConfigurationComponent', () => {
   });
 
   it('should load the logging file content into myTextarea', () => {
-    expect(component.myTextarea).toBe(loggingFixtureText);
+    expect(component.myTextarea()).toBe(loggingFixtureText);
   });
 
   it('should keep myTextareaOrig in sync with loaded content', () => {
-    expect(component.myTextareaOrig).toBe(loggingFixtureText);
+    expect(component.myTextareaOrig()).toBe(loggingFixtureText);
   });
 
   it('should set myEditFilename to "logging"', () => {
@@ -77,6 +77,6 @@ describe('LoggingConfigurationComponent', () => {
   });
 
   it('should contain YAML version header in loaded content', () => {
-    expect(component.myTextarea).toContain('version: 1');
+    expect(component.myTextarea()).toContain('version: 1');
   });
 });

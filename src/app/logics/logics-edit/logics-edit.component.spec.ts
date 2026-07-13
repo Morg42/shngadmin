@@ -88,7 +88,7 @@ describe('LogicsEditComponent', () => {
     (component as any).codeEditorWatchItems = { codeMirror: cmStub };
     fixture.detectChanges();
     // Override ViewChild after detectChanges so Angular's resolution doesn't overwrite it
-    (component as any).groupAutoComplete = { show: jest.fn() };
+    (component as any).groupAutoComplete = () => ({ show: jest.fn() });
   });
 
   it('should create', () => {
@@ -100,14 +100,14 @@ describe('LogicsEditComponent', () => {
   // -------------------------------------------------------------------------
 
   it('allGroupNames is populated from the groups API response', () => {
-    expect(component.allGroupNames).toEqual(['alpha', 'beta', 'gamma']);
+    expect(component.allGroupNames()).toEqual(['alpha', 'beta', 'gamma']);
   });
 
   it('allGroupNames is sorted alphabetically (case-insensitive)', () => {
-    const sorted = [...component.allGroupNames].sort((a, b) =>
+    const sorted = [...component.allGroupNames()].sort((a, b) =>
       a.toLowerCase().localeCompare(b.toLowerCase()),
     );
-    expect(component.allGroupNames).toEqual(sorted);
+    expect(component.allGroupNames()).toEqual(sorted);
   });
 
   // -------------------------------------------------------------------------
@@ -115,32 +115,32 @@ describe('LogicsEditComponent', () => {
   // -------------------------------------------------------------------------
 
   it('searchGroups() with empty query returns all group names', () => {
-    component.logicGroupChips = [];
+    component.logicGroupChips.set([]);
     component.searchGroups({ query: '' });
     expect(component.filteredGroupNames).toEqual(['alpha', 'beta', 'gamma']);
   });
 
   it('searchGroups() filters by substring (case-insensitive)', () => {
-    component.logicGroupChips = [];
+    component.logicGroupChips.set([]);
     component.searchGroups({ query: 'a' });
     // 'alpha', 'beta', 'gamma' all contain 'a'
     expect(component.filteredGroupNames).toEqual(['alpha', 'beta', 'gamma']);
   });
 
   it('searchGroups() narrows results as query becomes more specific', () => {
-    component.logicGroupChips = [];
+    component.logicGroupChips.set([]);
     component.searchGroups({ query: 'alp' });
     expect(component.filteredGroupNames).toEqual(['alpha']);
   });
 
   it('searchGroups() returns empty array when nothing matches', () => {
-    component.logicGroupChips = [];
+    component.logicGroupChips.set([]);
     component.searchGroups({ query: 'zzz' });
     expect(component.filteredGroupNames).toEqual([]);
   });
 
   it('searchGroups() excludes already-selected chips from suggestions', () => {
-    component.logicGroupChips = ['alpha', 'gamma'];
+    component.logicGroupChips.set(['alpha', 'gamma']);
     component.searchGroups({ query: '' });
     expect(component.filteredGroupNames).toEqual(['beta']);
   });
@@ -150,13 +150,13 @@ describe('LogicsEditComponent', () => {
   // -------------------------------------------------------------------------
 
   it('onGroupFocus() sets filteredGroupNames to unused groups', () => {
-    component.logicGroupChips = ['beta'];
+    component.logicGroupChips.set(['beta']);
     component.onGroupFocus();
     expect(component.filteredGroupNames).toEqual(['alpha', 'gamma']);
   });
 
   it('onGroupFocus() with no chips selected returns all groups', () => {
-    component.logicGroupChips = [];
+    component.logicGroupChips.set([]);
     component.onGroupFocus();
     expect(component.filteredGroupNames).toEqual(['alpha', 'beta', 'gamma']);
   });
@@ -166,22 +166,22 @@ describe('LogicsEditComponent', () => {
   // -------------------------------------------------------------------------
 
   it('onGroupChipsChange() writes a pipe-separated string to logic.group', () => {
-    component.logicGroupChips = ['alpha', 'beta'];
+    component.logicGroupChips.set(['alpha', 'beta']);
     component.onGroupChipsChange();
-    expect(component.logic.group).toBe('alpha | beta');
+    expect(component.logic().group).toBe('alpha | beta');
   });
 
   it('onGroupChipsChange() writes empty string when chips are empty', () => {
-    component.logicGroupChips = [];
+    component.logicGroupChips.set([]);
     component.onGroupChipsChange();
-    expect(component.logic.group).toBe('');
+    expect(component.logic().group).toBe('');
   });
 
   it('onGroupChipsChange() marks logicChanged when chips differ from original', () => {
     // After fixture loads, logicGroupChips is [] and logicGroupOrig is the original value.
     // Adding a chip that wasn't there before should set logicChanged = true.
-    component.logicGroupChips = ['alpha'];
+    component.logicGroupChips.set(['alpha']);
     component.onGroupChipsChange();
-    expect(component.logicChanged).toBe(true);
+    expect(component.logicChanged()).toBe(true);
   });
 });

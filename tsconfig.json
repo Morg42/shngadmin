@@ -22,17 +22,9 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "es2022",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "ES2022",
-      "dom"
-    ],
+    "typeRoots": ["node_modules/@types"],
     "paths": {
-      "core-js/es7/reflect": [
-        "node_modules/core-js/proposals/reflect-metadata"
-      ]
+      "core-js/es7/reflect": ["node_modules/core-js/proposals/reflect-metadata"]
     },
     "useDefineForClassFields": false
   },
@@ -43,5 +35,4 @@
     "strictInputAccessModifiers": false,
     "strictTemplates": true
   }
-
 }

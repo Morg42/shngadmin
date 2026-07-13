@@ -20,10 +20,6 @@ export class ConfigApiService {
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'config/';
     return this.http.get(url).pipe(
-      map((response) => {
-        const result = response;
-        return result;
-      }),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'ConfigApiService (getConfig): Could not read schedulers data' + ' - ' + err.error.error,
@@ -56,7 +52,6 @@ export class ConfigApiService {
   checkConfigEtc() {
     const url = this.appConfig.apiUrl + 'config/check_config_etc/';
     return this.http.get(url).pipe(
-      map((response) => response),
       catchError((err: HttpErrorResponse) => {
         this.log.error('ConfigApiService (checkConfigEtc): ' + err.message);
         return of({ result: 'error', description: err.message });
@@ -67,7 +62,6 @@ export class ConfigApiService {
   enableConfigEtc() {
     const url = this.appConfig.apiUrl + 'config/enable_config_etc/';
     return this.http.put(url, '{}').pipe(
-      map((response) => response),
       catchError((err: HttpErrorResponse) => {
         this.log.error('ConfigApiService (enableConfigEtc): ' + err.message);
         return of({ result: 'error', description: err.message });

@@ -61,7 +61,7 @@ describe('TopNavigationComponent', () => {
   });
 
   it('loggedIn is initially false', () => {
-    expect(component.loggedIn).toBe(false);
+    expect(component.loggedIn()).toBe(false);
   });
 
   it('helpUrl falls back to the official docs when local docs are unavailable', () => {
@@ -70,17 +70,17 @@ describe('TopNavigationComponent', () => {
   });
 
   it('helpUrl points to the section-specific admin doc page for the current route', () => {
-    jest.spyOn(component.router, 'url', 'get').mockReturnValue('/items');
+    component['currentUrl'].set('/items');
     expect(component.helpUrlOfficial).toContain('/admin/items.html');
   });
 
   it('helpUrl falls back to the generic admin page for unmapped routes', () => {
-    jest.spyOn(component.router, 'url', 'get').mockReturnValue('/login');
+    component['currentUrl'].set('/login');
     expect(component.helpUrlOfficial).toContain('/admin/admin.html');
   });
 
   it('helpUrlDev points to the same section page on the develop-branch docs mirror', () => {
-    jest.spyOn(component.router, 'url', 'get').mockReturnValue('/plugins');
+    component['currentUrl'].set('/plugins');
     expect(component.helpUrlDev).toBe('https://smarthomeng.github.io/dev_doc/admin/plugins.html');
   });
 
@@ -98,10 +98,11 @@ describe('TopNavigationComponent', () => {
     expect(component.nonMasterBranch).toBe(true);
   });
 
-  it('marks the component for check on navigation, so the OnPush Help link stays current', async () => {
-    const markForCheck = jest.spyOn(component['cdr'], 'markForCheck');
-    await TestBed.inject(Router).navigateByUrl('/items');
-    expect(markForCheck).toHaveBeenCalled();
+  it('updates the Help link source signal on navigation (OnPush reactivity)', async () => {
+    // currentUrl is a signal read by the help getters, so a change marks
+    // the OnPush component dirty without any manual markForCheck.
+    await TestBed.inject(Router).navigateByUrl('/');
+    expect(component['currentUrl']()).toBe('/');
   });
 
   it('forces an immediate check when the theme changes, so the toggle icon never goes stale', () => {

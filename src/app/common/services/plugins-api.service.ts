@@ -28,10 +28,6 @@ export class PluginsApiService {
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'plugins/installed/';
     return this.http.get(url).pipe(
-      map((response) => {
-        const result = response;
-        return result;
-      }),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'PluginsApiService (getInstalledPlugins): Could not read plugins data' +
@@ -53,10 +49,6 @@ export class PluginsApiService {
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'plugins/config/';
     return this.http.get(url).pipe(
-      map((response) => {
-        const result = response;
-        return result;
-      }),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'PluginsApiService (getPluginsConfig): Could not read plugins data' +
@@ -78,10 +70,6 @@ export class PluginsApiService {
     const apiUrl = this.appConfig.apiUrl;
     const url = apiUrl + 'plugins/info/';
     return this.http.get(url).pipe(
-      map((response) => {
-        const result = response;
-        return result;
-      }),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'PluginsApiService (getPluginsInfo): Could not read plugins data' +
@@ -103,10 +91,6 @@ export class PluginsApiService {
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'plugins/logicparams/';
     return this.http.get(url).pipe(
-      map((response) => {
-        const result = response;
-        return result;
-      }),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'PluginsApiService (getPluginsLogicParameters): Could not read plugins data' +
@@ -128,10 +112,6 @@ export class PluginsApiService {
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'plugins/api/';
     return this.http.get(url).pipe(
-      map((response) => {
-        const result = response;
-        return result;
-      }),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'PluginsApiService (getPluginsInfo): Could not read plugins data' +
@@ -150,7 +130,7 @@ export class PluginsApiService {
     // this.log.log('PluginsApiService.setPluginConfig');
 
     const apiUrl = this.appConfig.apiUrl;
-    const url = apiUrl + 'plugin/' + pluginsection + '/';
+    const url = apiUrl + 'plugin/' + encodeURIComponent(pluginsection) + '/';
     return this.http.put(url, JSON.stringify(config)).pipe(
       map((response) => {
         const result = response as ApiResult;
@@ -190,7 +170,7 @@ export class PluginsApiService {
     // this.log.log('PluginsApiService.addPluginConfig');
 
     const apiUrl = this.appConfig.apiUrl;
-    const url = apiUrl + 'plugin/' + pluginsection + '/';
+    const url = apiUrl + 'plugin/' + encodeURIComponent(pluginsection) + '/';
     return this.http.post(url, JSON.stringify(config)).pipe(
       map((response) => {
         const result = response as ApiResult;
@@ -232,7 +212,7 @@ export class PluginsApiService {
     // this.log.log('PluginsApiService.deletePluginConfig\n', {pluginsection});
 
     const apiUrl = this.appConfig.apiUrl;
-    const url = apiUrl + 'plugin/' + pluginsection + '/';
+    const url = apiUrl + 'plugin/' + encodeURIComponent(pluginsection) + '/';
     return this.http.delete(url).pipe(
       map((response) => {
         const result = response as ApiResult;
@@ -280,9 +260,9 @@ export class PluginsApiService {
     this.log.warn('PluginsApiService.setPluginState', { pluginConfigName }, { action });
 
     const apiUrl = this.appConfig.apiUrl;
-    let url = apiUrl + 'plugin/' + pluginConfigName + '?action=' + action;
+    let url = apiUrl + 'plugin/' + encodeURIComponent(pluginConfigName) + '?action=' + action;
     if (filename !== '') {
-      url += '&filename=' + filename;
+      url += '&filename=' + encodeURIComponent(filename);
     }
     return this.http.put(url, JSON.stringify('')).pipe(
       map((response) => {

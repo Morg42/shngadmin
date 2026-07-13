@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 700" font-family="'Segoe UI',Arial,sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#374151"/>
+    </marker>
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2563EB"/>
+    </marker>
+    <marker id="arr-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#16A34A"/>
+    </marker>
+    <marker id="arr-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#D97706"/>
+    </marker>
+  </defs>
+
+  <rect width="820" height="700" fill="#F9FAFB"/>
+  <text x="410" y="28" text-anchor="middle" font-size="16" font-weight="bold" fill="#111827">shngAdmin — Application Bootstrap Sequence</text>
+  <text x="410" y="46" text-anchor="middle" font-size="10" fill="#6B7280">What happens from browser load to the first feature page becoming visible</text>
+
+  <!-- Step boxes — left column -->
+  <!-- 1 -->
+  <rect x="20" y="64" width="200" height="52" rx="6" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1.5"/>
+  <text x="120" y="84" text-anchor="middle" font-size="10" font-weight="bold" fill="#1E40AF">① Browser loads index.html</text>
+  <text x="120" y="99" text-anchor="middle" font-size="9" fill="#1E3A8A">Angular injects runtime scripts.</text>
+  <text x="120" y="111" text-anchor="middle" font-size="9" fill="#1E3A8A">Zone.js patches all async APIs.</text>
+
+  <!-- arrow down -->
+  <line x1="120" y1="116" x2="120" y2="136" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- 2 -->
+  <rect x="20" y="136" width="200" height="52" rx="6" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1.5"/>
+  <text x="120" y="156" text-anchor="middle" font-size="10" font-weight="bold" fill="#1E40AF">② main.ts — bootstrapApplication</text>
+  <text x="120" y="171" text-anchor="middle" font-size="9" fill="#1E3A8A">Registers all root providers:</text>
+  <text x="120" y="183" text-anchor="middle" font-size="9" fill="#1E3A8A">Router, JwtModule, Translate, PrimeNG…</text>
+
+  <line x1="120" y1="188" x2="120" y2="208" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- 3 -->
+  <rect x="20" y="208" width="200" height="64" rx="6" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1.5"/>
+  <text x="120" y="228" text-anchor="middle" font-size="10" font-weight="bold" fill="#1E40AF">③ AppConfigService init</text>
+  <text x="120" y="243" text-anchor="middle" font-size="9" fill="#1E3A8A">BehaviorSubject starts with defaults.</text>
+  <text x="120" y="255" text-anchor="middle" font-size="9" fill="#1E3A8A">Language seeded from localStorage</text>
+  <text x="120" y="267" text-anchor="middle" font-size="9" fill="#1E3A8A">(UserPreferencesService).</text>
+
+  <line x1="120" y1="272" x2="120" y2="292" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- 4 -->
+  <rect x="20" y="292" width="200" height="64" rx="6" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1.5"/>
+  <text x="120" y="312" text-anchor="middle" font-size="10" font-weight="bold" fill="#1E40AF">④ ServerApiService init</text>
+  <text x="120" y="327" text-anchor="middle" font-size="9" fill="#1E3A8A">Reads window.location to build</text>
+  <text x="120" y="339" text-anchor="middle" font-size="9" fill="#1E3A8A">apiUrl  →  patches AppConfigService.</text>
+  <text x="120" y="351" text-anchor="middle" font-size="9" fill="#1E3A8A">ConnectivityService starts heartbeat.</text>
+
+  <line x1="120" y1="356" x2="120" y2="376" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- 5 -->
+  <rect x="20" y="376" width="200" height="64" rx="6" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1.5"/>
+  <text x="120" y="396" text-anchor="middle" font-size="10" font-weight="bold" fill="#1E40AF">⑤ AppComponent.constructor</text>
+  <text x="120" y="411" text-anchor="middle" font-size="9" fill="#1E3A8A">Applies saved language preference.</text>
+  <text x="120" y="423" text-anchor="middle" font-size="9" fill="#1E3A8A">Adds supported langs: en, de, fr.</text>
+  <text x="120" y="435" text-anchor="middle" font-size="9" fill="#1E3A8A">Sets translation default.</text>
+
+  <line x1="120" y1="440" x2="120" y2="460" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- 6 -->
+  <rect x="20" y="460" width="200" height="64" rx="6" fill="#DCFCE7" stroke="#86EFAC" stroke-width="1.5"/>
+  <text x="120" y="480" text-anchor="middle" font-size="10" font-weight="bold" fill="#14532D">⑥ AppComponent.ngOnInit</text>
+  <text x="120" y="495" text-anchor="middle" font-size="9" fill="#166534">GET /api/server/  →  ServerInfo.</text>
+  <text x="120" y="507" text-anchor="middle" font-size="9" fill="#166534">Patches loginRequired into AppConfig.</text>
+  <text x="120" y="519" text-anchor="middle" font-size="9" fill="#166534">Calls SharedService.setGuiLanguage().</text>
+
+  <line x1="120" y1="524" x2="120" y2="544" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- 7 -->
+  <rect x="20" y="544" width="200" height="52" rx="6" fill="#DCFCE7" stroke="#86EFAC" stroke-width="1.5"/>
+  <text x="120" y="564" text-anchor="middle" font-size="10" font-weight="bold" fill="#14532D">⑦ Router navigates to "/"</text>
+  <text x="120" y="579" text-anchor="middle" font-size="9" fill="#166534">Redirected to /system by default</text>
+  <text x="120" y="591" text-anchor="middle" font-size="9" fill="#166534">route configuration.</text>
+
+  <!-- Right column -->
+  <!-- 8 -->
+  <rect x="280" y="460" width="210" height="64" rx="6" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1.5"/>
+  <text x="385" y="480" text-anchor="middle" font-size="10" font-weight="bold" fill="#78350F">⑧ appReadyGuard</text>
+  <text x="385" y="495" text-anchor="middle" font-size="9" fill="#92400E">Waits for AppConfig.serverReady$</text>
+  <text x="385" y="507" text-anchor="middle" font-size="9" fill="#92400E">(wsPort populated by TopNav's</text>
+  <text x="385" y="519" text-anchor="middle" font-size="9" fill="#92400E">getServerinfo call). 5 s timeout.</text>
+
+  <!-- 9 -->
+  <rect x="280" y="544" width="210" height="64" rx="6" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1.5"/>
+  <text x="385" y="564" text-anchor="middle" font-size="10" font-weight="bold" fill="#78350F">⑨ authGuard</text>
+  <text x="385" y="579" text-anchor="middle" font-size="9" fill="#92400E">Already logged in? → pass.</text>
+  <text x="385" y="591" text-anchor="middle" font-size="9" fill="#92400E">Waits for authReady$ (loginRequired</text>
+  <text x="385" y="603" text-anchor="middle" font-size="9" fill="#92400E">flag). No login req? → pass. Else → /login.</text>
+
+  <!-- 10 -->
+  <rect x="280" y="628" width="210" height="52" rx="6" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1.5"/>
+  <text x="385" y="648" text-anchor="middle" font-size="10" font-weight="bold" fill="#4C1D95">⑩ Lazy feature module loads</text>
+  <text x="385" y="663" text-anchor="middle" font-size="9" fill="#5B21B6">Angular downloads the JS chunk for</text>
+  <text x="385" y="675" text-anchor="middle" font-size="9" fill="#5B21B6">system / items / logics / etc.</text>
+
+  <!-- TopNav parallel track -->
+  <rect x="510" y="376" width="210" height="80" rx="6" fill="#F0FDF4" stroke="#86EFAC" stroke-width="1.5"/>
+  <text x="615" y="396" text-anchor="middle" font-size="10" font-weight="bold" fill="#166534">TopNavigationComponent init</text>
+  <text x="615" y="412" text-anchor="middle" font-size="9" fill="#166534">GET /api/server/info  →  full config.</text>
+  <text x="615" y="424" text-anchor="middle" font-size="9" fill="#166534">Patches wsPort, tz, branches etc.</text>
+  <text x="615" y="436" text-anchor="middle" font-size="9" fill="#166534">→ serverReady$ emits.</text>
+  <text x="615" y="448" text-anchor="middle" font-size="9" fill="#166534">WebsocketPluginService connects WS.</text>
+
+  <!-- Auth parallel track -->
+  <rect x="510" y="476" width="210" height="80" rx="6" fill="#FCE7F3" stroke="#F9A8D4" stroke-width="1.5"/>
+  <text x="615" y="496" text-anchor="middle" font-size="10" font-weight="bold" fill="#831843">AuthService init (constructor)</text>
+  <text x="615" y="512" text-anchor="middle" font-size="9" fill="#9D174D">Checks sessionStorage for saved JWT.</text>
+  <text x="615" y="524" text-anchor="middle" font-size="9" fill="#9D174D">If valid and not expired → loggedIn$</text>
+  <text x="615" y="536" text-anchor="middle" font-size="9" fill="#9D174D">emits true without a server round-trip.</text>
+  <text x="615" y="548" text-anchor="middle" font-size="9" fill="#9D174D">Else: anonymous login via /api/auth.</text>
+
+  <!-- Arrows between columns -->
+  <!-- 7 → 8 -->
+  <line x1="220" y1="568" x2="278" y2="490" stroke="#2563EB" stroke-width="1.5" marker-end="url(#arr-blue)"/>
+  <!-- 8 → 9 -->
+  <line x1="385" y1="524" x2="385" y2="542" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+  <!-- 9 → 10 -->
+  <line x1="385" y1="608" x2="385" y2="626" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- 5 → TopNav (render) -->
+  <line x1="220" y1="408" x2="508" y2="408" stroke="#16A34A" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-green)"/>
+  <text x="360" y="402" text-anchor="middle" font-size="8" fill="#16A34A">renders (parallel)</text>
+
+  <!-- TopNav → appReadyGuard unblocks -->
+  <line x1="510" y1="440" x2="492" y2="480" stroke="#D97706" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-orange)"/>
+  <text x="515" y="466" font-size="8" fill="#D97706">serverReady$</text>
+
+  <!-- AuthService → authGuard unblocks -->
+  <line x1="510" y1="530" x2="492" y2="580" stroke="#D97706" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-orange)"/>
+  <text x="515" y="564" font-size="8" fill="#D97706">authReady$</text>
+
+  <!-- legend -->
+  <rect x="20" y="634" width="220" height="58" rx="4" fill="#F3F4F6" stroke="#D1D5DB" stroke-width="1"/>
+  <text x="30" y="650" font-size="9" font-weight="bold" fill="#374151">Legend</text>
+  <line x1="30" y1="662" x2="70" y2="662" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="75" y="666" font-size="9" fill="#374151">Sequential step</text>
+  <line x1="30" y1="678" x2="70" y2="678" stroke="#16A34A" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-green)"/>
+  <text x="75" y="682" font-size="9" fill="#374151">Parallel / async</text>
+  <line x1="150" y1="662" x2="190" y2="662" stroke="#D97706" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-orange)"/>
+  <text x="195" y="666" font-size="9" fill="#374151">Unblocks</text>
+</svg>

@@ -19,10 +19,6 @@ export class LoggersApiService {
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'loggers/';
     return this.http.get<LoggersApiResponse>(url).pipe(
-      map((response) => {
-        const result = response;
-        return result;
-      }),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'LoggersApiService (getLogs): Could not read logs data' + ' - ' + err.error.error,
@@ -36,7 +32,8 @@ export class LoggersApiService {
     // this.log.log('LoggersApiService.setLoggerLevel');
 
     const apiUrl = this.appConfig.apiUrl;
-    let url = apiUrl + 'loggers/' + logger + '?level=' + level;
+    let url =
+      apiUrl + 'loggers/' + encodeURIComponent(logger) + '?level=' + encodeURIComponent(level);
     return this.http.put(url, 'level').pipe(
       map((response) => {
         const result = response;
@@ -62,7 +59,12 @@ export class LoggersApiService {
     // this.log.log('LoggersApiService.setHandlers');
 
     const apiUrl = this.appConfig.apiUrl;
-    let url = apiUrl + 'loggers/' + logger + '?handlers=' + handlerList;
+    let url =
+      apiUrl +
+      'loggers/' +
+      encodeURIComponent(logger) +
+      '?handlers=' +
+      encodeURIComponent(handlerList);
     return this.http.put(url, 'handlers').pipe(
       map((response) => {
         const result = response;
@@ -86,12 +88,8 @@ export class LoggersApiService {
 
   addLogger(logger: string) {
     const apiUrl = this.appConfig.apiUrl;
-    let url = apiUrl + 'loggers/' + logger + '/';
+    let url = apiUrl + 'loggers/' + encodeURIComponent(logger) + '/';
     return this.http.post(url, 'xxx').pipe(
-      map((response) => {
-        const result = response;
-        return result;
-      }),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           "LoggersApiService.addLogger(): Could not add logger '" +
@@ -106,12 +104,8 @@ export class LoggersApiService {
 
   deleteLogger(logger: string) {
     const apiUrl = this.appConfig.apiUrl;
-    let url = apiUrl + 'loggers/' + logger + '/';
+    let url = apiUrl + 'loggers/' + encodeURIComponent(logger) + '/';
     return this.http.delete(url).pipe(
-      map((response) => {
-        const result = response;
-        return result;
-      }),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           "LoggersApiService.deleteLogger(): Could not delete logger '" +

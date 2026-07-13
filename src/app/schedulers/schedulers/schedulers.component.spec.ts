@@ -53,7 +53,7 @@ describe('SchedulersComponent', () => {
 
   it('should load all schedulers from fixture into component', () => {
     // fixture has 23 total schedulers: 8 item + 11 logic + 1 plugin + 3 other
-    expect(component.schedulerinfo.length).toBe(fixtureData.length);
+    expect(component.schedulerinfo().length).toBe(fixtureData.length);
   });
 
   it('should render item-group scheduler rows in first tabpanel', () => {

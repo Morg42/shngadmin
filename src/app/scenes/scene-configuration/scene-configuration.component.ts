@@ -1,11 +1,11 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   DestroyRef,
   inject,
   OnInit,
-  ViewChild,
+  signal,
+  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -48,7 +48,6 @@ import { ServicesApiService } from '../../common/services/services-api.service';
 })
 export class SceneConfigurationComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
-  private readonly cdr = inject(ChangeDetectorRef);
   private translate = inject(TranslateService);
   private fileService = inject(FilesApiService);
   private sceneApiService = inject(ScenesApiService);
@@ -60,23 +59,23 @@ export class SceneConfigurationComponent implements OnInit {
   // -----------------------------------------------------
   //  Vars for the YAML syntax checker
   //
-  @ViewChild('codeeditor') codeEditor?: CodeEditorComponent;
+  readonly codeEditor = viewChild<CodeEditorComponent>('codeeditor');
 
-  filelist!: string[];
-  sceneFiles!: SelectItem[];
+  readonly filelist = signal<string[]>([]);
+  readonly sceneFiles = signal<SelectItem[]>([]);
   selectedScenefile!: SelectItem;
 
-  reloadScenesButtonDisabled = false;
+  readonly reloadScenesButtonDisabled = signal(false);
 
-  myEditFilename = '';
-  myTextarea = '';
-  myTextareaOrig = '';
+  readonly myEditFilename = signal('');
+  readonly myTextarea = signal('');
+  readonly myTextareaOrig = signal('');
 
-  cmReadOnly = true;
+  readonly cmReadOnly = signal(true);
 
   editorHelp_display = false;
-  error_display = false;
-  myTextOutput = '';
+  readonly error_display = signal(false);
+  readonly myTextOutput = signal('');
   newconfig_display = false;
   newFilename = '';
   add_enabled = false;
@@ -94,31 +93,19 @@ export class SceneConfigurationComponent implements OnInit {
 
     this.getSceneFile('');
 
-    this.sceneFiles = [];
-
     this.setTitle(this.translate.instant('MENU.SCENE_CONFIGURATION'));
 
+    this.loadFileList();
+  }
+
+  private loadFileList() {
     this.fileService
       .getfileList('scenes')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        this.filelist = <string[]>response;
-        for (let i = 0; i < this.filelist.length; i++) {
-          //
-          // I get it. The sample code here and in the docs is wrong, it should read like this:
-          //
-          // fails
-          //   this.cities.push({name:'New York', code: 'NY'});
-          //
-          // correct
-          //   this.cities = [...this.cities, {name:'New York', code: 'NY'}];
-          //
-          this.sceneFiles = [
-            ...this.sceneFiles,
-            <SelectItem>{ label: this.filelist[i], value: this.filelist[i] },
-          ];
-        }
-        this.cdr.markForCheck();
+        const files = <string[]>response;
+        this.filelist.set(files);
+        this.sceneFiles.set(files.map((f) => <SelectItem>{ label: f, value: f }));
       });
   }
 
@@ -128,7 +115,7 @@ export class SceneConfigurationComponent implements OnInit {
   }
 
   deleteConfig() {
-    this.delete_param = { config: this.myEditFilename };
+    this.delete_param = { config: this.myEditFilename() };
     this.confirmdelete_display = true;
   }
 
@@ -140,7 +127,7 @@ export class SceneConfigurationComponent implements OnInit {
 
     // delete on backend server
     this.fileService
-      .deleteFile('scenes', this.myEditFilename)
+      .deleteFile('scenes', this.myEditFilename())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response: unknown) => {
         if (response) {
@@ -148,8 +135,6 @@ export class SceneConfigurationComponent implements OnInit {
           this.confirmdelete_display = false;
           this.log.log('SceneConfigurationComponent.DeleteConfigConfirm(): call ngOnInit()');
           this.ngOnInit();
-          //            this.restart_core_button = true;
-          this.cdr.markForCheck();
         }
       });
 
@@ -161,8 +146,8 @@ export class SceneConfigurationComponent implements OnInit {
     this.add_enabled = false;
     if (this.newFilename.length > 0) {
       this.add_enabled = true;
-      for (const filenno in this.filelist) {
-        const fn = this.filelist[filenno].slice(0, -5); // '.yaml' = 5 chars
+      for (const fname of this.filelist()) {
+        const fn = fname.slice(0, -5); // '.yaml' = 5 chars
         if (this.newFilename === fn) {
           this.add_enabled = false;
           this.fileExists = true;
@@ -174,32 +159,19 @@ export class SceneConfigurationComponent implements OnInit {
   addFile() {
     this.newconfig_display = false;
 
-    this.myTextarea = '# ' + this.newFilename + '.yaml\n';
-    this.myTextareaOrig = this.myTextarea;
-    this.myEditFilename = this.newFilename;
-    this.cmReadOnly = false;
+    const text = '# ' + this.newFilename + '.yaml\n';
+    this.myTextarea.set(text);
+    this.myTextareaOrig.set(text);
+    this.myEditFilename.set(this.newFilename);
+    this.cmReadOnly.set(false);
 
     this.fileService
-      .createFile('scenes', this.myEditFilename, this.myTextarea)
+      .createFile('scenes', this.myEditFilename(), this.myTextarea())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.myTextareaOrig = this.myTextarea;
-          this.sceneFiles = [];
-          this.fileService
-            .getfileList('scenes')
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe((response) => {
-              this.filelist = <string[]>response;
-              for (let i = 0; i < this.filelist.length; i++) {
-                this.sceneFiles = [
-                  ...this.sceneFiles,
-                  <SelectItem>{ label: this.filelist[i], value: this.filelist[i] },
-                ];
-              }
-              this.cdr.markForCheck();
-            });
-          this.cdr.markForCheck();
+          this.myTextareaOrig.set(this.myTextarea());
+          this.loadFileList();
         },
         error: (err) => {
           if (err?.status === 409) {
@@ -207,15 +179,14 @@ export class SceneConfigurationComponent implements OnInit {
               severity: 'warn',
               summary: this.translate.instant('COMMON.FILE_EXISTS_TITLE'),
               detail: this.translate.instant('COMMON.FILE_EXISTS_HINT', {
-                filename: this.myEditFilename,
+                filename: this.myEditFilename(),
               }),
               life: 5000,
             });
           }
-          this.myEditFilename = '';
-          this.myTextarea = '';
-          this.cmReadOnly = true;
-          this.cdr.markForCheck();
+          this.myEditFilename.set('');
+          this.myTextarea.set('');
+          this.cmReadOnly.set(true);
         },
       });
   }
@@ -227,17 +198,16 @@ export class SceneConfigurationComponent implements OnInit {
       // this.log.log('sceneFileSelected()' , {filename});
       this.getSceneFile(filename);
     } else {
-      this.myEditFilename = '';
-      this.myTextarea = '';
-      this.cmReadOnly = true;
-      this.myTextarea = this.translate.instant('SCENE_CONFIG.FILETYPE_UNSUPPORTED');
+      this.myEditFilename.set('');
+      this.cmReadOnly.set(true);
+      this.myTextarea.set(this.translate.instant('SCENE_CONFIG.FILETYPE_UNSUPPORTED'));
     }
   }
 
   getSceneFile(filename: string) {
-    this.myEditFilename = '';
-    this.myTextarea = '';
-    this.cmReadOnly = true;
+    this.myEditFilename.set('');
+    this.myTextarea.set('');
+    this.cmReadOnly.set(true);
     if (filename === '') {
       return;
     }
@@ -247,15 +217,13 @@ export class SceneConfigurationComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
-          this.myTextarea = response;
-          this.myTextareaOrig = response;
-          this.myEditFilename = filename;
-          this.cmReadOnly = false;
-          this.cdr.markForCheck();
+          this.myTextarea.set(response);
+          this.myTextareaOrig.set(response);
+          this.myEditFilename.set(filename);
+          this.cmReadOnly.set(false);
         },
         error: () => {
-          this.myTextarea = this.translate.instant('SCENE_CONFIG.FILE_NOT_FOUND');
-          this.cdr.markForCheck();
+          this.myTextarea.set(this.translate.instant('SCENE_CONFIG.FILE_NOT_FOUND'));
         },
       });
   }
@@ -264,22 +232,20 @@ export class SceneConfigurationComponent implements OnInit {
     // this.log.log('SceneConfigurationComponent.saveConfig');
 
     this.dataService
-      .CheckYamlText(this.myTextarea)
+      .CheckYamlText(this.myTextarea())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        this.myTextOutput = response as string;
-        if (this.myTextOutput.startsWith('ERROR:')) {
-          this.error_display = true;
+        this.myTextOutput.set(response as string);
+        if (this.myTextOutput().startsWith('ERROR:')) {
+          this.error_display.set(true);
         } else {
           this.fileService
-            .saveFile('scenes', this.myEditFilename, this.myTextarea)
+            .saveFile('scenes', this.myEditFilename(), this.myTextarea())
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe((response2) => {
-              this.myTextareaOrig = this.myTextarea;
-              this.cdr.markForCheck();
+            .subscribe(() => {
+              this.myTextareaOrig.set(this.myTextarea());
             });
         }
-        this.cdr.markForCheck();
       });
   }
 
@@ -287,7 +253,7 @@ export class SceneConfigurationComponent implements OnInit {
     // this.log.log('reloadPlugin', {pluginConfigName});
 
     this.sceneApiService
-      .reloadScene(this.myEditFilename)
+      .reloadScene(this.myEditFilename())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
         this.log.log('reloadScene', '\nresponse', { response });
@@ -297,14 +263,14 @@ export class SceneConfigurationComponent implements OnInit {
   reloadScenes() {
     // this.log.log('reloadPlugin', {pluginConfigName});
 
-    this.reloadScenesButtonDisabled = true;
+    this.reloadScenesButtonDisabled.set(true);
     this.sceneApiService
       .reloadScenes()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
         this.log.log('reloadScenes', '\nresponse', { response });
         setTimeout(() => {
-          this.reloadScenesButtonDisabled = false;
+          this.reloadScenesButtonDisabled.set(false);
         }, 200);
       });
   }

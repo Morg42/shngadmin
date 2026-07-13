@@ -6,11 +6,11 @@
         pInputText
         type="text"
         [placeholder]="'FILTER' | translate"
-        [value]="filterText"
+        [value]="filterText()"
         (input)="onFilterChange($any($event.target).value)"
         style="width: 220px; padding-right: 2rem"
       />
-      @if (filterText) {
+      @if (filterText()) {
         <span
           class="pi pi-times"
           style="
@@ -27,7 +27,7 @@
     </span>
   </div>
   <div class="body-content shng-page-body">
-    @if (loading) {
+    @if (loading()) {
       <div style="display: flex; align-items: center; padding: 1rem 0; gap: 0.5rem; color: var(--text-muted)">
         <p-progressSpinner
           [style]="{ width: '24px', height: '24px' }"
@@ -36,7 +36,7 @@
         {{ 'PLUGIN.LOADINFO' | translate }}
       </div>
     }
-    @if (!loading) {
+    @if (!loading()) {
       <table id="1" class="table table-striped table-hover shng-list-table">
         <thead>
           <tr class="shng_heading">
@@ -45,26 +45,26 @@
             <th style="width: 50px; border-top: 0">{{ 'PLUGIN.TYPE' | translate }}</th>
             <th class="sortable-th" style="width: 200px; border-top: 0" (click)="sortBy('configname')">
               {{ 'PLUGIN.CONFIGNAME' | translate }}
-              @if (sortField === 'configname') {
-                <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+              @if (sortField() === 'configname') {
+                <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
               }
             </th>
             <th class="sortable-th" style="width: 210px; border-top: 0" (click)="sortBy('pluginname')">
               {{ 'PLUGIN.PLUGINNAME' | translate }}
-              @if (sortField === 'pluginname') {
-                <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+              @if (sortField() === 'pluginname') {
+                <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
               }
             </th>
             <th class="sortable-th" style="width: 140px; border-top: 0" (click)="sortBy('instancename')">
               {{ 'PLUGIN.INSTANCE' | translate }}
-              @if (sortField === 'instancename') {
-                <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+              @if (sortField() === 'instancename') {
+                <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
               }
             </th>
             <th class="sortable-th" style="width: 110px; border-top: 0" (click)="sortBy('version')">
               {{ 'PLUGIN.VERSION' | translate }}
-              @if (sortField === 'version') {
-                <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+              @if (sortField() === 'version') {
+                <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
               }
             </th>
             <th style="width: 40px; border-top: 0">{{ 'PLUGIN.WEBIF' | translate }}</th>
@@ -73,7 +73,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (plugin of filteredPlugins; track plugin.configname) {
+          @for (plugin of filteredPlugins(); track plugin.configname) {
             <tr (click)="selectedPlugin = plugin; showPluginDetails = true" style="cursor: pointer">
               <td class="py-1">
                 @if (plugin.stopped === true) {

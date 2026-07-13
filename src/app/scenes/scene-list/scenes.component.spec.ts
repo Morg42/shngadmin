@@ -54,11 +54,11 @@ describe('ScenesComponent', () => {
   });
 
   it('should load sceneList from fixture', () => {
-    expect(component.sceneList.length).toBe(fixtureData.length);
+    expect(component.sceneList().length).toBe(fixtureData.length);
   });
 
   it('should set first scene path correctly', () => {
-    expect(component.sceneList[0].path).toBe(fixtureData[0].path);
+    expect(component.sceneList()[0].path).toBe(fixtureData[0].path);
   });
 
   it('should render one p-accordion-panel per scene', () => {

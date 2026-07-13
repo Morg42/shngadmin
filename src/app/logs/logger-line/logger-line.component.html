@@ -1,4 +1,4 @@
-@if (loggerActive) {
+@if (loggerActive()) {
   <td class="py-1">{{ loggerName }}</td>
 
   <td class="py-1">
@@ -53,7 +53,7 @@
   }
 }
 
-@if (!loggerActive) {
+@if (!loggerActive()) {
   <td class="py-1 shng-text-muted">{{ loggerName }}</td>
   <td class="py-1 shng-text-muted">
     <a>{{ logger.active.level }}</a>

@@ -27,13 +27,9 @@ export class FilesApiService {
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'files/' + filetype + '/';
     if (filename !== '') {
-      url += '?filename=' + filename;
+      url += '?filename=' + encodeURIComponent(filename);
     }
     return this.http.get(url, { responseType: 'text' }).pipe(
-      map((response) => {
-        const result = response;
-        return result;
-      }),
       catchError((err: HttpErrorResponse) => {
         this.log.error({ err });
         if (filename === '') {
@@ -66,7 +62,6 @@ export class FilesApiService {
   createFile(filetype: string, filename: string, content: string) {
     const url = this.appConfig.apiUrl + 'files/' + filetype + '/?filename=' + filename;
     return this.http.post(url, content, { responseType: 'text' }).pipe(
-      map((response) => response),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           `FilesApiService.createFile: ${err.status} – filetype '${filetype}', filename '${filename}'`,
@@ -82,7 +77,7 @@ export class FilesApiService {
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'files/' + filetype + '/';
     if (filename !== '') {
-      url += '?filename=' + filename;
+      url += '?filename=' + encodeURIComponent(filename);
     }
     return this.http.put(url, content, { responseType: 'text' }).pipe(
       map((response) => {
@@ -125,15 +120,11 @@ export class FilesApiService {
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'files/' + filetype + '/';
     if (filename !== '') {
-      url += '?filename=' + filename;
+      url += '?filename=' + encodeURIComponent(filename);
     }
     this.log.log('FilesApiService.deleteFile()', { url });
 
     return this.http.delete(url, { responseType: 'text' }).pipe(
-      map((response) => {
-        const result = response;
-        return result;
-      }),
       catchError((err: HttpErrorResponse) => {
         this.log.error({ err });
         if (filename === '') {

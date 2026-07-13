@@ -115,10 +115,6 @@ export class ServicesApiService {
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'services/cachecheck/';
     return this.http.get(url).pipe(
-      map((response) => {
-        const result = response;
-        return result;
-      }),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'ServicesApiService (getCacheOrphans): Could not read cache orphans data' +
@@ -134,7 +130,7 @@ export class ServicesApiService {
     // this.log.log('ServicesApiService.deleteCacheFile');
 
     const apiUrl = this.appConfig.apiUrl;
-    let url = apiUrl + 'services/cachefile_delete?filename=' + filename;
+    let url = apiUrl + 'services/cachefile_delete?filename=' + encodeURIComponent(filename);
     return this.http.put(url, 'xxx').pipe(
       map((response) => {
         const result = response;

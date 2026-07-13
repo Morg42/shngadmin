@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import { BehaviorSubject, of } from 'rxjs';
+import { of } from 'rxjs';
 import pypiFixture from '../../../testing/fixtures/pypi.json';
 import systeminfoFixture from '../../../testing/fixtures/systeminfo.json';
 import {
@@ -35,22 +35,14 @@ describe('SystemComponent', () => {
     getSeriesThreads: jest.fn(),
     getSeriesWorkerThreads: jest.fn(),
     getSeriesDisk: jest.fn(),
-    systemloadUpdate$: new BehaviorSubject(null),
-    systemmemoryUpdate$: new BehaviorSubject(null),
-    systemswapUpdate$: new BehaviorSubject(null),
-    memoryUpdate$: new BehaviorSubject(null),
-    threadsUpdate$: new BehaviorSubject(null),
-    workerThreadsUpdate$: new BehaviorSubject(null),
-    idleWorkerThreadsUpdate$: new BehaviorSubject(null),
-    diskUpdate$: new BehaviorSubject(null),
-    systemload: { series: [] },
-    systemmemory: { series: [] },
-    systemswap: { series: [] },
-    memory: { series: [] },
-    threads: { series: [] },
-    workerThreads: { series: [] },
-    idleWorkerThreads: { series: [] },
-    disk: { series: [] },
+    systemload: signal({ series: [], tsdiff: 0 }),
+    systemmemory: signal({ series: [], tsdiff: 0 }),
+    systemswap: signal({ series: [], tsdiff: 0 }),
+    memory: signal({ series: [], tsdiff: 0 }),
+    threads: signal({ series: [], tsdiff: 0 }),
+    workerThreads: signal({ series: [], tsdiff: 0 }),
+    idleWorkerThreads: signal({ series: [], tsdiff: 0 }),
+    disk: signal({ series: [], tsdiff: 0 }),
   };
 
   const mockServerApi = {
@@ -98,26 +90,40 @@ describe('SystemComponent', () => {
   });
 
   it('should populate systeminfo from fixture', () => {
-    expect(component.systeminfo.sh_vers).toBe(systeminfoFixture.sh_vers);
-    expect(component.systeminfo.node).toBe(systeminfoFixture.node);
+    expect(component.systeminfo().sh_vers).toBe(systeminfoFixture.sh_vers);
+    expect(component.systeminfo().node).toBe(systeminfoFixture.node);
   });
 
-  it('should populate pypiinfo after switching to PyPI tab', fakeAsync(() => {
-    component.onTabChange('2');
-    tick(0);
-    expect(component.pypiinfo.length).toBe(pypiFixture.length);
-  }));
+  // startPypiPoll() drives its first fetch through timer(0, 5000), which
+  // schedules via setTimeout even for a 0ms delay - fakeAsync()/tick() need
+  // zone.js (unavailable now that the app is zoneless), so these use Jest's
+  // own fake timers instead, which patch setTimeout directly and don't care
+  // whether zone.js is loaded.
+  describe('PyPI tab (fake timers)', () => {
+    afterEach(() => {
+      jest.useRealTimers();
+    });
 
-  it('should set loading to false after pypi data arrives', fakeAsync(() => {
-    component.onTabChange('2');
-    tick(0);
-    expect(component.loading).toBe(false);
-  }));
+    it('should populate pypiinfo after switching to PyPI tab', async () => {
+      jest.useFakeTimers();
+      component.onTabChange('2');
+      await jest.advanceTimersByTimeAsync(0);
+      expect(component.pypiinfo().length).toBe(pypiFixture.length);
+    });
 
-  it('should count plugin requirements correctly from pypi fixture', fakeAsync(() => {
-    component.onTabChange('2');
-    tick(0);
-    const expected = pypiFixture.filter((p) => p.is_required_for_plugins === true).length;
-    expect(component.plugincount).toBe(expected);
-  }));
+    it('should set loading to false after pypi data arrives', async () => {
+      jest.useFakeTimers();
+      component.onTabChange('2');
+      await jest.advanceTimersByTimeAsync(0);
+      expect(component.loading()).toBe(false);
+    });
+
+    it('should count plugin requirements correctly from pypi fixture', async () => {
+      jest.useFakeTimers();
+      component.onTabChange('2');
+      await jest.advanceTimersByTimeAsync(0);
+      const expected = pypiFixture.filter((p) => p.is_required_for_plugins === true).length;
+      expect(component.plugincount()).toBe(expected);
+    });
+  });
 });

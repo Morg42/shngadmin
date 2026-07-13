@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Bind } from 'primeng/bind';
 import { InputText } from 'primeng/inputtext';
@@ -8,29 +8,34 @@ import { ConfigParameter, TableColumn } from '../../models/interfaces';
 @Component({
   selector: 'app-dynamic-field',
   templateUrl: './dynamic-field.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [Bind, Select, FormsModule, InputText],
 })
 export class DynamicFieldComponent {
-  @Input() row!: ConfigParameter;
-  @Input() col!: TableColumn;
-  @Output() changed = new EventEmitter<void>();
+  /** row is written into via ngModel (row[col.field]) and is otherwise the
+   *  parent table's own object — under OnPush, a parent that changes a row's
+   *  value programmatically (not via this component's own template events)
+   *  must publish a NEW row reference or this field won't pick it up. */
+  readonly row = input.required<ConfigParameter>();
+  readonly col = input.required<TableColumn>();
+  readonly changed = output<void>();
 
   readonly NUM_TYPES = ['int', 'num', 'float', 'scene', 'hide-int'];
 
   get placeholder(): string | undefined {
-    return this.row.default as string | undefined;
+    return this.row().default as string | undefined;
   }
 
   get validMin(): string | number | null {
-    return (this.row.valid_min as string | number | null) ?? null;
+    return (this.row().valid_min as string | number | null) ?? null;
   }
 
   get validMax(): string | number | null {
-    return (this.row.valid_max as string | number | null) ?? null;
+    return (this.row().valid_max as string | number | null) ?? null;
   }
 
   get inputKind(): string {
-    const { type, gui_type, valid_list } = this.row;
+    const { type, gui_type, valid_list } = this.row();
     if ((valid_list?.length ?? 0) > 0) return 'select';
     if (type && this.NUM_TYPES.includes(type)) return 'number';
     if (type === 'hide-str') return 'password';
@@ -41,6 +46,7 @@ export class DynamicFieldComponent {
   }
 
   onChanged(): void {
+    // TODO: The 'emit' function requires a mandatory void argument
     this.changed.emit();
   }
 }

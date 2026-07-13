@@ -1,11 +1,10 @@
 import {
+  ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   inject,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges,
+  input,
+  linkedSignal,
+  output,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -30,37 +29,40 @@ import { ItemsApiService } from '../../common/services/items-api.service';
 @Component({
   selector: 'app-attribute-value-input',
   templateUrl: './attribute-value-input.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [AutoComplete, FaIconComponent, FormsModule, InputText, Select, ToggleSwitch],
 })
-export class AttributeValueInputComponent implements OnChanges {
+export class AttributeValueInputComponent {
   private itemsApi = inject(ItemsApiService);
 
   /** Declared attribute type, e.g. 'bool', 'str', 'list(num)', 'dict' — the
    *  subtype in parens (if any) is not used for control selection in this
    *  v1 (list/dict rows are always plain text); only the base type before
    *  '(' matters. */
-  @Input() type = '';
-  @Input() validList?: string[];
-  @Input() value: unknown;
-  @Output() valueChange = new EventEmitter<unknown>();
+  readonly type = input('');
+  readonly validList = input<string[]>();
+  readonly value = input<unknown>();
+  readonly valueChange = output<unknown>();
 
   faPlus = faPlus;
   faTrashAlt = faTrashAlt;
 
-  listRows: string[] = [];
-  dictRows: { key: string; value: string }[] = [];
+  /** Derived from value() whenever the parent passes a new one, but locally
+   *  mutable by the row editors below (add/remove/update a row) without a
+   *  round-trip through the parent — a linkedSignal recomputes its default
+   *  from value() but keeps a .set()/.update() override until value() itself
+   *  changes again. */
+  readonly listRows = linkedSignal<string[]>(() =>
+    AttributeValueInputComponent.toListRows(this.value()),
+  );
+  readonly dictRows = linkedSignal<{ key: string; value: string }[]>(() =>
+    AttributeValueInputComponent.toDictRows(this.value()),
+  );
   itemPathSuggestions: string[] = [];
   filteredItemPaths: string[] = [];
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['value']) {
-      this.listRows = AttributeValueInputComponent.toListRows(this.value);
-      this.dictRows = AttributeValueInputComponent.toDictRows(this.value);
-    }
-  }
-
   get baseType(): string {
-    return this.type.split('(')[0];
+    return this.type().split('(')[0];
   }
 
   get inputKind():
@@ -72,7 +74,7 @@ export class AttributeValueInputComponent implements OnChanges {
     | 'autocomplete'
     | 'number'
     | 'text' {
-    if ((this.validList?.length ?? 0) > 0) return 'select';
+    if ((this.validList()?.length ?? 0) > 0) return 'select';
     switch (this.baseType) {
       case 'bool':
         return 'toggle';
@@ -118,43 +120,43 @@ export class AttributeValueInputComponent implements OnChanges {
   }
 
   addListRow() {
-    this.listRows = [...this.listRows, ''];
-    this.emitValue(this.listRows);
+    this.listRows.update((rows) => [...rows, '']);
+    this.emitValue(this.listRows());
   }
 
   removeListRow(index: number) {
-    this.listRows = this.listRows.filter((_, i) => i !== index);
-    this.emitValue(this.listRows);
+    this.listRows.update((rows) => rows.filter((_, i) => i !== index));
+    this.emitValue(this.listRows());
   }
 
   updateListRow(index: number, rowValue: string) {
-    this.listRows = this.listRows.map((v, i) => (i === index ? rowValue : v));
-    this.emitValue(this.listRows);
+    this.listRows.update((rows) => rows.map((v, i) => (i === index ? rowValue : v)));
+    this.emitValue(this.listRows());
   }
 
   addDictRow() {
-    this.dictRows = [...this.dictRows, { key: '', value: '' }];
+    this.dictRows.update((rows) => [...rows, { key: '', value: '' }]);
     this.emitDict();
   }
 
   removeDictRow(index: number) {
-    this.dictRows = this.dictRows.filter((_, i) => i !== index);
+    this.dictRows.update((rows) => rows.filter((_, i) => i !== index));
     this.emitDict();
   }
 
   updateDictRowKey(index: number, key: string) {
-    this.dictRows = this.dictRows.map((r, i) => (i === index ? { ...r, key } : r));
+    this.dictRows.update((rows) => rows.map((r, i) => (i === index ? { ...r, key } : r)));
     this.emitDict();
   }
 
   updateDictRowValue(index: number, value: string) {
-    this.dictRows = this.dictRows.map((r, i) => (i === index ? { ...r, value } : r));
+    this.dictRows.update((rows) => rows.map((r, i) => (i === index ? { ...r, value } : r)));
     this.emitDict();
   }
 
   private emitDict() {
     const dict: Record<string, string> = {};
-    for (const row of this.dictRows) {
+    for (const row of this.dictRows()) {
       if (row.key.trim() !== '') {
         dict[row.key] = row.value;
       }

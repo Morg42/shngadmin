@@ -83,24 +83,24 @@ describe('SystemConfigComponent', () => {
   });
 
   it('should populate common_parameters from fixture', () => {
-    expect(component.common_parameters.length).toBe(commonParamCount);
+    expect(component.common_parameters().length).toBe(commonParamCount);
   });
 
   it('should populate config with all fixture sections', () => {
-    expect(component.config).toBeTruthy();
-    expect(component.config.common).toBeDefined();
-    expect(component.config.http).toBeDefined();
-    expect(component.config.websocket).toBeDefined();
-    expect(component.config.admin).toBeDefined();
-    expect(component.config.mqtt).toBeDefined();
+    expect(component.config()).toBeTruthy();
+    expect(component.config()!.common).toBeDefined();
+    expect(component.config()!.http).toBeDefined();
+    expect(component.config()!.websocket).toBeDefined();
+    expect(component.config()!.admin).toBeDefined();
+    expect(component.config()!.mqtt).toBeDefined();
   });
 
   it('should set data_changed to false initially', () => {
-    expect(component.data_changed).toBe(false);
+    expect(component.data_changed()).toBe(false);
   });
 
   it('should set the first common parameter name correctly from fixture', () => {
     const firstParamName = Object.keys(fixtureData.common.meta.parameters)[0];
-    expect(component.common_parameters[0].name).toBe(firstParamName);
+    expect(component.common_parameters()[0].name).toBe(firstParamName);
   });
 });

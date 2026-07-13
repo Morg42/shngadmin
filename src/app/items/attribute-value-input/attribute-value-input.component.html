@@ -1,25 +1,25 @@
 @switch (inputKind) {
   @case ('select') {
     <p-select
-      [options]="validList"
+      [options]="validList()"
       [showClear]="true"
-      [(ngModel)]="value"
+      [ngModel]="value()"
       (ngModelChange)="emitValue($event)"
       [style]="{ width: '100%' }"
     ></p-select>
   }
   @case ('toggle') {
-    <p-toggleSwitch [(ngModel)]="value" (ngModelChange)="emitValue($event)"></p-toggleSwitch>
+    <p-toggleSwitch [ngModel]="value()" (ngModelChange)="emitValue($event)"></p-toggleSwitch>
   }
   @case ('number') {
-    <input type="text" pInputText [(ngModel)]="value" (ngModelChange)="emitValue($event)" style="width: 100%" />
+    <input type="text" pInputText [ngModel]="value()" (ngModelChange)="emitValue($event)" style="width: 100%" />
   }
   @case ('password') {
-    <input type="password" pInputText [(ngModel)]="value" (ngModelChange)="emitValue($event)" style="width: 100%" />
+    <input type="password" pInputText [ngModel]="value()" (ngModelChange)="emitValue($event)" style="width: 100%" />
   }
   @case ('autocomplete') {
     <p-autoComplete
-      [(ngModel)]="value"
+      [ngModel]="value()"
       [suggestions]="filteredItemPaths"
       (completeMethod)="searchItemPaths($event)"
       (ngModelChange)="emitValue($event)"
@@ -30,7 +30,7 @@
   }
   @case ('list') {
     <div>
-      @for (row of listRows; track $index) {
+      @for (row of listRows(); track $index) {
         <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px">
           <input
             type="text"
@@ -51,7 +51,7 @@
   }
   @case ('dict') {
     <div>
-      @for (row of dictRows; track $index) {
+      @for (row of dictRows(); track $index) {
         <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px">
           <input
             type="text"
@@ -80,6 +80,6 @@
     </div>
   }
   @default {
-    <input type="text" pInputText [(ngModel)]="value" (ngModelChange)="emitValue($event)" style="width: 100%" />
+    <input type="text" pInputText [ngModel]="value()" (ngModelChange)="emitValue($event)" style="width: 100%" />
   }
 }

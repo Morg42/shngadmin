@@ -10,23 +10,23 @@
         type="button"
         [disabled]="false"
         icon="fa fa-info"
-        (click)="this.editorHelp_display = true"
+        (click)="editorHelp_display.set(true)"
         class="ui-button-success"
       ></button>
       <button
         pButton
         label="{{ 'BUTTON.DISCARD' | translate }}"
         type="button"
-        [disabled]="myEditFilename === '' || myTextarea === myTextareaOrig"
+        [disabled]="myEditFilename === '' || myTextarea() === myTextareaOrig()"
         icon="fa fa-times"
-        (click)="this.myTextarea = this.myTextareaOrig"
+        (click)="myTextarea.set(myTextareaOrig())"
         class="ui-button-secondary"
       ></button>
       <button
         pButton
         label="{{ 'BUTTON.SAVE' | translate }}"
         type="button"
-        [disabled]="myTextarea === myTextareaOrig"
+        [disabled]="myTextarea() === myTextareaOrig()"
         icon="fa fa-check"
         (click)="saveConfig()"
         class="ui-button-success"
@@ -41,10 +41,10 @@
       [(value)]="myTextarea"
       [foldable]="true"
     ></app-code-editor>
-    @if (saveResult) {
-      @if (saveResult.result === 'ok') {
+    @if (saveResult(); as sr) {
+      @if (sr.result === 'ok') {
         <p-message severity="success" [text]="'LOGGING.SAVE_OK' | translate" styleClass="mt-2 w-full" />
-      } @else if (saveResult.config_restored) {
+      } @else if (sr.config_restored) {
         <p-message severity="warn" [text]="'LOGGING.SAVE_ERROR_RESTORED' | translate" styleClass="mt-2 w-full" />
       } @else {
         <p-message severity="error" [text]="'LOGGING.SAVE_ERROR_NO_RESTORE' | translate" styleClass="mt-2 w-full" />
@@ -62,7 +62,7 @@
   [closable]="false"
   [modal]="true"
   blockScroll="true"
-  (document:keydown.escape)="error_display && (error_display = false)"
+  (document:keydown.escape)="error_display() && error_display.set(false)"
 >
   <ng-template pTemplate="header">
     {{ 'LOGGING.CONFIG_ERROR' | translate }}
@@ -71,14 +71,14 @@
   <pre
     >{{ 'LOGGING.CONFIG_ERROR_TEXT' | translate }}
 
-{{ myTextOutput }}
+{{ myTextOutput() }}
   </pre>
   <br />
   <ng-template pTemplate="footer">
     <button
       pButton
       type="button"
-      (click)="error_display = false"
+      (click)="error_display.set(false)"
       label="{{ 'BUTTON.CLOSE' | translate }}"
       class="ui-button-success"
     ></button>
@@ -141,7 +141,7 @@
     <button
       pButton
       type="button"
-      (click)="editorHelp_display = false"
+      (click)="editorHelp_display.set(false)"
       label="{{ 'BUTTON.CLOSE' | translate }}"
       class="ui-button-success"
     ></button>

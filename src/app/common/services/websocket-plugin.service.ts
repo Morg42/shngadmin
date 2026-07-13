@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -135,45 +135,18 @@ export class WebsocketPluginService {
     cmd: 'item',
   };
 
-  systemload: SeriesData = { series: [], tsdiff: 0 };
-  systemmemory: SeriesData = { series: [], tsdiff: 0 };
-  systemswap: SeriesData = { series: [], tsdiff: 0 };
-  memory: SeriesData = { series: [], tsdiff: 0 };
-  threads: SeriesData = { series: [], tsdiff: 0 };
-  workerThreads: SeriesData = { series: [], tsdiff: 0 };
-  idleWorkerThreads: SeriesData = { series: [], tsdiff: 0 };
-  activeWorkerThreads: SeriesData = { series: [], tsdiff: 0 };
-  disk: SeriesData = { series: [], tsdiff: 0 };
-
-  private monitoredItems = new Subject<void>();
-  public monitoredItemsUpdate$ = this.monitoredItems.asObservable();
-
-  private systemloadSource = new Subject<void>();
-  public systemloadUpdate$ = this.systemloadSource.asObservable();
-
-  private systemmemorySource = new Subject<void>();
-  public systemmemoryUpdate$ = this.systemmemorySource.asObservable();
-
-  private systemswapSource = new Subject<void>();
-  public systemswapUpdate$ = this.systemswapSource.asObservable();
-
-  private memorySource = new Subject<void>();
-  public memoryUpdate$ = this.memorySource.asObservable();
-
-  private threadsSource = new Subject<void>();
-  public threadsUpdate$ = this.threadsSource.asObservable();
-
-  private workerThreadsSource = new Subject<void>();
-  public workerThreadsUpdate$ = this.workerThreadsSource.asObservable();
-
-  private idleWorkerThreadsSource = new Subject<void>();
-  public idleWorkerThreadsUpdate$ = this.idleWorkerThreadsSource.asObservable();
-
-  private activeWorkerThreadsSource = new Subject<void>();
-  public activeWorkerThreadsUpdate$ = this.activeWorkerThreadsSource.asObservable();
-
-  private diskSource = new Subject<void>();
-  public diskUpdate$ = this.diskSource.asObservable();
+  // Each incoming series message publishes a NEW SeriesData value on the
+  // matching signal (updateSeries is copy-based) - consumers derive chart
+  // data with computed() instead of subscribing to ping-Subjects.
+  readonly systemload = signal<SeriesData>({ series: [], tsdiff: 0 });
+  readonly systemmemory = signal<SeriesData>({ series: [], tsdiff: 0 });
+  readonly systemswap = signal<SeriesData>({ series: [], tsdiff: 0 });
+  readonly memory = signal<SeriesData>({ series: [], tsdiff: 0 });
+  readonly threads = signal<SeriesData>({ series: [], tsdiff: 0 });
+  readonly workerThreads = signal<SeriesData>({ series: [], tsdiff: 0 });
+  readonly idleWorkerThreads = signal<SeriesData>({ series: [], tsdiff: 0 });
+  readonly activeWorkerThreads = signal<SeriesData>({ series: [], tsdiff: 0 });
+  readonly disk = signal<SeriesData>({ series: [], tsdiff: 0 });
 
   private readonly stop$ = new Subject<void>();
 
@@ -245,7 +218,6 @@ export class WebsocketPluginService {
     if (this.monitorCallbackFunction) {
       this.monitorCallbackFunction(data);
     }
-    this.monitoredItems.next();
   }
 
   sendMessage(message: unknown) {
@@ -313,20 +285,23 @@ export class WebsocketPluginService {
     }
   }
 
-  updateSeries(graphdata: SeriesData, data: SeriesResponse) {
-    if (graphdata.series.length === 0) {
-      const tstampDiff =
-        (data.series[data.series.length - 1][0] as number) - (data.series[0][0] as number);
-      graphdata.tsdiff = tstampDiff;
-    } else if (graphdata.series.length > 1) {
-      const tstampOldest = new Date().getTime() - graphdata.tsdiff;
-      while (graphdata.series.length > 1 && graphdata.series[1][0] < tstampOldest) {
-        graphdata.series.shift();
+  /** Produces a NEW SeriesData from the previous one plus the incoming
+   *  response - same trimming semantics as the old in-place version, but
+   *  copy-based so it can be published on a signal. */
+  private updateSeries(prev: SeriesData, data: SeriesResponse): SeriesData {
+    let tsdiff = prev.tsdiff;
+    const series = [...prev.series];
+    if (series.length === 0) {
+      tsdiff = (data.series[data.series.length - 1][0] as number) - (data.series[0][0] as number);
+    } else if (series.length > 1) {
+      const tstampOldest = new Date().getTime() - tsdiff;
+      while (series.length > 1 && series[1][0] < tstampOldest) {
+        series.shift();
       }
-      graphdata.series[0][0] = tstampOldest;
-      graphdata.series[0][2] = this.shared.getTimeStamp(new Date(tstampOldest));
+      series[0] = [tstampOldest, series[0][1], this.shared.getTimeStamp(new Date(tstampOldest))];
     }
-    graphdata.series.push(...(data.series as SeriesEntry[]));
+    series.push(...(data.series as SeriesEntry[]));
+    return { series, tsdiff };
   }
 
   handleResponseSeries(data: SeriesResponse) {
@@ -342,32 +317,23 @@ export class WebsocketPluginService {
     this.convertTimestamps(data);
 
     if (data.sid.startsWith(this.msgListenSeriesLoad.item!)) {
-      this.updateSeries(this.systemload, data);
-      this.systemloadSource.next();
+      this.systemload.update((prev) => this.updateSeries(prev, data));
     } else if (data.sid.startsWith(this.msgListenSeriesSystemMemory.item!)) {
-      this.updateSeries(this.systemmemory, data);
-      this.systemmemorySource.next();
+      this.systemmemory.update((prev) => this.updateSeries(prev, data));
     } else if (data.sid.startsWith(this.msgListenSeriesSwap.item!)) {
-      this.updateSeries(this.systemswap, data);
-      this.systemswapSource.next();
+      this.systemswap.update((prev) => this.updateSeries(prev, data));
     } else if (data.sid.startsWith(this.msgListenSeriesMemory.item!)) {
-      this.updateSeries(this.memory, data);
-      this.memorySource.next();
+      this.memory.update((prev) => this.updateSeries(prev, data));
     } else if (data.sid.startsWith(this.msgListenSeriesThreads.item!)) {
-      this.updateSeries(this.threads, data);
-      this.threadsSource.next();
+      this.threads.update((prev) => this.updateSeries(prev, data));
     } else if (data.sid.startsWith(this.msgListenSeriesWorkerThreads.item!)) {
-      this.updateSeries(this.workerThreads, data);
-      this.workerThreadsSource.next();
+      this.workerThreads.update((prev) => this.updateSeries(prev, data));
     } else if (data.sid.startsWith(this.msgListenSeriesIdleWorkerThreads.item!)) {
-      this.updateSeries(this.idleWorkerThreads, data);
-      this.idleWorkerThreadsSource.next();
+      this.idleWorkerThreads.update((prev) => this.updateSeries(prev, data));
     } else if (data.sid.startsWith(this.msgListenSeriesActiveWorkerThreads.item!)) {
-      this.updateSeries(this.activeWorkerThreads, data);
-      this.activeWorkerThreadsSource.next();
+      this.activeWorkerThreads.update((prev) => this.updateSeries(prev, data));
     } else if (data.sid.startsWith(this.msgListenSeriesDisk.item!)) {
-      this.updateSeries(this.disk, data);
-      this.diskSource.next();
+      this.disk.update((prev) => this.updateSeries(prev, data));
     } else {
       this.log.warn('message received (UNKNOWN series):', data);
     }

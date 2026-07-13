@@ -63,18 +63,18 @@ describe('ItemConfigurationComponent', () => {
   });
 
   it('should populate filelist from fixture', () => {
-    expect(component.filelist.length).toBe(fixtureFileList.length);
+    expect(component.filelist().length).toBe(fixtureFileList.length);
   });
 
   it('should populate itemFiles SelectItem list with fixture entries', () => {
-    expect(component.itemFiles.length).toBe(fixtureFileList.length);
+    expect(component.itemFiles().length).toBe(fixtureFileList.length);
   });
 
   it('should set first itemFile label to first fixture filename', () => {
-    expect(component.itemFiles[0].label).toBe(fixtureFileList[0]);
+    expect(component.itemFiles()[0].label).toBe(fixtureFileList[0]);
   });
 
   it('should set first itemFile value to first fixture filename', () => {
-    expect(component.itemFiles[0].value).toBe(fixtureFileList[0]);
+    expect(component.itemFiles()[0].value).toBe(fixtureFileList[0]);
   });
 });

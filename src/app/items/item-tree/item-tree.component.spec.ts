@@ -6,7 +6,7 @@ import { provideRouter } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { Tree } from 'primeng/tree';
-import { BehaviorSubject, of, Subject, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import {
   createMockAppConfigService,
   createMockAuthService,
@@ -39,7 +39,6 @@ describe('ItemTreeComponent', () => {
       connect: jest.fn(),
       disconnect: jest.fn(),
       getMonitoredItems: jest.fn(),
-      monitoredItemsUpdate$: new BehaviorSubject(null),
       monitor: { items: [] },
     };
 
@@ -106,23 +105,23 @@ describe('ItemTreeComponent', () => {
   });
 
   it('deleteItemHasFile is false for runtime-only items (backend returns filename "None")', () => {
-    component.itemdetails = { path: 'a', filename: 'None' } as never;
+    component.itemdetails.set({ path: 'a', filename: 'None' } as never);
     expect(component.deleteItemHasFile).toBe(false);
   });
 
   it('deleteItemHasFile is true when the item has a real source file', () => {
-    component.itemdetails = { path: 'a', filename: 'created' } as never;
+    component.itemdetails.set({ path: 'a', filename: 'created' } as never);
     expect(component.deleteItemHasFile).toBe(true);
   });
 
   it('openDeleteItemDialog() defaults deleteItemPersist to false for runtime-only items', () => {
-    component.itemdetails = { path: 'a', filename: 'None' } as never;
+    component.itemdetails.set({ path: 'a', filename: 'None' } as never);
     component.openDeleteItemDialog();
     expect(component.deleteItemPersist).toBe(false);
   });
 
   it('openDeleteItemDialog() defaults deleteItemPersist to true when the item has a file', () => {
-    component.itemdetails = { path: 'a', filename: 'created' } as never;
+    component.itemdetails.set({ path: 'a', filename: 'created' } as never);
     component.openDeleteItemDialog();
     expect(component.deleteItemPersist).toBe(true);
   });
@@ -154,7 +153,7 @@ describe('ItemTreeComponent', () => {
   });
 
   it('openDeleteItemDialog() sorts references: ambiguous first, then eval-family, then structural', () => {
-    component.itemdetails = { path: 'a', filename: 'created' } as never;
+    component.itemdetails.set({ path: 'a', filename: 'created' } as never);
     TestBed.inject(ItemsApiService).getItemReferences = jest.fn().mockReturnValue(
       of([
         { item: 'z', attribute: 'trigger', value: 'a', unambiguous: true },
@@ -166,14 +165,14 @@ describe('ItemTreeComponent', () => {
 
     component.openDeleteItemDialog();
 
-    expect(component.deleteItemReferences?.map((r) => r.item)).toEqual(['y', 'x', 'w', 'z']);
+    expect(component.deleteItemReferences()?.map((r) => r.item)).toEqual(['y', 'x', 'w', 'z']);
   });
 
   it('confirmDeleteItem() calls removeReferences() before deleteItem() when cleanup is enabled and a cleanable reference exists', () => {
-    component.itemdetails = { path: 'a', filename: 'created' } as never;
-    component.deleteItemReferences = [
+    component.itemdetails.set({ path: 'a', filename: 'created' } as never);
+    component.deleteItemReferences.set([
       { item: 'b', attribute: 'eval', value: 'sh.a()', unambiguous: true },
-    ];
+    ]);
     component.deleteItemCleanupReferences = true;
 
     component.confirmDeleteItem();
@@ -187,10 +186,10 @@ describe('ItemTreeComponent', () => {
   });
 
   it('confirmDeleteItem() skips removeReferences() when cleanup is disabled', () => {
-    component.itemdetails = { path: 'a', filename: 'created' } as never;
-    component.deleteItemReferences = [
+    component.itemdetails.set({ path: 'a', filename: 'created' } as never);
+    component.deleteItemReferences.set([
       { item: 'b', attribute: 'eval', value: 'sh.a()', unambiguous: true },
-    ];
+    ]);
     component.deleteItemCleanupReferences = false;
 
     component.confirmDeleteItem();
@@ -204,10 +203,10 @@ describe('ItemTreeComponent', () => {
   });
 
   it('confirmDeleteItem() skips removeReferences() when no reference is cleanable', () => {
-    component.itemdetails = { path: 'a', filename: 'created' } as never;
-    component.deleteItemReferences = [
+    component.itemdetails.set({ path: 'a', filename: 'created' } as never);
+    component.deleteItemReferences.set([
       { item: 'b', attribute: 'eval', value: 'sh.a() + sh.c()', unambiguous: false },
-    ];
+    ]);
     component.deleteItemCleanupReferences = true;
 
     component.confirmDeleteItem();
@@ -221,10 +220,10 @@ describe('ItemTreeComponent', () => {
   });
 
   it('confirmDeleteItem() aborts without deleting when removeReferences() fails', () => {
-    component.itemdetails = { path: 'a', filename: 'created' } as never;
-    component.deleteItemReferences = [
+    component.itemdetails.set({ path: 'a', filename: 'created' } as never);
+    component.deleteItemReferences.set([
       { item: 'b', attribute: 'eval', value: 'sh.a()', unambiguous: true },
-    ];
+    ]);
     component.deleteItemCleanupReferences = true;
     TestBed.inject(ItemsApiService).removeReferences = jest
       .fn()
@@ -233,7 +232,7 @@ describe('ItemTreeComponent', () => {
 
     component.confirmDeleteItem();
 
-    expect(component.deleteItemCleanupFailed).toBe(true);
+    expect(component.deleteItemCleanupFailed()).toBe(true);
     expect(TestBed.inject(ItemsApiService).deleteItem).not.toHaveBeenCalled();
   });
 
@@ -291,7 +290,7 @@ describe('ItemTreeComponent', () => {
   });
 
   it('openDeleteItemDialog() resets deleteItemConfirmChildren to false', () => {
-    component.itemdetails = { path: 'a', filename: 'created' } as never;
+    component.itemdetails.set({ path: 'a', filename: 'created' } as never);
     component.deleteItemConfirmChildren = true;
 
     component.openDeleteItemDialog();
@@ -300,8 +299,8 @@ describe('ItemTreeComponent', () => {
   });
 
   it('confirmDeleteItem() passes recursive:true only when the item has children AND the user confirmed', () => {
-    component.itemdetails = { path: 'a', filename: 'created' } as never;
-    component.deleteItemReferences = [];
+    component.itemdetails.set({ path: 'a', filename: 'created' } as never);
+    component.deleteItemReferences.set([]);
     component.selectedFile = { children: [{ label: 'child' }] } as never;
     component.deleteItemConfirmChildren = true;
 
@@ -315,8 +314,8 @@ describe('ItemTreeComponent', () => {
   });
 
   it('confirmDeleteItem() passes recursive:false when the item has children but the user has not confirmed', () => {
-    component.itemdetails = { path: 'a', filename: 'created' } as never;
-    component.deleteItemReferences = [];
+    component.itemdetails.set({ path: 'a', filename: 'created' } as never);
+    component.deleteItemReferences.set([]);
     component.selectedFile = { children: [{ label: 'child' }] } as never;
     component.deleteItemConfirmChildren = false;
 
@@ -330,11 +329,11 @@ describe('ItemTreeComponent', () => {
   });
 
   it('openEditItemDialog() pre-populates from editable_config, excluding type', () => {
-    component.itemdetails = {
+    component.itemdetails.set({
       path: 'a',
       type: 'num',
       editable_config: { type: 'num', eval: '1', cycle: '30' },
-    } as never;
+    } as never);
 
     component.openEditItemDialog();
 
@@ -343,11 +342,11 @@ describe('ItemTreeComponent', () => {
       { key: 'eval', value: '1' },
       { key: 'cycle', value: '30' },
     ]);
-    expect(component.editItem_display).toBe(true);
+    expect(component.editItem_display()).toBe(true);
   });
 
   it('openEditItemDialog() falls back to itemdetails.type when editable_config is absent', () => {
-    component.itemdetails = { path: 'a', type: 'bool' } as never;
+    component.itemdetails.set({ path: 'a', type: 'bool' } as never);
 
     component.openEditItemDialog();
 
@@ -356,7 +355,11 @@ describe('ItemTreeComponent', () => {
   });
 
   it('submitEditItem() calls editItem() with the assembled config and refreshes details on success', () => {
-    component.itemdetails = { path: 'a', type: 'num', editable_config: { type: 'num' } } as never;
+    component.itemdetails.set({
+      path: 'a',
+      type: 'num',
+      editable_config: { type: 'num' },
+    } as never);
     component.editItemType = 'str';
     component.editItemAttributes = [{ key: 'eval', value: '1' }];
 
@@ -367,14 +370,14 @@ describe('ItemTreeComponent', () => {
       eval: '1',
     });
     expect(TestBed.inject(ItemsApiService).getItemDetails).toHaveBeenCalledWith('a');
-    expect(component.editItem_display).toBe(false);
+    expect(component.editItem_display()).toBe(false);
   });
 
   it('submitEditItem() surfaces an error and keeps the dialog open on failure', () => {
-    component.itemdetails = { path: 'a', type: 'num', editable_config: {} } as never;
+    component.itemdetails.set({ path: 'a', type: 'num', editable_config: {} } as never);
     component.editItemType = 'num';
     component.editItemAttributes = [];
-    component.editItem_display = true;
+    component.editItem_display.set(true);
     TestBed.inject(ItemsApiService).editItem = jest
       .fn()
       .mockReturnValue(
@@ -383,12 +386,12 @@ describe('ItemTreeComponent', () => {
 
     component.submitEditItem();
 
-    expect(component.editItemError).toBe('name collision');
-    expect(component.editItem_display).toBe(true);
+    expect(component.editItemError()).toBe('name collision');
+    expect(component.editItem_display()).toBe(true);
   });
 
   it('addEditAttributeRow()/removeEditAttributeRow() mutate editItemAttributes only', () => {
-    component.itemdetails = { path: 'a', type: 'num', editable_config: {} } as never;
+    component.itemdetails.set({ path: 'a', type: 'num', editable_config: {} } as never);
     component.openEditItemDialog();
     component.newItemAttributes = [{ key: 'unrelated', value: '' }];
 
@@ -401,7 +404,7 @@ describe('ItemTreeComponent', () => {
   });
 
   it('the attribute browser fills rows in whichever dialog is currently active', () => {
-    component.itemdetails = { path: 'a', type: 'num', editable_config: {} } as never;
+    component.itemdetails.set({ path: 'a', type: 'num', editable_config: {} } as never);
     component.openEditItemDialog();
     component.editItemAttributes = [{ key: '', value: '' }];
 
@@ -412,16 +415,16 @@ describe('ItemTreeComponent', () => {
   });
 
   it('openRenameItemDialog() pre-fills the complete current path for a nested item', () => {
-    component.itemdetails = { path: 'home.light.switch' } as never;
+    component.itemdetails.set({ path: 'home.light.switch' } as never);
 
     component.openRenameItemDialog();
 
     expect(component.renameItemNewPathInput).toBe('home.light.switch');
-    expect(component.renameItem_display).toBe(true);
+    expect(component.renameItem_display()).toBe(true);
   });
 
   it('openRenameItemDialog() pre-fills the whole path for a top-level item too', () => {
-    component.itemdetails = { path: 'toplevel' } as never;
+    component.itemdetails.set({ path: 'toplevel' } as never);
 
     component.openRenameItemDialog();
 
@@ -460,7 +463,7 @@ describe('ItemTreeComponent', () => {
   });
 
   it('submitRenameItem() calls renameItem() with the input path as-is and refreshes the tree on success', () => {
-    component.itemdetails = { path: 'old' } as never;
+    component.itemdetails.set({ path: 'old' } as never);
     component.renameItemNewPathInput = 'new.parent.newname';
 
     component.submitRenameItem();
@@ -469,11 +472,11 @@ describe('ItemTreeComponent', () => {
       'old',
       'new.parent.newname',
     );
-    expect(component.renameItem_display).toBe(false);
+    expect(component.renameItem_display()).toBe(false);
   });
 
   it('submitRenameItem() shows the old and new path in the success toast', () => {
-    component.itemdetails = { path: 'old' } as never;
+    component.itemdetails.set({ path: 'old' } as never);
     component.renameItemNewPathInput = 'new.parent.newname';
     const messageService = TestBed.inject(MessageService);
     jest.spyOn(messageService, 'add');
@@ -486,7 +489,7 @@ describe('ItemTreeComponent', () => {
   });
 
   it('submitRenameItem() records failed_references for the persistent panel note', () => {
-    component.itemdetails = { path: 'old' } as never;
+    component.itemdetails.set({ path: 'old' } as never);
     component.renameItemNewPathInput = 'new';
     TestBed.inject(ItemsApiService).renameItem = jest.fn().mockReturnValue(
       of({
@@ -499,11 +502,124 @@ describe('ItemTreeComponent', () => {
 
     component.submitRenameItem();
 
-    expect(component.renameItemLastFailedReferences).toEqual([['broken', 'some error']]);
+    expect(component.renameItemLastFailedReferences()).toEqual([['broken', 'some error']]);
+    expect(component.renameFailedReferencesDetail_display).toBe(true);
+  });
+
+  it('submitRenameItem() does not auto-open the failed-references dialog when there are none', () => {
+    component.itemdetails.set({ path: 'old' } as never);
+    component.renameItemNewPathInput = 'new';
+    TestBed.inject(ItemsApiService).renameItem = jest
+      .fn()
+      .mockReturnValue(
+        of({ result: 'ok', new_path: 'new', rewritten_references: [], failed_references: [] }),
+      );
+
+    component.submitRenameItem();
+
+    expect(component.renameFailedReferencesDetail_display).toBe(false);
+  });
+
+  it('onRenameFailedReferencesVisibleChange(false) clears the notice so it does not linger after being dismissed', () => {
+    component.itemdetails.set({ path: 'old' } as never);
+    component.renameItemNewPathInput = 'new';
+    TestBed.inject(ItemsApiService).renameItem = jest.fn().mockReturnValue(
+      of({
+        result: 'ok',
+        new_path: 'new',
+        rewritten_references: [],
+        failed_references: [['broken', 'some error']],
+      }),
+    );
+    component.submitRenameItem();
+
+    component.onRenameFailedReferencesVisibleChange(false);
+
+    expect(component.renameItemLastFailedReferences()).toEqual([]);
+    expect(component.renameFailedReferencesDetail_display).toBe(false);
+  });
+
+  it('submitRenameItem() records left_pointing_at_original/relative_references_flagged for a copy', () => {
+    component.itemdetails.set({ path: 'old', filename: 'items' } as never);
+    component.openRenameItemDialog(true);
+    component.renameItemNewPathInput = 'new';
+    TestBed.inject(ItemsApiService).copyItem = jest.fn().mockReturnValue(
+      of({
+        result: 'ok',
+        new_path: 'new',
+        left_pointing_at_original: [{ item: 'new', attribute: 'eval', reference: 'old.child' }],
+        relative_references_flagged: [
+          {
+            item: 'new',
+            attribute: 'eval',
+            reference: '.child',
+            resolved_original_target: 'old.child',
+            reason: 'not_copied',
+          },
+        ],
+      }),
+    );
+
+    component.submitRenameItem();
+
+    expect(component.copyItemLeftPointingAtOriginal()).toEqual([
+      { item: 'new', attribute: 'eval', reference: 'old.child' },
+    ]);
+    expect(component.copyItemRelativeReferencesFlagged()).toEqual([
+      {
+        item: 'new',
+        attribute: 'eval',
+        reference: '.child',
+        resolved_original_target: 'old.child',
+        reason: 'not_copied',
+      },
+    ]);
+    expect(component.copyReferencesTotalCount).toBe(2);
+    expect(component.copyReferencesDetail_display).toBe(true);
+  });
+
+  it('submitRenameItem() does not auto-open the copy references dialog when nothing was flagged', () => {
+    component.itemdetails.set({ path: 'old', filename: 'items' } as never);
+    component.openRenameItemDialog(true);
+    component.renameItemNewPathInput = 'new';
+    TestBed.inject(ItemsApiService).copyItem = jest.fn().mockReturnValue(
+      of({
+        result: 'ok',
+        new_path: 'new',
+        left_pointing_at_original: [],
+        relative_references_flagged: [],
+      }),
+    );
+
+    component.submitRenameItem();
+
+    expect(component.copyReferencesDetail_display).toBe(false);
+  });
+
+  it('onCopyReferencesVisibleChange(false) clears the notice so it does not linger after being dismissed', () => {
+    component.itemdetails.set({ path: 'old', filename: 'items' } as never);
+    component.openRenameItemDialog(true);
+    component.renameItemNewPathInput = 'new';
+    TestBed.inject(ItemsApiService).copyItem = jest.fn().mockReturnValue(
+      of({
+        result: 'ok',
+        new_path: 'new',
+        left_pointing_at_original: [{ item: 'new', attribute: 'eval', reference: 'old.child' }],
+        relative_references_flagged: [],
+      }),
+    );
+    component.submitRenameItem();
+
+    component.onCopyReferencesVisibleChange(false);
+
+    expect(component.copyItemLeftPointingAtOriginal()).toEqual([]);
+    expect(component.copyItemRelativeReferencesFlagged()).toEqual([]);
+    expect(component.copyReferencesDetail_display).toBe(false);
+    expect(component.copyReferencesTotalCount).toBe(0);
   });
 
   it('submitRenameItem() sets renameItemSubmitting while the request is in flight, then clears it on success', () => {
-    component.itemdetails = { path: 'old' } as never;
+    component.itemdetails.set({ path: 'old' } as never);
     component.renameItemNewPathInput = 'new';
     const subject = new Subject<{
       result: string;
@@ -514,7 +630,7 @@ describe('ItemTreeComponent', () => {
     TestBed.inject(ItemsApiService).renameItem = jest.fn().mockReturnValue(subject.asObservable());
 
     component.submitRenameItem();
-    expect(component.renameItemSubmitting).toBe(true);
+    expect(component.renameItemSubmitting()).toBe(true);
 
     subject.next({
       result: 'ok',
@@ -522,11 +638,11 @@ describe('ItemTreeComponent', () => {
       rewritten_references: [],
       failed_references: [],
     });
-    expect(component.renameItemSubmitting).toBe(false);
+    expect(component.renameItemSubmitting()).toBe(false);
   });
 
   it('submitRenameItem() clears renameItemSubmitting on an ordinary error', () => {
-    component.itemdetails = { path: 'old' } as never;
+    component.itemdetails.set({ path: 'old' } as never);
     component.renameItemNewPathInput = 'new';
     TestBed.inject(ItemsApiService).renameItem = jest
       .fn()
@@ -534,11 +650,11 @@ describe('ItemTreeComponent', () => {
 
     component.submitRenameItem();
 
-    expect(component.renameItemSubmitting).toBe(false);
+    expect(component.renameItemSubmitting()).toBe(false);
   });
 
   it('submitRenameItem() is a no-op when the new path is invalid', () => {
-    component.itemdetails = { path: 'old' } as never;
+    component.itemdetails.set({ path: 'old' } as never);
     component.renameItemNewPathInput = '123invalid';
 
     component.submitRenameItem();
@@ -547,23 +663,23 @@ describe('ItemTreeComponent', () => {
   });
 
   it('submitRenameItem() surfaces an ordinary error and keeps the dialog open', () => {
-    component.itemdetails = { path: 'old' } as never;
+    component.itemdetails.set({ path: 'old' } as never);
     component.renameItemNewPathInput = 'new';
-    component.renameItem_display = true;
+    component.renameItem_display.set(true);
     TestBed.inject(ItemsApiService).renameItem = jest
       .fn()
       .mockReturnValue(throwError(() => ({ error: { error: 'collision' } }) as unknown as Error));
 
     component.submitRenameItem();
 
-    expect(component.renameItemError).toBe('collision');
-    expect(component.renameItem_display).toBe(true);
+    expect(component.renameItemError()).toBe('collision');
+    expect(component.renameItem_display()).toBe(true);
   });
 
   it('submitRenameItem() shows a specific message when the new path would make the item a child of itself', () => {
-    component.itemdetails = { path: 'a.b' } as never;
+    component.itemdetails.set({ path: 'a.b' } as never);
     component.renameItemNewPathInput = 'a.b.b';
-    component.renameItem_display = true;
+    component.renameItem_display.set(true);
     TestBed.inject(ItemsApiService).renameItem = jest.fn().mockReturnValue(
       throwError(
         () =>
@@ -578,14 +694,14 @@ describe('ItemTreeComponent', () => {
 
     component.submitRenameItem();
 
-    expect(component.renameItemError).toBe(
+    expect(component.renameItemError()).toBe(
       TestBed.inject(TranslateService).instant('ITEMS.RENAME_CYCLE'),
     );
-    expect(component.renameItem_display).toBe(true);
+    expect(component.renameItem_display()).toBe(true);
   });
 
   it('submitRenameItem() offers to create missing parents instead of erroring out, when the backend reports a missing parent', () => {
-    component.itemdetails = { path: 'old' } as never;
+    component.itemdetails.set({ path: 'old' } as never);
     component.renameItemNewPathInput = 'a.b.d.newname';
     TestBed.inject(ItemsApiService).renameItem = jest.fn().mockReturnValue(
       throwError(
@@ -601,15 +717,15 @@ describe('ItemTreeComponent', () => {
 
     component.submitRenameItem();
 
-    expect(component.renameItemMissingAncestors).toEqual(['a.b.d']);
-    expect(component.renameItemConfirmCreateParents_display).toBe(true);
-    expect(component.renameItemError).toBe('');
+    expect(component.renameItemMissingAncestors()).toEqual(['a.b.d']);
+    expect(component.renameItemConfirmCreateParents_display()).toBe(true);
+    expect(component.renameItemError()).toBe('');
   });
 
   it('confirmCreateMissingParents() creates each missing ancestor as an untyped structural item, then retries the rename', () => {
-    component.itemdetails = { path: 'old', filename: 'created' } as never;
+    component.itemdetails.set({ path: 'old', filename: 'created' } as never);
     component.renameItemNewPathInput = 'a.b.d.newname';
-    component.renameItemMissingAncestors = ['a.b', 'a.b.d'];
+    component.renameItemMissingAncestors.set(['a.b', 'a.b.d']);
     const createItemMock = TestBed.inject(ItemsApiService).createItem as jest.Mock;
     createItemMock.mockReturnValue(of({}));
 
@@ -618,13 +734,13 @@ describe('ItemTreeComponent', () => {
     expect(createItemMock).toHaveBeenNthCalledWith(1, 'a.b', {}, true, 'created');
     expect(createItemMock).toHaveBeenNthCalledWith(2, 'a.b.d', {}, true, 'created');
     expect(TestBed.inject(ItemsApiService).renameItem).toHaveBeenCalledWith('old', 'a.b.d.newname');
-    expect(component.renameItemConfirmCreateParents_display).toBe(false);
+    expect(component.renameItemConfirmCreateParents_display()).toBe(false);
   });
 
   it('confirmCreateMissingParents() creates ancestors as runtime-only when the moved item itself is not persisted', () => {
-    component.itemdetails = { path: 'old', filename: 'None' } as never;
+    component.itemdetails.set({ path: 'old', filename: 'None' } as never);
     component.renameItemNewPathInput = 'a.newname';
-    component.renameItemMissingAncestors = ['a'];
+    component.renameItemMissingAncestors.set(['a']);
     const createItemMock = TestBed.inject(ItemsApiService).createItem as jest.Mock;
     createItemMock.mockReturnValue(of({}));
 
@@ -650,7 +766,6 @@ describe('ItemTreeComponent attribute catalog', () => {
       connect: jest.fn(),
       disconnect: jest.fn(),
       getMonitoredItems: jest.fn(),
-      monitoredItemsUpdate$: new BehaviorSubject(null),
       monitor: { items: [] },
     };
 
@@ -720,12 +835,12 @@ describe('ItemTreeComponent attribute catalog', () => {
   });
 
   it('merges core and plugin attributes, plugin entry wins on name collision', () => {
-    expect(component.attributeCatalog['autotimer']).toEqual({
+    expect(component.attributeCatalog()['autotimer']).toEqual({
       name: 'autotimer',
       type: 'str',
       source: 'someplugin',
     });
-    expect(component.attributeCatalog['someplugin_attr']).toEqual({
+    expect(component.attributeCatalog()['someplugin_attr']).toEqual({
       name: 'someplugin_attr',
       type: 'num',
       description: { en: 'Plugin attr' },
@@ -734,7 +849,7 @@ describe('ItemTreeComponent attribute catalog', () => {
   });
 
   it('a plugin attribute named "type" never overrides core\'s "type" entry (dedicated field)', () => {
-    expect(component.attributeCatalog['type']).toEqual({
+    expect(component.attributeCatalog()['type']).toEqual({
       type: 'str',
       valid_list: ['bool', 'num', 'str'],
       source: 'core',
@@ -750,8 +865,8 @@ describe('ItemTreeComponent attribute catalog', () => {
   });
 
   it('attributeGroups groups suggestions by source, core first', () => {
-    expect(component.attributeGroups.map((g) => g.source)).toEqual(['core', 'someplugin']);
-    const pluginGroup = component.attributeGroups.find((g) => g.source === 'someplugin');
+    expect(component.attributeGroups().map((g) => g.source)).toEqual(['core', 'someplugin']);
+    const pluginGroup = component.attributeGroups().find((g) => g.source === 'someplugin');
     expect(pluginGroup?.entries.map((e) => e.name)).toEqual(['autotimer', 'someplugin_attr']);
   });
 
@@ -895,15 +1010,15 @@ describe('ItemTreeComponent attribute catalog', () => {
 
     component.submitNewItem();
 
-    expect(component.newItemError).toBe('boom');
+    expect(component.newItemError()).toBe('boom');
   });
 
   it('selectAttributeFromBrowser() fills the first empty row and closes the browser', () => {
     component.newItemAttributes = [{ key: '', value: '' }];
-    component.attributeBrowser_display = true;
+    component.attributeBrowser_display.set(true);
     component.selectAttributeFromBrowser('someplugin_attr');
     expect(component.newItemAttributes).toEqual([{ key: 'someplugin_attr', value: '' }]);
-    expect(component.attributeBrowser_display).toBe(false);
+    expect(component.attributeBrowser_display()).toBe(false);
   });
 
   it('selectAttributeFromBrowser() adds a new row when no row is empty', () => {

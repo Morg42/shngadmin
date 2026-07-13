@@ -4,7 +4,7 @@
       pButton
       label="{{ 'BUTTON.NEW_DEFINITION_FILE' | translate }}"
       type="button"
-      [disabled]="!(myEditFilename === '' || myTextarea === myTextareaOrig)"
+      [disabled]="!(myEditFilename() === '' || myTextarea() === myTextareaOrig())"
       icon="far fa-file"
       style="margin-right: 10px"
       (click)="newConfig()"
@@ -13,7 +13,7 @@
     <button
       pButton
       type="button"
-      [disabled]="myEditFilename === ''"
+      [disabled]="myEditFilename() === ''"
       icon="far fa-trash-alt"
       style="margin-right: 0; width: 25px"
       (click)="deleteConfig()"
@@ -26,7 +26,7 @@
       pButton
       label="{{ 'BUTTON.SAVE' | translate }}"
       type="button"
-      [disabled]="myEditFilename === '' || myTextarea === myTextareaOrig"
+      [disabled]="myEditFilename() === '' || myTextarea() === myTextareaOrig()"
       icon="fa fa-check"
       style="margin-right: 0"
       (click)="saveConfig()"
@@ -36,10 +36,10 @@
       pButton
       label="{{ 'BUTTON.DISCARD' | translate }}"
       type="button"
-      [disabled]="myEditFilename === '' || myTextarea === myTextareaOrig"
+      [disabled]="myEditFilename() === '' || myTextarea() === myTextareaOrig()"
       icon="fa fa-times"
       style="margin-right: 10px"
-      (click)="this.myTextarea = this.myTextareaOrig"
+      (click)="myTextarea.set(myTextareaOrig())"
       class="float-sm-right ui-button-secondary"
     ></button>
     <button
@@ -52,8 +52,8 @@
       (click)="this.editorHelp_display = true"
       class="float-sm-right ui-button-success"
     ></button>
-    @if (myEditFilename !== '') {
-      {{ 'STRUCT_CONFIG.CONFIG_FILE' | translate }}: <strong>{{ structsDir }}/{{ myEditFilename }}.yaml</strong>
+    @if (myEditFilename() !== '') {
+      {{ 'STRUCT_CONFIG.CONFIG_FILE' | translate }}: <strong>{{ structsDir() }}/{{ myEditFilename() }}.yaml</strong>
     }
   </div>
 
@@ -64,9 +64,9 @@
     </div>
 
     <p-listbox
-      [options]="structFiles"
+      [options]="structFiles()"
       [(ngModel)]="selectedStructfile"
-      [disabled]="!(myEditFilename === '' || myTextarea === myTextareaOrig)"
+      [disabled]="!(myEditFilename() === '' || myTextarea() === myTextareaOrig())"
       (onChange)="structFileSelected()"
       optionLabel="label"
       [style]="{ width: '100%' }"
@@ -78,7 +78,7 @@
     <app-code-editor
       #codeeditor
       [language]="'yaml'"
-      [readOnly]="cmReadOnly"
+      [readOnly]="cmReadOnly()"
       [(value)]="myTextarea"
       [foldable]="true"
     ></app-code-editor>
@@ -155,7 +155,7 @@
   [closable]="false"
   [modal]="true"
   blockScroll="true"
-  (document:keydown.escape)="error_display && (error_display = false)"
+  (document:keydown.escape)="error_display() && error_display.set(false)"
 >
   <ng-template pTemplate="header">
     {{ 'STRUCT_CONFIG.CONFIG_ERROR' | translate }}
@@ -164,14 +164,14 @@
   <pre
     >{{ 'STRUCT_CONFIG.CONFIG_ERROR_TEXT' | translate }}
 
-    {{ myTextOutput }}
+    {{ myTextOutput() }}
   </pre>
   <br />
   <ng-template pTemplate="footer">
     <button
       pButton
       type="button"
-      (click)="error_display = false"
+      (click)="error_display.set(false)"
       label="{{ 'BUTTON.CLOSE' | translate }}"
       class="ui-button-success"
     ></button>

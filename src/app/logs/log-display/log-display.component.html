@@ -4,7 +4,7 @@
     SmartHomeNG {{ 'LOGS.LOGFILE' | translate }}:
     <p-select
       [style]="{ width: '300px' }"
-      [options]="logs"
+      [options]="logs()"
       [(ngModel)]="selectedLog"
       placeholder="{{ 'LOGS.SELECT_LOG' | translate }}"
       (onChange)="fillTimeframe()"
@@ -12,7 +12,7 @@
     &nbsp; {{ 'LOGS.TIMEFRAME' | translate }}:
     <p-select
       [style]="{ width: '210px' }"
-      [options]="files"
+      [options]="files()"
       [(ngModel)]="selectedFile"
       placeholder="{{ 'LOGS.SELECT_FILE' | translate }}"
       (onChange)="changedTimeframe()"
@@ -22,7 +22,7 @@
       pButton
       id="reloadLogButton"
       type="button"
-      (click)="readLogfile(chunk_no)"
+      (click)="readLogfile(chunk_no())"
       [disabled]="selectedLog === null || selectedFile === null"
       label="{{ 'BUTTON.RELOAD_LOG' | translate }}"
       class="ui-button-secondary"
@@ -31,7 +31,7 @@
 
   <div
     class="log-filter-row"
-    [class.log-filter-row--fullscreen]="editorFullscreen"
+    [class.log-filter-row--fullscreen]="editorFullscreen()"
     style="display: flex; align-items: center; flex-wrap: wrap; gap: 4px; width: 98%"
   >
     <div>{{ 'LOGS.FILTER' | translate }}:</div>
@@ -82,7 +82,7 @@
       pButton
       type="button"
       style="margin-top: 2px; margin-left: 31px; width: 25px"
-      [disabled]="first_chunk"
+      [disabled]="first_chunk()"
       icon="fa fa-fast-backward"
       (click)="readLogfile(1)"
       class="ui-button-success"
@@ -91,26 +91,26 @@
       pButton
       type="button"
       style="margin-top: 2px; margin-left: 2px; margin-right: 5px; width: 25px"
-      [disabled]="first_chunk"
+      [disabled]="first_chunk()"
       icon="fa fa-step-backward"
-      (click)="readLogfile(chunk_no - 1)"
+      (click)="readLogfile(chunk_no() - 1)"
       class="ui-button-success"
     ></button>
-    {{ chunk_no }}{{ logfile_chunk?.chunks ? ' / ' + logfile_chunk!.chunks : '' }}
+    {{ chunk_no() }}{{ logfile_chunk()?.chunks ? ' / ' + logfile_chunk()!.chunks : '' }}
     <button
       pButton
       type="button"
       style="margin-top: 2px; margin-left: 5px; width: 25px"
-      [disabled]="last_chunk"
+      [disabled]="last_chunk()"
       icon="fa fa-step-forward"
-      (click)="readLogfile(chunk_no + 1)"
+      (click)="readLogfile(chunk_no() + 1)"
       class="ui-button-success"
     ></button>
     <button
       pButton
       type="button"
       style="margin-top: 2px; margin-left: 2px; width: 25px"
-      [disabled]="last_chunk"
+      [disabled]="last_chunk()"
       icon="fa fa-fast-forward"
       (click)="readLogfile(0)"
       class="ui-button-success"
@@ -128,8 +128,8 @@
       pButton
       type="button"
       style="margin-top: 2px; margin-left: 2px; width: 25px"
-      title="{{ (editorFullscreen ? 'LOGS.EXIT_FULLSCREEN' : 'LOGS.ENTER_FULLSCREEN') | translate }}"
-      [icon]="editorFullscreen ? 'fa fa-compress' : 'fa fa-expand'"
+      title="{{ (editorFullscreen() ? 'LOGS.EXIT_FULLSCREEN' : 'LOGS.ENTER_FULLSCREEN') | translate }}"
+      [icon]="editorFullscreen() ? 'fa fa-compress' : 'fa fa-expand'"
       (click)="toggleEditorFullscreen()"
       class="ui-button-success"
     ></button>
@@ -140,7 +140,7 @@
       [disabled]="false"
       icon="fa fa-info"
       style="margin-right: 10px; width: 25px"
-      (click)="editorHelp_display = true"
+      (click)="editorHelp_display.set(true)"
       class="float-sm-right ui-button-success"
     ></button>
   </div>
@@ -153,9 +153,9 @@
       #codeeditor
       [language]="'text'"
       [readOnly]="true"
-      [lineNums]="cmLineNumbers"
-      [firstLineNumber]="cmFirstLineNumber"
-      [value]="logfile_content"
+      [lineNums]="cmLineNumbers()"
+      [firstLineNumber]="cmFirstLineNumber()"
+      [value]="logfile_content()"
       (fullscreenChange)="onFullscreenChange($event)"
     ></app-code-editor>
   </div>
@@ -165,13 +165,15 @@
   #logspinner
   header="{{ 'LOGS.LOADCHUNK' | translate }}..."
   [ngStyle]="{ align: 'center' }"
-  [(visible)]="spinner_display"
+  [visible]="spinner_display()"
+  (visibleChange)="spinner_display.set($event)"
   [modal]="true"
   blockScroll="true"
   [closable]="false"
   [resizable]="false"
   [maximizable]="false"
   [minY]="100"
+  [baseZIndex]="10000"
   [style]="{ minWidth: '200px', minHeight: '100px' }"
 >
   <div align="center">
@@ -179,7 +181,16 @@
   </div>
 </p-dialog>
 
-<p-dialog header="" [(visible)]="editorHelp_display" [closable]="true" [modal]="true" dynamic="true" blockScroll="true">
+<p-dialog
+  header=""
+  [visible]="editorHelp_display()"
+  (visibleChange)="editorHelp_display.set($event)"
+  [closable]="true"
+  [modal]="true"
+  dynamic="true"
+  blockScroll="true"
+  [baseZIndex]="10000"
+>
   <ng-template pTemplate="header">
     {{ 'HELP.EDITOR-KEYS' | translate }}
   </ng-template>
@@ -222,7 +233,7 @@
     <button
       pButton
       type="button"
-      (click)="editorHelp_display = false"
+      (click)="editorHelp_display.set(false)"
       label="{{ 'BUTTON.CLOSE' | translate }}"
       class="ui-button-success"
     ></button>

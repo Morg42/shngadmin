@@ -2,10 +2,10 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  EventEmitter,
   inject,
   Input,
-  Output,
+  input,
+  output,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -41,12 +41,12 @@ import { LogService } from '../../common/services/log.service';
 export class LoggerLineComponent {
   @Input() loggerName!: string;
   @Input() logger!: LoggerInfo;
-  @Input() loggerActive!: boolean;
-  @Input() definedHandlers!: string[];
+  readonly loggerActive = input.required<boolean>();
+  readonly definedHandlers = input.required<string[]>();
   // @Input() loggerActiveLevel: any;
-  @Output() levelChange = new EventEmitter();
-  @Output() loggerDelete = new EventEmitter();
-  @Output() modifyHandlers = new EventEmitter();
+  readonly levelChange = output<string>();
+  readonly loggerDelete = output<string>();
+  readonly modifyHandlers = output<string[]>();
 
   // Ordered from least verbose (ERROR=40) to most verbose (DEVELOP=9).
   // DEVELOP was added in SmartHomeNG core commit a95e1f0; it sits below DEBUG
@@ -152,9 +152,10 @@ export class LoggerLineComponent {
     ];
 
     this.choosableHandlers = [];
-    this.log.log('definedHandlers', this.definedHandlers);
-    for (const key in this.definedHandlers) {
-      if (this.definedHandlers.hasOwnProperty(key)) {
+    const definedHandlers = this.definedHandlers();
+    this.log.log('definedHandlers', definedHandlers);
+    for (const key in definedHandlers) {
+      if (definedHandlers.hasOwnProperty(key)) {
         let found = false;
         let parentFound = false;
         if (this.logger.active !== undefined) {

@@ -1,6 +1,6 @@
 <div class="shngbody">
   <div style="position: relative">
-    @if (pypiPending) {
+    @if (pypiPending()) {
       <div
         class="shng-text-muted"
         style="
@@ -45,15 +45,15 @@
               <span><img ngSrc="assets/img/logo_small_76x76.png" height="76" width="76" /></span>
               <span>{{ 'SYSTEM.SHNG_VERSION' | translate }}:</span>
               <span
-                >{{ systeminfo.sh_vers }} &nbsp; {{ 'SYSTEM.IN' | translate }} &nbsp; {{ systeminfo.sh_dir }} &nbsp;
-                &nbsp; &nbsp; &nbsp; &nbsp; ({{ systeminfo.sh_desc }})</span
+                >{{ systeminfo().sh_vers }} &nbsp; {{ 'SYSTEM.IN' | translate }} &nbsp; {{ systeminfo().sh_dir }} &nbsp;
+                &nbsp; &nbsp; &nbsp; &nbsp; ({{ systeminfo().sh_desc }})</span
               >
 
               <span><img ngSrc="assets/img/logo_small_76x76.png" height="76" width="76" /></span>
               <span>{{ 'SYSTEM.SHNG_PLG_VERSION' | translate }}:</span>
               <span
-                >{{ systeminfo.plg_vers }} &nbsp; {{ 'SYSTEM.IN' | translate }} &nbsp; {{ systeminfo.sh_dir }}/plugins
-                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ({{ systeminfo.plg_desc }})</span
+                >{{ systeminfo().plg_vers }} &nbsp; {{ 'SYSTEM.IN' | translate }} &nbsp;
+                {{ systeminfo().sh_dir }}/plugins &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ({{ systeminfo().plg_desc }})</span
               >
 
               <span><img ngSrc="assets/img/logo_small_76x76.png" height="76" width="76" /></span>
@@ -63,71 +63,71 @@
               <span><img ngSrc="assets/img/python.png" height="236" width="230" /></span>
               <span>{{ 'SYSTEM.PYTHON VERSION' | translate }}:</span>
 
-              @if (systeminfo.pyvirtual) {
+              @if (systeminfo().pyvirtual) {
                 <span
-                  >{{ systeminfo.pyversion }} (virtual environment) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ({{
-                    systeminfo.pypath
+                  >{{ systeminfo().pyversion }} (virtual environment) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ({{
+                    systeminfo().pypath
                   }})</span
                 >
               }
-              @if (!systeminfo.pyvirtual) {
-                <span>{{ systeminfo.pyversion }} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ({{ systeminfo.pypath }})</span>
+              @if (!systeminfo().pyvirtual) {
+                <span>{{ systeminfo().pyversion }} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ({{ systeminfo().pypath }})</span>
               }
 
               <span><img src="assets/img/terminal-server.svg" height="16" width="16" /></span>
               <span>{{ 'SYSTEM.HOST' | translate }}:</span>
               <span
-                >{{ systeminfo.node }}
-                @if (systeminfo.ip !== '0.0.0.0') {
-                  <span> &nbsp; &nbsp; - &nbsp; &nbsp; IPv4: {{ systeminfo.ip }}</span>
+                >{{ systeminfo().node }}
+                @if (systeminfo().ip !== '0.0.0.0') {
+                  <span> &nbsp; &nbsp; - &nbsp; &nbsp; IPv4: {{ systeminfo().ip }}</span>
                 }
-                @if (systeminfo.ipv6 !== '::1') {
-                  <span> &nbsp; &nbsp; - &nbsp; &nbsp; IPv6: {{ systeminfo.ipv6 }}</span>
+                @if (systeminfo().ipv6 !== '::1') {
+                  <span> &nbsp; &nbsp; - &nbsp; &nbsp; IPv6: {{ systeminfo().ipv6 }}</span>
                 }
               </span>
 
-              @if (['debian', 'raspbian'].includes(systeminfo.osflavor ?? '')) {
-                <span><img [src]="'assets/img/' + systeminfo.osflavor + '.svg'" /></span>
+              @if (['debian', 'raspbian'].includes(systeminfo().osflavor ?? '')) {
+                <span><img [src]="'assets/img/' + systeminfo().osflavor + '.svg'" /></span>
               }
-              @if (!['debian', 'raspbian'].includes(systeminfo.osflavor ?? '')) {
-                @if (['linux', 'macos', 'windows'].includes(systeminfo.ostype ?? '')) {
-                  <span><img [src]="'assets/img/' + systeminfo.ostype + '.svg'" /></span>
+              @if (!['debian', 'raspbian'].includes(systeminfo().osflavor ?? '')) {
+                @if (['linux', 'macos', 'windows'].includes(systeminfo().ostype ?? '')) {
+                  <span><img [src]="'assets/img/' + systeminfo().ostype + '.svg'" /></span>
                 }
-                @if (!['linux', 'macos', 'windows'].includes(systeminfo.ostype ?? '')) {
+                @if (!['linux', 'macos', 'windows'].includes(systeminfo().ostype ?? '')) {
                   <span><img ngSrc="assets/img/os.png" height="224" width="224" /></span>
                 }
               }
 
               <span>{{ 'SYSTEM.OS' | translate }}:</span>
-              <span>{{ systeminfo.vers }}</span>
+              <span>{{ systeminfo().vers }}</span>
 
               <span><img src="assets/img/tux_hdd.svg" height="32" width="32" /></span>
               <span>{{ 'SYSTEM.PID' | translate }}:</span>
-              <span>{{ systeminfo.pid }}</span>
+              <span>{{ systeminfo().pid }}</span>
 
               <span><img src="assets/img/user.svg" height="32" width="32" /></span>
               <span>{{ 'SYSTEM.USER' | translate }}:</span>
-              <span>{{ systeminfo.user }}</span>
+              <span>{{ systeminfo().user }}</span>
 
               <span><img src="assets/img/hd.svg" height="32" width="32" /></span>
               <span>{{ 'SYSTEM.FREE DISC SPACE' | translate }}:</span>
-              <span>{{ systeminfo.freespace | number: '1.0-0' }} MByte</span>
+              <span>{{ systeminfo().freespace | number: '1.0-0' }} MByte</span>
 
-              @if (systeminfo.hardware) {
-                @if (systeminfo.rasppi) {
+              @if (systeminfo().hardware) {
+                @if (systeminfo().rasppi) {
                   <span><img src="assets/img/raspberry_pi.svg" height="32" width="26" /></span>
                 }
-                @if (!systeminfo.rasppi) {
+                @if (!systeminfo().rasppi) {
                   <span><img src="assets/img/terminal-server.svg" height="16" width="16" /></span>
                 }
                 <span>{{ 'SYSTEM.HARDWARE' | translate }}:</span>
-                @if (!systeminfo.hwspeed) {
-                  <span>{{ systeminfo.hardware }}</span>
+                @if (!systeminfo().hwspeed) {
+                  <span>{{ systeminfo().hardware }}</span>
                 }
-                @if (systeminfo.hwspeed) {
+                @if (systeminfo().hwspeed) {
                   <span
-                    >{{ systeminfo.hardware }} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ({{
-                      'SPEEDCLASS.' + systeminfo.hwspeed | translate
+                    >{{ systeminfo().hardware }} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ({{
+                      'SPEEDCLASS.' + systeminfo().hwspeed | translate
                     }})</span
                   >
                 }
@@ -135,15 +135,15 @@
 
               <span><img src="assets/img/clock.svg" height="16" width="16" /></span>
               <span>{{ 'SYSTEM.DATE' | translate }} / {{ 'SYSTEM.TIME' | translate }}:</span>
-              <span>{{ shared.displayDateTime(systeminfo.now) }}</span>
+              <span>{{ shared.displayDateTime(systeminfo().now) }}</span>
 
               <span><img ngSrc="assets/img/logo_small_76x76.png" height="76" width="76" /></span>
               <span>{{ 'SYSTEM.UPTIME' | translate }} SmartHomeNG:</span>
-              <span>{{ sh_uptime }}</span>
+              <span>{{ sh_uptime() }}</span>
 
               <span><img src="assets/img/terminal-server.svg" height="16" width="16" /></span>
               <span>{{ 'SYSTEM.UPTIME_HOST' | translate }}:</span>
-              <span>{{ os_uptime }}</span>
+              <span>{{ os_uptime() }}</span>
             </div>
             <div class="info-footer"></div>
           </div>
@@ -158,7 +158,7 @@
                 width="360px"
                 height="280px"
                 #chartWorkerThreads
-                [data]="chartdataWorkerThreads"
+                [data]="chartdataWorkerThreads()"
                 [options]="chartoptionsScheduler"
               ></p-chart>
               <p-chart
@@ -166,7 +166,7 @@
                 width="360px"
                 height="280px"
                 #chartThreads
-                [data]="chartdataThreads"
+                [data]="chartdataThreads()"
                 [options]="chartoptionsShng"
               ></p-chart>
               <p-chart
@@ -174,7 +174,7 @@
                 width="360px"
                 height="280px"
                 #chartMemory
-                [data]="chartdataMemory"
+                [data]="chartdataMemory()"
                 [options]="chartoptionsShng"
               ></p-chart>
               <p-chart
@@ -182,7 +182,7 @@
                 width="360px"
                 height="280px"
                 #chartSystemload
-                [data]="chartdataLoad"
+                [data]="chartdataLoad()"
                 [options]="chartoptionsSystem"
               ></p-chart>
               <p-chart
@@ -190,7 +190,7 @@
                 width="360px"
                 height="280px"
                 #chartSystemMemory
-                [data]="chartdataSystemMemory"
+                [data]="chartdataSystemMemory()"
                 [options]="chartoptionsSystem"
               ></p-chart>
               <p-chart
@@ -198,7 +198,7 @@
                 width="360px"
                 height="280px"
                 #chartSystemSwap
-                [data]="chartdataSwap"
+                [data]="chartdataSwap()"
                 [options]="chartoptionsSystem"
               ></p-chart>
               <p-chart
@@ -206,7 +206,7 @@
                 width="360px"
                 height="280px"
                 #chartDisk
-                [data]="chartdataDisk"
+                [data]="chartdataDisk()"
                 [options]="chartoptionsDisc"
               ></p-chart>
             </div>
@@ -243,7 +243,7 @@
             <div class="pypi-content">
               <table id="package_check2" class="table shng-list-table">
                 <tbody>
-                  @if (loading) {
+                  @if (loading()) {
                     <tr>
                       <td colspan="5">
                         <p class="shng-text-xl" style="padding-top: 100px; text-align: center">Loading...</p>
@@ -252,7 +252,7 @@
                   }
 
                   <!-- is required (BASE) -->
-                  @for (pypipackage of pypiinfo; track pypipackage.name) {
+                  @for (pypipackage of pypiinfo(); track pypipackage.name) {
                     @if (pypipackage.is_required === true) {
                       <tr>
                         @if (pypipackage.pypi_doc_url === '') {
@@ -338,7 +338,7 @@
 
                 <!-- is required (PLUGINS) -->
 
-                @if (plugincount > 0) {
+                @if (plugincount() > 0) {
                   <thead>
                     <tr class="shng_heading">
                       <th class="py-1" colspan="5">
@@ -348,7 +348,7 @@
                   </thead>
 
                   <tbody>
-                    @for (pypipackage of pypiinfo; track pypipackage.name) {
+                    @for (pypipackage of pypiinfo(); track pypipackage.name) {
                       @if (pypipackage.is_required_for_plugins === true) {
                         <tr>
                           @if (pypipackage.pypi_doc_url === '') {
@@ -431,7 +431,7 @@
 
                 <!-- is required (DOCUMENTAION) -->
 
-                @if (documentationcount > 0) {
+                @if (documentationcount() > 0) {
                   <thead>
                     <tr class="shng_heading">
                       <th class="py-1" colspan="5">
@@ -441,7 +441,7 @@
                   </thead>
 
                   <tbody>
-                    @for (pypipackage of pypiinfo; track pypipackage.name) {
+                    @for (pypipackage of pypiinfo(); track pypipackage.name) {
                       @if (pypipackage.is_required_for_docbuild === true) {
                         <tr>
                           @if (pypipackage.pypi_doc_url === '') {
@@ -524,7 +524,7 @@
 
                 <!-- is required (TESTSUITE) -->
 
-                @if (testsuitecount > 0) {
+                @if (testsuitecount() > 0) {
                   <thead>
                     <tr class="shng_heading">
                       <th class="py-1" colspan="5">
@@ -533,7 +533,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    @for (pypipackage of pypiinfo; track pypipackage.name) {
+                    @for (pypipackage of pypiinfo(); track pypipackage.name) {
                       @if (pypipackage.is_required_for_testsuite === true) {
                         <tr>
                           @if (pypipackage.pypi_doc_url === '') {
@@ -611,7 +611,7 @@
 
                 <!-- is NOT required -->
 
-                @if (norequirementcount > 0) {
+                @if (norequirementcount() > 0) {
                   <thead>
                     <tr class="shng_heading">
                       <th class="py-1" colspan="5">
@@ -621,7 +621,7 @@
                   </thead>
 
                   <tbody>
-                    @for (pypipackage of pypiinfo; track pypipackage.name) {
+                    @for (pypipackage of pypiinfo(); track pypipackage.name) {
                       @if (
                         pypipackage.is_required === false &&
                         pypipackage.is_required_for_plugins === false &&
@@ -659,7 +659,7 @@
 
         <p-tabpanel value="3">
           <div class="shngdisclosure">
-            <div class="shngdisclosure-text">{{ licenseText }}</div>
+            <div class="shngdisclosure-text">{{ licenseText() }}</div>
           </div>
         </p-tabpanel>
 

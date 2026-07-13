@@ -5,34 +5,34 @@
       <thead>
         <tr class="shng_heading">
           <th class="sortable-th" (click)="sortBy('name')">
-            {{ 'THREADS.THREAD' | translate }} ({{ 'THREADS.TOTAL' | translate }}: {{ threads_count }})
-            @if (sortField === 'name') {
-              <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+            {{ 'THREADS.THREAD' | translate }} ({{ 'THREADS.TOTAL' | translate }}: {{ threads_count() }})
+            @if (sortField() === 'name') {
+              <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
             }
           </th>
           <th class="sortable-th" (click)="sortBy('id')">
             {{ 'THREADS.THREAD-ID' | translate }}
-            @if (sortField === 'id') {
-              <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+            @if (sortField() === 'id') {
+              <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
             }
           </th>
           <th class="sortable-th" (click)="sortBy('native_id')">
             {{ 'THREADS.SYSTEM-PID' | translate }}
-            @if (sortField === 'native_id') {
-              <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+            @if (sortField() === 'native_id') {
+              <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
             }
           </th>
           <th class="sortable-th" (click)="sortBy('alive')">
             {{ 'THREADS.ACTIVE' | translate }}
-            @if (sortField === 'alive') {
-              <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+            @if (sortField() === 'alive') {
+              <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
             }
           </th>
           <th></th>
         </tr>
       </thead>
       <tbody>
-        @for (thread of threadsList; track thread.id) {
+        @for (thread of threadsList(); track thread.id) {
           <tr>
             <td class="py-1">{{ thread.name }}</td>
             <td class="py-1">{{ thread.id }}</td>

@@ -15,34 +15,34 @@
               <tr class="shng_heading">
                 <th class="sortable-th" style="width: 280px; border-top: 0" (click)="sortBy('name')">
                   {{ 'SCHEDULERS.SCHEDULER' | translate }}
-                  @if (sortField === 'name') {
-                    <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+                  @if (sortField() === 'name') {
+                    <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
                   }
                 </th>
                 <th class="sortable-th" style="min-width: 250px; border-top: 0" (click)="sortBy('next')">
                   {{ 'SCHEDULERS.NEXT EXECUTION' | translate }}
-                  @if (sortField === 'next') {
-                    <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+                  @if (sortField() === 'next') {
+                    <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
                   }
                 </th>
                 <th class="sortable-th" style="width: 50px; border-top: 0" (click)="sortBy('prio')">
                   {{ 'SCHEDULERS.PRIO' | translate }}
-                  @if (sortField === 'prio') {
-                    <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+                  @if (sortField() === 'prio') {
+                    <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
                   }
                 </th>
                 <th style="width: 130px; border-top: 0">{{ 'SCHEDULERS.VALUE' | translate }}</th>
                 <th class="sortable-th" style="min-width: 130px; border-top: 0" (click)="sortBy('cycle')">
                   {{ 'SCHEDULERS.CYCLE' | translate }}
-                  @if (sortField === 'cycle') {
-                    <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+                  @if (sortField() === 'cycle') {
+                    <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
                   }
                 </th>
                 <th style="width: 100%; border-top: 0">{{ 'SCHEDULERS.CRONTAB' | translate }}</th>
               </tr>
             </thead>
             <tbody>
-              @for (scheduler of itemSchedulers; track scheduler.name) {
+              @for (scheduler of itemSchedulers(); track scheduler.name) {
                 <tr>
                   <td class="py-1">{{ scheduler.name }}</td>
                   <td class="py-1">{{ scheduler.next }}</td>
@@ -66,34 +66,34 @@
               <tr class="shng_heading">
                 <th class="sortable-th" style="width: 280px; border-top: 0" (click)="sortBy('name')">
                   {{ 'SCHEDULERS.SCHEDULER' | translate }}
-                  @if (sortField === 'name') {
-                    <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+                  @if (sortField() === 'name') {
+                    <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
                   }
                 </th>
                 <th class="sortable-th" style="min-width: 250px; border-top: 0" (click)="sortBy('next')">
                   {{ 'SCHEDULERS.NEXT EXECUTION' | translate }}
-                  @if (sortField === 'next') {
-                    <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+                  @if (sortField() === 'next') {
+                    <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
                   }
                 </th>
                 <th class="sortable-th" style="width: 50px; border-top: 0" (click)="sortBy('prio')">
                   {{ 'SCHEDULERS.PRIO' | translate }}
-                  @if (sortField === 'prio') {
-                    <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+                  @if (sortField() === 'prio') {
+                    <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
                   }
                 </th>
                 <th style="width: 130px; border-top: 0">{{ 'SCHEDULERS.VALUE' | translate }}</th>
                 <th class="sortable-th" style="min-width: 130px; border-top: 0" (click)="sortBy('cycle')">
                   {{ 'SCHEDULERS.CYCLE' | translate }}
-                  @if (sortField === 'cycle') {
-                    <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+                  @if (sortField() === 'cycle') {
+                    <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
                   }
                 </th>
                 <th style="width: 100%; border-top: 0">{{ 'SCHEDULERS.CRONTAB' | translate }}</th>
               </tr>
             </thead>
             <tbody>
-              @for (scheduler of logicSchedulers; track scheduler.name) {
+              @for (scheduler of logicSchedulers(); track scheduler.name) {
                 <tr>
                   <td class="py-1">{{ scheduler.name }}</td>
                   <td class="py-1">{{ scheduler.next }}</td>
@@ -117,27 +117,27 @@
               <tr class="shng_heading">
                 <th class="sortable-th" style="width: 280px; border-top: 0" (click)="sortBy('name')">
                   {{ 'SCHEDULERS.SCHEDULER' | translate }}
-                  @if (sortField === 'name') {
-                    <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+                  @if (sortField() === 'name') {
+                    <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
                   }
                 </th>
                 <th class="sortable-th" style="min-width: 250px; border-top: 0" (click)="sortBy('next')">
                   {{ 'SCHEDULERS.NEXT EXECUTION' | translate }}
-                  @if (sortField === 'next') {
-                    <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+                  @if (sortField() === 'next') {
+                    <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
                   }
                 </th>
                 <th class="sortable-th" style="width: 50px; border-top: 0" (click)="sortBy('prio')">
                   {{ 'SCHEDULERS.PRIO' | translate }}
-                  @if (sortField === 'prio') {
-                    <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+                  @if (sortField() === 'prio') {
+                    <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
                   }
                 </th>
                 <th style="width: 130px; border-top: 0">{{ 'SCHEDULERS.PARAMETERS' | translate }}</th>
                 <th class="sortable-th" style="min-width: 130px; border-top: 0" (click)="sortBy('cycle')">
                   {{ 'SCHEDULERS.CYCLE' | translate }}
-                  @if (sortField === 'cycle') {
-                    <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+                  @if (sortField() === 'cycle') {
+                    <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
                   }
                 </th>
                 @if (developerMode === false) {
@@ -151,7 +151,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (scheduler of pluginSchedulers; track scheduler.name) {
+              @for (scheduler of pluginSchedulers(); track scheduler.name) {
                 <tr>
                   <td class="py-1">{{ scheduler.name }}</td>
                   <td class="py-1">{{ scheduler.next }}</td>
@@ -179,27 +179,27 @@
               <tr class="shng_heading">
                 <th class="sortable-th" style="width: 280px; border-top: 0" (click)="sortBy('name')">
                   {{ 'SCHEDULERS.SCHEDULER' | translate }}
-                  @if (sortField === 'name') {
-                    <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+                  @if (sortField() === 'name') {
+                    <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
                   }
                 </th>
                 <th class="sortable-th" style="min-width: 250px; border-top: 0" (click)="sortBy('next')">
                   {{ 'SCHEDULERS.NEXT EXECUTION' | translate }}
-                  @if (sortField === 'next') {
-                    <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+                  @if (sortField() === 'next') {
+                    <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
                   }
                 </th>
                 <th class="sortable-th" style="width: 50px; border-top: 0" (click)="sortBy('prio')">
                   {{ 'SCHEDULERS.PRIO' | translate }}
-                  @if (sortField === 'prio') {
-                    <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+                  @if (sortField() === 'prio') {
+                    <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
                   }
                 </th>
                 <th style="width: 130px; border-top: 0">{{ 'SCHEDULERS.VALUE' | translate }}</th>
                 <th class="sortable-th" style="min-width: 130px; border-top: 0" (click)="sortBy('cycle')">
                   {{ 'SCHEDULERS.CYCLE' | translate }}
-                  @if (sortField === 'cycle') {
-                    <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+                  @if (sortField() === 'cycle') {
+                    <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
                   }
                 </th>
                 @if (developerMode === false) {
@@ -213,7 +213,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (scheduler of otherSchedulers; track scheduler.name) {
+              @for (scheduler of otherSchedulers(); track scheduler.name) {
                 <tr>
                   <td class="py-1">{{ scheduler.name }}</td>
                   <td class="py-1">{{ scheduler.next }}</td>
@@ -240,20 +240,20 @@
               <tr class="shng_heading">
                 <th class="sortable-th" style="width: 280px; border-top: 0" (click)="sortBy('name')">
                   {{ 'SCHEDULERS.TRIGGER' | translate }}
-                  @if (sortField === 'name') {
-                    <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+                  @if (sortField() === 'name') {
+                    <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
                   }
                 </th>
                 <th class="sortable-th" style="width: 250px; border-top: 0" (click)="sortBy('next')">
                   {{ 'SCHEDULERS.NEXT EXECUTION' | translate }}
-                  @if (sortField === 'next') {
-                    <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+                  @if (sortField() === 'next') {
+                    <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
                   }
                 </th>
                 <th class="sortable-th" style="width: 50px; border-top: 0" (click)="sortBy('prio')">
                   {{ 'SCHEDULERS.PRIO' | translate }}
-                  @if (sortField === 'prio') {
-                    <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+                  @if (sortField() === 'prio') {
+                    <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
                   }
                 </th>
                 @if (developerMode === false) {
@@ -268,7 +268,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (scheduler of triggerSchedulers; track scheduler.name) {
+              @for (scheduler of triggerSchedulers(); track scheduler.name) {
                 <tr>
                   <td class="py-1">{{ scheduler.name }}</td>
                   <td class="py-1">{{ scheduler.next }}</td>

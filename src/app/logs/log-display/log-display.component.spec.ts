@@ -72,7 +72,7 @@ describe('LogDisplayComponent', () => {
   });
 
   it('should build logs dropdown with one entry per log in fixture', () => {
-    expect(component.logs.length).toBe(logNames.length);
+    expect(component.logs().length).toBe(logNames.length);
   });
 
   it('should set default_log from fixture', () => {

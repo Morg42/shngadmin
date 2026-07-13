@@ -1,7 +1,7 @@
 <div class="shngbody">
   <div class="logics-tab-wrapper">
     <div class="logics-tab-controls">
-      @if (nogroups === false && activeTabIndex === '0') {
+      @if (nogroups() === false && activeTabIndex === '0') {
         <span style="display: inline-flex; align-items: center; gap: 6px">
           <p-toggleswitch [(ngModel)]="grouped"></p-toggleswitch>
           <label style="cursor: pointer; user-select: none" (click)="grouped = !grouped">{{
@@ -14,11 +14,11 @@
           pInputText
           type="text"
           [placeholder]="'FILTER' | translate"
-          [value]="filterText"
+          [value]="filterText()"
           (input)="onFilterChange($any($event.target).value)"
           style="width: 220px; padding-right: 2rem"
         />
-        @if (filterText) {
+        @if (filterText()) {
           <span
             class="pi pi-times"
             style="
@@ -41,7 +41,7 @@
       </p-tablist>
       <p-tabpanels>
         <p-tabpanel value="0">
-          @if (nogroups === false && grouped) {
+          @if (nogroups() === false && grouped) {
             <div class="tab-content-ng">
               <div style="padding: 6px 0 6px 10px">
                 <button
@@ -63,7 +63,7 @@
                     (onOpen)="groupOpened($event)"
                     (onClose)="groupClosed($event)"
                   >
-                    @for (group of groupList; track $index) {
+                    @for (group of groupList(); track $index) {
                       <p-accordion-panel [value]="$index">
                         <p-accordion-header>
                           @if (group.name === '') {
@@ -102,8 +102,8 @@
                                     (click)="sortUserLogics('name')"
                                   >
                                     <strong>{{ 'LOGICS.LOGIC' | translate }}</strong>
-                                    @if (uSortField === 'name') {
-                                      <span class="sort-indicator">{{ uSortOrder === 1 ? '▲' : '▼' }}</span>
+                                    @if (uSortField() === 'name') {
+                                      <span class="sort-indicator">{{ uSortOrder() === 1 ? '▲' : '▼' }}</span>
                                     }
                                   </th>
                                   <th
@@ -112,8 +112,8 @@
                                     (click)="sortUserLogics('next_exec')"
                                   >
                                     {{ 'LOGICS.NEXT_EXEC' | translate }}
-                                    @if (uSortField === 'next_exec') {
-                                      <span class="sort-indicator">{{ uSortOrder === 1 ? '▲' : '▼' }}</span>
+                                    @if (uSortField() === 'next_exec') {
+                                      <span class="sort-indicator">{{ uSortOrder() === 1 ? '▲' : '▼' }}</span>
                                     }
                                   </th>
                                   <th
@@ -122,8 +122,8 @@
                                     (click)="sortUserLogics('cycle')"
                                   >
                                     {{ 'LOGICS.CYCLE' | translate }}
-                                    @if (uSortField === 'cycle') {
-                                      <span class="sort-indicator">{{ uSortOrder === 1 ? '▲' : '▼' }}</span>
+                                    @if (uSortField() === 'cycle') {
+                                      <span class="sort-indicator">{{ uSortOrder() === 1 ? '▲' : '▼' }}</span>
                                     }
                                   </th>
                                   <th class="p-1" style="width: 150px; border-top: 0">
@@ -138,8 +138,8 @@
                                     (click)="sortUserLogics('filename')"
                                   >
                                     {{ 'LOGICS.FILENAME' | translate }}
-                                    @if (uSortField === 'filename') {
-                                      <span class="sort-indicator">{{ uSortOrder === 1 ? '▲' : '▼' }}</span>
+                                    @if (uSortField() === 'filename') {
+                                      <span class="sort-indicator">{{ uSortOrder() === 1 ? '▲' : '▼' }}</span>
                                     }
                                   </th>
                                   <th class="p-1" style="width: 230px; border-top: 0">
@@ -149,8 +149,8 @@
                               </thead>
 
                               <tbody>
-                                @if (userlogics.length > 0) {
-                                  @for (logic of filteredUserLogics; track logic.name) {
+                                @if (userlogics().length > 0) {
+                                  @for (logic of filteredUserLogics(); track logic.name) {
                                     @if (logic.userlogic === true) {
                                       @if ((logic.group ?? '').indexOf(group.name ?? '') > -1) {
                                         <tr>
@@ -305,7 +305,7 @@
                                     }
                                   }
                                 }
-                                @if (userlogics.length === 0) {
+                                @if (userlogics().length === 0) {
                                   <tr>
                                     <td colspan="8">{{ 'LOGICS.NO_DATA' | translate }}</td>
                                   </tr>
@@ -322,7 +322,7 @@
                 <table id="1" class="table table-striped table-hover shng-list-table">
                   <div class="tab-header"></div>
                   <div>
-                    @if (newlogics.length > 0) {
+                    @if (newlogics().length > 0) {
                       <thead>
                         <tr class="shng_heading">
                           <th style="width: 30px; border-top: 0"></th>
@@ -338,20 +338,20 @@
                     }
 
                     <tbody>
-                      @if (userlogics.length === 0) {
+                      @if (userlogics().length === 0) {
                         <tr>
                           <td colspan="8">{{ 'LOGICS.NO_DATA' | translate }}</td>
                         </tr>
                       }
 
-                      @if (newlogics.length > 0) {
+                      @if (newlogics().length > 0) {
                         <tr></tr>
                         <tr>
                           <th colspan="8">{{ 'LOGICS.NEW_LOGICS' | translate }}</th>
                         </tr>
                         <tr></tr>
                       }
-                      @for (logic of newlogics; track logic.name) {
+                      @for (logic of newlogics(); track logic.name) {
                         @if (logic.userlogic === true) {
                           <tr>
                             <td class="p-1 pl-2">
@@ -416,7 +416,7 @@
             <!-- /.tab-content-ng -->
           }
 
-          @if (nogroups === true || !grouped) {
+          @if (nogroups() === true || !grouped) {
             <div class="tab-content-ng">
               <div style="padding: 6px 0 6px 10px">
                 <button
@@ -433,7 +433,7 @@
               <div class="tab-content">
                 <table id="1ng" class="table table-striped table-hover shng-list-table">
                   <thead>
-                    @if (userlogics.length > 0) {
+                    @if (userlogics().length > 0) {
                       <tr class="shng_heading">
                         <th style="width: 30px; border-top: 0"></th>
                         <th
@@ -442,8 +442,8 @@
                           (click)="sortUserLogics('name')"
                         >
                           {{ 'LOGICS.LOGIC' | translate }}
-                          @if (uSortField === 'name') {
-                            <span class="sort-indicator">{{ uSortOrder === 1 ? '▲' : '▼' }}</span>
+                          @if (uSortField() === 'name') {
+                            <span class="sort-indicator">{{ uSortOrder() === 1 ? '▲' : '▼' }}</span>
                           }
                         </th>
                         <th
@@ -452,8 +452,8 @@
                           (click)="sortUserLogics('group')"
                         >
                           {{ 'LOGICS.GROUP' | translate }}
-                          @if (uSortField === 'group') {
-                            <span class="sort-indicator">{{ uSortOrder === 1 ? '▲' : '▼' }}</span>
+                          @if (uSortField() === 'group') {
+                            <span class="sort-indicator">{{ uSortOrder() === 1 ? '▲' : '▼' }}</span>
                           }
                         </th>
                         <th
@@ -462,8 +462,8 @@
                           (click)="sortUserLogics('next_exec')"
                         >
                           {{ 'LOGICS.NEXT_EXEC' | translate }}
-                          @if (uSortField === 'next_exec') {
-                            <span class="sort-indicator">{{ uSortOrder === 1 ? '▲' : '▼' }}</span>
+                          @if (uSortField() === 'next_exec') {
+                            <span class="sort-indicator">{{ uSortOrder() === 1 ? '▲' : '▼' }}</span>
                           }
                         </th>
                         <th
@@ -472,8 +472,8 @@
                           (click)="sortUserLogics('cycle')"
                         >
                           {{ 'LOGICS.CYCLE' | translate }}
-                          @if (uSortField === 'cycle') {
-                            <span class="sort-indicator">{{ uSortOrder === 1 ? '▲' : '▼' }}</span>
+                          @if (uSortField() === 'cycle') {
+                            <span class="sort-indicator">{{ uSortOrder() === 1 ? '▲' : '▼' }}</span>
                           }
                         </th>
                         <th class="p-1" style="width: 150px; border-top: 0">{{ 'LOGICS.CRONTAB' | translate }}</th>
@@ -484,8 +484,8 @@
                           (click)="sortUserLogics('filename')"
                         >
                           {{ 'LOGICS.FILENAME' | translate }}
-                          @if (uSortField === 'filename') {
-                            <span class="sort-indicator">{{ uSortOrder === 1 ? '▲' : '▼' }}</span>
+                          @if (uSortField() === 'filename') {
+                            <span class="sort-indicator">{{ uSortOrder() === 1 ? '▲' : '▼' }}</span>
                           }
                         </th>
                         <th class="p-1" style="width: 260px; border-top: 0">{{ 'LOGICS.ACTIONS' | translate }}</th>
@@ -494,8 +494,8 @@
                   </thead>
 
                   <tbody>
-                    @if (userlogics.length > 0) {
-                      @for (logic of filteredUserLogics; track logic.name) {
+                    @if (userlogics().length > 0) {
+                      @for (logic of filteredUserLogics(); track logic.name) {
                         @if (logic.userlogic === true) {
                           <tr>
                             @if (logic.enabled === true) {
@@ -665,19 +665,19 @@
                         }
                       }
                     }
-                    @if (userlogics.length === 0) {
+                    @if (userlogics().length === 0) {
                       <tr>
                         <td colspan="8">{{ 'LOGICS.NO_DATA' | translate }}</td>
                       </tr>
                     }
 
-                    @if (newlogics.length > 0) {
+                    @if (newlogics().length > 0) {
                       <tr>
                         <th colspan="8">{{ 'LOGICS.NEW_LOGICS' | translate }}</th>
                       </tr>
                       <tr></tr>
                     }
-                    @for (logic of newlogics; track logic.name) {
+                    @for (logic of newlogics(); track logic.name) {
                       @if (logic.userlogic === true) {
                         <tr>
                           <td class="p-1 pl-2">
@@ -746,36 +746,36 @@
                   <th style="width: 30px; border-top: 0"></th>
                   <th class="p-1 sortable-th" style="width: 320px; border-top: 0" (click)="sortSysLogics('name')">
                     {{ 'LOGICS.LOGIC' | translate }}
-                    @if (sSortField === 'name') {
-                      <span class="sort-indicator">{{ sSortOrder === 1 ? '▲' : '▼' }}</span>
+                    @if (sSortField() === 'name') {
+                      <span class="sort-indicator">{{ sSortOrder() === 1 ? '▲' : '▼' }}</span>
                     }
                   </th>
                   <th class="p-1 sortable-th" style="width: 220px; border-top: 0" (click)="sortSysLogics('next_exec')">
                     {{ 'LOGICS.NEXT_EXEC' | translate }}
-                    @if (sSortField === 'next_exec') {
-                      <span class="sort-indicator">{{ sSortOrder === 1 ? '▲' : '▼' }}</span>
+                    @if (sSortField() === 'next_exec') {
+                      <span class="sort-indicator">{{ sSortOrder() === 1 ? '▲' : '▼' }}</span>
                     }
                   </th>
                   <th class="p-1 sortable-th" style="width: 250px; border-top: 0" (click)="sortSysLogics('cycle')">
                     {{ 'LOGICS.CYCLE' | translate }}
-                    @if (sSortField === 'cycle') {
-                      <span class="sort-indicator">{{ sSortOrder === 1 ? '▲' : '▼' }}</span>
+                    @if (sSortField() === 'cycle') {
+                      <span class="sort-indicator">{{ sSortOrder() === 1 ? '▲' : '▼' }}</span>
                     }
                   </th>
                   <th class="p-1" style="width: 160px; border-top: 0">{{ 'LOGICS.CRONTAB' | translate }}</th>
                   <th class="p-1" style="width: 150px; border-top: 0">{{ 'LOGICS.WATCH_ITEMS' | translate }}</th>
                   <th class="p-1 sortable-th" style="width: 250px; border-top: 0" (click)="sortSysLogics('filename')">
                     {{ 'LOGICS.FILENAME' | translate }}
-                    @if (sSortField === 'filename') {
-                      <span class="sort-indicator">{{ sSortOrder === 1 ? '▲' : '▼' }}</span>
+                    @if (sSortField() === 'filename') {
+                      <span class="sort-indicator">{{ sSortOrder() === 1 ? '▲' : '▼' }}</span>
                     }
                   </th>
                   <th class="p-1" style="width: 260px; border-top: 0">{{ 'LOGICS.ACTIONS' | translate }}</th>
                 </tr>
               </thead>
               <tbody>
-                @if (systemlogics.length > 0) {
-                  @for (logic of filteredSysLogics; track logic.name) {
+                @if (systemlogics().length > 0) {
+                  @for (logic of filteredSysLogics(); track logic.name) {
                     @if (logic.userlogic === false) {
                       <tr>
                         <td class="p-1 pl-2">
@@ -807,7 +807,7 @@
                     }
                   }
                 }
-                @if (systemlogics.length === 0) {
+                @if (systemlogics().length === 0) {
                   <tr>
                     <td colspan="8">{{ 'LOGICS.NO_DATA' | translate }}</td>
                   </tr>
@@ -1014,7 +1014,7 @@
       pButton
       type="button"
       icon="fa fa-times"
-      (click)="rename_display = false"
+      (click)="rename_display.set(false)"
       label="{{ 'BUTTON.ABORT' | translate }}"
       class="ui-button-secondary"
     ></button>

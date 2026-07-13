@@ -1077,6 +1077,13 @@ a.text-shng:hover {
   height: 1.1em !important;
 }
 
+/* Items view "more actions" (⋮) menu — flags the Delete entry the same red
+   as the standalone .btn-shng-danger buttons used elsewhere, since a plain
+   MenuItem has no built-in severity/danger styling of its own. */
+.p-menu-item.menu-item-danger .p-menu-item-link {
+  color: var(--shng-red);
+}
+
 /* PrimeNG DataTable column headers: left-align text */
 .p-datatable th {
   text-align: left;
@@ -1301,6 +1308,16 @@ a.text-shng:hover {
 
 .dark-mode .sortable-th:hover {
   background-color: rgba(255, 255, 255, 0.06);
+}
+
+/* .table-hover's base rule (line ~420) hardcodes a light-blue #ecf3f8
+   row background for light mode. Text color already switches to the
+   dark-mode palette, but that fixed light background doesn't - pairing
+   light text on a near-white row is unreadable. Same translucent-white
+   overlay approach as the other dark-mode hover states above. */
+.dark-mode .table-hover > tbody > tr:hover > td,
+.dark-mode .table-hover > tbody > tr:hover > th {
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 /* ================================================================

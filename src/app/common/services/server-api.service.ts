@@ -186,7 +186,6 @@ export class ServerApiService {
     this.log.log('getShngServerStatus');
     const url = this.appConfig.apiUrl + 'server/status/';
     return this.http.get(url).pipe(
-      map((response) => response),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'ServerApiService (getShngServerStatus): Could not read server status - ',
@@ -201,7 +200,6 @@ export class ServerApiService {
     this.log.log('restartShngServer');
     const url = this.appConfig.apiUrl + 'server/restart/';
     return this.http.put(url, JSON.stringify('')).pipe(
-      map((response) => response),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'ServerApiService (restartShngServer): Could not restart server - ',
@@ -215,7 +213,6 @@ export class ServerApiService {
   getSystemStats() {
     const url = this.appConfig.apiUrl + 'system/info';
     return this.http.get(url).pipe(
-      map((response) => response),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'ServerApiService.getSystemStats(): Could not read system stats - ',
@@ -229,7 +226,6 @@ export class ServerApiService {
   getPypiInfo() {
     const url = this.appConfig.apiUrl + 'server/pypi';
     return this.http.get(url).pipe(
-      map((response) => response),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'ServerApiService.getPypiInfo(): Could not read PyPI data - ',
@@ -257,7 +253,6 @@ export class ServerApiService {
     this.log.log('downloadConfigBackup');
     const url = this.appConfig.apiUrl + 'files/backup/';
     return this.http.get(url, { responseType: 'blob' }).pipe(
-      map((response) => response),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'ServerApiService (downloadConfigBackup): Could not download backup data - ',

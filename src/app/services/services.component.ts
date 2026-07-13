@@ -1,11 +1,12 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
+  computed,
   DestroyRef,
   inject,
   OnInit,
-  ViewChild,
+  signal,
+  viewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -77,7 +78,6 @@ export interface CacheEntryType {
 })
 export class ServicesComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
-  private readonly cdr = inject(ChangeDetectorRef);
   private translate = inject(TranslateService);
   public shared = inject(SharedService);
   private fileService = inject(FilesApiService);
@@ -91,75 +91,86 @@ export class ServicesComponent implements OnInit {
 
   //  schedulerinfo: SchedulerInfo[];
 
-  serverInfo = <ServerInfo>{};
-  default_language!: string;
-  shng_status!: string;
+  readonly serverInfo = signal(<ServerInfo>{});
+  readonly default_language = signal('');
+  readonly shng_status = signal('');
   status_errorcount = 0;
 
-  valid_languagelist: { label: string; value: string }[] = [];
+  readonly valid_languagelist = signal<{ label: string; value: string }[]>([]);
 
   valid_default_language = '          ';
-  selected_language: string | null = null;
-  shng_statuscode = 0;
+  readonly selected_language = signal<string | null>(null);
+  readonly shng_statuscode = signal(0);
 
   pwd_clear = '';
   pwd_hash!: string;
   pwd_show!: boolean;
 
-  backup_disabled = false;
-  restore_disabled = false;
-  show_backup_confirm = false;
-  show_restore_chooser = false;
+  readonly backup_disabled = signal(false);
+  readonly restore_disabled = signal(false);
+  readonly show_backup_confirm = signal(false);
+  readonly show_restore_chooser = signal(false);
 
   // -----------------------------------------------------
   //  Vars for the EVAL syntax checker
   //
-  @ViewChild('evalcodeeditor') evalCodeEditor?: CodeEditorComponent;
-  @ViewChild('evalcodeeditor2') evalCodeEditor2?: CodeEditorComponent;
+  readonly evalCodeEditor = viewChild<CodeEditorComponent>('evalcodeeditor');
+  readonly evalCodeEditor2 = viewChild<CodeEditorComponent>('evalcodeeditor2');
 
   myEvalTextarea = '';
   myRelativeTo = '';
-  myEvalResult = '';
-  myResultType = '';
+  readonly myEvalResult = signal('');
+  readonly myResultType = signal('');
 
-  myEvalTextOutput = '';
+  readonly myEvalTextOutput = signal('');
 
   // -----------------------------------------------------
   //  Vars for the YAML syntax checker
   //
-  @ViewChild('codeeditor') codeEditor?: CodeEditorComponent;
-  @ViewChild('codeeditor2') codeEditor2?: CodeEditorComponent;
+  readonly codeEditor = viewChild<CodeEditorComponent>('codeeditor');
+  readonly codeEditor2 = viewChild<CodeEditorComponent>('codeeditor2');
 
   myTextarea = '';
 
-  myTextOutput = '';
+  readonly myTextOutput = signal('');
 
   // -----------------------------------------------------
   //  Vars for the YAML converter
   //
-  @ViewChild('convertercodeeditor') converterCodeEditor?: CodeEditorComponent;
-  @ViewChild('convertercodeeditor2') converterCodeEditor2?: CodeEditorComponent;
+  readonly converterCodeEditor = viewChild<CodeEditorComponent>('convertercodeeditor');
+  readonly converterCodeEditor2 = viewChild<CodeEditorComponent>('convertercodeeditor2');
 
   myConverterTextarea = '';
 
-  myConverterTextOutput = '';
+  readonly myConverterTextOutput = signal('');
 
-  cacheInfo: CacheEntryType[] = [];
-  cacheAllChecked!: boolean;
+  private readonly rawCacheInfo = signal<CacheEntryType[]>([]);
+  readonly cacheAllChecked = signal(false);
 
-  cacheSortField = '';
-  cacheSortOrder: 1 | -1 = 1;
+  readonly cacheSortField = signal('');
+  readonly cacheSortOrder = signal<1 | -1>(1);
 
-  sortCache(field: string): void {
-    this.cacheSortOrder = this.cacheSortField === field ? (this.cacheSortOrder === 1 ? -1 : 1) : 1;
-    this.cacheSortField = field;
-    const ord = this.cacheSortOrder;
-    this.cacheInfo.sort((a, b) => {
+  /** Column-sorted view - pure computed over a copy; the entry objects stay
+   *  identity-stable, so checkbox mutations (checked flags) keep working. */
+  readonly cacheInfo = computed(() => {
+    const list = this.rawCacheInfo();
+    const field = this.cacheSortField();
+    if (!field) {
+      return list;
+    }
+    const ord = this.cacheSortOrder();
+    return [...list].sort((a, b) => {
       const av = String((a as unknown as Record<string, unknown>)[field] ?? '').toLowerCase();
       const bv = String((b as unknown as Record<string, unknown>)[field] ?? '').toLowerCase();
       return av < bv ? -ord : av > bv ? ord : 0;
     });
-    this.cdr.markForCheck();
+  });
+
+  sortCache(field: string): void {
+    this.cacheSortOrder.set(
+      this.cacheSortField() === field ? (this.cacheSortOrder() === 1 ? -1 : 1) : 1,
+    );
+    this.cacheSortField.set(field);
   }
 
   public setTitle(newTitle: string) {
@@ -173,28 +184,24 @@ export class ServicesComponent implements OnInit {
       .getServerinfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        this.shng_status = '?';
-        this.default_language = this.appConfig.defaultLanguage;
+        this.shng_status.set('?');
+        this.default_language.set(this.appConfig.defaultLanguage);
 
-        this.serverInfo = <ServerInfo>response;
+        this.serverInfo.set(<ServerInfo>response);
 
         this.getShngStatus();
 
-        //        this.valid_languagelist = [{label: 'English', value: 'en'},{label: 'Deutsch', value: 'de'},{label: 'Français', value: 'fr'},
-        //        {label: 'Polski', value: 'pl'}];
-        this.valid_languagelist = [
+        this.valid_languagelist.set([
           { label: 'English', value: 'en' },
           { label: 'Deutsch', value: 'de' },
           { label: 'Français', value: 'fr' },
-        ];
+        ]);
 
-        // this.valid_default_language = 'Deutsch';
-        this.selected_language = this.default_language;
+        this.selected_language.set(this.default_language());
 
         this.setTitle(this.translate.instant('SERVICES.SERVICES'));
 
         this.loadCacheOrphans();
-        this.cdr.markForCheck();
       });
   }
 
@@ -203,17 +210,15 @@ export class ServicesComponent implements OnInit {
       .getCacheOrphans()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        this.cacheInfo = <CacheEntryType[]>response;
-        this.cacheAllChecked = false;
-        // this.log.log('loadChacheOrphans', this.cacheInfo);
-        this.cdr.markForCheck();
+        this.rawCacheInfo.set(Array.isArray(response) ? (response as CacheEntryType[]) : []);
+        this.cacheAllChecked.set(false);
       });
   }
 
   deleteCacheEntry(entryNr: number) {
     // this.log.log('deleteCacheEntry', this.cacheInfo[entryNr].filename);
     this.dataService
-      .deleteCacheFile(this.cacheInfo[entryNr].filename)
+      .deleteCacheFile(this.cacheInfo()[entryNr].filename)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.loadCacheOrphans();
@@ -222,9 +227,9 @@ export class ServicesComponent implements OnInit {
 
   deleteCacheSelected() {
     const filelist: string[] = [];
-    for (let i = 0; i < this.cacheInfo.length; i++) {
-      if (this.cacheInfo[i].checked) {
-        filelist.push(this.cacheInfo[i].filename);
+    for (const entry of this.cacheInfo()) {
+      if (entry.checked) {
+        filelist.push(entry.filename);
       }
     }
 
@@ -237,8 +242,8 @@ export class ServicesComponent implements OnInit {
   }
 
   cacheCheckAll() {
-    for (let i = 0; i < this.cacheInfo.length; i++) {
-      this.cacheInfo[i].checked = this.cacheAllChecked;
+    for (const entry of this.cacheInfo()) {
+      entry.checked = this.cacheAllChecked();
     }
   }
 
@@ -254,8 +259,7 @@ export class ServicesComponent implements OnInit {
       .CheckYamlText(this.myTextarea)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        this.myTextOutput = response as string;
-        this.cdr.markForCheck();
+        this.myTextOutput.set(response as string);
       });
   }
 
@@ -266,14 +270,13 @@ export class ServicesComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
         const myResponse = response as { expression: string; type: string; result: unknown };
-        this.myEvalTextOutput = myResponse.expression;
-        this.myResultType = myResponse.type;
-        if (this.myResultType === 'list' || this.myResultType === 'dict') {
-          this.myEvalResult = JSON.stringify(myResponse.result);
+        this.myEvalTextOutput.set(myResponse.expression);
+        this.myResultType.set(myResponse.type);
+        if (myResponse.type === 'list' || myResponse.type === 'dict') {
+          this.myEvalResult.set(JSON.stringify(myResponse.result));
         } else {
-          this.myEvalResult = String(myResponse.result);
+          this.myEvalResult.set(String(myResponse.result));
         }
-        this.cdr.markForCheck();
       });
   }
 
@@ -284,17 +287,16 @@ export class ServicesComponent implements OnInit {
       .ConvertToYamlText(this.myConverterTextarea)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        this.myConverterTextOutput = response as string;
-        this.cdr.markForCheck();
+        this.myConverterTextOutput.set(response as string);
       });
   }
 
   setLanguage() {
-    this.log.log('setLanguage', this.selected_language);
-    this.appConfig.setDefaultLanguage(this.selected_language!);
-    this.userPrefs.setLanguage(this.selected_language!); // persist across reloads
+    this.log.log('setLanguage', this.selected_language());
+    this.appConfig.setDefaultLanguage(this.selected_language()!);
+    this.userPrefs.setLanguage(this.selected_language()!); // persist across reloads
     this.shared.setGuiLanguage();
-    this.default_language = this.appConfig.defaultLanguage;
+    this.default_language.set(this.appConfig.defaultLanguage);
   }
 
   // -------------------------------------------------------
@@ -325,14 +327,15 @@ export class ServicesComponent implements OnInit {
           // shng is not running
           this.status_errorcount += 1;
           this.log.log('getShngStatus', 'SmartHomeNG not running');
-          this.shng_status = this.translate_shngStatus('waiting') + '...';
+          this.shng_status.set(this.translate_shngStatus('waiting') + '...');
         } else {
           // this.log.log('getShngStatus', res.code, res.text);
-          this.shng_statuscode = res.code;
-          this.shng_status = this.translate_shngStatus(res.text ?? '');
+          this.shng_statuscode.set(res.code);
+          let status = this.translate_shngStatus(res.text ?? '');
           if (res.details !== undefined) {
-            this.shng_status += ' (' + res.details + ')';
+            status += ' (' + res.details + ')';
           }
+          this.shng_status.set(status);
           this.status_errorcount = 0;
         }
         if (this.status_errorcount < 20) {
@@ -351,10 +354,9 @@ export class ServicesComponent implements OnInit {
             .subscribe(() => this.getShngStatus());
         } else {
           this.log.warn('getShngStatus', 'Statuspolling aborted');
-          this.shng_status = this.translate_shngStatus('not active');
-          this.shng_statuscode = -1;
+          this.shng_status.set(this.translate_shngStatus('not active'));
+          this.shng_statuscode.set(-1);
         }
-        this.cdr.markForCheck();
       });
   }
 
@@ -368,9 +370,8 @@ export class ServicesComponent implements OnInit {
       .subscribe((response) => {
         const res = response as { result?: string };
         this.log.log('restartShng', res.result);
-        this.shng_status = this.translate_shngStatus('Restart clicked');
-        this.shng_statuscode = -1;
-        this.cdr.markForCheck();
+        this.shng_status.set(this.translate_shngStatus('Restart clicked'));
+        this.shng_statuscode.set(-1);
       });
   }
 
@@ -381,12 +382,12 @@ export class ServicesComponent implements OnInit {
     const yyyy = todayDate.getFullYear();
     const today = yyyy + '-' + mm + '-' + dd;
 
-    this.backup_disabled = true;
-    this.restore_disabled = true;
+    this.backup_disabled.set(true);
+    this.restore_disabled.set(true);
 
     let filename = '';
-    if (this.serverInfo.backup_stem != null) {
-      filename = this.serverInfo.backup_stem;
+    if (this.serverInfo().backup_stem != null) {
+      filename = this.serverInfo().backup_stem;
     }
     if (filename !== '') {
       filename += '_';
@@ -400,22 +401,16 @@ export class ServicesComponent implements OnInit {
         const res = response as Blob;
         // saveAs(res, 'shng_config_backup_' + today + '.zip');
         saveAs(res, filename);
-        this.show_backup_confirm = true;
-        this.backup_disabled = false;
-        this.restore_disabled = false;
+        this.show_backup_confirm.set(true);
+        this.backup_disabled.set(false);
+        this.restore_disabled.set(false);
 
         this.ngOnInit();
-        this.cdr.markForCheck();
       });
   }
 
   restoreBackup() {
-    this.backup_disabled = true;
-    this.restore_disabled = true;
-    this.show_restore_chooser = true;
-
-    this.backup_disabled = false;
-    this.restore_disabled = false;
+    this.show_restore_chooser.set(true);
   }
 
   myUploader(event: { files: File[] }, form: { clear: () => void }) {
@@ -468,7 +463,7 @@ export class ServicesComponent implements OnInit {
         });
 
       form.clear();
-      this.show_restore_chooser = false;
+      this.show_restore_chooser.set(false);
     };
 
     // read as text file
@@ -489,6 +484,6 @@ export class ServicesComponent implements OnInit {
 */
 
     form.clear();
-    this.show_restore_chooser = false;
+    this.show_restore_chooser.set(false);
   }
 }

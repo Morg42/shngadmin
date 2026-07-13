@@ -4,18 +4,17 @@ import {
   Component,
   DestroyRef,
   ElementRef,
-  EventEmitter,
   HostBinding,
-  Input,
   NgZone,
   OnChanges,
   OnDestroy,
   OnInit,
-  Output,
   SimpleChanges,
-  ViewChild,
   ViewEncapsulation,
   inject,
+  input,
+  output,
+  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -99,33 +98,33 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
   private readonly destroyRef = inject(DestroyRef);
   private readonly themeService = inject(ThemeService);
 
-  @ViewChild('host', { static: true }) private hostRef!: ElementRef<HTMLDivElement>;
+  private readonly hostRef = viewChild.required<ElementRef<HTMLDivElement>>('host');
 
-  @Input() language: CmLanguage = 'text';
-  @Input() readOnly = false;
-  @Input() lineNums = true;
-  @Input() lineWrapping = false;
-  @Input() foldable = false;
-  @Input() firstLineNumber = 1;
-  @Input() value = '';
-  @Output() valueChange = new EventEmitter<string>();
+  readonly language = input<CmLanguage>('text');
+  readonly readOnly = input(false);
+  readonly lineNums = input(true);
+  readonly lineWrapping = input(false);
+  readonly foldable = input(false);
+  readonly firstLineNumber = input(1);
+  readonly value = input('');
+  readonly valueChange = output<string>();
 
   /** Extra keybindings specific to the hosting component. */
-  @Input() extraKeybindings: KeyBinding[] = [];
+  readonly extraKeybindings = input<KeyBinding[]>([]);
 
   /** Emits the new fullscreen state whenever it changes (toggle or ESC exit). */
-  @Output() fullscreenChange = new EventEmitter<boolean>();
+  readonly fullscreenChange = output<boolean>();
 
   /** Optional CM6 completion source for autocomplete (logics-edit). */
-  @Input() completionSource?: CmCompletionSource;
+  readonly completionSource = input<CmCompletionSource>();
 
   /** If set, typed text matching this regex is blocked (watch-items editor). */
-  @Input() allowedCharsPattern?: RegExp;
+  readonly allowedCharsPattern = input<RegExp>();
 
   @HostBinding('style.display') readonly hostDisplay = 'block';
 
   @HostBinding('class.cm-fullscreen')
-  private _fullscreen = false;
+  protected _fullscreen = false;
 
   private _lineWrapping!: boolean;
 
@@ -142,7 +141,7 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
   }
 
   ngOnInit() {
-    this._lineWrapping = this.lineWrapping;
+    this._lineWrapping = this.lineWrapping();
   }
 
   // Capture-phase document listener so Escape exits fullscreen regardless of
@@ -150,7 +149,7 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
   // Also acts as CSS-only fallback when native fullscreen is unavailable.
   private readonly _onDocKeydown = (e: KeyboardEvent) => {
     if (e.key !== 'Escape' || !this._fullscreen) return;
-    const host = this.hostRef.nativeElement as HTMLElement;
+    const host = this.hostRef().nativeElement as HTMLElement;
     const cmPanelOpen = host.querySelector('.cm-search, .cm-dialog') !== null;
     if (!cmPanelOpen) {
       this.zone.run(() => this.exitFullscreen());
@@ -167,8 +166,8 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
 
   ngAfterViewInit() {
     this._view = new EditorView({
-      state: this._buildState(this.value),
-      parent: this.hostRef.nativeElement,
+      state: this._buildState(this.value()),
+      parent: this.hostRef().nativeElement,
     });
     document.addEventListener('keydown', this._onDocKeydown, true);
     document.addEventListener('fullscreenchange', this._onFullscreenChange);
@@ -185,15 +184,16 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
 
     if (changes['value'] && !changes['value'].firstChange) {
       const current = this._view.state.doc.toString();
-      if (current !== this.value) {
+      const value = this.value();
+      if (current !== value) {
         this._view.dispatch({
-          changes: { from: 0, to: current.length, insert: this.value ?? '' },
+          changes: { from: 0, to: current.length, insert: value ?? '' },
         });
       }
     }
     if (changes['readOnly'] && !changes['readOnly'].firstChange) {
       this._view.dispatch({
-        effects: this.readOnlyComp.reconfigure(EditorState.readOnly.of(this.readOnly)),
+        effects: this.readOnlyComp.reconfigure(EditorState.readOnly.of(this.readOnly())),
       });
     }
     if (changes['lineNums'] && !changes['lineNums'].firstChange) {
@@ -261,7 +261,7 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
 
   scrollToEnd() {
     requestAnimationFrame(() => {
-      const scroller = this.hostRef.nativeElement.querySelector(
+      const scroller = this.hostRef().nativeElement.querySelector(
         '.cm-scroller',
       ) as HTMLElement | null;
       if (scroller) {
@@ -302,14 +302,15 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
   // ---------------------------------------------------------------------------
 
   private _lineNumsExtension(): Extension {
-    if (!this.lineNums) return [];
-    const offset = this.firstLineNumber - 1;
+    if (!this.lineNums()) return [];
+    const offset = this.firstLineNumber() - 1;
     return offset > 0 ? lineNumbers({ formatNumber: (n) => String(n + offset) }) : lineNumbers();
   }
 
   private _completionExtension(): Extension {
-    if (!this.completionSource) return autocompletion();
-    return autocompletion({ override: [this.completionSource] });
+    const completionSource = this.completionSource();
+    if (!completionSource) return autocompletion();
+    return autocompletion({ override: [completionSource] });
   }
 
   /** oneDark bundles its own colour theme + syntax highlighting; the default
@@ -323,7 +324,8 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
 
   private _buildState(doc: string): EditorState {
     const self = this;
-    const useSpacesForTab = this.language === 'yaml' || this.language === 'python';
+    const language = this.language();
+    const useSpacesForTab = language === 'yaml' || language === 'python';
 
     // Pre-process loaded content: replace any existing tabs with 4 spaces
     if (useSpacesForTab) {
@@ -386,7 +388,7 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
 
     const extensions: Extension[] = [
       EditorView.theme({ '.cm-scroller': { overflow: 'auto' } }),
-      this.readOnlyComp.of(EditorState.readOnly.of(this.readOnly)),
+      this.readOnlyComp.of(EditorState.readOnly.of(this.readOnly())),
       this.lineNumComp.of(this._lineNumsExtension()),
       this.lineWrapComp.of(this._lineWrapping ? EditorView.lineWrapping : []),
       this.completionComp.of(this._completionExtension()),
@@ -400,9 +402,9 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
       indentOnInput(),
       bracketMatching(),
       closeBrackets(),
-      this.foldable ? foldGutter() : [],
+      this.foldable() ? foldGutter() : [],
       keymap.of([
-        ...this.extraKeybindings,
+        ...this.extraKeybindings(),
         ...builtinKeys,
         ...defaultKeymap,
         ...historyKeymap,
@@ -416,8 +418,9 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
       }),
     ];
 
-    if (this.allowedCharsPattern) {
-      const pattern = this.allowedCharsPattern;
+    const allowedCharsPattern = this.allowedCharsPattern();
+    if (allowedCharsPattern) {
+      const pattern = allowedCharsPattern;
       extensions.push(
         EditorState.transactionFilter.of((tr: Transaction) => {
           if (!tr.docChanged) return tr;
@@ -455,7 +458,7 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
   }
 
   private _languageExtension(): Extension {
-    switch (this.language) {
+    switch (this.language()) {
       case 'python':
         return python();
       case 'yaml':

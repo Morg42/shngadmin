@@ -1,4 +1,10 @@
-import { APP_INITIALIZER, enableProdMode, importProvidersFrom, Injector } from '@angular/core';
+import {
+  APP_INITIALIZER,
+  enableProdMode,
+  importProvidersFrom,
+  Injector,
+  provideZonelessChangeDetection,
+} from '@angular/core';
 
 import {
   HttpClient,
@@ -60,6 +66,7 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
+    provideZonelessChangeDetection(),
     provideRouter(
       appRoutes,
       withPreloading(PreloadAllModules), // preload all lazy chunks after initial navigation

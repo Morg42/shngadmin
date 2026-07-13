@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, effect, inject, signal } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AppConfigService } from './app-config.service';
 import { LogService } from './log.service';
@@ -11,12 +11,44 @@ export class SharedService {
   private appConfig = inject(AppConfigService);
   private readonly log = inject(LogService);
 
-  /** Persists the monitored-item list across item-tree component navigation.
-   *  Stored here because WebsocketPluginService is component-scoped. */
-  public monitoredItemsList: [string, Record<string, unknown>][] = [];
+  private static readonly MONITORED_ITEMS_KEY = 'shng.items.monitored';
+
+  /** Persists the monitored-item list across item-tree component navigation
+   *  AND across full page reloads (item paths only - see loadMonitoredPaths).
+   *  Stored here because WebsocketPluginService is component-scoped. A signal
+   *  so item-tree's live table stays reactive under OnPush without a manual
+   *  ping subscription - every update publishes a new array reference. */
+  public readonly monitoredItemsList = signal<[string, Record<string, unknown>][]>(
+    SharedService.loadMonitoredPaths(),
+  );
 
   constructor() {
     this.log.log('SharedService constructor called');
+
+    // Persist paths only, not the live data - a stale cached value would be
+    // misleading, and item-tree already re-fetches fresh data on (re)connect
+    // for every path found here (see ItemTreeComponent.ngOnInit).
+    effect(() => {
+      const paths = this.monitoredItemsList().map(([path]) => path);
+      try {
+        localStorage.setItem(SharedService.MONITORED_ITEMS_KEY, JSON.stringify(paths));
+      } catch {
+        // Storage unavailable/full - monitoring still works for this session,
+        // it just won't survive a reload.
+      }
+    });
+  }
+
+  private static loadMonitoredPaths(): [string, Record<string, unknown>][] {
+    try {
+      const raw = localStorage.getItem(SharedService.MONITORED_ITEMS_KEY);
+      if (!raw) return [];
+      const paths = JSON.parse(raw) as unknown;
+      if (!Array.isArray(paths)) return [];
+      return paths.filter((p) => typeof p === 'string').map((path) => [path, {}]);
+    } catch {
+      return [];
+    }
   }
 
   ageToString(age: number) {

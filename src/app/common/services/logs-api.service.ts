@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 
 import { of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 import { LogsType } from '../models/logfiles-info';
 import { AppConfigService } from './app-config.service';
 import { LogService } from './log.service';
@@ -21,10 +21,6 @@ export class LogsApiService {
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'logs/';
     return this.http.get<LogsType>(url).pipe(
-      map((response) => {
-        const result = response;
-        return result;
-      }),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'LogsApiService (getLogs): Could not read logs data' + ' - ' + err.error.error,
@@ -42,14 +38,10 @@ export class LogsApiService {
     }
     // chunk=null → 1 (first); chunk=0 → 0 (server convention for last chunk)
     const part = chunk ?? 1;
-    let url = apiUrl + 'logs/' + filename + '?chunk=' + String(part);
+    let url = apiUrl + 'logs/' + encodeURIComponent(filename) + '?chunk=' + String(part);
 
     // return this.http.get(url, { responseType: 'text' })
     return this.http.get(url).pipe(
-      map((response) => {
-        const result = response;
-        return result;
-      }),
       catchError((err: HttpErrorResponse) => {
         this.log.error({ err });
         this.log.error(

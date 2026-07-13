@@ -8,7 +8,8 @@ import {
   inject,
   OnInit,
   Renderer2,
-  ViewChild,
+  signal,
+  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
@@ -70,14 +71,19 @@ export class TopNavigationComponent implements OnInit {
   private readonly el = inject(ElementRef);
   protected theme = inject(ThemeService);
 
-  @ViewChild('topnav') private topnavEl!: ElementRef<HTMLElement>;
+  private readonly topnavEl = viewChild.required<ElementRef<HTMLElement>>('topnav');
 
   labels: string[] = [];
-  menu: MenuItem[] = [];
-  loggedIn = false;
-  loginRequired = false;
+  readonly menu = signal<MenuItem[]>([]);
+  readonly loggedIn = signal(false);
+  readonly loginRequired = signal(false);
 
   isTouchDevice = false;
+
+  /** Current URL as a signal; drives the context-sensitive Help link.
+   *  Replaces the old NavigationEnd->markForCheck subscription: the Help
+   *  getters read this signal, so navigation refreshes them under OnPush. */
+  private readonly currentUrl = signal('/');
 
   constructor() {
     this.log.log('TopNavigationComponent - constructor()');
@@ -85,6 +91,14 @@ export class TopNavigationComponent implements OnInit {
 
   ngOnInit() {
     this.log.log('TopNavigationComponent.ngOnInit() entered');
+
+    this.currentUrl.set(this.router.url);
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => this.currentUrl.set(this.router.url));
 
     // One-shot initialisation: load server config, set up translate, attempt
     // anonymous login.  After this the component reacts purely via observables.
@@ -115,30 +129,18 @@ export class TopNavigationComponent implements OnInit {
     // translate.instant() to return keys from the previous language.
     this.translate.onLangChange.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.buildMenu();
-      this.cdr.markForCheck();
     });
 
     // Sync loggedIn / loginRequired whenever auth state changes.
     // Only rebuild the menu if translations are already loaded; if not,
     // onLangChange will call buildMenu() once they arrive.
     this.authService.loggedIn$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((loggedIn) => {
-      this.loggedIn = loggedIn;
-      this.loginRequired = this.authService.loginRequired();
+      this.loggedIn.set(loggedIn);
+      this.loginRequired.set(this.authService.loginRequired());
       if (this.translate.currentLang) {
         this.buildMenu();
       }
-      this.cdr.markForCheck();
     });
-
-    // The Help link's URL depends on the current route (context-sensitive help).
-    // This component is OnPush and otherwise only marks for check on login/lang
-    // changes, so without this the Help link would go stale after navigating.
-    this.router.events
-      .pipe(
-        filter((event) => event instanceof NavigationEnd),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe(() => this.cdr.markForCheck());
 
     // Keep the toggle's own icon/label in sync — ThemeService can be changed
     // from applyServerDefault() above (async, after this component's own
@@ -173,7 +175,7 @@ export class TopNavigationComponent implements OnInit {
     if (this.drawerOpen) {
       // Pre-expand the section whose child route is currently active
       const url = this.router.url;
-      for (const entry of this.menu) {
+      for (const entry of this.menu()) {
         if (entry.items.some((sub) => sub.routerLink && url.startsWith(sub.routerLink[0]))) {
           this.drawerOpenSections.add(entry.label);
           break;
@@ -182,13 +184,11 @@ export class TopNavigationComponent implements OnInit {
     } else {
       this.drawerOpenSections.clear();
     }
-    this.cdr.markForCheck();
   }
 
   closeDrawer() {
     this.drawerOpen = false;
     this.drawerOpenSections.clear();
-    this.cdr.markForCheck();
   }
 
   toggleDrawerSection(label: string) {
@@ -197,7 +197,6 @@ export class TopNavigationComponent implements OnInit {
     if (!wasOpen) {
       this.drawerOpenSections.add(label);
     }
-    this.cdr.markForCheck();
   }
 
   enableDropdownMenu() {
@@ -210,7 +209,7 @@ export class TopNavigationComponent implements OnInit {
   disableResponsiveMenu(menuEntry: MenuItem, hideDropdown = true) {
     this.closeTouchDropdown();
 
-    const m = this.topnavEl?.nativeElement;
+    const m = this.topnavEl()?.nativeElement;
     if (!m) return;
 
     this.renderer.removeClass(m, 'responsive');
@@ -256,21 +255,33 @@ export class TopNavigationComponent implements OnInit {
     this.openMenuLabel = null;
   }
 
-  setMenuEntry(menu: number, label: string, routerLink: string[] = [], visible: boolean = true) {
-    while (this.menu.length < menu + 1) {
-      this.menu.push({ label: 'dummy', visible: visible, items: [] });
+  private static setMenuEntry(
+    menu: MenuItem[],
+    index: number,
+    label: string,
+    routerLink: string[] = [],
+    visible: boolean = true,
+  ) {
+    while (menu.length < index + 1) {
+      menu.push({ label: 'dummy', visible: visible, items: [] });
     }
-    this.menu[menu].label = label;
-    this.menu[menu].routerLink = routerLink;
-    this.menu[menu].visible = visible;
+    menu[index].label = label;
+    menu[index].routerLink = routerLink;
+    menu[index].visible = visible;
   }
 
-  setSubmenuEntry(menu: number, submenu: number, label: string, routerLink: string[]) {
-    while (this.menu[menu].items.length < submenu + 1) {
-      this.menu[menu].items.push({ label: 'dummy' });
+  private static setSubmenuEntry(
+    menu: MenuItem[],
+    index: number,
+    submenu: number,
+    label: string,
+    routerLink: string[],
+  ) {
+    while (menu[index].items.length < submenu + 1) {
+      menu[index].items.push({ label: 'dummy' });
     }
-    this.menu[menu].items[submenu].label = label;
-    this.menu[menu].items[submenu].routerLink = routerLink;
+    menu[index].items[submenu].label = label;
+    menu[index].items[submenu].routerLink = routerLink;
   }
 
   buildMenu() {
@@ -280,63 +291,151 @@ export class TopNavigationComponent implements OnInit {
       this.appConfig.defaultLanguage,
     );
 
-    this.setMenuEntry(0, this.translate.instant('MENU.SYSTEM'), ['/system/systemproperties']);
-    this.setSubmenuEntry(0, 0, this.translate.instant('MENU.SYSTEM_PROPERTIES'), [
+    const menu: MenuItem[] = [];
+    TopNavigationComponent.setMenuEntry(menu, 0, this.translate.instant('MENU.SYSTEM'), [
       '/system/systemproperties',
     ]);
-    this.setSubmenuEntry(0, 1, this.translate.instant('MENU.SYSTEM_CONFIGURATION'), [
-      '/system/config',
+    TopNavigationComponent.setSubmenuEntry(
+      menu,
+      0,
+      0,
+      this.translate.instant('MENU.SYSTEM_PROPERTIES'),
+      ['/system/systemproperties'],
+    );
+    TopNavigationComponent.setSubmenuEntry(
+      menu,
+      0,
+      1,
+      this.translate.instant('MENU.SYSTEM_CONFIGURATION'),
+      ['/system/config'],
+    );
+
+    TopNavigationComponent.setMenuEntry(menu, 1, this.translate.instant('MENU.SERVICES'), [
+      '/services',
+    ]);
+    TopNavigationComponent.setSubmenuEntry(menu, 1, 0, this.translate.instant('MENU.SERVICES'), [
+      '/services',
+    ]);
+    TopNavigationComponent.setSubmenuEntry(
+      menu,
+      1,
+      1,
+      this.translate.instant('MENU.FUNCTION_CONFIGURATION'),
+      ['/services/functions'],
+    );
+
+    TopNavigationComponent.setMenuEntry(menu, 2, this.translate.instant('MENU.ITEMS'), ['/items']);
+    TopNavigationComponent.setSubmenuEntry(menu, 2, 0, this.translate.instant('MENU.ITEM_TREE'), [
+      '/items',
+    ]);
+    TopNavigationComponent.setSubmenuEntry(
+      menu,
+      2,
+      1,
+      this.translate.instant('MENU.ITEM_CONFIGURATION'),
+      ['/items/config'],
+    );
+    TopNavigationComponent.setSubmenuEntry(
+      menu,
+      2,
+      2,
+      this.translate.instant('MENU.ITEM_STRUCTS'),
+      ['/items/structs'],
+    );
+    TopNavigationComponent.setSubmenuEntry(
+      menu,
+      2,
+      3,
+      this.translate.instant('MENU.ITEM_STRUCT_CONFIGURATION'),
+      ['/items/struct_config'],
+    );
+
+    TopNavigationComponent.setMenuEntry(menu, 3, this.translate.instant('MENU.LOGICS'), [
+      '/logics/list',
+    ]);
+    TopNavigationComponent.setSubmenuEntry(menu, 3, 0, this.translate.instant('MENU.LOGICS_LIST'), [
+      '/logics/list',
+    ]);
+    TopNavigationComponent.setSubmenuEntry(
+      menu,
+      3,
+      1,
+      this.translate.instant('MENU.LOGICS_GROUPS'),
+      ['/logics/groups'],
+    );
+
+    TopNavigationComponent.setMenuEntry(menu, 4, this.translate.instant('MENU.PLUGINS'), [
+      '/plugins',
+    ]);
+    TopNavigationComponent.setSubmenuEntry(
+      menu,
+      4,
+      0,
+      this.translate.instant('MENU.PLUGINS_LIST'),
+      ['/plugins'],
+    );
+    TopNavigationComponent.setSubmenuEntry(
+      menu,
+      4,
+      1,
+      this.translate.instant('MENU.PLUGINS_CONFIGURATION'),
+      ['/plugins/config'],
+    );
+
+    TopNavigationComponent.setMenuEntry(menu, 5, this.translate.instant('MENU.SCENES'), [
+      '/scenes/list',
+    ]);
+    TopNavigationComponent.setSubmenuEntry(menu, 5, 0, this.translate.instant('MENU.SCENE_LIST'), [
+      '/scenes/list',
+    ]);
+    TopNavigationComponent.setSubmenuEntry(
+      menu,
+      5,
+      1,
+      this.translate.instant('MENU.SCENE_CONFIGURATION'),
+      ['/scenes/config'],
+    );
+
+    TopNavigationComponent.setMenuEntry(menu, 6, this.translate.instant('MENU.SCHEDULERS'), [
+      '/schedulers',
+    ]);
+    TopNavigationComponent.setSubmenuEntry(menu, 6, 0, this.translate.instant('MENU.SCHEDULERS'), [
+      '/schedulers',
+    ]);
+    TopNavigationComponent.setSubmenuEntry(menu, 6, 1, this.translate.instant('MENU.THREADS'), [
+      '/threads',
     ]);
 
-    this.setMenuEntry(1, this.translate.instant('MENU.SERVICES'), ['/services']);
-    this.setSubmenuEntry(1, 0, this.translate.instant('MENU.SERVICES'), ['/services']);
-    this.setSubmenuEntry(1, 1, this.translate.instant('MENU.FUNCTION_CONFIGURATION'), [
-      '/services/functions',
+    TopNavigationComponent.setMenuEntry(menu, 7, this.translate.instant('MENU.LOGS'), [
+      '/logs/display',
     ]);
-
-    this.setMenuEntry(2, this.translate.instant('MENU.ITEMS'), ['/items']);
-    this.setSubmenuEntry(2, 0, this.translate.instant('MENU.ITEM_TREE'), ['/items']);
-    this.setSubmenuEntry(2, 1, this.translate.instant('MENU.ITEM_CONFIGURATION'), [
-      '/items/config',
-    ]);
-    this.setSubmenuEntry(2, 2, this.translate.instant('MENU.ITEM_STRUCTS'), ['/items/structs']);
-    this.setSubmenuEntry(2, 3, this.translate.instant('MENU.ITEM_STRUCT_CONFIGURATION'), [
-      '/items/struct_config',
-    ]);
-
-    this.setMenuEntry(3, this.translate.instant('MENU.LOGICS'), ['/logics/list']);
-    this.setSubmenuEntry(3, 0, this.translate.instant('MENU.LOGICS_LIST'), ['/logics/list']);
-    this.setSubmenuEntry(3, 1, this.translate.instant('MENU.LOGICS_GROUPS'), ['/logics/groups']);
-
-    this.setMenuEntry(4, this.translate.instant('MENU.PLUGINS'), ['/plugins']);
-    this.setSubmenuEntry(4, 0, this.translate.instant('MENU.PLUGINS_LIST'), ['/plugins']);
-    this.setSubmenuEntry(4, 1, this.translate.instant('MENU.PLUGINS_CONFIGURATION'), [
-      '/plugins/config',
-    ]);
-
-    this.setMenuEntry(5, this.translate.instant('MENU.SCENES'), ['/scenes/list']);
-    this.setSubmenuEntry(5, 0, this.translate.instant('MENU.SCENE_LIST'), ['/scenes/list']);
-    this.setSubmenuEntry(5, 1, this.translate.instant('MENU.SCENE_CONFIGURATION'), [
-      '/scenes/config',
-    ]);
-
-    this.setMenuEntry(6, this.translate.instant('MENU.SCHEDULERS'), ['/schedulers']);
-    this.setSubmenuEntry(6, 0, this.translate.instant('MENU.SCHEDULERS'), ['/schedulers']);
-    this.setSubmenuEntry(6, 1, this.translate.instant('MENU.THREADS'), ['/threads']);
-
-    this.setMenuEntry(7, this.translate.instant('MENU.LOGS'), ['/logs/display']);
-    this.setSubmenuEntry(7, 0, this.translate.instant('MENU.LOGS_DISPLAY'), ['/logs/display']);
-    this.setSubmenuEntry(7, 1, this.translate.instant('MENU.LOGGER_CONFIGURATION'), [
-      '/logs/logger-list',
-    ]);
-    this.setSubmenuEntry(7, 2, this.translate.instant('MENU.LOGGING_CONFIGURATION'), [
-      '/logs/logging-configuration',
-    ]);
+    TopNavigationComponent.setSubmenuEntry(
+      menu,
+      7,
+      0,
+      this.translate.instant('MENU.LOGS_DISPLAY'),
+      ['/logs/display'],
+    );
+    TopNavigationComponent.setSubmenuEntry(
+      menu,
+      7,
+      1,
+      this.translate.instant('MENU.LOGGER_CONFIGURATION'),
+      ['/logs/logger-list'],
+    );
+    TopNavigationComponent.setSubmenuEntry(
+      menu,
+      7,
+      2,
+      this.translate.instant('MENU.LOGGING_CONFIGURATION'),
+      ['/logs/logging-configuration'],
+    );
+    this.menu.set(menu);
     this.log.log('TopNavigationComponent.buildMenu leaving');
   }
 
   logout() {
-    if (this.loggedIn && this.loginRequired) {
+    if (this.loggedIn() && this.loginRequired()) {
       this.router.navigate(['/login']);
       this.authService.logout();
     }
@@ -354,7 +453,7 @@ export class TopNavigationComponent implements OnInit {
   }
 
   private get helpPage(): string {
-    const segment = this.router.url.split('/')[1];
+    const segment = this.currentUrl().split('/')[1];
     return HELP_PAGE_BY_ROUTE[segment] ?? 'admin';
   }
 

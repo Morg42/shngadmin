@@ -1,12 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
+  computed,
   DestroyRef,
   inject,
   OnDestroy,
   OnInit,
+  signal,
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { AppConfigService } from '../../common/services/app-config.service';
@@ -17,7 +18,7 @@ import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { ChartData } from 'chart.js';
-import { combineLatest, Subject, timer } from 'rxjs';
+import { Subject, timer } from 'rxjs';
 import { switchMap, take, takeUntil } from 'rxjs/operators';
 
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
@@ -58,7 +59,6 @@ import { WebsocketService } from '../../common/services/websocket.service';
 })
 export class SystemComponent implements OnDestroy, OnInit {
   private readonly destroyRef = inject(DestroyRef);
-  private readonly cdr = inject(ChangeDetectorRef);
   private http = inject(HttpClient);
   private serverApi = inject(ServerApiService);
   private translate = inject(TranslateService);
@@ -70,21 +70,21 @@ export class SystemComponent implements OnDestroy, OnInit {
 
   faCheckCircle = faCheckCircle;
 
-  loading: boolean = true;
-  licenseText = '';
-  pypiPending = false;
+  readonly loading = signal(true);
+  readonly licenseText = signal('');
+  readonly pypiPending = signal(false);
   private readonly pypiPollStop$ = new Subject<void>();
 
-  systeminfo: SystemInfo = <SystemInfo>{};
-  pypiinfo!: PypiInfo[];
+  readonly systeminfo = signal<SystemInfo>(<SystemInfo>{});
+  readonly pypiinfo = signal<PypiInfo[]>([]);
   reqinfodisplay!: Record<string, string>;
-  plugincount = 0;
-  documentationcount = 0;
-  testsuitecount = 0;
-  norequirementcount = 0;
+  readonly plugincount = signal(0);
+  readonly documentationcount = signal(0);
+  readonly testsuitecount = signal(0);
+  readonly norequirementcount = signal(0);
 
-  os_uptime = '';
-  sh_uptime = '';
+  readonly os_uptime = signal('');
+  readonly sh_uptime = signal('');
 
   chartoptions1: Record<string, unknown> = { scales: { x: {}, y: {} } };
   chartoptionsSystem: Record<string, unknown> = {
@@ -143,16 +143,62 @@ export class SystemComponent implements OnDestroy, OnInit {
     };
   }
 
-  chartdataLoad: ChartData = SystemComponent.emptyDataset('Load');
-  chartdataSystemMemory: ChartData = SystemComponent.emptyDataset('Memory (MByte)');
-  chartdataSwap: ChartData = SystemComponent.emptyDataset('Swap used (MByte)');
-  chartdataMemory: ChartData = SystemComponent.emptyDataset('Memory (MByte)');
-  chartdataThreads: ChartData = SystemComponent.emptyDataset('Threads');
-  chartdataWorkerThreads: ChartData = SystemComponent.emptyDataset2(
-    'Started Workers',
-    'Active Workers',
+  readonly chartdataLoad = computed(() =>
+    this.updateChartData(
+      SystemComponent.emptyDataset('Load'),
+      this.websocketPluginService.systemload().series,
+    ),
   );
-  chartdataDisk: ChartData = SystemComponent.emptyDataset('% disc usage');
+  readonly chartdataSystemMemory = computed(() =>
+    this.updateChartData(
+      SystemComponent.emptyDataset('Memory (MByte)'),
+      this.websocketPluginService.systemmemory().series,
+    ),
+  );
+  readonly chartdataSwap = computed(() =>
+    this.updateChartData(
+      SystemComponent.emptyDataset('Swap used (MByte)'),
+      this.websocketPluginService.systemswap().series,
+    ),
+  );
+  readonly chartdataMemory = computed(() =>
+    this.updateChartData(
+      SystemComponent.emptyDataset('Memory (MByte)'),
+      this.websocketPluginService.memory().series,
+    ),
+  );
+  readonly chartdataThreads = computed(() =>
+    this.updateChartData(
+      SystemComponent.emptyDataset('Threads'),
+      this.websocketPluginService.threads().series,
+    ),
+  );
+  /** Two source signals, one chart - the old combineLatest becomes a plain
+   *  computed reading both. Active workers = started minus idle. */
+  readonly chartdataWorkerThreads = computed(() => {
+    const workerSeries = this.websocketPluginService.workerThreads().series;
+    const idleSeries = this.websocketPluginService.idleWorkerThreads().series;
+    const len = Math.min(workerSeries.length, idleSeries.length);
+    const activeSeries: [number, number, { time: string }][] = [];
+    for (let i = 0; i < len; i++) {
+      activeSeries.push([
+        workerSeries[i][0],
+        workerSeries[i][1] - idleSeries[i][1],
+        workerSeries[i][2],
+      ]);
+    }
+    return this.updateChartData(
+      SystemComponent.emptyDataset2('Started Workers', 'Active Workers'),
+      workerSeries.slice(0, len),
+      activeSeries,
+    );
+  });
+  readonly chartdataDisk = computed(() =>
+    this.updateChartData(
+      SystemComponent.emptyDataset('% disc usage'),
+      this.websocketPluginService.disk().series,
+    ),
+  );
 
   appName = APP_NAME;
   appVersion = 'v' + APP_VERSION; // short form used in page titles / navbar
@@ -168,7 +214,6 @@ export class SystemComponent implements OnDestroy, OnInit {
 
     this.setTitle(this.translate.instant('MENU.SYSTEM_PROPERTIES'));
     this.initSystemInfo();
-    this.cdr.markForCheck();
   }
 
   ngOnDestroy(): void {
@@ -185,11 +230,10 @@ export class SystemComponent implements OnDestroy, OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
-          this.systeminfo = response as SystemInfo;
-
-          this.os_uptime = this.shared.ageToString(this.systeminfo.uptime);
-          this.sh_uptime = this.shared.ageToString(this.systeminfo.sh_uptime);
-          this.cdr.markForCheck();
+          const info = response as SystemInfo;
+          this.systeminfo.set(info);
+          this.os_uptime.set(this.shared.ageToString(info.uptime));
+          this.sh_uptime.set(this.shared.ageToString(info.sh_uptime));
         },
         error: (error) => {
           this.log.log('SystemComponent: serverApi.getSystemStats():');
@@ -209,12 +253,10 @@ export class SystemComponent implements OnDestroy, OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
-          this.licenseText = response;
-          this.cdr.markForCheck();
+          this.licenseText.set(response);
         },
         error: (error) => {
-          this.licenseText = `ERROR ${error.status}:\n\n    ${error.url}   ${error.statusText}`;
-          this.cdr.markForCheck();
+          this.licenseText.set(`ERROR ${error.status}:\n\n    ${error.url}   ${error.statusText}`);
         },
       });
   }
@@ -228,17 +270,15 @@ export class SystemComponent implements OnDestroy, OnInit {
       this.startPypiPoll();
     } else {
       this.pypiPollStop$.next();
-      this.pypiPending = false;
-      this.cdr.markForCheck();
+      this.pypiPending.set(false);
     }
   }
 
   private startPypiPoll() {
-    if (this.pypiinfo?.length && this.pypiinfo.every((p) => p.pypi_version !== '--')) {
+    if (this.pypiinfo().length && this.pypiinfo().every((p) => p.pypi_version !== '--')) {
       return;
     }
-    this.pypiPending = true;
-    this.cdr.markForCheck();
+    this.pypiPending.set(true);
 
     timer(0, 5000)
       .pipe(
@@ -249,29 +289,30 @@ export class SystemComponent implements OnDestroy, OnInit {
       .subscribe({
         next: (response) => {
           this.processPypiData(response as PypiInfo[]);
-          if (this.pypiinfo.every((p) => p.pypi_version !== '--')) {
-            this.pypiPending = false;
+          if (this.pypiinfo().every((p) => p.pypi_version !== '--')) {
+            this.pypiPending.set(false);
             this.pypiPollStop$.next();
           }
-          this.cdr.markForCheck();
         },
         error: (err) => this.log.log('SystemComponent: pypi poll error:', err),
       });
   }
 
   private processPypiData(data: PypiInfo[]) {
-    this.pypiinfo = data;
-    this.loading = false;
-    this.plugincount = data.filter((p) => p.is_required_for_plugins).length;
-    this.documentationcount = data.filter((p) => p.is_required_for_docbuild).length;
-    this.testsuitecount = data.filter((p) => p.is_required_for_testsuite).length;
-    this.norequirementcount = data.filter(
-      (p) =>
-        !p.is_required &&
-        !p.is_required_for_plugins &&
-        !p.is_required_for_docbuild &&
-        !p.is_required_for_testsuite,
-    ).length;
+    this.pypiinfo.set(data);
+    this.loading.set(false);
+    this.plugincount.set(data.filter((p) => p.is_required_for_plugins).length);
+    this.documentationcount.set(data.filter((p) => p.is_required_for_docbuild).length);
+    this.testsuitecount.set(data.filter((p) => p.is_required_for_testsuite).length);
+    this.norequirementcount.set(
+      data.filter(
+        (p) =>
+          !p.is_required &&
+          !p.is_required_for_plugins &&
+          !p.is_required_for_docbuild &&
+          !p.is_required_for_testsuite,
+      ).length,
+    );
     this.reqinfodisplay = {};
     for (const pkg of data) {
       this.reqinfodisplay[pkg.name] = this.buildreqinfostring(pkg);
@@ -321,112 +362,6 @@ export class SystemComponent implements OnDestroy, OnInit {
   initCharts() {
     this.log.log('initCharts()');
 
-    this.chartdataLoad = {
-      labels: [],
-      datasets: [
-        {
-          label: 'Load',
-          data: [],
-          fill: false,
-          backgroundColor: '#709cc2',
-          borderColor: '#709cc2',
-          pointRadius: 0,
-        },
-      ],
-    };
-
-    this.chartdataThreads = {
-      labels: [],
-      datasets: [
-        {
-          label: 'Threads',
-          data: [],
-          fill: false,
-          backgroundColor: '#709cc2',
-          borderColor: '#709cc2',
-          pointRadius: 0,
-        },
-      ],
-    };
-
-    this.chartdataWorkerThreads = {
-      labels: [],
-      datasets: [
-        {
-          label: 'Started Workers',
-          data: [],
-          fill: false,
-          backgroundColor: '#ff8000',
-          borderColor: '#ff8000',
-          pointRadius: 0,
-        },
-        {
-          label: 'Active Workers',
-          data: [],
-          fill: false,
-          backgroundColor: '#709cc2',
-          borderColor: '#709cc2',
-          pointRadius: 0,
-        },
-      ],
-    };
-
-    this.chartdataSystemMemory = {
-      labels: [],
-      datasets: [
-        {
-          label: 'Memory (MByte)',
-          data: [],
-          fill: false,
-          backgroundColor: '#709cc2',
-          borderColor: '#709cc2',
-          pointRadius: 0,
-        },
-      ],
-    };
-
-    this.chartdataSwap = {
-      labels: [],
-      datasets: [
-        {
-          label: 'Swap used (MByte)',
-          data: [],
-          fill: false,
-          backgroundColor: '#709cc2',
-          borderColor: '#709cc2',
-          pointRadius: 0,
-        },
-      ],
-    };
-
-    this.chartdataMemory = {
-      labels: [],
-      datasets: [
-        {
-          label: 'Memory (MByte)',
-          data: [],
-          fill: false,
-          backgroundColor: '#709cc2',
-          borderColor: '#709cc2',
-          pointRadius: 0,
-        },
-      ],
-    };
-
-    this.chartdataDisk = {
-      labels: [],
-      datasets: [
-        {
-          label: '% disc usage',
-          data: [],
-          fill: false,
-          backgroundColor: '#709cc2',
-          borderColor: '#709cc2',
-          pointRadius: 0,
-        },
-      ],
-    };
-
     // Defer the WebSocket connection until wsPort is available.
     // getServerBasicinfo() (APP_INITIALIZER) does not return websocket_port,
     // so wsPort is '' until getServerinfo() completes from TopNavigationComponent.
@@ -442,90 +377,7 @@ export class SystemComponent implements OnDestroy, OnInit {
       this.websocketPluginService.getSeriesThreads(period);
       this.websocketPluginService.getSeriesWorkerThreads(period);
       this.websocketPluginService.getSeriesDisk(period);
-      this.drawCharts();
     });
-  }
-
-  drawCharts() {
-    this.log.log('DrawCharts()');
-    this.websocketPluginService.systemloadUpdate$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.chartdataLoad = this.updateChartData(
-          this.chartdataLoad,
-          this.websocketPluginService.systemload.series,
-        );
-        this.cdr.markForCheck();
-      });
-    this.websocketPluginService.systemmemoryUpdate$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.chartdataSystemMemory = this.updateChartData(
-          this.chartdataSystemMemory,
-          this.websocketPluginService.systemmemory.series,
-        );
-        this.cdr.markForCheck();
-      });
-    this.websocketPluginService.systemswapUpdate$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.chartdataSwap = this.updateChartData(
-          this.chartdataSwap,
-          this.websocketPluginService.systemswap.series,
-        );
-        this.cdr.markForCheck();
-      });
-    this.websocketPluginService.memoryUpdate$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.chartdataMemory = this.updateChartData(
-          this.chartdataMemory,
-          this.websocketPluginService.memory.series,
-        );
-        this.cdr.markForCheck();
-      });
-    this.websocketPluginService.threadsUpdate$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.chartdataThreads = this.updateChartData(
-          this.chartdataThreads,
-          this.websocketPluginService.threads.series,
-        );
-        this.cdr.markForCheck();
-      });
-    combineLatest([
-      this.websocketPluginService.workerThreadsUpdate$,
-      this.websocketPluginService.idleWorkerThreadsUpdate$,
-    ])
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        const workerSeries = this.websocketPluginService.workerThreads.series;
-        const idleSeries = this.websocketPluginService.idleWorkerThreads.series;
-        const len = Math.min(workerSeries.length, idleSeries.length);
-        const activeSeries: [number, number, { time: string }][] = [];
-        for (let i = 0; i < len; i++) {
-          activeSeries.push([
-            workerSeries[i][0],
-            workerSeries[i][1] - idleSeries[i][1],
-            workerSeries[i][2],
-          ]);
-        }
-        this.chartdataWorkerThreads = this.updateChartData(
-          this.chartdataWorkerThreads,
-          workerSeries.slice(0, len),
-          activeSeries,
-        );
-        this.cdr.markForCheck();
-      });
-    this.websocketPluginService.diskUpdate$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.chartdataDisk = this.updateChartData(
-          this.chartdataDisk,
-          this.websocketPluginService.disk.series,
-        );
-        this.cdr.markForCheck();
-      });
   }
 
   updateChartData(

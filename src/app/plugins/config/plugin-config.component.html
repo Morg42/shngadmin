@@ -7,7 +7,7 @@
 -->
 <div class="shngbody">
   <div class="shng-page-header">
-    @if (spinner_display) {
+    @if (spinner_display()) {
       <span
         style="margin-left: 1rem; font-size: var(--font-size-base); color: var(--text-muted); vertical-align: middle"
       >
@@ -15,7 +15,7 @@
           [style]="{ width: '18px', height: '18px' }"
           styleClass="plugin-loading-spinner"
         ></p-progressSpinner>
-        &nbsp;{{ spinner_header }}
+        &nbsp;{{ spinner_header() }}
       </span>
     }
     <span
@@ -32,11 +32,11 @@
         pInputText
         type="text"
         [placeholder]="'FILTER' | translate"
-        [value]="filterText"
+        [value]="filterText()"
         (input)="onFilterChange($any($event.target).value)"
         style="width: 220px; padding-right: 2rem; margin-top: 5px"
       />
-      @if (filterText) {
+      @if (filterText()) {
         <span
           class="pi pi-times"
           style="
@@ -72,32 +72,32 @@
           <th style="width: 30px; border: 0"></th>
           <th class="sortable-th" style="border: 0" (click)="sortBy('confname')">
             {{ 'PLUGIN.CONFIGNAME' | translate }}
-            @if (sortField === 'confname') {
-              <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+            @if (sortField() === 'confname') {
+              <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
             }
           </th>
           <th class="sortable-th" style="min-width: 200px; border: 0" (click)="sortBy('plugin')">
             {{ 'PLUGIN.PLUGINNAME' | translate }}
-            @if (sortField === 'plugin') {
-              <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+            @if (sortField() === 'plugin') {
+              <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
             }
           </th>
           <th class="sortable-th" style="min-width: 120px; border: 0" (click)="sortBy('instance')">
             {{ 'PLUGIN.INSTANCE' | translate }}
-            @if (sortField === 'instance') {
-              <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+            @if (sortField() === 'instance') {
+              <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
             }
           </th>
           <th style="border: 0">{{ 'PLUGIN.DESCRIPTION' | translate }}</th>
-          @if (developerMode) {
+          @if (developerMode()) {
             <th style="width: 110px; border: 0; text-align: right">{{ 'PLUGIN.ACTIONS' | translate }}</th>
           }
         </tr>
       </thead>
       <tbody>
-        @for (row of filteredPlugins; track row.confname) {
+        @for (row of filteredPlugins(); track row.confname) {
           <tr style="cursor: pointer" (click)="rowClicked($event, row)">
-            <td [style.opacity]="row.loaded ? '1' : '0.5'">
+            <td [style.opacity]="row.loaded ? '1' : '0.5'" (click)="toggleEnabled($event, row)">
               @if (row['enabled'] === 'true') {
                 <i style="color: var(--shng-blue)" class="fa fa-toggle-on"></i>
               }
@@ -134,7 +134,7 @@
             </td>
             <td [style.opacity]="row.loaded ? '1' : '0.5'">{{ row['instance'] }}</td>
             <td [style.opacity]="row.loaded ? '1' : '0.5'"><div [innerHTML]="row['desc']"></div></td>
-            @if (developerMode) {
+            @if (developerMode()) {
               <td style="text-align: right; white-space: nowrap" (click)="$event.stopPropagation()">
                 @if (!row.loaded) {
                   <button
@@ -186,21 +186,15 @@
   [maximizable]="true"
   [minY]="100"
   [style]="{ minWidth: '600px', minHeight: '300px', maxHeight: '98%' }"
-  (document:keydown.escape)="dialog_display && closeDialog()"
+  (document:keydown.escape)="dialog_display() && closeDialog()"
 >
   <ng-template pTemplate="header">
     <span>
-      @if (is_new_plugin) {
-        {{ 'PLUGIN.CONFIGURE_AND_LOAD' | translate }} <strong>{{ this.dialog_configname }}</strong> &nbsp; (Plugin
-        <strong>{{ this.dialog_pluginname }}</strong
-        >)
-      } @else {
-        {{ 'CONFIGURATION' | translate }} <strong>{{ this.dialog_configname }}</strong> &nbsp; (Plugin
-        <strong>{{ this.dialog_pluginname }}</strong
-        >)
-        @if (plugin_enabled === false) {
-          &nbsp; - &nbsp;<strong>{{ 'PLUGIN.PLUGIN_DISABLED' | translate }}</strong>
-        }
+      {{ 'CONFIGURATION' | translate }} <strong>{{ this.dialog_configname }}</strong> &nbsp; (Plugin
+      <strong>{{ this.dialog_pluginname }}</strong
+      >)
+      @if (plugin_enabled === false) {
+        &nbsp; - &nbsp;<strong>{{ 'PLUGIN.PLUGIN_DISABLED' | translate }}</strong>
       }
     </span>
   </ng-template>
@@ -299,63 +293,61 @@
 
   <ng-template pTemplate="footer">
     @if (dialog_readonly === false) {
-      @if (save_error) {
+      @if (save_error()) {
         <span style="color: var(--shng-danger); font-size: var(--font-size-base); margin-right: 1rem">
-          <i class="fa fa-exclamation-triangle"></i>&nbsp;{{ save_error }}
+          <i class="fa fa-exclamation-triangle"></i>&nbsp;{{ save_error() }}
         </span>
       }
-      @if (load_error) {
+      @if (load_error()) {
         <span style="color: var(--shng-danger); font-size: var(--font-size-base); margin-right: 1rem">
-          <i class="fa fa-exclamation-triangle"></i>&nbsp;{{ load_error }}
+          <i class="fa fa-exclamation-triangle"></i>&nbsp;{{ load_error() }}
         </span>
       }
-      @if (!is_new_plugin && !load_error) {
+      @if (!load_error()) {
         <a class="shng-text-sm">&nbsp; &nbsp; &nbsp;</a>
       }
-      @if (!is_new_plugin) {
+      <button
+        pButton
+        type="button"
+        icon="fa fa-trash-alt"
+        (click)="DeleteConfig()"
+        label="{{ 'BUTTON.DELETE' | translate }}"
+        class="ui-button-danger float-sm-left"
+      ></button>
+      @if (developerMode() && rowclicked_foredit && !rowclicked_foredit.loaded) {
         <button
           pButton
           type="button"
-          icon="fa fa-trash-alt"
-          (click)="DeleteConfig()"
-          label="{{ 'BUTTON.DELETE' | translate }}"
-          class="ui-button-danger float-sm-left"
+          icon="fa fa-upload"
+          (click)="loadPlugin()"
+          label="{{ 'BUTTON.LOAD' | translate }}"
+          class="ui-button-success float-sm-left"
         ></button>
-        @if (developerMode && rowclicked_foredit && !rowclicked_foredit.loaded) {
-          <button
-            pButton
-            type="button"
-            icon="fa fa-upload"
-            (click)="loadPlugin()"
-            label="{{ 'BUTTON.LOAD' | translate }}"
-            class="ui-button-success float-sm-left"
-          ></button>
-        }
-        @if (developerMode && rowclicked_foredit && rowclicked_foredit.loaded) {
-          <button
-            pButton
-            type="button"
-            icon="fa fa-sync"
-            (click)="reloadPlugin()"
-            label="{{ 'BUTTON.RELOAD' | translate }}"
-            class="ui-button-warning float-sm-left"
-          ></button>
-          <button
-            pButton
-            type="button"
-            icon="fa fa-eject"
-            (click)="unloadPlugin()"
-            label="{{ 'BUTTON.UNLOAD' | translate }}"
-            class="ui-button-warning float-sm-left"
-          ></button>
-        }
+      }
+      @if (developerMode() && rowclicked_foredit && rowclicked_foredit.loaded) {
+        <button
+          pButton
+          type="button"
+          icon="fa fa-sync"
+          (click)="reloadPlugin()"
+          label="{{ 'BUTTON.RELOAD' | translate }}"
+          class="ui-button-warning float-sm-left"
+        ></button>
+        <button
+          pButton
+          type="button"
+          icon="fa fa-eject"
+          (click)="unloadPlugin()"
+          label="{{ 'BUTTON.UNLOAD' | translate }}"
+          class="ui-button-warning float-sm-left"
+        ></button>
       }
       <button
         pButton
         type="button"
         icon="fa fa-check"
         (click)="saveConfig()"
-        label="{{ (is_new_plugin ? 'BUTTON.SAVE_LOAD' : 'BUTTON.SAVE') | translate }}"
+        label="{{ 'BUTTON.SAVE' | translate }}"
         class="ui-button-success"
       ></button>
       <button
@@ -372,7 +364,7 @@
         pButton
         type="button"
         icon="fa fa-times"
-        (click)="dialog_display = false"
+        (click)="dialog_display.set(false)"
         label="{{ 'BUTTON.CLOSE' | translate }}"
         class="ui-button-success"
       ></button>
@@ -435,11 +427,11 @@
         pInputText
         type="text"
         [placeholder]="'FILTER' | translate"
-        [value]="addDialogFilter"
+        [value]="addDialogFilter()"
         (input)="onAddFilterChange($any($event.target).value)"
         style="width: 260px; padding-right: 2rem"
       />
-      @if (addDialogFilter) {
+      @if (addDialogFilter()) {
         <span
           class="pi pi-times"
           style="
@@ -489,18 +481,19 @@
                   <th>{{ 'PLUGIN.MULTI INSTANCE' | translate }}</th>
                   <th>{{ 'PLUGIN.DESCRIPTION' | translate }}</th>
                 </thead>
-                @for (iplugin of plugins_installed_list; track iplugin) {
+                @for (iplugin of plugins_installed_list(); track iplugin) {
                   @if (
-                    (plugins_installed[iplugin].type === plugintype ||
-                      (plugintype === 'unclassified' && plugintypes.indexOf(plugins_installed[iplugin].type) === -1)) &&
+                    (plugins_installed()[iplugin].type === plugintype ||
+                      (plugintype === 'unclassified' &&
+                        plugintypes.indexOf(plugins_installed()[iplugin].type) === -1)) &&
                     matchesAddFilter(iplugin)
                   ) {
                     <tr style="cursor: pointer" (click)="selectPlugin(iplugin)">
                       <td style="padding-left: 15px">
                         {{ iplugin }}
                         @if (
-                          plugins_installed[iplugin].state &&
-                          plugins_installed[iplugin].state.toLowerCase() === 'deprecated'
+                          plugins_installed()[iplugin].state &&
+                          plugins_installed()[iplugin].state.toLowerCase() === 'deprecated'
                         ) {
                           &nbsp;
                           <fa-icon
@@ -510,8 +503,8 @@
                           ></fa-icon>
                         }
                         @if (
-                          plugins_installed[iplugin].state &&
-                          plugins_installed[iplugin].state.toLowerCase() === 'develop'
+                          plugins_installed()[iplugin].state &&
+                          plugins_installed()[iplugin].state.toLowerCase() === 'develop'
                         ) {
                           &nbsp;
                           <fa-icon
@@ -523,12 +516,12 @@
                       </td>
                       <td>
                         &nbsp; &nbsp;
-                        @if (plugins_installed[iplugin].multi_instance) {
+                        @if (plugins_installed()[iplugin].multi_instance) {
                           <i style="color: var(--shng-blue)" class="fa fa-check"></i>
                         }
                       </td>
                       <td>
-                        {{ plugins_installed[iplugin]['disp_description'] }}
+                        {{ plugins_installed()[iplugin]['disp_description'] }}
                       </td>
                     </tr>
                   }
@@ -559,12 +552,12 @@
         </tr>
       </thead>
       <tbody>
-        @for (iplugin of addDialogFilteredList; track iplugin) {
+        @for (iplugin of addDialogFilteredList(); track iplugin) {
           <tr style="cursor: pointer" (click)="selectPlugin(iplugin)">
             <td style="padding-left: 15px">
               {{ iplugin }}
               @if (
-                plugins_installed[iplugin].state && plugins_installed[iplugin].state.toLowerCase() === 'deprecated'
+                plugins_installed()[iplugin].state && plugins_installed()[iplugin].state.toLowerCase() === 'deprecated'
               ) {
                 &nbsp;
                 <fa-icon
@@ -573,7 +566,9 @@
                   [icon]="faExclamationTriangle"
                 ></fa-icon>
               }
-              @if (plugins_installed[iplugin].state && plugins_installed[iplugin].state.toLowerCase() === 'develop') {
+              @if (
+                plugins_installed()[iplugin].state && plugins_installed()[iplugin].state.toLowerCase() === 'develop'
+              ) {
                 &nbsp;
                 <fa-icon
                   style="color: var(--shng-orange)"
@@ -583,25 +578,25 @@
               }
             </td>
             <td>
-              @if (['web', 'protocol', 'interface', 'gateway', 'system'].includes(plugins_installed[iplugin].type)) {
+              @if (['web', 'protocol', 'interface', 'gateway', 'system'].includes(plugins_installed()[iplugin].type)) {
                 <img
-                  [src]="'assets/img/plugin_' + plugins_installed[iplugin].type + '.svg'"
+                  [src]="'assets/img/plugin_' + plugins_installed()[iplugin].type + '.svg'"
                   style="width: 22px"
                   width="22"
                   height="22"
-                  [title]="plugins_installed[iplugin].type"
+                  [title]="plugins_installed()[iplugin].type"
                 />
               } @else {
-                <span style="font-size: 0.8em; color: var(--text-muted)">{{ plugins_installed[iplugin].type }}</span>
+                <span style="font-size: 0.8em; color: var(--text-muted)">{{ plugins_installed()[iplugin].type }}</span>
               }
             </td>
             <td>
               &nbsp; &nbsp;
-              @if (plugins_installed[iplugin].multi_instance) {
+              @if (plugins_installed()[iplugin].multi_instance) {
                 <i style="color: var(--shng-blue)" class="fa fa-check"></i>
               }
             </td>
-            <td>{{ plugins_installed[iplugin]['disp_description'] }}</td>
+            <td>{{ plugins_installed()[iplugin]['disp_description'] }}</td>
           </tr>
         }
       </tbody>

@@ -1,11 +1,11 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   DestroyRef,
   inject,
   OnInit,
-  ViewChild,
+  signal,
+  viewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -63,48 +63,44 @@ interface DropDownEntry {
 })
 export class LogDisplayComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
-  private readonly cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
   private dataService = inject(LogsApiService);
   private translate = inject(TranslateService);
   private titleService = inject(Title);
   private readonly log = inject(LogService);
 
-  @ViewChild('codeeditor') codeEditor?: CodeEditorComponent;
+  readonly codeEditor = viewChild<CodeEditorComponent>('codeeditor');
 
   loglevels: DropDownEntry[] = [];
 
   logs_info: LogsInfoDict = {};
   default_log = '';
 
-  logs: DropDownEntry[] = [];
+  // Selections and filters are ngModel-bound plain fields: they only change
+  // through user interaction, and the DOM event itself triggers the refresh.
+  // Everything written asynchronously (after an API response) is a signal.
+  readonly logs = signal<DropDownEntry[]>([]);
   selectedLog: string | null = null;
 
-  files: DropDownEntry[] = [];
+  readonly files = signal<DropDownEntry[]>([]);
   selectedFile: string | null = null;
 
   displayLogfile = '';
   text_filter = '';
   level_filter = 'ALL';
 
-  nbsp = String.fromCharCode(160);
+  readonly logfile_chunk = signal<LogfileChunk | null>(null);
+  readonly first_chunk = signal(true);
+  readonly last_chunk = signal(true);
+  readonly chunk_no = signal(1);
+  readonly logfile_content = signal('');
 
-  logfile_chunk: LogfileChunk | null = null;
-  first_chunk = true;
-  last_chunk = true;
-  chunk_no = 1;
-  logfile_content = '';
+  readonly cmLineNumbers = signal(true);
+  readonly cmFirstLineNumber = signal(1);
 
-  cmLineNumbers = true;
-  cmFirstLineNumber = 1;
-
-  editorHelp_display = false;
-  editorFullscreen = false;
-  spinner_display: boolean = false;
-
-  public setTitle(newTitle: string) {
-    this.titleService.setTitle(newTitle);
-  }
+  readonly editorHelp_display = signal(false);
+  readonly editorFullscreen = signal(false);
+  readonly spinner_display = signal(false);
 
   ngOnInit() {
     // Support deep-linking: /logs/:logname pre-selects a log file on load.
@@ -125,7 +121,7 @@ export class LogDisplayComponent implements OnInit {
     this.loglevels.push({ label: 'ERROR', value: ' ERROR ' });
     this.loglevels.push({ label: 'CRITICAL', value: ' CRITICAL ' });
 
-    this.setTitle(this.translate.instant('MENU.LOGS_DISPLAY'));
+    this.titleService.setTitle(this.translate.instant('MENU.LOGS_DISPLAY'));
 
     this.dataService
       .getLogs()
@@ -134,12 +130,13 @@ export class LogDisplayComponent implements OnInit {
         const logs = response2 as LogsType;
         this.logs_info = logs['logs'];
         this.default_log = logs['default'];
-        this.logs = [];
+        const entries: DropDownEntry[] = [];
         for (let log in this.logs_info) {
           if (this.logs_info.hasOwnProperty(log)) {
-            this.logs.push({ label: log, value: log });
+            entries.push({ label: log, value: log });
           }
         }
+        this.logs.set(entries);
         this.selectedLog = null;
         if (logParam !== null) {
           if (logParam in this.logs_info) {
@@ -151,17 +148,16 @@ export class LogDisplayComponent implements OnInit {
           this.selectedLog = this.default_log;
           this.fillTimeframe(true);
         }
-        this.cdr.markForCheck();
       });
   }
 
   fillTimeframe(useActual = false) {
     if (this.selectedLog === null) {
-      this.files = [];
+      this.files.set([]);
       this.selectedFile = null;
       this.readLogfile();
     } else {
-      this.files = [];
+      const files: DropDownEntry[] = [];
 
       this.logs_info[this.selectedLog].push(this.logs_info[this.selectedLog][0]);
       this.logs_info[this.selectedLog].splice(0, 1);
@@ -197,15 +193,16 @@ export class LogDisplayComponent implements OnInit {
         };
 
         if (tf_split.length === 2) {
-          this.files.unshift(wrk);
+          files.unshift(wrk);
         } else {
-          this.files.push(wrk);
+          files.push(wrk);
         }
-        this.files.sort((a, b) => a.label.localeCompare(b.label));
-        this.files.reverse();
+        files.sort((a, b) => a.label.localeCompare(b.label));
+        files.reverse();
       }
 
-      this.selectedFile = this.files[0].value;
+      this.files.set(files);
+      this.selectedFile = files[0].value;
       this.readLogfile(0); // 0 = last (newest) chunk
     }
   }
@@ -215,53 +212,54 @@ export class LogDisplayComponent implements OnInit {
   }
 
   filterLogChunk() {
-    this.logfile_content = '';
-    this.cmLineNumbers = this.level_filter === 'ALL' && this.text_filter === '';
-    if (!this.logfile_chunk) return;
+    this.cmLineNumbers.set(this.level_filter === 'ALL' && this.text_filter === '');
+    const chunk = this.logfile_chunk();
+    if (!chunk) {
+      this.logfile_content.set('');
+      return;
+    }
 
     const filter = this.text_filter;
-    for (let i = 0; i < this.logfile_chunk.loglines.length; i++) {
-      if (
-        this.level_filter === 'ALL' ||
-        this.logfile_chunk.loglines[i].indexOf(this.level_filter) > -1
-      ) {
-        if (filter === '' || this.logfile_chunk.loglines[i].indexOf(filter) > -1) {
-          this.logfile_content += this.logfile_chunk.loglines[i];
+    let content = '';
+    for (let i = 0; i < chunk.loglines.length; i++) {
+      if (this.level_filter === 'ALL' || chunk.loglines[i].indexOf(this.level_filter) > -1) {
+        if (filter === '' || chunk.loglines[i].indexOf(filter) > -1) {
+          content += chunk.loglines[i];
         }
       }
     }
+    this.logfile_content.set(content);
   }
 
   scrollDown() {
-    this.codeEditor?.scrollToEnd();
+    this.codeEditor()?.scrollToEnd();
   }
 
   openSearch() {
-    this.codeEditor?.openSearch();
+    this.codeEditor()?.openSearch();
   }
 
   gotoLine() {
-    this.codeEditor?.triggerGotoLine();
+    this.codeEditor()?.triggerGotoLine();
   }
 
   toggleLineWrap() {
-    this.codeEditor?.toggleLineWrapping();
+    this.codeEditor()?.toggleLineWrapping();
   }
 
   toggleEditorFullscreen() {
-    this.codeEditor?.toggleFullscreen();
+    this.codeEditor()?.toggleFullscreen();
     // editorFullscreen is kept in sync via (fullscreenChange) binding
   }
 
   onFullscreenChange(isFullscreen: boolean) {
-    this.editorFullscreen = isFullscreen;
-    this.cdr.markForCheck();
+    this.editorFullscreen.set(isFullscreen);
   }
 
   readLogfile(chunk = 1) {
     if (this.selectedLog === null || this.selectedFile === null) {
       this.displayLogfile = '';
-      this.logfile_content = '';
+      this.logfile_content.set('');
     } else {
       // chunk === 0 is the sentinel for "newest chunk" — used on initial load,
       // timeframe change, and the fast-forward button.  Scroll to bottom in
@@ -270,39 +268,39 @@ export class LogDisplayComponent implements OnInit {
       // viewport at the top so the user can read from the beginning of that chunk.
       const scrollAfterLoad = chunk === 0;
 
-      this.spinner_display = true;
+      this.spinner_display.set(true);
       this.displayLogfile = String(this.selectedFile);
 
       this.dataService
         .readLogfile(this.displayLogfile, chunk)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe((response) => {
-          this.logfile_chunk = response as unknown as LogfileChunk;
-          this.first_chunk = this.logfile_chunk.lines[0] === 1;
-          this.last_chunk = this.logfile_chunk.lastchunk;
-          this.chunk_no = this.logfile_chunk.chunk;
-          this.cmLineNumbers = true;
-          this.cmFirstLineNumber = this.logfile_chunk.lines[0];
-          if (this.cmFirstLineNumber !== undefined) {
+          const loaded = response as unknown as LogfileChunk;
+          if (loaded.lines[0] !== undefined) {
             // Replace non-breaking spaces (U+00A0, charCode 160) with regular spaces.
             // The backend can emit NBSP in log lines; CodeMirror's monospace layout
             // treats them differently from regular spaces, breaking column alignment.
-            for (let i = 0; i < this.logfile_chunk.loglines.length; i++) {
+            for (let i = 0; i < loaded.loglines.length; i++) {
               let wrk2 = '';
-              for (let c = 0; c < this.logfile_chunk.loglines[i].length; c++) {
-                if (this.logfile_chunk.loglines[i][c].charCodeAt(0) === 160) {
+              for (let c = 0; c < loaded.loglines[i].length; c++) {
+                if (loaded.loglines[i][c].charCodeAt(0) === 160) {
                   wrk2 += ' ';
                 } else {
-                  wrk2 += this.logfile_chunk.loglines[i][c];
+                  wrk2 += loaded.loglines[i][c];
                 }
               }
-              this.logfile_chunk.loglines[i] = wrk2;
+              loaded.loglines[i] = wrk2;
             }
           }
+          this.logfile_chunk.set(loaded);
+          this.first_chunk.set(loaded.lines[0] === 1);
+          this.last_chunk.set(loaded.lastchunk);
+          this.chunk_no.set(loaded.chunk);
+          this.cmLineNumbers.set(true);
+          this.cmFirstLineNumber.set(loaded.lines[0]);
 
           this.filterLogChunk();
-          this.spinner_display = false;
-          this.cdr.markForCheck();
+          this.spinner_display.set(false);
           // Defer scroll until after Angular's change-detection cycle updates the
           // CodeMirror DOM so scrollToEnd() reads the correct scrollHeight.
           if (scrollAfterLoad) setTimeout(() => this.scrollDown());

@@ -8,11 +8,11 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
 import { finalize, map, switchMap } from 'rxjs/operators';
 import { AppConfigService } from '../../common/services/app-config.service';
 
 import {
+  faCircle,
   faExclamationTriangle,
   faLaptopCode,
   faPlus,
@@ -26,57 +26,26 @@ import { LogService } from '../../common/services/log.service';
 import { PluginsApiService } from '../../common/services/plugins-api.service';
 import { SharedService } from '../../common/services/shared.service';
 
-import { NgOptimizedImage, NgStyle } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'primeng/accordion';
 import { PrimeTemplate } from 'primeng/api';
 import { Bind } from 'primeng/bind';
 import { ButtonDirective } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { ProgressSpinner } from 'primeng/progressspinner';
-import { Ripple } from 'primeng/ripple';
-import { TableModule } from 'primeng/table';
-import { ToggleSwitch } from 'primeng/toggleswitch';
+import { Select } from 'primeng/select';
 import { AppComponent } from '../../app.component';
-import { DynamicFieldComponent } from '../../common/components/dynamic-field/dynamic-field.component';
-import { ConfigParameter, TableColumn } from '../../common/models/interfaces';
-import { PluginsConfig } from '../../common/models/plugins-config';
-import { PluginsInstalled } from '../../common/models/plugins-installed';
-
-interface PluginParamMeta {
-  type?: string;
-  gui_type?: string;
-  valid_list?: unknown[];
-  valid_min?: number;
-  valid_max?: number;
-  default?: unknown;
-  mandatory?: boolean;
-  description?: Record<string, string>;
-  hide?: boolean;
-}
-
-interface PluginMetaInfo {
-  plugin?: {
-    state?: string;
-    type?: string;
-    description?: Record<string, string>;
-  };
-  parameters?: Record<string, PluginParamMeta>;
-}
-
-interface PluginSectionConfig {
-  plugin_name?: string;
-  class_path?: string;
-  instance?: string;
-  _meta?: PluginMetaInfo;
-  _loaded?: boolean;
-  plugin_enabled?: boolean | string;
-  _description?: unknown;
-  [key: string]: unknown;
-}
+import { TableColumn } from '../../common/models/interfaces';
+import {
+  PluginMetaInfo,
+  PluginsConfig,
+  PluginSectionConfig,
+} from '../../common/models/plugins-config';
+import { AddPluginDialogComponent } from './add-plugin-dialog/add-plugin-dialog.component';
+import { PluginParameterDialogComponent } from './plugin-parameter-dialog/plugin-parameter-dialog.component';
 
 export interface ConfiguredPlugin {
   confname: string;
@@ -84,9 +53,19 @@ export interface ConfiguredPlugin {
   plugin: string;
   desc: string;
   loaded: boolean;
+  /** Only meaningful when loaded is true (mirrors SmartPlugin.alive). Purely
+   *  informational here - start/stop control lives on the /plugins page. */
+  running: boolean;
   enabled: string;
   type?: string;
 }
+
+/** Selection for the confirm-delete dialog's follow-up-action dropdown. */
+type DeleteFollowupAction = 'keep' | 'stop' | 'unload';
+
+/** Runtime start/stop lives on the /plugins page - this page only ever
+ *  drives the lifecycle actions. */
+type PluginLifecycleAction = 'load' | 'unload' | 'reload';
 
 @Component({
   selector: 'app-config',
@@ -102,18 +81,12 @@ export interface ConfiguredPlugin {
     FaIconComponent,
     Dialog,
     PrimeTemplate,
-    ToggleSwitch,
     FormsModule,
-    TableModule,
-    NgStyle,
-    DynamicFieldComponent,
-    Accordion,
-    AccordionPanel,
-    Ripple,
-    AccordionHeader,
-    AccordionContent,
     InputText,
+    Select,
     TranslatePipe,
+    AddPluginDialogComponent,
+    PluginParameterDialogComponent,
   ],
 })
 export class PluginConfigComponent implements OnInit {
@@ -122,9 +95,7 @@ export class PluginConfigComponent implements OnInit {
   private translate = inject(TranslateService);
   private readonly messageService = inject(MessageService);
   private shared = inject(SharedService);
-  private router = inject(Router);
   private titleService = inject(Title);
-  private appConfig = inject(AppConfigService);
   private readonly log = inject(LogService);
 
   faPlus = faPlus;
@@ -132,6 +103,7 @@ export class PluginConfigComponent implements OnInit {
   faPlusSquare = faPlusSquare;
   faExclamationTriangle = faExclamationTriangle; // signal deprecated plugin
   faCode = faLaptopCode; // signal plugin in state "develop"
+  faCircle = faCircle; // status dot: disabled/running/stopped
 
   private readonly rawConfiguredplugins = signal<ConfiguredPlugin[]>([]);
   cols!: TableColumn[];
@@ -162,6 +134,9 @@ export class PluginConfigComponent implements OnInit {
     });
   });
 
+  /** Feeds the add-plugin dialog's set-config-name uniqueness check. */
+  readonly configuredConfnames = computed(() => this.rawConfiguredplugins().map((p) => p.confname));
+
   sortBy(field: string): void {
     this.sortOrder.set(this.sortField() === field ? (this.sortOrder() === 1 ? -1 : 1) : 1);
     this.sortField.set(field);
@@ -189,14 +164,8 @@ export class PluginConfigComponent implements OnInit {
     );
   });
   pluginconflist!: PluginsConfig;
-  lang!: string;
 
   // display modal edit dialog
-  parameters!: ConfigParameter[];
-  plugin_enabled!: boolean;
-  parameter_cols!: TableColumn[];
-  classic = false;
-  state = '';
   rowclicked_foredit: ConfiguredPlugin | false = false;
 
   // for list of installed plugins dialog
@@ -204,77 +173,23 @@ export class PluginConfigComponent implements OnInit {
   dialog_readonly = false;
   dialog_configname!: string;
   dialog_pluginname!: string;
-  dialog_description!: string;
+  dialog_meta?: PluginMetaInfo;
+  dialog_currentConfig?: PluginSectionConfig;
+  /** Other confnames configuring the same plugin_name, for the dialog's
+   *  copy-from dropdown. Computed unconditionally on every open - this is a
+   *  rare, manually-triggered action, so an O(n) scan over the already-
+   *  in-memory config list isn't worth guarding behind extra conditions. */
+  dialog_siblingConfigs: { confname: string; config: PluginSectionConfig }[] = [];
 
   // for add dialog
   readonly add_display = signal(false);
-  plugintypes: string[] = ['system', 'gateway', 'interface', 'protocol', 'web', 'unclassified'];
-  plugintypes_expanded: boolean[] = [];
   readonly spinner_display = signal(false);
   readonly spinner_header = signal('');
-  add_firstrun = true;
-  readonly plugins_installed = signal<PluginsInstalled>({} as PluginsInstalled);
-  readonly plugins_installed_list = signal<string[]>([]);
-
-  readonly addDialogFilter = signal('');
-  addDialogCategorized = false;
-
-  onAddFilterChange(value: string): void {
-    this.addDialogFilter.set(value);
-  }
-
-  clearAddFilter(): void {
-    this.addDialogFilter.set('');
-  }
-
-  readonly addDialogFilteredList = computed<string[]>(() => {
-    const f = this.addDialogFilter().toLowerCase();
-    const list = f
-      ? this.plugins_installed_list().filter(
-          (name) =>
-            name.toLowerCase().includes(f) ||
-            (this.plugins_installed()[name]?.disp_description ?? '').toLowerCase().includes(f),
-        )
-      : [...this.plugins_installed_list()];
-    return list.sort((a, b) => a.localeCompare(b));
-  });
-
-  matchesAddFilter(name: string): boolean {
-    if (!this.addDialogFilter()) return true;
-    const f = this.addDialogFilter().toLowerCase();
-    return (
-      name.toLowerCase().includes(f) ||
-      (this.plugins_installed()[name]?.disp_description ?? '').toLowerCase().includes(f)
-    );
-  }
-
-  hasMatchingPlugins(plugintype: string): boolean {
-    return this.plugins_installed_list().some((name) => {
-      const inType =
-        this.plugins_installed()[name]?.type === plugintype ||
-        (plugintype === 'unclassified' &&
-          this.plugintypes.indexOf(this.plugins_installed()[name]?.type) === -1);
-      return inType && this.matchesAddFilter(name);
-    });
-  }
-
-  // set configuration name dialog
-  setconfig_display = false;
-  selected_plugin!: string;
-  pluginconfig_name!: string;
-  translate_params: {} = {};
-  add_enabled!: boolean;
-
-  readonly load_error = signal<string | null>(null);
-  readonly save_error = signal<string | null>(null);
-
-  validation_dialog_display = false;
-  validation_dialog_parameter!: string;
-  validation_dialog_text!: string[];
 
   // confirm delete dialog
   confirmdelete_display = false;
   delete_param!: {};
+  readonly deleteAction = signal<DeleteFollowupAction>('unload');
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);
@@ -301,7 +216,7 @@ export class PluginConfigComponent implements OnInit {
   // ---------------------------------------------------------------
   //  Fetch the plugin config from the backend and rebuild the list.
   //
-  private reloadPluginList(): void {
+  private reloadPluginList(onComplete?: () => void): void {
     this.pluginsdataService
       .getPluginsConfig()
       .pipe(
@@ -313,6 +228,7 @@ export class PluginConfigComponent implements OnInit {
       .subscribe((response) => {
         this.pluginconflist = response as PluginsConfig;
         this.buildConfiguredPlugins();
+        onComplete?.();
       });
   }
 
@@ -348,6 +264,7 @@ export class PluginConfigComponent implements OnInit {
           plugin: deprecated + (plgname ?? ''),
           desc: '',
           loaded: !!plugin_config[plg]._loaded,
+          running: !!plugin_config[plg]._running,
           enabled: 'true',
         };
 
@@ -368,13 +285,10 @@ export class PluginConfigComponent implements OnInit {
             desc = plugin_config[plg]._meta?.plugin?.description;
           }
         }
-        let plgdesc = this.shared.getDescription(desc as Record<string, string> | null | undefined);
-        plgdesc = plgdesc.replace(new RegExp('\n', 'g'), '<br>');
-        plgdesc = plgdesc.replace(new RegExp(' \\*\\*', 'g'), ' <b><mark>');
-        plgdesc = plgdesc.replace(new RegExp('\\*\\* ', 'g'), '</mark></b> ');
-        plgdesc = plgdesc.replace(new RegExp(' \\*', 'g'), ' <i><mark>');
-        plgdesc = plgdesc.replace(new RegExp('\\* ', 'g'), '</mark></i> ');
-        conf.desc = plgdesc;
+        const plgdesc = this.shared.getDescription(
+          desc as Record<string, string> | null | undefined,
+        );
+        conf.desc = this.shared.mdLiteToHtml(plgdesc);
 
         newPlugins.push(conf);
       }
@@ -382,42 +296,12 @@ export class PluginConfigComponent implements OnInit {
     this.rawConfiguredplugins.set(newPlugins);
   }
 
-  listToString(list: string | string[] | undefined) {
-    let result = '';
-    if (typeof list === 'string') {
-      result = list;
-    } else {
-      if (list !== undefined) {
-        for (let i = 0; i < list.length; i++) {
-          if (i > 0) {
-            result += ' | ';
-          }
-          result += list[i];
-        }
-      }
-    }
-    return result;
-  }
-
-  stringToList(str: string | null | undefined) {
-    if (str === null || str === undefined) {
-      return [];
-    }
-    if (str.trim() === '') {
-      return [];
-    }
-    const list = str.split('|');
-    for (let i = 0; i < list.length; i++) {
-      list[i] = list[i].trim();
-    }
-    return list;
-  }
-
   // ---------------------------------------------------------
   // Handle the click event on the list of installed plugins
   //
-  //  - Get the configuration data for the selected plugin
-  //    for the modal dialog
+  //  - Capture which plugin was clicked and feed its raw config/meta
+  //    down to <app-plugin-parameter-dialog>, which builds the actual
+  //    parameter table reactively from those inputs.
   //
   rowClicked(event: unknown, rowdata: ConfiguredPlugin) {
     this.dialog_configname = rowdata.confname;
@@ -426,383 +310,55 @@ export class PluginConfigComponent implements OnInit {
 
     const pconf = this.pluginconflist.plugin_config as Record<string, PluginSectionConfig>;
     const conf = pconf[rowdata.confname];
-    this.log.log({ conf });
-    const meta = pconf[rowdata.confname]._meta;
-    let desc: Record<string, string> | null = null;
-    this.classic = true;
-    if (meta != null && meta !== undefined && meta.plugin !== undefined) {
-      if (meta.plugin.type !== undefined && meta.plugin.type !== 'classic') {
-        this.classic = false;
-      }
-      this.state = '';
-      if (meta.plugin.state !== undefined) {
-        this.state = meta.plugin.state;
-      }
-      desc = meta.plugin.description ?? null;
-    }
+    this.dialog_meta = conf._meta;
+    this.dialog_currentConfig = conf;
+    this.dialog_siblingConfigs = this.buildSiblingConfigs(rowdata.confname, conf);
     this.dialog_readonly = this.pluginconflist.readonly;
-    this.dialog_description = this.shared.getDescription(desc);
-
-    this.plugin_enabled = true;
-    if (conf.plugin_enabled !== undefined) {
-      this.log.log('typeof conf.plugin_enabled', typeof conf.plugin_enabled);
-      if (typeof conf.plugin_enabled === 'boolean') {
-        this.plugin_enabled = conf.plugin_enabled;
-      } else if (
-        typeof conf.plugin_enabled === 'string' &&
-        conf.plugin_enabled.toLowerCase() === 'false'
-      ) {
-        this.plugin_enabled = false;
-      }
-    }
-
-    this.parameter_cols = [
-      { field: 'name', sfield: 'confname', header: 'PLUGIN.PARAMETER', width: '190px' },
-      { field: 'type', sfield: 'conftype', header: 'PLUGIN.TYPE', width: '80px' },
-      { field: 'value', sfield: 'paramvalue', header: 'PLUGIN.VALUE', width: '240px' },
-      { field: 'desc', sfield: '', header: 'PLUGIN.DESCRIPTION', width: '' },
-    ];
-    this.parameters = [];
-
-    this.lang = this.appConfig.defaultLanguage;
-    const metaParams = meta?.parameters ?? {};
-    if (meta != null && meta !== undefined && (meta.parameters as unknown) !== 'NONE') {
-      for (const param in metaParams) {
-        if (metaParams.hasOwnProperty(param)) {
-          const pm = metaParams[param];
-          const vl: { label: string; value: unknown }[] = [];
-          if (pm.valid_list !== undefined) {
-            for (let i = 0; i < pm.valid_list.length; i++) {
-              const wrk = {
-                label: String(pm.valid_list[i]),
-                value: pm.valid_list[i],
-              };
-              vl.push(wrk);
-            }
-          }
-
-          if (pm.type === 'bool') {
-            vl.push({ label: 'true', value: true });
-            vl.push({ label: 'false', value: false });
-          }
-
-          let paramdesc = '';
-          if (pm.description !== undefined) {
-            paramdesc = pm.description[this.lang];
-            if (paramdesc === '' || paramdesc === undefined) {
-              paramdesc = pm.description[this.shared.getFallbackLanguage()];
-              if (paramdesc === '' || paramdesc === undefined) {
-                paramdesc = pm.description[this.shared.getFallbackLanguage(1)];
-              }
-            }
-          }
-
-          const paramdescBlocks: string[] = [];
-          paramdescBlocks.push(paramdesc);
-
-          paramdesc = paramdesc.replace(new RegExp('\n', 'g'), '<br>');
-          paramdesc = paramdesc.replace(new RegExp(' \\*\\*', 'g'), ' <b><mark>');
-          paramdesc = paramdesc.replace(new RegExp('\\*\\* ', 'g'), '</mark></b> ');
-          paramdesc = paramdesc.replace(new RegExp(' \\*', 'g'), ' <i><mark>');
-          paramdesc = paramdesc.replace(new RegExp('\\* ', 'g'), '</mark></i> ');
-
-          const paramdata = {
-            name: param,
-            type: pm.type,
-            gui_type: pm.gui_type,
-            valid_list: vl,
-            valid_min: pm.valid_min,
-            valid_max: pm.valid_max,
-            default: pm.default,
-            mandatory: pm.mandatory,
-            value: conf[param],
-            desc: paramdesc,
-            initial_unset: false as boolean,
-          };
-
-          if (paramdata['type'] === 'list') {
-            paramdata['default'] = this.listToString(pm.default as string | string[] | undefined);
-          }
-          if (pm.hide && ['str', 'int'].indexOf(pm.type ?? '') !== -1) {
-            paramdata['type'] = 'hide' + '-' + pm.type;
-          }
-
-          const initial_unset = conf[param] === undefined || conf[param] === null;
-          paramdata.initial_unset = initial_unset;
-
-          if (paramdata.type === 'bool') {
-            if (conf[param] === undefined || conf[param] === null) {
-              if (initial_unset && paramdata.default != null) {
-                paramdata.value =
-                  typeof paramdata.default === 'boolean'
-                    ? paramdata.default
-                    : String(paramdata.default).toLowerCase() === 'true';
-              } else {
-                paramdata.value = null;
-              }
-            } else if (typeof conf[param] === 'boolean') {
-              paramdata.value = conf[param];
-            } else {
-              paramdata.value = (conf[param] as string).toLowerCase() === 'true';
-            }
-          } else if (paramdata.type === 'list') {
-            paramdata.value =
-              initial_unset && paramdata.default != null
-                ? paramdata.default
-                : this.listToString(conf[param] as string);
-          } else if (paramdata.type === 'int') {
-            paramdata.value =
-              initial_unset && paramdata.default != null
-                ? typeof paramdata.default === 'number'
-                  ? paramdata.default
-                  : parseInt(String(paramdata.default), 10)
-                : parseInt(conf[param] as string, 10);
-          } else {
-            paramdata.value =
-              initial_unset && paramdata.default != null
-                ? String(paramdata.default)
-                : (conf[param] as string);
-          }
-
-          this.parameters.push(paramdata);
-        }
-      }
-    }
 
     this.dialog_display.set(true);
   }
 
-  saveConfig() {
-    const pluginConf = this.pluginconflist.plugin_config as Record<string, PluginSectionConfig>;
-    const conf = pluginConf[this.dialog_configname];
-
-    let errors_found = false;
-    this.validation_dialog_text = [];
-    for (let i = 0; i < this.parameters.length; i++) {
-      let error_found = false;
-      let error_text = '';
-      const isUnchangedDefault =
-        this.parameters[i]['initial_unset'] &&
-        this.parameters[i]['default'] != null &&
-        String(this.parameters[i]['value']) === String(this.parameters[i]['default']);
-
-      if (
-        this.parameters[i]['value'] === '' ||
-        this.parameters[i]['value'] === null ||
-        isUnchangedDefault
-      ) {
-        conf[this.parameters[i]['name']] = undefined;
-      } else {
-        conf[this.parameters[i]['name']] = this.parameters[i]['value'];
-      }
-
-      if (this.parameters[i]['value'] === undefined) {
-        this.parameters[i]['value'] = null;
-      }
-
-      if (this.parameters[i]['value'] !== null && this.parameters[i]['value'] !== '') {
-        const ptype = String(this.parameters[i]['type']).toLowerCase();
-        const pvalue = this.parameters[i]['value'] as string;
-        error_text = "'" + pvalue + "' ";
-        if (ptype === 'knx_ga' && !this.shared.is_knx_groupaddress(pvalue)) {
-          error_found = true;
-          error_text += this.translate.instant('PLUGIN.INVALID_KNX_ADDRESS');
-        }
-        if (ptype === 'mac' && !this.shared.is_mac(pvalue)) {
-          error_found = true;
-          error_text += this.translate.instant('PLUGIN.INVALID_MAC_ADDRESS');
-        }
-        if (ptype === 'ipv4' && !this.shared.is_ipv4(pvalue)) {
-          error_found = true;
-          error_text += this.translate.instant('PLUGIN.INVALID_IP_ADDRESS') + ' (v4)';
-        }
-        if (ptype === 'ipv6' && !this.shared.is_ipv6(pvalue)) {
-          error_found = true;
-          error_text += this.translate.instant('PLUGIN.INVALID_IP_ADDRESS') + ' (v6)';
-        }
-        if (ptype === 'ip') {
-          if (!this.shared.is_ipv4(pvalue) && !this.shared.is_ipv6(pvalue)) {
-            if (!this.shared.is_hostname(pvalue)) {
-              error_found = true;
-              error_text += this.translate.instant('PLUGIN.INVALID_HOSTNAME');
-            }
-          }
-        }
-      }
-
-      if (
-        this.parameters[i]['value'] !== null &&
-        (this.parameters[i]['value'] as number) < (this.parameters[i]['valid_min'] as number)
-      ) {
-        error_found = true;
-        error_text =
-          this.translate.instant('PLUGIN.DEFINED_MIN') +
-          " '" +
-          this.parameters[i]['valid_min'] +
-          "'";
-        error_text +=
-          ', ' +
-          this.translate.instant('PLUGIN.ACTUAL_VALUE') +
-          " '" +
-          this.parameters[i]['value'] +
-          "'";
-      }
-      if (
-        this.parameters[i]['value'] !== null &&
-        (this.parameters[i]['value'] as number) > (this.parameters[i]['valid_max'] as number)
-      ) {
-        error_found = true;
-        error_text =
-          this.translate.instant('PLUGIN.DEFINED_MAX') +
-          " '" +
-          this.parameters[i]['valid_max'] +
-          "'";
-        error_text +=
-          ', ' +
-          this.translate.instant('PLUGIN.ACTUAL_VALUE') +
-          " '" +
-          this.parameters[i]['value'] +
-          "'";
-      }
-
-      if (
-        (this.parameters[i]['value'] === undefined ||
-          this.parameters[i]['value'] === null ||
-          this.parameters[i]['value'] === '') &&
-        this.parameters[i]['mandatory']
-      ) {
-        error_found = true;
-        error_text = this.translate.instant('PLUGIN.MANDATORY_VALUE');
-      }
-
-      if (error_found) {
-        errors_found = true;
-        error_found = false;
-        this.validation_dialog_text.push(
-          this.translate.instant('PLUGIN.PARAMETER') +
-            " '" +
-            this.parameters[i]['name'] +
-            "': " +
-            error_text,
-        );
-        this.validation_dialog_parameter = this.parameters[i]['name'];
-
-        this.validation_dialog_display = true;
+  /** Other sections sharing the same plugin identity (plugin_name, falling
+   *  back to class_path for classic plugins - same fallback already used
+   *  above for the row's display name). */
+  private buildSiblingConfigs(
+    confname: string,
+    conf: PluginSectionConfig,
+  ): { confname: string; config: PluginSectionConfig }[] {
+    const identity = conf.plugin_name ?? conf.class_path;
+    if (!identity) {
+      return [];
+    }
+    const pconf = this.pluginconflist.plugin_config as Record<string, PluginSectionConfig>;
+    const siblings: { confname: string; config: PluginSectionConfig }[] = [];
+    for (const otherConfname in pconf) {
+      const other = pconf[otherConfname];
+      if (otherConfname !== confname && (other.plugin_name ?? other.class_path) === identity) {
+        siblings.push({ confname: otherConfname, config: other });
       }
     }
+    return siblings;
+  }
 
-    if (!errors_found) {
-      this.dialog_display.set(false);
-      this.save_error.set(null);
-
-      const saveParams = pluginConf[this.dialog_configname]._meta?.parameters ?? {};
-      for (const param of Object.keys(saveParams)) {
-        if (
-          saveParams[param].type === 'list' &&
-          pluginConf[this.dialog_configname][param] !== undefined
-        ) {
-          pluginConf[this.dialog_configname][param] = this.stringToList(
-            pluginConf[this.dialog_configname][param] as string,
-          );
-        }
-      }
-
-      if (this.plugin_enabled === false) {
-        pluginConf[this.dialog_configname]['plugin_enabled'] = false;
-        if (this.rowclicked_foredit) this.rowclicked_foredit.enabled = 'false';
-      } else {
-        pluginConf[this.dialog_configname]['plugin_enabled'] = true;
-        if (this.rowclicked_foredit) this.rowclicked_foredit.enabled = 'true';
-      }
-      if (this.rowclicked_foredit)
-        this.rowclicked_foredit.instance = pluginConf[this.dialog_configname].instance ?? '';
-
-      const config = JSON.parse(JSON.stringify(pluginConf[this.dialog_configname]));
-      delete config['_meta'];
-      delete config['_description'];
-      for (const conf in config) {
-        if (config.hasOwnProperty(conf)) {
-          if (config[conf] === null) {
-            delete config[conf];
-          }
-        }
-      }
-
-      const configname = this.dialog_configname;
-
-      this.pluginsdataService
-        .setPluginConfig(configname, { config: config })
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((response) => {
-          if (response !== true) {
-            this.save_error.set(this.translate.instant('PLUGIN.SAVE_FAILED'));
-            this.dialog_display.set(true);
-          }
-        });
+  onParameterDialogSaved(result: { confname: string; enabled: string; instance: string }): void {
+    if (this.rowclicked_foredit) {
+      this.rowclicked_foredit.enabled = result.enabled;
+      this.rowclicked_foredit.instance = result.instance;
     }
   }
 
-  closeDialog() {
-    this.dialog_display.set(false);
-    this.load_error.set(null);
-    this.save_error.set(null);
-  }
-
-  // ---------------------------------------------------------
-  // Flip a plugin's enabled/disabled state directly from the
-  // list, without opening the config dialog.
-  //
-  toggleEnabled(event: Event, row: ConfiguredPlugin): void {
-    event.stopPropagation();
-    if (this.pluginconflist.readonly) {
-      return;
-    }
-
-    const pluginConf = this.pluginconflist.plugin_config as Record<string, PluginSectionConfig>;
-    const conf = pluginConf[row.confname];
-    const newEnabled = row.enabled !== 'true';
-
-    const config = JSON.parse(JSON.stringify(conf));
-    delete config['_meta'];
-    delete config['_description'];
-    for (const key of Object.keys(config)) {
-      if (config[key] === null) {
-        delete config[key];
-      }
-    }
-    config['plugin_enabled'] = newEnabled;
-
-    this.pluginsdataService
-      .setPluginConfig(row.confname, { config: config })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((response) => {
-        if (response === true) {
-          conf['plugin_enabled'] = newEnabled;
-          row.enabled = newEnabled ? 'true' : 'false';
-          this.rawConfiguredplugins.set([...this.rawConfiguredplugins()]);
-          this.messageService.add({
-            severity: 'success',
-            summary: this.translate.instant(
-              newEnabled ? 'PLUGIN.LOAD_ON_STARTUP' : 'PLUGIN.NO_LOAD_ON_STARTUP',
-            ),
-            detail: row.confname,
-            life: 3000,
-          });
-        }
-      });
-  }
-
-  private _runLifecycleAction(
-    configname: string,
-    action: 'load' | 'unload' | 'reload',
-    fromDialog: boolean,
-  ): void {
-    const spinnerKey = {
+  private _runLifecycleAction(configname: string, action: PluginLifecycleAction): void {
+    const spinnerKey: Record<PluginLifecycleAction, string> = {
       load: 'PLUGIN.LOADING',
       unload: 'PLUGIN.UNLOADING',
       reload: 'PLUGIN.RELOADING',
     };
-    const errorKey = {
+    const successKey: Record<PluginLifecycleAction, string> = {
+      load: 'PLUGIN.LOADED',
+      unload: 'PLUGIN.UNLOADED',
+      reload: 'PLUGIN.RELOADED',
+    };
+    const errorKey: Record<PluginLifecycleAction, string> = {
       load: 'PLUGIN.LOAD_FAILED',
       unload: 'PLUGIN.UNLOAD_FAILED',
       reload: 'PLUGIN.RELOAD_FAILED',
@@ -821,133 +377,129 @@ export class PluginConfigComponent implements OnInit {
       )
       .subscribe((result) => {
         if (result === true) {
-          this.load_error.set(null);
           this.reloadPluginList();
+          this.messageService.add({
+            severity: 'success',
+            summary: this.translate.instant(successKey[action]),
+            detail: configname,
+            life: 3000,
+          });
         } else {
-          this.load_error.set(this.translate.instant(errorKey[action]));
-          if (fromDialog) {
-            this.dialog_display.set(true);
-          }
+          this.messageService.add({
+            severity: 'error',
+            summary: this.translate.instant(errorKey[action]),
+            detail: configname,
+            sticky: true,
+          });
         }
       });
   }
 
-  loadPlugin(confname?: string): void {
-    const fromDialog = confname === undefined;
-    this.dialog_display.set(false);
-    this._runLifecycleAction(confname ?? this.dialog_configname, 'load', fromDialog);
+  loadPlugin(row: ConfiguredPlugin): void {
+    // load_plugin() silently no-ops for a disabled plugin server-side (by
+    // design - see lib/plugin.py) and returns the same generic failure as
+    // any other load error. Catch it here, where the disabled state is
+    // already known, rather than showing a misleading "check the
+    // parameters" message for something that was never about parameters.
+    if (row.enabled === 'false') {
+      this.messageService.add({
+        severity: 'warn',
+        summary: this.translate.instant('PLUGIN.LOAD_DISABLED'),
+        detail: row.confname,
+        sticky: true,
+      });
+      return;
+    }
+    this._runLifecycleAction(row.confname, 'load');
   }
 
-  unloadPlugin(confname?: string): void {
-    const fromDialog = confname === undefined;
-    this.dialog_display.set(false);
-    this._runLifecycleAction(confname ?? this.dialog_configname, 'unload', fromDialog);
+  unloadPlugin(confname: string): void {
+    this._runLifecycleAction(confname, 'unload');
   }
 
-  reloadPlugin(confname?: string): void {
-    const fromDialog = confname === undefined;
-    this.dialog_display.set(false);
-    this._runLifecycleAction(confname ?? this.dialog_configname, 'reload', fromDialog);
+  reloadPlugin(confname: string): void {
+    this._runLifecycleAction(confname, 'reload');
   }
 
   // -------------------------------------------------------------------
   //  Add configuration
   //
-  addPluginDialog() {
-    this.log.log('PluginConfigComponent.addPluginDialog:');
-
-    for (let i = 0; i < this.plugintypes.length; i++) {
-      this.plugintypes_expanded[i] = !this.add_firstrun;
-    }
-    this.add_firstrun = false;
-
-    this.spinner_header.set(this.translate.instant('PLUGIN.LOADLIST'));
+  onPluginAdded(confname: string): void {
+    this.log.log('PluginConfigComponent.onPluginAdded:', confname);
     this.spinner_display.set(true);
-    this.pluginsdataService
-      .getInstalledPlugins()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((response) => {
-        const installed = <PluginsInstalled>response;
-        this.log.log('addPluginDialog', { response });
-
-        for (let p in installed) {
-          if (p in installed) {
-            installed[p]['disp_description'] = this.shared.getDescription(
-              installed[p].description as Record<string, string>,
-            );
-          }
-        }
-        this.plugins_installed.set(installed);
-        this.plugins_installed_list.set(Object.keys(installed));
-
-        this.spinner_display.set(false);
-        this.add_display.set(true);
-
-        for (let i = 0; i < this.plugintypes.length; i++) {
-          this.plugintypes_expanded[i] = false;
-        }
-      });
+    this.spinner_header.set(this.translate.instant('PLUGIN.LOADCONFIG'));
+    this.reloadPluginList(() => this.openForConfigurationIfNeeded(confname));
   }
 
-  selectPlugin(iplugin: string) {
-    this.log.warn({ iplugin });
-    this.selected_plugin = iplugin;
-    this.pluginconfig_name = iplugin;
-    this.translate_params = { selected_plugin: this.selected_plugin };
-    this.checkInput();
-
-    this.setconfig_display = true;
-  }
-
-  checkInput() {
-    this.add_enabled = false;
-    if (this.pluginconfig_name.length > 0) {
-      this.add_enabled = true;
-      for (const conf of this.configuredplugins()) {
-        if (conf.confname === this.pluginconfig_name) {
-          this.add_enabled = false;
-        }
-      }
+  /** A freshly added plugin is never loadable until its mandatory
+   *  parameters are filled in - open the parameter dialog for it
+   *  automatically, but only when there's actually something required to
+   *  fill in (many plugins need no configuration at all). */
+  private openForConfigurationIfNeeded(confname: string): void {
+    const pconf = this.pluginconflist.plugin_config as Record<string, PluginSectionConfig>;
+    const meta = pconf[confname]?._meta;
+    const hasMandatoryParams = Object.values(meta?.parameters ?? {}).some((p) => p.mandatory);
+    if (!hasMandatoryParams) {
+      return;
     }
-    this.log.warn(this.add_enabled);
-    return this.add_enabled;
-  }
-
-  addPlugin() {
-    if (!this.checkInput()) return;
-
-    const configname = this.pluginconfig_name;
-    const pluginname = this.selected_plugin;
-
-    this.setconfig_display = false;
-    this.add_display.set(false);
-
-    const config = { plugin_name: pluginname, plugin_enabled: true };
-
-    this.spinner_display.set(true);
-    this.spinner_header.set(this.translate.instant('PLUGIN.ADDING'));
-
-    this.pluginsdataService
-      .addPluginConfig(configname, { config })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((response) => {
-        if (response === true) {
-          this.spinner_header.set(this.translate.instant('PLUGIN.LOADCONFIG'));
-          this.reloadPluginList();
-        } else {
-          this.spinner_display.set(false);
-        }
-      });
+    const row = this.configuredplugins().find((p) => p.confname === confname);
+    if (row) {
+      this.rowClicked(null, row);
+    }
   }
 
   // -------------------------------------------------------------------
   //  Delete configuration
   //
+  /** Nothing to choose between when the plugin isn't loaded - "stop"/"unload"
+   *  both act on a live process, "keep" would be the only remaining
+   *  (and only meaningful) option, so the whole dropdown is redundant. */
+  get showDeleteActionDropdown(): boolean {
+    return !!this.rowclicked_foredit && this.rowclicked_foredit.loaded;
+  }
+
+  get deleteActionOptions(): { label: string; value: DeleteFollowupAction }[] {
+    // Only reached when loaded is true (the dropdown itself is hidden
+    // otherwise) - "keep running" would be wrong for a loaded-but-stopped
+    // plugin, since nothing is actually running to "keep".
+    const keepLabel =
+      this.rowclicked_foredit && this.rowclicked_foredit.running
+        ? 'PLUGIN.DELETE_KEEP_RUNNING'
+        : 'PLUGIN.DELETE_KEEP_LOADED';
+    const options: { label: string; value: DeleteFollowupAction }[] = [
+      { label: this.translate.instant(keepLabel), value: 'keep' },
+    ];
+    if (this.rowclicked_foredit && this.rowclicked_foredit.running) {
+      options.push({ label: this.translate.instant('PLUGIN.DELETE_STOP_FIRST'), value: 'stop' });
+    }
+    if (this.rowclicked_foredit && this.rowclicked_foredit.loaded) {
+      options.push({
+        label: this.translate.instant('PLUGIN.DELETE_UNLOAD_FIRST'),
+        value: 'unload',
+      });
+    }
+    return options;
+  }
+
+  /** Delete straight from the row, without going through the parameter
+   *  dialog first - DeleteConfig()/DeleteConfigConfirm() only ever read
+   *  dialog_configname/rowclicked_foredit, so setting those directly here
+   *  and delegating is all that's needed; nothing about them is specific
+   *  to having gone through rowClicked() first. */
+  deleteConfigFromRow(row: ConfiguredPlugin): void {
+    this.dialog_configname = row.confname;
+    this.rowclicked_foredit = row;
+    this.DeleteConfig();
+  }
+
   DeleteConfig() {
     this.log.log('PluginConfigComponent.DeleteConfig:');
     this.log.warn(this.dialog_configname);
 
     this.delete_param = { config: this.dialog_configname };
+    this.deleteAction.set(
+      this.rowclicked_foredit && this.rowclicked_foredit.loaded ? 'unload' : 'keep',
+    );
 
     this.confirmdelete_display = true;
   }
@@ -960,13 +512,14 @@ export class PluginConfigComponent implements OnInit {
       .deletePluginConfig(configname)
       .pipe(takeUntilDestroyed(this.destroyRef));
 
+    const choice = this.deleteAction();
     const action$ =
-      this.rowclicked_foredit && this.rowclicked_foredit.loaded
-        ? this.pluginsdataService.setPluginState(configname, 'unload').pipe(
+      choice === 'keep'
+        ? delete$
+        : this.pluginsdataService.setPluginState(configname, choice).pipe(
             takeUntilDestroyed(this.destroyRef),
             switchMap(() => delete$),
-          )
-        : delete$;
+          );
 
     action$.subscribe((response) => {
       if (response) {

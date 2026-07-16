@@ -277,4 +277,43 @@ export class SharedService {
     }
     return desc ?? '';
   }
+
+  /** Joins a list into a single pipe-delimited display string. A plain
+   *  string input is passed through unchanged (already-joined values flow
+   *  back through here from round-tripped form state); `null` stays `null`
+   *  so callers that distinguish "no value" from "empty value" still can. */
+  listToString(list: string | string[] | null | undefined, delimiter = ' | '): string | null {
+    if (list === null) {
+      return null;
+    }
+    if (typeof list === 'string') {
+      return list;
+    }
+    if (list === undefined) {
+      return '';
+    }
+    return list.join(delimiter);
+  }
+
+  /** Inverse of listToString: splits on the delimiter (trimmed, so the
+   *  default splits on a bare '|') and trims each entry. */
+  stringToList(str: string | null | undefined, delimiter = ' | '): string[] {
+    if (str === null || str === undefined || str.trim() === '') {
+      return [];
+    }
+    const sep = delimiter.trim() || delimiter;
+    return str.split(sep).map((s) => s.trim());
+  }
+
+  /** Renders the plugin/parameter description mini-markdown (newlines,
+   *  `**bold**`, `*italic*`) used in both the plugin list and the
+   *  parameter-edit dialog. */
+  mdLiteToHtml(text: string): string {
+    return text
+      .replace(/\n/g, '<br>')
+      .replace(/ \*\*/g, ' <b><mark>')
+      .replace(/\*\* /g, '</mark></b> ')
+      .replace(/ \*/g, ' <i><mark>')
+      .replace(/\* /g, '</mark></i> ');
+  }
 }

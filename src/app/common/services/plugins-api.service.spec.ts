@@ -15,6 +15,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { MessageService } from 'primeng/api';
 import { createMockAppConfigService } from '../../../testing/test-helpers';
 import { AppConfigService } from './app-config.service';
 import { PluginsApiService } from './plugins-api.service';
@@ -29,6 +30,7 @@ describe('PluginsApiService', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: AppConfigService, useValue: createMockAppConfigService() },
+        MessageService,
         PluginsApiService,
       ],
     });
@@ -167,6 +169,24 @@ describe('PluginsApiService', () => {
     service.addPluginConfig('newplugin', {}).subscribe((r) => (result = r));
     http.expectOne('/api/plugin/newplugin/').flush({ result: 'error' });
     expect(result).toBe(false);
+  });
+
+  it('addPluginConfig() shows a sticky error toast with the backend description on failure', () => {
+    const messageService = TestBed.inject(MessageService);
+    const addSpy = jest.spyOn(messageService, 'add');
+
+    service.addPluginConfig('newplugin', {}).subscribe();
+    http
+      .expectOne('/api/plugin/newplugin/')
+      .flush({ result: 'error', description: 'collides with instance name' });
+
+    expect(addSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        severity: 'error',
+        detail: 'collides with instance name',
+        sticky: true,
+      }),
+    );
   });
 
   it('addPluginConfig() returns {} on HTTP error', () => {

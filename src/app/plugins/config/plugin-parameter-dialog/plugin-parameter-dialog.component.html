@@ -1,0 +1,193 @@
+<!-- ---------------------------------------------------------------------------------------
+  -- Dialog for configuring the parameters of a plugin
+  -->
+
+<p-dialog
+  header=""
+  [(visible)]="visible"
+  [modal]="true"
+  blockScroll="true"
+  [closable]="false"
+  [maximizable]="true"
+  [minY]="100"
+  [style]="{ minWidth: '600px', minHeight: '300px', maxHeight: '98%' }"
+  (document:keydown.escape)="visible() && abort()"
+>
+  <ng-template pTemplate="header">
+    <span>
+      {{ 'CONFIGURATION' | translate }} <strong>{{ configname() }}</strong> &nbsp; (Plugin
+      <strong>{{ pluginname() }}</strong
+      >)
+      @if (pluginEnabled() === false) {
+        &nbsp; - &nbsp;<strong>{{ 'PLUGIN.PLUGIN_DISABLED' | translate }}</strong>
+      }
+    </span>
+  </ng-template>
+
+  <table style="width: 100%">
+    <tr>
+      <td style="width: 190px">{{ 'PLUGIN.DISABLE_PLUGIN' | translate }}</td>
+      <td style="width: 80px"></td>
+      <td style="width: 240px">
+        <input
+          type="checkbox"
+          [checked]="pluginEnabled() === false"
+          (change)="pluginEnabled.set(!$any($event.target).checked)"
+        />
+      </td>
+      <td>{{ description() }}</td>
+    </tr>
+    @if (copyFromOptions().length > 0) {
+      <tr>
+        <td style="width: 190px">{{ 'PLUGIN.COPY_FROM' | translate }}</td>
+        <td style="width: 80px"></td>
+        <td colspan="2">
+          <p-select
+            [options]="copyFromOptions()"
+            optionLabel="label"
+            optionValue="value"
+            [showClear]="true"
+            placeholder="{{ 'PLUGIN.COPY_FROM_PLACEHOLDER' | translate }}"
+            [(ngModel)]="copyFromSelection"
+            (ngModelChange)="onCopyFromChange($event)"
+          ></p-select>
+        </td>
+      </tr>
+    }
+  </table>
+  @if (state() && state().toLowerCase() === 'deprecated') {
+    <table style="width: 100%">
+      <tr>
+        <td align="center" style="width: 30px">
+          <fa-icon
+            style="color: var(--shng-warning)"
+            title="{{ 'PLUGIN.DEPRECATED' | translate }}"
+            [icon]="faExclamationTriangle"
+          ></fa-icon>
+        </td>
+        <td>
+          <strong>{{ 'PLUGIN.DEPRECATED' | translate }}:</strong>
+          <p style="padding: 0; margin: 0; background-color: var(--shng-cell-alt-bg); border: 0">
+            {{ 'PLUGIN.DEPRECATED_TEXT' | translate }}
+          </p>
+        </td>
+      </tr>
+    </table>
+  }
+  <br />
+
+  @if (!classic()) {
+    <p-table
+      [style]="{ minHeight: '200px', height: 'calc(80vh - 200px)' }"
+      [columns]="parameter_cols"
+      [value]="parameters()"
+      selectionMode="single"
+    >
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          @for (col of columns; track col.field) {
+            <th [pSortableColumn]="col.field" [ngStyle]="{ width: col.width }">
+              {{ col.header | translate }}
+              @if (col.field !== '') {
+                <p-sortIcon
+                  [field]="col.field"
+                  ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"
+                ></p-sortIcon>
+              }
+            </th>
+          }
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-columns="columns">
+        <tr>
+          @for (col of columns; track col.field) {
+            <td>
+              @if (isReadonly() === false && col.field === 'value') {
+                <app-dynamic-field [row]="rowData" [col]="col"></app-dynamic-field>
+              }
+              @if (isReadonly() === true || col.field !== 'value') {
+                @if (isReadonly() === true || col.field !== 'desc') {
+                  {{ rowData[col.field] }}
+                }
+                @if (isReadonly() === true || col.field === 'desc') {
+                  <div [innerHTML]="rowData[col.field]"></div>
+                }
+              }
+            </td>
+          }
+        </tr>
+      </ng-template>
+    </p-table>
+  }
+  @if (classic()) {
+    <div>
+      {{ 'PLUGIN.CLASSIC_NOT_CONFIGURABLE' | translate }}
+    </div>
+    <br />
+  }
+
+  <ng-template pTemplate="footer">
+    @if (isReadonly() === false) {
+      @if (saveError()) {
+        <span style="color: var(--shng-danger); font-size: var(--font-size-base); margin-right: 1rem">
+          <i class="fa fa-exclamation-triangle"></i>&nbsp;{{ saveError() }}
+        </span>
+      }
+      <button
+        pButton
+        type="button"
+        icon="fa fa-check"
+        (click)="saveConfig()"
+        label="{{ 'BUTTON.SAVE' | translate }}"
+        class="ui-button-success"
+      ></button>
+      <button
+        pButton
+        type="button"
+        icon="fa fa-times"
+        (click)="abort()"
+        label="{{ 'BUTTON.ABORT' | translate }}"
+        class="ui-button-secondary"
+      ></button>
+    }
+    @if (isReadonly() === true) {
+      <button
+        pButton
+        type="button"
+        icon="fa fa-times"
+        (click)="visible.set(false)"
+        label="{{ 'BUTTON.CLOSE' | translate }}"
+        class="ui-button-success"
+      ></button>
+    }
+  </ng-template>
+</p-dialog>
+
+<!--
+  -- Validation dialog, showing information about the error, if from validation fails
+  -->
+
+<p-dialog header="" [(visible)]="validation_dialog_display" [modal]="true" blockScroll="true">
+  <ng-template pTemplate="header">
+    {{ 'PLUGIN.CONFIGURATION_ERRORS' | translate }}
+  </ng-template>
+
+  @for (l of validation_dialog_text; track $index) {
+    <li>
+      {{ l }}
+    </li>
+  }
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      type="button"
+      icon="pi pi-times"
+      (click)="validation_dialog_display = false"
+      label="{{ 'BUTTON.CLOSE' | translate }}"
+      class="ui-button-success"
+    ></button>
+  </ng-template>
+</p-dialog>

@@ -1,0 +1,268 @@
+<!-- ---------------------------------------------------------------------------------------
+  -- Add Dialog: For selecting a plugin to add to the configured plugins from list of all installed plugins
+  -->
+
+<p-dialog
+  #pluginadd
+  header=""
+  [(visible)]="visible"
+  [modal]="true"
+  blockScroll="true"
+  [closable]="true"
+  [resizable]="true"
+  [maximizable]="false"
+  [minY]="100"
+  [style]="{ width: '95vw', height: '95vh' }"
+  [contentStyle]="{ overflow: 'auto', flex: '1', 'min-height': '0' }"
+  (onShow)="loadInstalledPlugins()"
+>
+  <ng-template pTemplate="header">
+    {{ 'PLUGIN.ADD' | translate }}
+  </ng-template>
+
+  @if (loading()) {
+    <div style="margin-bottom: 12px; color: var(--text-muted)">
+      <p-progressSpinner [style]="{ width: '18px', height: '18px' }"></p-progressSpinner>
+      &nbsp;{{ 'PLUGIN.LOADLIST' | translate }}
+    </div>
+  }
+
+  <!-- toolbar: filter + view toggle -->
+  <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap">
+    <span style="position: relative; display: inline-block">
+      <input
+        pInputText
+        type="text"
+        [placeholder]="'FILTER' | translate"
+        [value]="addDialogFilter()"
+        (input)="onAddFilterChange($any($event.target).value)"
+        style="width: 260px; padding-right: 2rem"
+      />
+      @if (addDialogFilter()) {
+        <span
+          class="pi pi-times"
+          style="
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--text-muted);
+          "
+          (click)="clearAddFilter()"
+        ></span>
+      }
+    </span>
+    <div style="display: flex; align-items: center; gap: 6px; margin-left: auto">
+      <p-toggleSwitch [(ngModel)]="addDialogCategorized"></p-toggleSwitch>
+      <span style="font-size: 0.9em; color: var(--text-muted)">{{ 'PLUGIN.CATEGORIES' | translate }}</span>
+    </div>
+  </div>
+
+  <!-- categorized accordion view -->
+  @if (addDialogCategorized) {
+    <p-accordion [multiple]="true">
+      @for (plugintype of plugintypes; track plugintype; let i = $index) {
+        @if (!addDialogFilter || hasMatchingPlugins(plugintype)) {
+          <p-accordion-panel [value]="i">
+            <p-accordion-header>
+              <span class="shng-text-lg"
+                ><img
+                  [src]="'assets/img/plugin_' + plugintype + '.svg'"
+                  style="width: 30px; cursor: pointer"
+                  width="30"
+                  height="30"
+                />
+                {{ plugintype.charAt(0).toUpperCase() + plugintype.substring(1) }} Plugins</span
+              >
+            </p-accordion-header>
+            <p-accordion-content>
+              <table class="table table-striped table-hover shng-list-table">
+                <colgroup>
+                  <col minwidth="200px" />
+                  <col width="25px" />
+                  <col minwidth="400px" />
+                </colgroup>
+                <thead>
+                  <th>{{ 'PLUGIN.PLUGINNAME' | translate }}</th>
+                  <th>{{ 'PLUGIN.MULTI INSTANCE' | translate }}</th>
+                  <th>{{ 'PLUGIN.DESCRIPTION' | translate }}</th>
+                </thead>
+                @for (iplugin of plugins_installed_list(); track iplugin) {
+                  @if (
+                    (plugins_installed()[iplugin].type === plugintype ||
+                      (plugintype === 'unclassified' &&
+                        plugintypes.indexOf(plugins_installed()[iplugin].type) === -1)) &&
+                    matchesAddFilter(iplugin)
+                  ) {
+                    <tr style="cursor: pointer" (click)="selectPlugin(iplugin)">
+                      <td style="padding-left: 15px">
+                        {{ iplugin }}
+                        @if (
+                          plugins_installed()[iplugin].state &&
+                          plugins_installed()[iplugin].state.toLowerCase() === 'deprecated'
+                        ) {
+                          &nbsp;
+                          <fa-icon
+                            style="color: var(--shng-warning)"
+                            title="{{ 'PLUGIN.DEPRECATED' | translate }}"
+                            [icon]="faExclamationTriangle"
+                          ></fa-icon>
+                        }
+                        @if (
+                          plugins_installed()[iplugin].state &&
+                          plugins_installed()[iplugin].state.toLowerCase() === 'develop'
+                        ) {
+                          &nbsp;
+                          <fa-icon
+                            style="color: var(--shng-orange)"
+                            title="{{ 'PLUGIN.DEVELOP' | translate }}"
+                            [icon]="faCode"
+                          ></fa-icon>
+                        }
+                      </td>
+                      <td>
+                        &nbsp; &nbsp;
+                        @if (plugins_installed()[iplugin].multi_instance) {
+                          <i style="color: var(--shng-blue)" class="fa fa-check"></i>
+                        }
+                      </td>
+                      <td>
+                        {{ plugins_installed()[iplugin]['disp_description'] }}
+                      </td>
+                    </tr>
+                  }
+                }
+              </table>
+            </p-accordion-content>
+          </p-accordion-panel>
+        }
+      }
+    </p-accordion>
+  }
+
+  <!-- flat list view -->
+  @if (!addDialogCategorized) {
+    <table class="table table-striped table-hover shng-list-table">
+      <colgroup>
+        <col style="min-width: 200px" />
+        <col style="width: 40px" />
+        <col style="width: 25px" />
+        <col style="min-width: 400px" />
+      </colgroup>
+      <thead>
+        <tr class="shng_heading">
+          <th>{{ 'PLUGIN.PLUGINNAME' | translate }}</th>
+          <th>{{ 'PLUGIN.TYPE' | translate }}</th>
+          <th>{{ 'PLUGIN.MULTI INSTANCE' | translate }}</th>
+          <th>{{ 'PLUGIN.DESCRIPTION' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (iplugin of addDialogFilteredList(); track iplugin) {
+          <tr style="cursor: pointer" (click)="selectPlugin(iplugin)">
+            <td style="padding-left: 15px">
+              {{ iplugin }}
+              @if (
+                plugins_installed()[iplugin].state && plugins_installed()[iplugin].state.toLowerCase() === 'deprecated'
+              ) {
+                &nbsp;
+                <fa-icon
+                  style="color: var(--shng-warning)"
+                  title="{{ 'PLUGIN.DEPRECATED' | translate }}"
+                  [icon]="faExclamationTriangle"
+                ></fa-icon>
+              }
+              @if (
+                plugins_installed()[iplugin].state && plugins_installed()[iplugin].state.toLowerCase() === 'develop'
+              ) {
+                &nbsp;
+                <fa-icon
+                  style="color: var(--shng-orange)"
+                  title="{{ 'PLUGIN.DEVELOP' | translate }}"
+                  [icon]="faCode"
+                ></fa-icon>
+              }
+            </td>
+            <td>
+              @if (['web', 'protocol', 'interface', 'gateway', 'system'].includes(plugins_installed()[iplugin].type)) {
+                <img
+                  [src]="'assets/img/plugin_' + plugins_installed()[iplugin].type + '.svg'"
+                  style="width: 22px"
+                  width="22"
+                  height="22"
+                  [title]="plugins_installed()[iplugin].type"
+                />
+              } @else {
+                <span style="font-size: 0.8em; color: var(--text-muted)">{{ plugins_installed()[iplugin].type }}</span>
+              }
+            </td>
+            <td>
+              &nbsp; &nbsp;
+              @if (plugins_installed()[iplugin].multi_instance) {
+                <i style="color: var(--shng-blue)" class="fa fa-check"></i>
+              }
+            </td>
+            <td>{{ plugins_installed()[iplugin]['disp_description'] }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</p-dialog>
+
+<!--
+  -- Dialog for setting the configuration name of a plugin(-instance)
+  -->
+
+<p-dialog
+  header=""
+  [(visible)]="setconfig_display"
+  [modal]="true"
+  blockScroll="true"
+  [closable]="false"
+  [maximizable]="false"
+  [minY]="100"
+  [style]="{ minWidth: '600px', minHeight: '200px' }"
+>
+  <ng-template pTemplate="header">
+    {{ 'PLUGIN.NAME_CONFIGURATION' | translate: translate_params }}
+  </ng-template>
+
+  <br />
+  {{ 'PLUGIN.UNIQUE_NAME' | translate }}&nbsp;
+  <input
+    [(ngModel)]="pluginconfig_name"
+    type="text"
+    (input)="checkInput()"
+    (keydown.enter)="add_enabled && addPlugin()"
+    (keydown.escape)="setconfig_display = false"
+    pInputText
+    placeholder=""
+    [ngStyle]="{ width: 20 }"
+    autofocus
+  />
+
+  <br />
+  <br />
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      type="button"
+      icon="pi pi-check"
+      (click)="this.addPlugin()"
+      [disabled]="!this.add_enabled"
+      label="{{ 'BUTTON.ADD' | translate }}"
+      class="ui-button-success"
+      autofocus
+    ></button>
+    <button
+      pButton
+      type="button"
+      icon="pi pi-times"
+      (click)="setconfig_display = false"
+      label="{{ 'BUTTON.ABORT' | translate }}"
+      class="ui-button-secondary"
+    ></button>
+  </ng-template>
+</p-dialog>

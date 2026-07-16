@@ -13,6 +13,7 @@ import {
   ViewEncapsulation,
   inject,
   input,
+  model,
   output,
   viewChild,
 } from '@angular/core';
@@ -106,8 +107,7 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
   readonly lineWrapping = input(false);
   readonly foldable = input(false);
   readonly firstLineNumber = input(1);
-  readonly value = input('');
-  readonly valueChange = output<string>();
+  readonly value = model('');
 
   /** Extra keybindings specific to the hosting component. */
   readonly extraKeybindings = input<KeyBinding[]>([]);
@@ -413,7 +413,7 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
       ]),
       EditorView.updateListener.of((update: ViewUpdate) => {
         if (update.docChanged) {
-          self.valueChange.emit(update.state.doc.toString());
+          self.value.set(update.state.doc.toString());
         }
       }),
     ];

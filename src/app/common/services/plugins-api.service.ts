@@ -1,6 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 
+import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AppConfigService } from './app-config.service';
@@ -11,6 +12,10 @@ interface ApiResult {
   description?: string;
 }
 
+/** Dispatched server-side in modules/admin/api_plugin.py's PluginController.update():
+ *  'start'/'stop' -> handle_plugin_action(); 'load'/'unload'/'reload' -> handle_plugin_lifecycle(). */
+export type PluginStateAction = 'start' | 'stop' | 'load' | 'unload' | 'reload';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -18,6 +23,7 @@ export class PluginsApiService {
   private http = inject(HttpClient);
   private appConfig = inject(AppConfigService);
   private readonly log = inject(LogService);
+  private readonly messageService = inject(MessageService);
 
   // ---------------------------------------------------------------------
   //  Get information about the plugins installed in ../plugins directory
@@ -187,6 +193,19 @@ export class PluginsApiService {
               result.result,
               result.description,
             );
+            // The dialog that triggers this has already closed by the time
+            // this response arrives (optimistic close), so a toast is the
+            // only way the user finds out why the add didn't go through -
+            // e.g. a legacy-instance-name collision the dialog can't detect
+            // client-side (see modules/admin/api_plugin.py's add()). Matches
+            // the same result/description-as-toast pattern LogicsApiService
+            // already uses for setLogicState().
+            this.messageService.add({
+              severity: 'error',
+              summary: result.result,
+              detail: result.description,
+              sticky: true,
+            });
             return false;
           }
         } else {
@@ -254,9 +273,7 @@ export class PluginsApiService {
   // -----------------------------------------------------------
   //  set plugin state to started/stopped
   //
-  setPluginState(pluginConfigName: string, action: string, filename = '') {
-    // valid actions are: 'trigger', 'enable', 'disable', 'load', 'unload', 'reload', 'delete', 'create'
-    action = action.toLowerCase();
+  setPluginState(pluginConfigName: string, action: PluginStateAction, filename = '') {
     this.log.warn('PluginsApiService.setPluginState', { pluginConfigName }, { action });
 
     const apiUrl = this.appConfig.apiUrl;

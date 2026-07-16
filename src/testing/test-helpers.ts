@@ -3,8 +3,14 @@
  * Import from spec files to reduce boilerplate.
  */
 
+import { signal } from '@angular/core';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
+import {
+  AttributeCatalogEntry,
+  AttributeCatalogService,
+  AttributeGroup,
+} from '../app/common/services/attribute-catalog.service';
 
 // ---------------------------------------------------------------------------
 // Translate helpers
@@ -118,5 +124,46 @@ export function createMockWebsocketPluginService() {
     connect: () => {},
     send: () => {},
     messages$: new BehaviorSubject(null),
+  };
+}
+
+/** Minimal stub for AttributeCatalogService — attributeCatalog/attributeGroups
+ *  default empty (loadAttributeCatalog() is a jest.fn(), so nothing populates
+ *  them unless the caller passes a pre-built catalog). Pass a catalog to seed
+ *  attributeCatalog directly, skipping the merge logic covered separately in
+ *  attribute-catalog.service.spec.ts; attributeGroups is derived from it here
+ *  (same grouping rules as the real service) since callers rely on both. */
+export function createMockAttributeCatalogService(
+  catalog: Record<string, AttributeCatalogEntry> = {},
+) {
+  const bySource = new Map<string, { name: string; entry: AttributeCatalogEntry }[]>();
+  for (const [name, entry] of Object.entries(catalog)) {
+    if (AttributeCatalogService.ATTRIBUTES_WITH_DEDICATED_FIELDS.includes(name)) continue;
+    const list = bySource.get(entry.source) ?? [];
+    list.push({ name, entry });
+    bySource.set(entry.source, list);
+  }
+  for (const list of bySource.values()) {
+    list.sort((a, b) => a.name.localeCompare(b.name));
+  }
+  const sources = [...bySource.keys()].sort((a, b) =>
+    a === 'core' ? -1 : b === 'core' ? 1 : a.localeCompare(b),
+  );
+  const attributeGroups: AttributeGroup[] = sources.map((source) => ({
+    source,
+    entries: bySource.get(source)!,
+  }));
+
+  return {
+    attributeCatalog: signal(catalog),
+    attributeCatalogLoaded: signal(Object.keys(catalog).length > 0),
+    attributeGroups: signal(attributeGroups),
+    loadAttributeCatalog: jest.fn(),
+    attributeDescription: jest.fn().mockReturnValue(''),
+    attributeType: jest.fn().mockReturnValue(''),
+    attributeValidList: jest.fn().mockReturnValue(undefined),
+    get itemTypeOptions() {
+      return (catalog['type']?.valid_list ?? []).map((t) => ({ label: t, value: t }));
+    },
   };
 }

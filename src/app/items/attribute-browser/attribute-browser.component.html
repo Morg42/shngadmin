@@ -1,0 +1,43 @@
+<!------------------------------------------>
+<!--   Attribute browser dialog   -->
+<!------------------------------------------>
+<p-dialog
+  header="{{ 'ITEMS.BROWSE_ATTRIBUTES_TITLE' | translate }}"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '600px', minWidth: '350px', height: '600px' }"
+  [baseZIndex]="10001"
+>
+  <input
+    type="text"
+    pInputText
+    [(ngModel)]="attributeBrowserSearch"
+    placeholder="{{ 'ITEMS.ATTRIBUTE_SEARCH_PLACEHOLDER' | translate }}"
+    style="width: 100%; margin-bottom: 10px"
+  />
+  @if (filteredAttributeGroups.length === 0) {
+    <p>{{ 'ITEMS.NO_MATCHING_ATTRIBUTES' | translate }}</p>
+  }
+  @for (group of filteredAttributeGroups; track group.source) {
+    <strong>{{ group.source === 'core' ? ('ITEMS.SOURCE_CORE' | translate) : group.source }}</strong>
+    @for (item of group.entries; track item.name) {
+      <div
+        style="padding: 4px 6px; cursor: pointer; border-radius: 4px"
+        (click)="selectAttributeFromBrowser(item.name)"
+      >
+        <code>{{ item.name }}</code>
+        <span style="color: var(--text-muted)"> ({{ item.entry.type }})</span>
+        @if (attributeCatalogService.attributeDescription(item.name)) {
+          <div style="color: var(--text-muted)">
+            <small>{{ attributeCatalogService.attributeDescription(item.name) }}</small>
+          </div>
+        }
+      </div>
+    }
+  }
+  <ng-template #footer>
+    <button type="button" class="btn btn-sm ui-button-secondary" (click)="visible.set(false)">
+      {{ 'BUTTON.CLOSE' | translate }}
+    </button>
+  </ng-template>
+</p-dialog>

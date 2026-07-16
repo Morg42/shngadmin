@@ -1,0 +1,249 @@
+<!------------------------------------------>
+<!--   Rename / move item dialog   -->
+<!------------------------------------------>
+<p-dialog
+  header="{{ (isCopy() ? 'BUTTON.COPY' : 'BUTTON.RENAME') | translate }}"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '750px', minWidth: '450px' }"
+  [baseZIndex]="10000"
+>
+  <table style="width: 100%; table-layout: fixed">
+    <colgroup>
+      <col style="width: 140px" />
+      <col />
+    </colgroup>
+    <tr>
+      <td class="py-1">{{ 'ITEMS.CURRENT_PATH' | translate }}</td>
+      <td class="py-1">
+        <code>{{ itemPath() }}</code>
+      </td>
+    </tr>
+    <tr>
+      <td class="py-1">{{ 'ITEMS.NAME_OR_PATH' | translate }}</td>
+      <td class="py-1">
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="renameItemNewPathInput"
+          [disabled]="renameItemSubmitting()"
+          style="width: 100%"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td class="py-1">{{ 'ITEMS.NEW_PATH' | translate }}</td>
+      <td class="py-1">
+        <code>{{ renameItemNewPath }}</code>
+      </td>
+    </tr>
+    @if (isCopy() && renameItemCopyDisabled) {
+      <tr>
+        <td class="py-1" colspan="2">
+          <div style="color: var(--text-muted); font-size: var(--font-size-sm, 0.875rem)">
+            {{ 'ITEMS.COPY_TOGGLE_DISABLED_HINT' | translate }}
+          </div>
+        </td>
+      </tr>
+    }
+    @if (isCopy() && !renameItemCopyDisabled) {
+      <tr>
+        <td class="py-1">{{ 'ITEMS.COPY_INCLUDE_CHILDREN_LABEL' | translate }}</td>
+        <td class="py-1">
+          <p-toggleSwitch
+            [(ngModel)]="renameItemCopyIncludeChildren"
+            [disabled]="renameItemSubmitting()"
+          ></p-toggleSwitch>
+        </td>
+      </tr>
+    }
+  </table>
+
+  <p></p>
+  <strong style="display: block; margin-bottom: 6px">{{ 'ITEMS.PICK_NEW_PARENT' | translate }}</strong>
+  <div
+    [style]="{
+      height: '380px',
+      overflow: 'auto',
+      border: '1px solid var(--surface-border)',
+      'pointer-events': renameItemSubmitting() ? 'none' : 'auto',
+      opacity: renameItemSubmitting() ? 0.6 : 1,
+    }"
+  >
+    <p-tree
+      [value]="renameItemParentTreeNodes"
+      (onNodeSelect)="selectRenameParent($event)"
+      selectionMode="single"
+      [(selection)]="renameItemSelectedParentNode"
+      emptyMessage="{{ 'ITEMS.NO ITEMS' | translate }}"
+      styleClass="item-tree"
+    ></p-tree>
+  </div>
+
+  <ng-template #footer>
+    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 12px">
+      @if (renameItemSubmitting()) {
+        <span
+          style="
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            flex: 1 1 auto;
+            color: var(--text-muted);
+            text-align: left;
+            overflow-wrap: anywhere;
+            font-size: var(--font-size-sm, 0.875rem);
+          "
+        >
+          <p-progressSpinner
+            [style]="{ width: '18px', height: '18px', flexShrink: '0' }"
+            styleClass="plugin-loading-spinner"
+          ></p-progressSpinner>
+          <span>{{ (isCopy() ? 'ITEMS.COPY_IN_PROGRESS' : 'ITEMS.RENAME_IN_PROGRESS') | translate }}</span>
+        </span>
+      } @else {
+        <span
+          style="min-width: 0; flex: 1 1 auto; color: var(--shng-orange); text-align: left; overflow-wrap: anywhere"
+          >{{ renameItemError() }}</span
+        >
+      }
+      <div style="display: flex; gap: 8px; flex-shrink: 0">
+        <button
+          type="button"
+          class="btn btn-sm ui-button-secondary"
+          [disabled]="renameItemSubmitting()"
+          (click)="visible.set(false)"
+        >
+          {{ 'BUTTON.ABORT' | translate }}
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary btn-sm btn-shng"
+          [disabled]="!renameItemNewPathValid || renameItemSubmitting()"
+          (click)="submitRenameItem()"
+        >
+          {{ (isCopy() ? 'BUTTON.COPY' : 'BUTTON.RENAME') | translate }}
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!------------------------------------------>
+<!--   Rename: missing parent(s) confirm dialog   -->
+<!------------------------------------------>
+<p-dialog
+  header="{{ 'ITEMS.MISSING_PARENTS_TITLE' | translate }}"
+  [(visible)]="renameItemConfirmCreateParents_display"
+  [modal]="true"
+  [style]="{ width: '550px', minWidth: '350px' }"
+  [baseZIndex]="10001"
+>
+  <p>{{ 'ITEMS.MISSING_PARENTS_INTRO' | translate }}</p>
+  <ul>
+    @for (ancestor of renameItemMissingAncestors(); track ancestor) {
+      <li>
+        <code>{{ ancestor }}</code>
+      </li>
+    }
+  </ul>
+  <p>{{ 'ITEMS.MISSING_PARENTS_QUESTION' | translate }}</p>
+  <ng-template #footer>
+    <button
+      type="button"
+      class="btn btn-sm ui-button-secondary"
+      (click)="renameItemConfirmCreateParents_display.set(false)"
+    >
+      {{ 'BUTTON.ABORT' | translate }}
+    </button>
+    <button type="button" class="btn btn-primary btn-sm btn-shng" (click)="confirmCreateMissingParents()">
+      {{ 'ITEMS.MISSING_PARENTS_CREATE' | translate }}
+    </button>
+  </ng-template>
+</p-dialog>
+
+<!------------------------------------------>
+<!--   Rename failed-references detail dialog   -->
+<!------------------------------------------>
+<p-dialog
+  header="{{ 'ITEMS.RENAME_FAILED_REFERENCES_TITLE' | translate }}"
+  [visible]="renameFailedReferencesDetail_display"
+  (visibleChange)="onRenameFailedReferencesVisibleChange($event)"
+  [modal]="true"
+  [style]="{ width: '600px', minWidth: '350px' }"
+  [baseZIndex]="10000"
+>
+  <table style="width: 100%">
+    <thead>
+      <tr>
+        <th>{{ 'ITEMS.REFERENCE_ITEM' | translate }}</th>
+        <th>{{ 'ITEMS.ERROR' | translate }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (entry of renameItemLastFailedReferences(); track entry[0]) {
+        <tr>
+          <td class="py-1">{{ entry[0] }}</td>
+          <td class="py-1">{{ entry[1] }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+  <ng-template #footer>
+    <button type="button" class="btn btn-sm ui-button-secondary" (click)="onRenameFailedReferencesVisibleChange(false)">
+      {{ 'BUTTON.CLOSE' | translate }}
+    </button>
+  </ng-template>
+</p-dialog>
+
+<!------------------------------------------>
+<!--   Copy references-to-review detail dialog   -->
+<!------------------------------------------>
+<p-dialog
+  header="{{ 'ITEMS.COPY_REFERENCES_TITLE' | translate }}"
+  [visible]="copyReferencesDetail_display"
+  (visibleChange)="onCopyReferencesVisibleChange($event)"
+  [modal]="true"
+  [style]="{ width: '700px', minWidth: '400px' }"
+  [baseZIndex]="10000"
+>
+  <table style="width: 100%">
+    <thead>
+      <tr>
+        <th>{{ 'ITEMS.REFERENCE_ITEM' | translate }}</th>
+        <th>{{ 'ITEMS.ATTRIBUTE' | translate }}</th>
+        <th>{{ 'ITEMS.COPY_REFERENCES_REFERENCE' | translate }}</th>
+        <th>{{ 'ITEMS.COPY_REFERENCES_REASON' | translate }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (entry of copyItemLeftPointingAtOriginal(); track entry.item + entry.attribute + entry.reference) {
+        <tr>
+          <td class="py-1">{{ entry.item }}</td>
+          <td class="py-1">{{ entry.attribute }}</td>
+          <td class="py-1">{{ entry.reference }}</td>
+          <td class="py-1">{{ 'ITEMS.COPY_REFERENCES_LEFT_AT_ORIGINAL' | translate }}</td>
+        </tr>
+      }
+      @for (entry of copyItemRelativeReferencesFlagged(); track entry.item + entry.attribute + entry.reference) {
+        <tr>
+          <td class="py-1">{{ entry.item }}</td>
+          <td class="py-1">{{ entry.attribute }}</td>
+          <td class="py-1">{{ entry.reference }}</td>
+          <td class="py-1">
+            {{
+              (entry.reason === 'not_copied' ? 'ITEMS.COPY_REASON_NOT_COPIED' : 'ITEMS.COPY_REASON_TARGET_MAY_DIFFER')
+                | translate
+            }}
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+  <ng-template #footer>
+    <button type="button" class="btn btn-sm ui-button-secondary" (click)="onCopyReferencesVisibleChange(false)">
+      {{ 'BUTTON.CLOSE' | translate }}
+    </button>
+  </ng-template>
+</p-dialog>

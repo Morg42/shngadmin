@@ -272,7 +272,7 @@ export class LogicsEditComponent implements OnInit {
               val = null;
             }
             if (paramdef['type'] === 'list') {
-              val = this.listToString(val as string | string[] | null | undefined);
+              val = this.shared.listToString(val as string | string[] | null | undefined);
             }
 
             const paramdata: ConfigParameter = {
@@ -291,7 +291,7 @@ export class LogicsEditComponent implements OnInit {
             if (paramdata['type'] === 'list') {
               // this.log.log({paramdef});
               if (paramdef['default'] !== undefined) {
-                paramdata['default'] = this.listToString(
+                paramdata['default'] = this.shared.listToString(
                   paramdef['default'] as string | string[] | undefined,
                 );
               }
@@ -313,7 +313,7 @@ export class LogicsEditComponent implements OnInit {
                 }
               }
             } else if (paramdata.type === 'list') {
-              paramdata.value = this.listToString(val as string);
+              paramdata.value = this.shared.listToString(val as string);
             } else {
               paramdata.value = val as string;
             }
@@ -324,45 +324,6 @@ export class LogicsEditComponent implements OnInit {
         }
         this.parameters.set(parameters);
       });
-  }
-
-  listToString(list: string | string[] | null | undefined): string | null {
-    let result: string | null = '';
-    if (list === null) {
-      result = null;
-    } else if (typeof list === 'string') {
-      result = list;
-    } else {
-      if (list !== undefined) {
-        for (let i = 0; i < list.length; i++) {
-          if (i > 0) {
-            result += ' | ';
-          }
-          result += list[i];
-        }
-      }
-    }
-    return result;
-  }
-
-  stringToList(str: string | null) {
-    // let wrk = str.trim();
-    // wrk =  wrk.replace(/,/g, ' ');   // comma is no delimiter
-    // wrk =  wrk.replace(/\|/g, ' ');
-    // wrk =  wrk.replace(/   /g, ' ');
-    // while (wrk.indexOf('  ') !== -1) {
-    //   wrk =  wrk.replace(/  /g, ' ');
-    // }
-    if (str === null) {
-      return [];
-    } else if (str.trim() === '') {
-      return [];
-    }
-    const list = str.split('|');
-    for (let i = 0; i < list.length; i++) {
-      list[i] = list[i].trim();
-    }
-    return list;
   }
 
   /** Called by p-autoComplete (completeMethod) to filter suggestions. */
@@ -386,7 +347,10 @@ export class LogicsEditComponent implements OnInit {
 
   /** Called whenever the chip list changes (add/remove/select). Syncs logic.group string. */
   onGroupChipsChange() {
-    this.logic.update((l) => ({ ...l, group: this.listToString(this.logicGroupChips()) ?? '' }));
+    this.logic.update((l) => ({
+      ...l,
+      group: this.shared.listToString(this.logicGroupChips()) ?? '',
+    }));
     this.logicChanged.set(this.hasLogicChanged());
   }
 
@@ -409,9 +373,9 @@ export class LogicsEditComponent implements OnInit {
         if (logic.group === undefined) {
           logic.group = '';
         }
-        logic.group = this.listToString(logic.group);
+        logic.group = this.shared.listToString(logic.group);
         // Populate chip array from the pipe-separated string
-        this.logicGroupChips.set(this.stringToList(logic.group as string | null));
+        this.logicGroupChips.set(this.shared.stringToList(logic.group as string | null));
 
         if (logic.cycle === undefined) {
           logic.cycle = null;
@@ -419,7 +383,7 @@ export class LogicsEditComponent implements OnInit {
         if (logic.crontab === undefined) {
           logic.crontab = '';
         }
-        logic.crontab = this.listToString(logic.crontab);
+        logic.crontab = this.shared.listToString(logic.crontab);
 
         if (logic.watch_item === undefined) {
           logic.watch_item = [];
@@ -623,7 +587,7 @@ export class LogicsEditComponent implements OnInit {
       watch_item: Array.from(this.logicWatchitemOrig),
     }));
     this.logicGroupChips.set(
-      this.stringToList(
+      this.shared.stringToList(
         Array.isArray(this.logicGroupOrig)
           ? this.logicGroupOrig.join(' | ')
           : (this.logicGroupOrig as string | null),
@@ -642,18 +606,18 @@ export class LogicsEditComponent implements OnInit {
     const logic = this.logic();
     const cycle = !(parseInt(logic.cycle ?? '', 10) > 0) ? null : logic.cycle;
     params['logic_description'] = logic.logic_description;
-    params['group'] = this.stringToList(
+    params['group'] = this.shared.stringToList(
       Array.isArray(logic.group) ? logic.group.join(' | ') : (logic.group ?? null),
     );
     params['cycle'] = cycle;
-    params['crontab'] = this.stringToList(
+    params['crontab'] = this.shared.stringToList(
       Array.isArray(logic.crontab) ? logic.crontab.join(' | ') : logic.crontab,
     );
     this.logic.update((l) => ({
       ...l,
       cycle,
-      group: this.listToString(params['group'] as string[]),
-      crontab: this.listToString(params['crontab'] as string[]),
+      group: this.shared.listToString(params['group'] as string[]),
+      crontab: this.shared.listToString(params['crontab'] as string[]),
     }));
 
     params['watch_item'] = logic.watch_item;
@@ -671,8 +635,8 @@ export class LogicsEditComponent implements OnInit {
         }
         let value = parameter.value;
         if (parameter.type === 'list') {
-          params[parameter.name] = this.stringToList(parameter.value as string | null);
-          value = this.listToString(params[parameter.name] as string | null);
+          params[parameter.name] = this.shared.stringToList(parameter.value as string | null);
+          value = this.shared.listToString(params[parameter.name] as string | null);
         } else {
           params[parameter.name] = parameter.value;
         }

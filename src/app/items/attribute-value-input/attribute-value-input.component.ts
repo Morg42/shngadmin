@@ -1,11 +1,14 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   inject,
   input,
   linkedSignal,
   output,
+  signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
@@ -34,6 +37,7 @@ import { ItemsApiService } from '../../common/services/items-api.service';
 })
 export class AttributeValueInputComponent {
   private itemsApi = inject(ItemsApiService);
+  private readonly destroyRef = inject(DestroyRef);
 
   /** Declared attribute type, e.g. 'bool', 'str', 'list(num)', 'dict' — the
    *  subtype in parens (if any) is not used for control selection in this
@@ -58,8 +62,8 @@ export class AttributeValueInputComponent {
   readonly dictRows = linkedSignal<{ key: string; value: string }[]>(() =>
     AttributeValueInputComponent.toDictRows(this.value()),
   );
-  itemPathSuggestions: string[] = [];
-  filteredItemPaths: string[] = [];
+  readonly itemPathSuggestions = signal<string[]>([]);
+  readonly filteredItemPaths = signal<string[]>([]);
 
   get baseType(): string {
     return this.type().split('(')[0];
@@ -100,19 +104,22 @@ export class AttributeValueInputComponent {
   /** Lazily loaded on first use (only the str/autocomplete control needs
    *  it), not on every component instance up front. */
   searchItemPaths(event: { query: string }) {
-    if (this.itemPathSuggestions.length === 0) {
-      this.itemsApi.getItemList().subscribe((paths) => {
-        this.itemPathSuggestions = paths as string[];
-        this.filteredItemPaths = this.filterItemPaths(event.query);
-      });
+    if (this.itemPathSuggestions().length === 0) {
+      this.itemsApi
+        .getItemList()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((paths) => {
+          this.itemPathSuggestions.set(paths as string[]);
+          this.filteredItemPaths.set(this.filterItemPaths(event.query));
+        });
       return;
     }
-    this.filteredItemPaths = this.filterItemPaths(event.query);
+    this.filteredItemPaths.set(this.filterItemPaths(event.query));
   }
 
   private filterItemPaths(query: string): string[] {
     const q = query.toLowerCase();
-    return this.itemPathSuggestions.filter((p) => p.toLowerCase().includes(q));
+    return this.itemPathSuggestions().filter((p) => p.toLowerCase().includes(q));
   }
 
   emitValue(value: unknown) {

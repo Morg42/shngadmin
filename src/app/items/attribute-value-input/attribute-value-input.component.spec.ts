@@ -150,10 +150,10 @@ describe('AttributeValueInputComponent', () => {
   it('searchItemPaths() lazily loads the item list once, then filters locally', () => {
     component.searchItemPaths({ query: 'light' });
     expect(mockItemsApi.getItemList).toHaveBeenCalledTimes(1);
-    expect(component.filteredItemPaths).toEqual(['home.light']);
+    expect(component.filteredItemPaths()).toEqual(['home.light']);
 
     component.searchItemPaths({ query: 'sensor' });
     expect(mockItemsApi.getItemList).toHaveBeenCalledTimes(1); // not called again
-    expect(component.filteredItemPaths).toEqual(['home.sensor']);
+    expect(component.filteredItemPaths()).toEqual(['home.sensor']);
   });
 });

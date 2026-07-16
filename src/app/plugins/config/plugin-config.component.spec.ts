@@ -68,6 +68,10 @@ describe('PluginConfigComponent', () => {
     fixture.detectChanges();
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -169,12 +173,8 @@ describe('PluginConfigComponent', () => {
   });
 
   // -------------------------------------------------------------------------
-  // addDialogCategorized default and sortBy
+  // sortBy
   // -------------------------------------------------------------------------
-
-  it('addDialogCategorized defaults to false (flat list shown on open)', () => {
-    expect(component.addDialogCategorized).toBe(false);
-  });
 
   it('sortBy() sorts configuredplugins ascending by the given field', () => {
     component['rawConfiguredplugins'].set([
@@ -206,5 +206,214 @@ describe('PluginConfigComponent', () => {
     component.sortBy('confname'); // now descending
     component.sortBy('plugin'); // new field → ascending
     expect(component.sortOrder()).toBe(1);
+  });
+
+  // -------------------------------------------------------------------------
+  // buildConfiguredPlugins: running derived from _running (informational only
+  // here - start/stop control lives on the /plugins page)
+  // -------------------------------------------------------------------------
+
+  it('derives running/loaded from the fixture for a loaded+running plugin (backend)', () => {
+    const backend = component.configuredplugins().find((p) => p.confname === 'backend')!;
+    expect(backend.loaded).toBe(true);
+    expect(backend.running).toBe(true);
+  });
+
+  it('derives running/loaded from the fixture for a loaded+stopped plugin (cli)', () => {
+    const cli = component.configuredplugins().find((p) => p.confname === 'cli')!;
+    expect(cli.loaded).toBe(true);
+    expect(cli.running).toBe(false);
+  });
+
+  it('defaults running/loaded to false for an unloaded plugin (develop)', () => {
+    const develop = component.configuredplugins().find((p) => p.confname === 'develop')!;
+    expect(develop.loaded).toBe(false);
+    expect(develop.running).toBe(false);
+  });
+
+  // -------------------------------------------------------------------------
+  // loadPlugin/unloadPlugin/reloadPlugin
+  // -------------------------------------------------------------------------
+
+  it('loadPlugin() short-circuits with a disabled-specific toast, no API call, for a disabled plugin', () => {
+    const setPluginState = jest.spyOn(mockPluginsApi, 'setPluginState');
+    const messageService = TestBed.inject(MessageService);
+    const addSpy = jest.spyOn(messageService, 'add');
+    const row = makePlugin('cli', '-cli');
+    row.enabled = 'false';
+
+    component.loadPlugin(row);
+
+    expect(setPluginState).not.toHaveBeenCalled();
+    expect(addSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        severity: 'warn',
+        summary: expect.any(String),
+        detail: 'cli',
+        sticky: true,
+      }),
+    );
+  });
+
+  it('loadPlugin() calls setPluginState with "load" for an enabled plugin', () => {
+    const setPluginState = jest.spyOn(mockPluginsApi, 'setPluginState');
+    const row = makePlugin('cli', '-cli');
+    row.enabled = 'true';
+
+    component.loadPlugin(row);
+
+    expect(setPluginState).toHaveBeenCalledWith('cli', 'load');
+  });
+
+  it('unloadPlugin() calls setPluginState with "unload"', () => {
+    const setPluginState = jest.spyOn(mockPluginsApi, 'setPluginState');
+
+    component.unloadPlugin('backend');
+
+    expect(setPluginState).toHaveBeenCalledWith('backend', 'unload');
+  });
+
+  it('_runLifecycleAction shows a sticky error toast on failure', () => {
+    const setPluginState = jest
+      .spyOn(mockPluginsApi, 'setPluginState')
+      .mockReturnValueOnce(of(false));
+    const messageService = TestBed.inject(MessageService);
+    const addSpy = jest.spyOn(messageService, 'add');
+
+    component.reloadPlugin('cli');
+
+    expect(setPluginState).toHaveBeenCalledWith('cli', 'reload');
+    expect(addSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ severity: 'error', detail: 'cli', sticky: true }),
+    );
+  });
+
+  // -------------------------------------------------------------------------
+  // Delete confirm dropdown
+  // -------------------------------------------------------------------------
+
+  it('deleteActionOptions only offers "keep" when the plugin is not loaded', () => {
+    component.rowclicked_foredit = makePlugin('x', '-x');
+    component.rowclicked_foredit.loaded = false;
+    expect(component.deleteActionOptions.map((o) => o.value)).toEqual(['keep']);
+  });
+
+  it('deleteActionOptions offers "keep" and "unload" but not "stop" when loaded but not running, labeling "keep" as loaded (not running)', () => {
+    component.rowclicked_foredit = makePlugin('x', '-x');
+    component.rowclicked_foredit.loaded = true;
+    component.rowclicked_foredit.running = false;
+    expect(component.deleteActionOptions.map((o) => o.value)).toEqual(['keep', 'unload']);
+    expect(component.deleteActionOptions[0].label).toBe('PLUGIN.DELETE_KEEP_LOADED');
+  });
+
+  it('deleteActionOptions offers all three choices when loaded and running, labeling "keep" as running', () => {
+    component.rowclicked_foredit = makePlugin('x', '-x');
+    component.rowclicked_foredit.loaded = true;
+    component.rowclicked_foredit.running = true;
+    expect(component.deleteActionOptions.map((o) => o.value)).toEqual(['keep', 'stop', 'unload']);
+    expect(component.deleteActionOptions[0].label).toBe('PLUGIN.DELETE_KEEP_RUNNING');
+  });
+
+  it('showDeleteActionDropdown is false when not loaded, true when loaded', () => {
+    component.rowclicked_foredit = makePlugin('x', '-x');
+    component.rowclicked_foredit.loaded = false;
+    expect(component.showDeleteActionDropdown).toBe(false);
+
+    component.rowclicked_foredit.loaded = true;
+    expect(component.showDeleteActionDropdown).toBe(true);
+  });
+
+  it('DeleteConfig() defaults deleteAction to "unload" when loaded, "keep" when not', () => {
+    component.dialog_configname = 'x';
+    component.rowclicked_foredit = makePlugin('x', '-x');
+    component.rowclicked_foredit.loaded = true;
+    component.DeleteConfig();
+    expect(component.deleteAction()).toBe('unload');
+
+    component.rowclicked_foredit.loaded = false;
+    component.DeleteConfig();
+    expect(component.deleteAction()).toBe('keep');
+  });
+
+  it('deleteConfigFromRow() sets up the same state as DeleteConfig() would from the dialog, without opening it', () => {
+    const row = makePlugin('x', '-x');
+    row.loaded = true;
+
+    component.deleteConfigFromRow(row);
+
+    expect(component.dialog_configname).toBe('x');
+    expect(component.rowclicked_foredit).toBe(row);
+    expect(component.confirmdelete_display).toBe(true);
+    expect(component.deleteAction()).toBe('unload');
+  });
+
+  it('DeleteConfigConfirm() deletes without a pre-action when "keep" is chosen', () => {
+    const setPluginState = jest.spyOn(mockPluginsApi, 'setPluginState');
+    const deletePluginConfig = jest.spyOn(mockPluginsApi, 'deletePluginConfig');
+    component.dialog_configname = 'x';
+    component.deleteAction.set('keep');
+
+    component.DeleteConfigConfirm();
+
+    expect(setPluginState).not.toHaveBeenCalled();
+    expect(deletePluginConfig).toHaveBeenCalledWith('x');
+  });
+
+  it('DeleteConfigConfirm() stops before deleting when "stop" is chosen', () => {
+    const setPluginState = jest.spyOn(mockPluginsApi, 'setPluginState');
+    component.dialog_configname = 'x';
+    component.deleteAction.set('stop');
+
+    component.DeleteConfigConfirm();
+
+    expect(setPluginState).toHaveBeenCalledWith('x', 'stop');
+  });
+
+  it('DeleteConfigConfirm() unloads before deleting when "unload" is chosen', () => {
+    const setPluginState = jest.spyOn(mockPluginsApi, 'setPluginState');
+    component.dialog_configname = 'x';
+    component.deleteAction.set('unload');
+
+    component.DeleteConfigConfirm();
+
+    expect(setPluginState).toHaveBeenCalledWith('x', 'unload');
+  });
+
+  // -------------------------------------------------------------------------
+  // rowClicked(): sibling configs for the copy-from dropdown
+  // -------------------------------------------------------------------------
+
+  it('rowClicked() finds siblings sharing the same class_path (dreambox_wz/sz/az fixture)', () => {
+    const row = component.configuredplugins().find((p) => p.confname === 'dreambox_wz')!;
+    component.rowClicked(null, row);
+
+    const siblingNames = component.dialog_siblingConfigs.map((s) => s.confname).sort();
+    expect(siblingNames).toEqual(['dreambox_az', 'dreambox_sz']);
+  });
+
+  it('rowClicked() finds no siblings for a single-instance plugin', () => {
+    const row = component.configuredplugins().find((p) => p.confname === 'backend')!;
+    component.rowClicked(null, row);
+
+    expect(component.dialog_siblingConfigs).toEqual([]);
+  });
+
+  // -------------------------------------------------------------------------
+  // onPluginAdded(): conditional auto-open for configuration
+  // -------------------------------------------------------------------------
+
+  it('onPluginAdded() opens the parameter dialog when the plugin has mandatory parameters', () => {
+    expect(component.dialog_display()).toBe(false);
+
+    component.onPluginAdded('simulation');
+
+    expect(component.dialog_display()).toBe(true);
+    expect(component.dialog_configname).toBe('simulation');
+  });
+
+  it('onPluginAdded() does not open the dialog when the plugin has no mandatory parameters', () => {
+    component.onPluginAdded('backend');
+
+    expect(component.dialog_display()).toBe(false);
   });
 });

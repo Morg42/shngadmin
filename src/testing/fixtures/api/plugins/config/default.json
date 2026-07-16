@@ -63,7 +63,9 @@
       "_description": {
         "de": "Web Interface zur Anzeige von Informationen zum System und SmartHomeNG Backend-Daten",
         "en": "webinterface for displaying system information and SmartHomeNG backend data"
-      }
+      },
+      "_loaded": true,
+      "_running": true
     },
     "blockly": {
       "plugin_name": "blockly",
@@ -249,7 +251,9 @@
       "_description": {
         "de": "Command Line Interface für SmartHomeNG - Funktioniert mit SmartHomeNG v1.4 und höher",
         "en": "Commandline interface for SmartHomeNG - Works with SmartHomeNG v1.4 and up"
-      }
+      },
+      "_loaded": true,
+      "_running": false
     },
     "develop": {
       "plugin_name": "priv_develop",

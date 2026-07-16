@@ -1,0 +1,110 @@
+<!------------------------------------------>
+<!--   Delete item dialog   -->
+<!------------------------------------------>
+<p-dialog
+  header="{{ 'ITEMS.DELETE ITEM' | translate }}"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '950px', minWidth: '500px' }"
+  [baseZIndex]="10000"
+>
+  <p>
+    {{ 'ITEMS.DELETE_CONFIRM' | translate }} <code>{{ itemDetails()?.path }}</code
+    >?
+  </p>
+
+  @if (deleteItemHasChildren) {
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px">
+      <p-toggleSwitch [(ngModel)]="deleteItemConfirmChildren"></p-toggleSwitch>
+      <span style="color: var(--shng-orange)">{{
+        'ITEMS.DELETE_CONFIRM_CHILDREN' | translate: { count: deleteItemDescendantCount }
+      }}</span>
+    </div>
+  }
+
+  @if (deleteItemHasFile) {
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px">
+      <p-toggleSwitch [(ngModel)]="deleteItemPersist"></p-toggleSwitch>
+      <span>{{ 'ITEMS.DELETE_PERSIST' | translate }}</span>
+    </div>
+    @if (!deleteItemPersist) {
+      <p style="color: var(--shng-orange)">
+        {{ 'ITEMS.DELETE_PERSIST_WARNING' | translate: { filename: definedInFilename } }}
+      </p>
+    }
+  }
+
+  @if (deleteItemReferencesFailed()) {
+    <p style="color: var(--shng-orange)">{{ 'ITEMS.REFERENCE_CHECK_FAILED' | translate }}</p>
+  } @else if (deleteItemReferences() === null) {
+    <p>{{ 'ITEMS.REFERENCE_CHECK_RUNNING' | translate }}</p>
+  } @else if (deleteItemReferences()!.length === 0) {
+    <p>{{ 'ITEMS.NO_REFERENCES_FOUND' | translate }}</p>
+  } @else {
+    <p style="color: var(--shng-orange)">
+      {{ 'ITEMS.REFERENCES_FOUND' | translate: { count: deleteItemReferences()!.length } }}
+    </p>
+    <div style="overflow-x: auto">
+      <table style="width: 100%; table-layout: fixed">
+        <colgroup>
+          <col style="width: 28%" />
+          <col style="width: 14%" />
+          <col style="width: 38%" />
+          <col style="width: 20%" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>{{ 'ITEMS.REFERENCE_ITEM' | translate }}</th>
+            <th>{{ 'ITEMS.ATTRIBUTE' | translate }}</th>
+            <th>{{ 'ITEMS.VALUE' | translate }}</th>
+            <th title="{{ 'ITEMS.REFERENCE_OUTCOME_HINT' | translate }}">
+              {{ 'ITEMS.REFERENCE_OUTCOME' | translate }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (ref of deleteItemReferences()!; track ref.item + ref.attribute) {
+            <tr>
+              <td class="py-1" style="overflow-wrap: anywhere">{{ ref.item }}</td>
+              <td class="py-1" style="overflow-wrap: anywhere">{{ ref.attribute }}</td>
+              <td class="py-1" style="overflow-wrap: anywhere">{{ ref.value }}</td>
+              <td class="py-1" [style.color]="ref.unambiguous ? 'var(--shng-blue)' : 'var(--shng-orange)'">
+                {{ (ref.unambiguous ? 'ITEMS.REFERENCE_OUTCOME_AUTO' : 'ITEMS.REFERENCE_OUTCOME_MANUAL') | translate }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px">
+      <p-toggleSwitch [(ngModel)]="deleteItemCleanupReferences"></p-toggleSwitch>
+      <span>{{ 'ITEMS.DELETE_CLEANUP_REFERENCES' | translate }}</span>
+    </div>
+  }
+
+  @if (deleteItemCleanupFailed()) {
+    <p style="color: var(--shng-orange)">{{ 'ITEMS.REFERENCE_CLEANUP_FAILED' | translate }}</p>
+  }
+
+  @if (deleteItemError() !== '') {
+    <p style="color: var(--shng-orange)">{{ deleteItemError() }}</p>
+  }
+
+  <ng-template #footer>
+    <button type="button" class="btn btn-sm ui-button-secondary" (click)="visible.set(false)">
+      {{ 'BUTTON.ABORT' | translate }}
+    </button>
+    <button
+      type="button"
+      class="btn btn-shng-danger btn-sm"
+      [disabled]="
+        (deleteItemReferences() === null && !deleteItemReferencesFailed()) ||
+        (deleteItemHasChildren && !deleteItemConfirmChildren)
+      "
+      (click)="confirmDeleteItem()"
+    >
+      {{ 'ITEMS.DELETE ITEM' | translate }}
+    </button>
+  </ng-template>
+</p-dialog>

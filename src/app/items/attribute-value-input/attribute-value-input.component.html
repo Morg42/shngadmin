@@ -20,7 +20,7 @@
   @case ('autocomplete') {
     <p-autoComplete
       [ngModel]="value()"
-      [suggestions]="filteredItemPaths"
+      [suggestions]="filteredItemPaths()"
       (completeMethod)="searchItemPaths($event)"
       (ngModelChange)="emitValue($event)"
       [appendTo]="'body'"

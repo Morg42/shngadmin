@@ -1,0 +1,142 @@
+<!------------------------------------------>
+<!--   New item dialog   -->
+<!------------------------------------------>
+<p-dialog
+  header="{{ 'ITEMS.NEW ITEM' | translate }}"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '700px', minWidth: '400px', height: '780px' }"
+  [baseZIndex]="10000"
+  [focusOnShow]="false"
+  (onShow)="nameInput.focus()"
+>
+  <table style="width: 100%">
+    <tr>
+      <td class="py-1">{{ 'ITEMS.PARENT' | translate }}</td>
+      <td class="py-1">
+        <input type="text" pInputText [(ngModel)]="newItemParent" style="width: 100%" />
+      </td>
+    </tr>
+    <tr>
+      <td class="py-1">{{ 'ITEMS.NAME' | translate }}</td>
+      <td class="py-1">
+        <input #nameInput type="text" pInputText [(ngModel)]="newItemName" style="width: 100%" />
+      </td>
+    </tr>
+    <tr>
+      <td class="py-1">{{ 'ITEMS.FULL PATH' | translate }}</td>
+      <td class="py-1">
+        <code>{{ newItemFullPath }}</code>
+      </td>
+    </tr>
+    @if (newItemMissingAncestors.length > 0) {
+      <tr>
+        <td class="py-1"></td>
+        <td class="py-1" style="color: var(--text-muted)">
+          <small
+            >{{ 'ITEMS.MISSING_PARENTS_INTRO' | translate }}
+            <code>{{ newItemMissingAncestors.join(', ') }}</code></small
+          >
+        </td>
+      </tr>
+    }
+    <tr>
+      <td class="py-1">{{ 'ITEMS.TYPE' | translate }}</td>
+      <td class="py-1">
+        <p-select
+          [options]="attributeCatalogService.itemTypeOptions"
+          [(ngModel)]="newItemType"
+          [appendTo]="'body'"
+          [autoOptionFocus]="true"
+          style="width: 100%"
+        ></p-select>
+      </td>
+    </tr>
+    <tr>
+      <td class="py-1">{{ 'ITEMS.PERSIST' | translate }}</td>
+      <td class="py-1">
+        <p-toggleSwitch [(ngModel)]="newItemPersist"></p-toggleSwitch>
+      </td>
+    </tr>
+    @if (newItemPersist) {
+      <tr>
+        <td class="py-1">{{ 'ITEMS.FILENAME' | translate }}</td>
+        <td class="py-1">
+          <p-autoComplete
+            [(ngModel)]="newItemFilename"
+            [suggestions]="filteredItemFiles()"
+            (completeMethod)="searchItemFiles($event)"
+            (onBlur)="stripFilenameExtension()"
+            placeholder="{{ 'ITEMS.FILENAME_PLACEHOLDER' | translate }}"
+            pTooltip="{{ 'ITEMS.FILENAME_TOOLTIP' | translate }}"
+            tooltipPosition="top"
+            tooltipEvent="both"
+            [appendTo]="'body'"
+            [inputStyle]="{ width: '100%' }"
+            style="width: 100%"
+          ></p-autoComplete>
+        </td>
+      </tr>
+    }
+  </table>
+
+  <p></p>
+  <strong style="display: block; margin-bottom: 6px">{{ 'ITEMS.ADDITIONAL ATTRIBUTES' | translate }}</strong>
+  @for (attr of newItemAttributes; track $index) {
+    <div style="margin-top: 6px">
+      <div style="display: flex; align-items: center; gap: 6px">
+        <p-autoComplete
+          #attrNameInput
+          [(ngModel)]="attr.key"
+          [suggestions]="filteredAttributeNames"
+          (completeMethod)="searchAttributeNames($event, attr)"
+          placeholder="{{ 'ITEMS.ATTRIBUTE' | translate }}"
+          [appendTo]="'body'"
+          [inputStyle]="{ width: '100%' }"
+          style="flex: 1"
+        ></p-autoComplete>
+        <app-attribute-value-input
+          [type]="attributeCatalogService.attributeType(attr.key)"
+          [validList]="attributeCatalogService.attributeValidList(attr.key)"
+          [value]="attr.value"
+          (valueChange)="attr.value = $event"
+          style="flex: 1"
+        ></app-attribute-value-input>
+        <button type="button" class="btn btn-shng-danger btn-sm" (click)="removeAttributeRow($index)">
+          <fa-icon [icon]="faTrashAlt"></fa-icon>
+        </button>
+      </div>
+      @if (attributeCatalogService.attributeDescription(attr.key)) {
+        <small style="color: var(--text-muted)">{{ attributeCatalogService.attributeDescription(attr.key) }}</small>
+      }
+    </div>
+  }
+  <div style="display: flex; gap: 8px; margin-top: 8px">
+    <button type="button" class="btn btn-shng btn-sm" (click)="addAttributeRow()">
+      <fa-icon [icon]="faPlus"></fa-icon> {{ 'ITEMS.ADD ATTRIBUTE' | translate }}
+    </button>
+    <button type="button" class="btn btn-shng btn-sm" (click)="attributeBrowser.open()">
+      <fa-icon [icon]="faList"></fa-icon> {{ 'ITEMS.BROWSE ATTRIBUTES' | translate }}
+    </button>
+  </div>
+
+  @if (newItemError() !== '') {
+    <p style="color: var(--shng-orange)">{{ newItemError() }}</p>
+  }
+
+  <ng-template #footer>
+    <button type="button" class="btn btn-sm ui-button-secondary" (click)="visible.set(false)">
+      {{ 'BUTTON.ABORT' | translate }}
+    </button>
+    <button
+      type="button"
+      class="btn btn-primary btn-sm btn-shng"
+      [disabled]="!newItemNameValid"
+      (click)="submitNewItem()"
+    >
+      {{ (newItemMissingAncestors.length > 0 ? 'ITEMS.CREATE_WITH_PATH_BUTTON' : 'BUTTON.CREATE') | translate }}
+    </button>
+  </ng-template>
+</p-dialog>
+
+<app-attribute-browser #attributeBrowser [(rows)]="newItemAttributes" />

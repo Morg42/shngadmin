@@ -1,4 +1,4 @@
-import { DestroyRef, Injectable, inject, signal } from '@angular/core';
+import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
 import { SelectItem } from 'primeng/api';
@@ -36,10 +36,38 @@ export class AttributeCatalogService {
    *  plugins alphabetically) for the attribute browser dialog. */
   readonly attributeGroups = signal<AttributeGroup[]>([]);
 
-  get itemTypeOptions(): SelectItem[] {
+  /** A computed signal, not a getter: a getter re-evaluated on every
+   *  change-detection tick would return a brand-new array of brand-new
+   *  object literals each time, and PrimeNG's p-select renders [options]
+   *  via *ngFor with no trackBy of its own - it can't tell that "new" array
+   *  apart from a different one, so it would tear down and rebuild every
+   *  dropdown option (and its click listener) on every unrelated CD tick
+   *  that happens while the "Datentyp" dropdown sits open in the
+   *  create/edit-item dialogs. Same mechanism that made the item-tree
+   *  "more actions" popup silently eat clicks (see item-tree.component.ts's
+   *  itemActionsMenuItems). computed() only re-runs when attributeCatalog()
+   *  actually changes, so the array/object identity stays stable between
+   *  real catalog reloads.
+   *
+   *  Why computed() here and not a plain signal() rebuilt by hand (the
+   *  style item-tree.component.ts's itemActionsMenuItems and
+   *  plugin-config.component.ts's deleteActionOptions use for the same
+   *  click-eating fix): this value is *derived from another signal*
+   *  (attributeCatalog() above) with no other trigger involved - no RxJS
+   *  event, no explicit "rebuild now" call site. computed() is the
+   *  built-in, correct tool for exactly that: recompute automatically
+   *  whenever the signals read inside it change. The alternative - an
+   *  effect() watching attributeCatalog() and pushing the result into a
+   *  plain signal - is the anti-pattern Angular's own guidance warns
+   *  against (effects are for side effects, not for deriving one signal's
+   *  value from another). Use computed() whenever a value's only real
+   *  dependencies are other signals; reach for a plain signal + manual
+   *  rebuild only when a dependency isn't a signal, like an RxJS event or
+   *  an explicit user action. */
+  readonly itemTypeOptions = computed<SelectItem[]>(() => {
     const validList = this.attributeCatalog()['type']?.valid_list ?? [];
     return validList.map((t) => ({ label: t, value: t }));
-  }
+  });
 
   /** name/type have their own dedicated dialog fields, so they're excluded from
    *  the free-text attribute autocomplete suggestions. */

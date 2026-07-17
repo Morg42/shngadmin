@@ -215,7 +215,7 @@
                   >
                     <fa-icon [icon]="faEllipsisVertical"></fa-icon>
                   </button>
-                  <p-menu #itemActionsMenu [model]="itemActionsMenuItems" [popup]="true" appendTo="body"></p-menu>
+                  <p-menu #itemActionsMenu [model]="itemActionsMenuItems()" [popup]="true" appendTo="body"></p-menu>
                   @if ((renameItemDialog()?.failedReferencesCount() ?? 0) > 0) {
                     <span
                       class="float-sm-right"

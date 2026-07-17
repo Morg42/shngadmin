@@ -162,8 +162,8 @@ export function createMockAttributeCatalogService(
     attributeDescription: jest.fn().mockReturnValue(''),
     attributeType: jest.fn().mockReturnValue(''),
     attributeValidList: jest.fn().mockReturnValue(undefined),
-    get itemTypeOptions() {
-      return (catalog['type']?.valid_list ?? []).map((t) => ({ label: t, value: t }));
-    },
+    // Callable, not a getter - the real service exposes this as a computed()
+    // signal, so consuming templates call it as itemTypeOptions().
+    itemTypeOptions: () => (catalog['type']?.valid_list ?? []).map((t) => ({ label: t, value: t })),
   };
 }

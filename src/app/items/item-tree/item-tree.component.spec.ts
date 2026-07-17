@@ -3,7 +3,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { Tree } from 'primeng/tree';
 import { of } from 'rxjs';
@@ -128,5 +128,40 @@ describe('ItemTreeComponent', () => {
     component.selectedFile = undefined as never;
     component.getItemtree('does.not.exist');
     expect(component.selectedFile).toBeUndefined();
+  });
+
+  // Regression tests for the "more actions" popup menu eating clicks: when
+  // itemActionsMenuItems was a plain getter, it returned a brand-new array
+  // of brand-new object literals on every read, so PrimeNG's untracked
+  // *ngFor tore down and rebuilt the popup's <li>s on every unrelated
+  // change-detection tick while it was open - dropping a click that landed
+  // mid-rebuild. Built once into a signal instead, the reference must stay
+  // stable across CD cycles UNLESS something it actually depends on
+  // changes (a real language switch) - two reads with nothing in between
+  // would pass trivially for any signal regardless of correctness, so
+  // these drive an unrelated signal write (mimicking the websocket-pushed
+  // monitored-item update that originally triggered the bug) and a real
+  // translate.use() language switch between reads instead.
+  it('itemActionsMenuItems stays referentially stable across an unrelated signal write and CD cycle', () => {
+    TestBed.inject(TranslateService).use('de');
+    fixture.detectChanges();
+    const first = component.itemActionsMenuItems();
+
+    component.itemcount.set(component.itemcount() + 1);
+    fixture.detectChanges();
+
+    expect(component.itemActionsMenuItems()).toBe(first);
+  });
+
+  it('itemActionsMenuItems rebuilds with a new reference when the language actually changes', () => {
+    const translate = TestBed.inject(TranslateService);
+    translate.use('de');
+    fixture.detectChanges();
+    const first = component.itemActionsMenuItems();
+
+    translate.use('en');
+    fixture.detectChanges();
+
+    expect(component.itemActionsMenuItems()).not.toBe(first);
   });
 });

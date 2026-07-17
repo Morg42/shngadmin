@@ -10,7 +10,7 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService, TreeNode } from 'primeng/api';
@@ -149,7 +149,43 @@ export class RenameItemDialogComponent {
     selectable: true,
   };
 
-  get renameItemParentTreeNodes(): {}[] {
+  /** A computed signal, not a getter: a getter re-evaluated on every
+   *  change-detection tick would return a brand-new array of brand-new
+   *  object literals each time, and PrimeNG's p-tree renders [value] via
+   *  *ngFor with no trackBy of its own — it can't tell that "new" array
+   *  apart from a different one, so it would tear down and rebuild every
+   *  tree node (and its click listener) on every unrelated CD tick that
+   *  happens while this dialog is open. That's the exact mechanism that
+   *  made the "more actions" popup eat clicks (see item-tree.component.ts's
+   *  itemActionsMenuItems) — confirmed live here too via the same DOM
+   *  instrumentation (this array's nodes were being rebuilt on unrelated
+   *  ticks while the dialog sat open). computed() only re-runs when
+   *  treeNodes() or langChange() actually change, so the array/object
+   *  identity - and therefore the tree's DOM - stays stable in between.
+   *  langChange itself only exists to give the computed() a signal to
+   *  depend on - translate.onLangChange is a plain RxJS Observable, not a
+   *  signal, and its emitted value is never read, only its firing.
+   *
+   *  Why computed() here and not a plain signal() rebuilt by hand (the
+   *  style item-tree.component.ts's itemActionsMenuItems and
+   *  plugin-config.component.ts's deleteActionOptions use for the same
+   *  click-eating fix): this value is *derived from another signal*
+   *  (treeNodes(), an Angular input that changes whenever the parent's own
+   *  tree data changes, at times this component has no fixed hook into).
+   *  computed() is the built-in, correct tool for "recompute automatically
+   *  whenever the signals I read change" - the alternative would be an
+   *  effect() watching treeNodes() and pushing the result into a plain
+   *  signal, which is exactly the anti-pattern Angular's own guidance
+   *  warns against (effects are for side effects, not for deriving one
+   *  signal's value from another - that's what computed() is for). Use
+   *  computed() whenever the value's only real dependencies are other
+   *  signals; reach for a plain signal + manual rebuild (see the other two
+   *  fixes above) only when a dependency is something that *isn't* a
+   *  signal, like an RxJS event or an explicit user action (open()). */
+  private readonly langChange = toSignal(this.translate.onLangChange);
+
+  readonly renameItemParentTreeNodes = computed(() => {
+    this.langChange();
     return [
       {
         ...RenameItemDialogComponent.TOP_LEVEL_TREE_NODE,
@@ -157,7 +193,7 @@ export class RenameItemDialogComponent {
       },
       ...(this.treeNodes() ?? []),
     ];
-  }
+  });
 
   /** Set when a rename attempt fails specifically because the target's
    *  parent doesn't exist yet — offered to the user as "create these

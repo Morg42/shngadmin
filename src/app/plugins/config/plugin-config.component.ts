@@ -25,6 +25,7 @@ import { MessageService } from 'primeng/api';
 import { LogService } from '../../common/services/log.service';
 import { PluginsApiService } from '../../common/services/plugins-api.service';
 import { SharedService } from '../../common/services/shared.service';
+import { rebuildOnLangChange } from '../../common/utils/translate.utils';
 
 import { NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -202,6 +203,7 @@ export class PluginConfigComponent implements OnInit {
     this.shared.setGuiLanguage();
     this.setTitle(this.translate.instant('PLUGIN.PLUGIN_CONFIGURATION'));
     this.reloadPluginList();
+    rebuildOnLangChange(this.translate, this.destroyRef, () => this.buildDeleteActionOptions());
 
     this.cols = [
       { field: 'enabled', sfield: '', header: '' },
@@ -458,7 +460,22 @@ export class PluginConfigComponent implements OnInit {
     return !!this.rowclicked_foredit && this.rowclicked_foredit.loaded;
   }
 
-  get deleteActionOptions(): { label: string; value: DeleteFollowupAction }[] {
+  /** A signal, not a getter: PrimeNG's p-select renders [options] via
+   *  *ngFor with no trackBy, so a getter recomputed on every CD tick (new
+   *  array/objects each read) can tear down and rebuild the dropdown while
+   *  it's open and silently eat a click (same bug fixed for item-tree's
+   *  popup menu). Built once via buildDeleteActionOptions() whenever the
+   *  delete-confirm dialog is about to open (rowclicked_foredit is only
+   *  read here, never reactively), plus on language change.
+   *
+   *  Plain signal(), not computed() - rowclicked_foredit is a plain
+   *  mutable field, not a signal, so there's nothing here for computed()
+   *  to track; see attribute-catalog.service.ts's itemTypeOptions for the
+   *  computed() counterpart, used there because that value derives from a
+   *  real signal. */
+  readonly deleteActionOptions = signal<{ label: string; value: DeleteFollowupAction }[]>([]);
+
+  private buildDeleteActionOptions(): void {
     // Only reached when loaded is true (the dropdown itself is hidden
     // otherwise) - "keep running" would be wrong for a loaded-but-stopped
     // plugin, since nothing is actually running to "keep".
@@ -478,7 +495,7 @@ export class PluginConfigComponent implements OnInit {
         value: 'unload',
       });
     }
-    return options;
+    this.deleteActionOptions.set(options);
   }
 
   /** Delete straight from the row, without going through the parameter
@@ -500,6 +517,7 @@ export class PluginConfigComponent implements OnInit {
     this.deleteAction.set(
       this.rowclicked_foredit && this.rowclicked_foredit.loaded ? 'unload' : 'keep',
     );
+    this.buildDeleteActionOptions();
 
     this.confirmdelete_display = true;
   }

@@ -172,6 +172,29 @@ dl {
   padding: 0;
 }
 
+/* PrimeNG p-dialog's mask (backdrop + dialog content, modal dialogs only)
+   stays interactive for the ~1.3s leave/fade-out transition after closing.
+   A click aimed at whatever's underneath (e.g. a button right behind where
+   the dialog just was) lands on the closing mask/dialog instead and is
+   silently swallowed - confirmed live via DOM/click instrumentation on
+   p-dialog specifically (the only masked PrimeNG overlay this app uses
+   today).
+   p-overlay-mask-leave-active is a class PrimeNG applies to the mask for
+   the duration of that leave transition - shared overlay-mask
+   infrastructure, not Dialog-specific (grep of node_modules/primeng shows
+   it's also used by Drawer, Table, Tree, TreeTable, Galleria, Image,
+   SpeedDial and BlockUI), so disabling pointer events on it should apply
+   the same swallowed-click protection to any of those once/if this app
+   uses them in a masked mode too - not independently verified for those.
+   !important required: PrimeNG injects its theme CSS after this file in the
+   cascade (same reasoning as the p-tabs rules above) and its own mask rule
+   sets pointer-events itself, so an equal-specificity override here loses
+   without it - confirmed live (class was present, computed pointer-events
+   stayed "auto" until !important was added). */
+.p-overlay-mask-leave-active {
+  pointer-events: none !important;
+}
+
 /* ================================================================
    Page-frame for non-tab pages (B / C layout types)
    Mirrors PrimeNG p-tabs visually so all pages look consistent.

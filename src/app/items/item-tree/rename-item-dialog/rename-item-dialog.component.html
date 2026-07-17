@@ -71,7 +71,7 @@
     }"
   >
     <p-tree
-      [value]="renameItemParentTreeNodes"
+      [value]="renameItemParentTreeNodes()"
       (onNodeSelect)="selectRenameParent($event)"
       selectionMode="single"
       [(selection)]="renameItemSelectedParentNode"

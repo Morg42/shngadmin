@@ -10,7 +10,11 @@
   [focusOnShow]="false"
   (onShow)="nameInput.focus()"
 >
-  <table style="width: 100%">
+  <table style="width: 100%; table-layout: fixed">
+    <colgroup>
+      <col style="width: 140px" />
+      <col />
+    </colgroup>
     <tr>
       <td class="py-1">{{ 'ITEMS.PARENT' | translate }}</td>
       <td class="py-1">
@@ -44,7 +48,7 @@
       <td class="py-1">{{ 'ITEMS.TYPE' | translate }}</td>
       <td class="py-1">
         <p-select
-          [options]="attributeCatalogService.itemTypeOptions"
+          [options]="attributeCatalogService.itemTypeOptions()"
           [(ngModel)]="newItemType"
           [appendTo]="'body'"
           [autoOptionFocus]="true"

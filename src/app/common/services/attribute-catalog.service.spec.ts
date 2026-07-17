@@ -84,11 +84,24 @@ describe('AttributeCatalogService', () => {
     });
 
     it('itemTypeOptions is derived from the catalog "type" attribute valid_list', () => {
-      expect(service.itemTypeOptions).toEqual([
+      expect(service.itemTypeOptions()).toEqual([
         { label: 'bool', value: 'bool' },
         { label: 'num', value: 'num' },
         { label: 'str', value: 'str' },
       ]);
+    });
+
+    // Regression test for the same click-eating pattern fixed in
+    // item-tree.component.ts's itemActionsMenuItems: a getter re-evaluated
+    // on every read would return a new array/objects each time, and
+    // PrimeNG's p-select (bound to this via [options]) renders its list
+    // with no trackBy, so it would tear down and rebuild its dropdown on
+    // every unrelated read. computed() must keep the same reference across
+    // reads until attributeCatalog() actually changes.
+    it('itemTypeOptions keeps a stable array reference across repeated reads', () => {
+      const first = service.itemTypeOptions();
+      const second = service.itemTypeOptions();
+      expect(second).toBe(first);
     });
 
     it('attributeGroups groups suggestions by source, core first, name/type excluded', () => {

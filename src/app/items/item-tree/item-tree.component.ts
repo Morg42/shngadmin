@@ -54,6 +54,7 @@ import { ToggleSwitch } from 'primeng/toggleswitch';
 import { Tooltip } from 'primeng/tooltip';
 import { Tree } from 'primeng/tree';
 import { take } from 'rxjs/operators';
+import { rebuildOnLangChange } from '../../common/utils/translate.utils';
 import { findAndExpandNodeByPath } from './item-tree-path.utils';
 
 type MonitoredItem = [string, Record<string, unknown>];
@@ -210,6 +211,15 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
         this.fetchDataForEmptyMonitoredItems();
       }
     });
+
+    // Only build eagerly if the initial translation file has already
+    // loaded (same guard as top-navigation's loggedIn$ handler) - otherwise
+    // translate.instant() below would return raw i18n keys, and rely on
+    // onLangChange below to build once it arrives instead.
+    if (this.translate.currentLang) {
+      this.buildItemActionsMenu();
+    }
+    rebuildOnLangChange(this.translate, this.destroyRef, () => this.buildItemActionsMenu());
   }
 
   /** Items restored from localStorage start with an empty data placeholder -
@@ -594,9 +604,30 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
    *  tooltip on a disabled element, which has its own hover problems (see the
    *  standalone Copy button's earlier fix, before it moved in here). Copy
    *  always opens its dialog and explains a non-persisted item's disabled
-   *  state inline in the dialog body instead. */
-  get itemActionsMenuItems(): MenuItem[] {
-    return [
+   *  state inline in the dialog body instead.
+   *
+   *  A signal set once by buildItemActionsMenu(), not a getter: a getter
+   *  re-evaluated on every change-detection tick returns a brand-new array
+   *  of brand-new object literals each time, and PrimeNG's p-menu renders
+   *  [model] via *ngFor with no trackBy - it can't tell that "new" array
+   *  apart from a different one, so it tears down and rebuilds every <li>
+   *  (and its click listener) on every unrelated CD tick that happens while
+   *  the popup is open (e.g. a websocket-pushed monitored-item update). If
+   *  that teardown lands between a real click's mousedown and mouseup,
+   *  Chrome drops the click entirely instead of retargeting it - a silent
+   *  no-op, confirmed live via DOM/click instrumentation, not fixable by
+   *  waiting since the rebuilds aren't on a fixed schedule.
+   *
+   *  Plain signal(), not computed() - nothing this depends on is itself a
+   *  signal (rebuilds are triggered by ngOnInit and translate.onLangChange,
+   *  an RxJS event), so there's no signal dependency for computed() to
+   *  track. See rename-item-dialog.component.ts's renameItemParentTreeNodes
+   *  for the computed() counterpart, used there because that value derives
+   *  from a real signal input. */
+  readonly itemActionsMenuItems = signal<MenuItem[]>([]);
+
+  private buildItemActionsMenu() {
+    this.itemActionsMenuItems.set([
       {
         label: this.translate.instant('BUTTON.EDIT'),
         icon: 'pi pi-pencil',
@@ -625,7 +656,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
         styleClass: 'menu-item-danger',
         command: () => this.deleteItemDialog()?.open(),
       },
-    ];
+    ]);
   }
 
   /** deleted output handler for <app-delete-item-dialog> - nothing to

@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { of, throwError } from 'rxjs';
 import { translateTestingModule } from '../../../../testing/test-helpers';
@@ -63,6 +64,50 @@ describe('RenameItemDialogComponent', () => {
     component.open();
 
     expect(component.visible()).toBe(false);
+  });
+
+  // ---------------------------------------------------------------------
+  // renameItemParentTreeNodes
+  // ---------------------------------------------------------------------
+
+  // Regression tests for the same click-eating pattern fixed in
+  // item-tree.component.ts's itemActionsMenuItems: a getter re-evaluated on
+  // every read would return a new array/objects each time, and PrimeNG's
+  // p-tree (bound to this via [value]) renders its nodes with no trackBy,
+  // so it would tear down and rebuild the parent-picker tree on every
+  // unrelated read while the rename/copy dialog sat open. Two reads with
+  // nothing in between would pass trivially for any computed() regardless
+  // of correctness, so these drive an unrelated signal write (mimicking
+  // the kind of unrelated state change that originally triggered the bug)
+  // and a real translate.use() language switch instead.
+  it('renameItemParentTreeNodes stays referentially stable across an unrelated signal write', () => {
+    const first = component.renameItemParentTreeNodes();
+
+    component.renameItemSubmitting.set(true);
+    const second = component.renameItemParentTreeNodes();
+
+    expect(second).toBe(first);
+  });
+
+  it('renameItemParentTreeNodes rebuilds with a new reference when the language actually changes', () => {
+    const translate = TestBed.inject(TranslateService);
+    translate.use('de');
+    const first = component.renameItemParentTreeNodes();
+
+    translate.use('en');
+    const second = component.renameItemParentTreeNodes();
+
+    expect(second).not.toBe(first);
+  });
+
+  it('renameItemParentTreeNodes recomputes when the treeNodes input changes', () => {
+    const before = component.renameItemParentTreeNodes();
+
+    fixture.componentRef.setInput('treeNodes', [{ label: 'a', path: 'a' }]);
+    const after = component.renameItemParentTreeNodes();
+
+    expect(after).not.toBe(before);
+    expect(after.map((n) => (n as { path: string }).path)).toEqual(['', 'a']);
   });
 
   // ---------------------------------------------------------------------

@@ -295,23 +295,26 @@ describe('PluginConfigComponent', () => {
   it('deleteActionOptions only offers "keep" when the plugin is not loaded', () => {
     component.rowclicked_foredit = makePlugin('x', '-x');
     component.rowclicked_foredit.loaded = false;
-    expect(component.deleteActionOptions.map((o) => o.value)).toEqual(['keep']);
+    component.DeleteConfig();
+    expect(component.deleteActionOptions().map((o) => o.value)).toEqual(['keep']);
   });
 
   it('deleteActionOptions offers "keep" and "unload" but not "stop" when loaded but not running, labeling "keep" as loaded (not running)', () => {
     component.rowclicked_foredit = makePlugin('x', '-x');
     component.rowclicked_foredit.loaded = true;
     component.rowclicked_foredit.running = false;
-    expect(component.deleteActionOptions.map((o) => o.value)).toEqual(['keep', 'unload']);
-    expect(component.deleteActionOptions[0].label).toBe('PLUGIN.DELETE_KEEP_LOADED');
+    component.DeleteConfig();
+    expect(component.deleteActionOptions().map((o) => o.value)).toEqual(['keep', 'unload']);
+    expect(component.deleteActionOptions()[0].label).toBe('PLUGIN.DELETE_KEEP_LOADED');
   });
 
   it('deleteActionOptions offers all three choices when loaded and running, labeling "keep" as running', () => {
     component.rowclicked_foredit = makePlugin('x', '-x');
     component.rowclicked_foredit.loaded = true;
     component.rowclicked_foredit.running = true;
-    expect(component.deleteActionOptions.map((o) => o.value)).toEqual(['keep', 'stop', 'unload']);
-    expect(component.deleteActionOptions[0].label).toBe('PLUGIN.DELETE_KEEP_RUNNING');
+    component.DeleteConfig();
+    expect(component.deleteActionOptions().map((o) => o.value)).toEqual(['keep', 'stop', 'unload']);
+    expect(component.deleteActionOptions()[0].label).toBe('PLUGIN.DELETE_KEEP_RUNNING');
   });
 
   it('showDeleteActionDropdown is false when not loaded, true when loaded', () => {

@@ -19,7 +19,7 @@
       <td class="py-1">{{ 'ITEMS.TYPE' | translate }}</td>
       <td class="py-1">
         <p-select
-          [options]="attributeCatalogService.itemTypeOptions"
+          [options]="attributeCatalogService.itemTypeOptions()"
           [(ngModel)]="editItemType"
           [appendTo]="'body'"
           [autoOptionFocus]="true"

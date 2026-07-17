@@ -232,7 +232,7 @@
   <br />
   @if (showDeleteActionDropdown) {
     <p-select
-      [options]="deleteActionOptions"
+      [options]="deleteActionOptions()"
       optionLabel="label"
       optionValue="value"
       [showClear]="false"

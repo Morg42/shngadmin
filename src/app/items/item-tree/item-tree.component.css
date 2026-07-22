@@ -97,6 +97,27 @@
   overflow-x: auto;
 }
 
+/* Long values used to trigger the global textarea rule's overflow-x
+   scrollbar (styles.css), which sat over the last line of text and made
+   it unreadable. Wrapping here lets pTextarea's autoResize grow the
+   field's height to fit instead — #tree_detail above scrolls the whole
+   panel if that ever exceeds the visible area. */
+.item-value-textarea {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  overflow-x: hidden;
+}
+
+/* Without this, the table's default auto layout sizes the value column
+   to the textarea's unwrapped intrinsic width (percentage widths don't
+   count during that pass), so a long value widened the whole table
+   instead of wrapping — table-layout: fixed pins the column widths from
+   the header row so cell content has to wrap within them instead. */
+.item-details-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
 /* Monitored items tab: scrollable area matching the page bottom boundary.
    height: 100% of the .p-tabpanel ancestor (global flex-fill chain, see
    styles.css) rather than a calc() guessing the tablist's pixel height —

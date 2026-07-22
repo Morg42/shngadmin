@@ -50,6 +50,7 @@ import { Dialog } from 'primeng/dialog';
 import { Menu } from 'primeng/menu';
 import { Ripple } from 'primeng/ripple';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
+import { Textarea } from 'primeng/textarea';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 import { Tooltip } from 'primeng/tooltip';
 import { Tree } from 'primeng/tree';
@@ -80,6 +81,7 @@ type MonitoredItem = [string, Record<string, unknown>];
     Tree,
     PrimeTemplate,
     ToggleSwitch,
+    Textarea,
     FormsModule,
     RouterLink,
     NgTemplateOutlet,

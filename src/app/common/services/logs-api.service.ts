@@ -4,6 +4,7 @@ import { Injectable, inject } from '@angular/core';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { LogsType } from '../models/logfiles-info';
+import { MemlogResponse } from '../models/memlog-entry';
 import { AppConfigService } from './app-config.service';
 import { LogService } from './log.service';
 import { ServerApiService } from './server-api.service';
@@ -61,6 +62,28 @@ export class LogsApiService {
         return of(result);
 
         // return of('File not found!');
+      }),
+    );
+  }
+
+  /** Tail of an in-memory log (e.g. 'env.core.log', the root WARNING+
+   *  buffer) - see modules/admin/api_logs.py's LogsController.read(),
+   *  which recognizes registered memory-log names before falling back
+   *  to the file lookup readLogfile() above uses.
+   *
+   *  Returns null on error rather than a fake `{entries: []}` success
+   *  shape - the dashboard widget polling this needs to tell "the log is
+   *  genuinely quiet" apart from "the request failed", which an empty
+   *  array can't do on its own. */
+  getMemlogTail(name: string, count = 10) {
+    const apiUrl = this.appConfig.apiUrl;
+    const url = apiUrl + 'logs/' + encodeURIComponent(name) + '?count=' + String(count);
+    return this.http.get<MemlogResponse>(url).pipe(
+      catchError((err: HttpErrorResponse) => {
+        this.log.error(
+          'LogsApiService (getMemlogTail): Could not read memlog ' + name + ' - ' + err.error.error,
+        );
+        return of(null);
       }),
     );
   }

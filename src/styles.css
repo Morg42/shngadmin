@@ -1251,6 +1251,10 @@ a.text-shng:hover {
   color: var(--shng-red);
   font-weight: var(--font-weight-bold); /* sparingly: status indicator */
 }
+.shng-status-warning {
+  color: var(--shng-amber);
+  font-weight: var(--font-weight-bold); /* sparingly: status indicator */
+}
 .shng-cell-alt {
   background-color: var(--shng-cell-alt-bg);
 }

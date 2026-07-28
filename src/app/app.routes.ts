@@ -1,12 +1,47 @@
+import { inject } from '@angular/core';
 import { Routes } from '@angular/router';
 import { appReadyGuard } from './common/guards/app-ready.guard';
 import { authGuard } from './common/guards/auth.guard';
+import { AppConfigService } from './common/services/app-config.service';
 import { LoginComponent } from './login/login.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 
-export const appRoutes: Routes = [
-  { path: '', redirectTo: 'system', pathMatch: 'full' },
+// Keep in sync with the top-level route paths below and with
+// modules/admin/module.yaml's start_page valid_list in the shng repo.
+const START_ROUTES = [
+  'dashboard',
+  'system',
+  'items',
+  'logics',
+  'plugins',
+  'scenes',
+  'schedulers',
+  'services',
+  'logs',
+];
 
+/** Falls back to 'dashboard' for an unrecognized value (stale config, typo)
+ *  rather than redirecting into a 404. Extracted from the route's
+ *  redirectTo function so it's testable without router/DI machinery. */
+export function resolveStartRoute(configured: string): string {
+  return START_ROUTES.includes(configured) ? configured : 'dashboard';
+}
+
+export const appRoutes: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    // AppConfigService.startPage is patched during APP_INITIALIZER
+    // (getServerBasicinfo), which the router guarantees completes before
+    // this initial redirect resolves - see server-api.service.ts.
+    redirectTo: () => resolveStartRoute(inject(AppConfigService).startPage),
+  },
+
+  {
+    path: 'dashboard',
+    canActivate: [appReadyGuard, authGuard],
+    loadChildren: () => import('./dashboard/dashboard.routes').then((r) => r.DASHBOARD_ROUTES),
+  },
   {
     path: 'system',
     canActivate: [appReadyGuard, authGuard],

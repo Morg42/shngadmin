@@ -52,6 +52,7 @@ export function createMockAppConfigService() {
     tzname: 'CET',
     tznameDST: 'CEST',
     fallbackLanguageOrder: ['en', 'de'],
+    startPage: 'dashboard',
     itemtreeFullpath: true,
     itemtreeSearchstart: 3,
     developerMode: false,

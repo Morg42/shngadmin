@@ -1,0 +1,149 @@
+.shngbody {
+  height: calc(100vh - var(--navbar-height));
+  width: 100%;
+  margin: 0;
+  padding: 0 var(--page-padding) var(--page-padding) var(--page-padding);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* .shng-page-header and .shng-page-body are global — see styles.css */
+
+.page-body {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: auto;
+  padding: 10px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2.5fr 1fr;
+  grid-template-areas:
+    'status plugins'
+    'schedulers schedulers'
+    'logs logs';
+  gap: var(--grid-gutter, 16px);
+  /* Default grid stretch, not 'start': status and plugins share a row, so
+     they should match height and grow together as either one's content
+     grows, instead of each sizing independently to its own content. */
+  align-items: stretch;
+}
+
+.widget .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.widget-stale-icon {
+  flex: 0 0 auto;
+}
+
+/* Grey layer on top of stale content - the header icon+tooltip explains
+   why, this just makes "not fresh" visible at a glance. */
+.card-body.stale {
+  opacity: 0.55;
+}
+
+.widget-status {
+  grid-area: status;
+}
+.widget-plugins {
+  grid-area: plugins;
+}
+.widget-schedulers {
+  grid-area: schedulers;
+}
+.widget-logs {
+  grid-area: logs;
+}
+
+@media (max-width: 720px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'status'
+      'plugins'
+      'schedulers'
+      'logs';
+  }
+}
+
+.widget-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.widget-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--shng-cell-alt-bg);
+}
+
+.widget-list li:last-child {
+  border-bottom: none;
+}
+
+.widget-list-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+a.widget-list-label {
+  color: inherit;
+  text-decoration: none;
+}
+a.widget-list-label:hover {
+  text-decoration: underline;
+}
+
+.widget-list li .btn {
+  flex: 0 0 auto;
+  padding: 2px 8px;
+}
+
+.status-list li {
+  gap: 12px;
+}
+.status-list .shng-text-caption {
+  flex: 0 0 auto;
+  width: 9em;
+}
+
+/* Log widget spans the full page width - readability needs the horizontal
+   room, not a scrollbar; truncating/wrapping the message inside a
+   half-width card was the problem this fixes. */
+.memlog-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 3px 0;
+  font-family: var(--font-family-monospace, monospace);
+  font-size: 0.9em;
+}
+
+.memlog-time {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.memlog-level {
+  flex: 0 0 auto;
+  width: 4.5em;
+}
+
+.memlog-message {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: break-word;
+}

@@ -22,8 +22,14 @@ export class DynamicFieldComponent {
 
   readonly NUM_TYPES = ['int', 'num', 'float', 'scene', 'hide-int'];
 
+  /** p-select's internal label rendering falls back via `placeholder() ||
+   *  'p-emptylabel'` when nothing is selected - a falsy-but-real default
+   *  (boolean false, number 0) was silently swallowed by that `||` and
+   *  rendered as nothing at all, not as the string "false"/"0". Always
+   *  returning a string sidesteps the falsy check entirely. */
   get placeholder(): string | undefined {
-    return this.row().default as string | undefined;
+    const def = this.row().default;
+    return def === undefined || def === null ? undefined : String(def);
   }
 
   get validMin(): string | number | null {

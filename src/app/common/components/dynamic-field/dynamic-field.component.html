@@ -7,6 +7,7 @@
       [(ngModel)]="row()[col().field]"
       (ngModelChange)="row()[col().field] = $event; onChanged()"
       [style]="{ width: '100%' }"
+      appendTo="body"
     >
     </p-select>
   }

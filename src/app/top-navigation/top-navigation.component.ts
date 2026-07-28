@@ -292,140 +292,144 @@ export class TopNavigationComponent implements OnInit {
     );
 
     const menu: MenuItem[] = [];
-    TopNavigationComponent.setMenuEntry(menu, 0, this.translate.instant('MENU.SYSTEM'), [
+    TopNavigationComponent.setMenuEntry(menu, 0, this.translate.instant('MENU.DASHBOARD'), [
+      '/dashboard',
+    ]);
+
+    TopNavigationComponent.setMenuEntry(menu, 1, this.translate.instant('MENU.SYSTEM'), [
       '/system/systemproperties',
     ]);
     TopNavigationComponent.setSubmenuEntry(
       menu,
-      0,
+      1,
       0,
       this.translate.instant('MENU.SYSTEM_PROPERTIES'),
       ['/system/systemproperties'],
     );
     TopNavigationComponent.setSubmenuEntry(
       menu,
-      0,
+      1,
       1,
       this.translate.instant('MENU.SYSTEM_CONFIGURATION'),
       ['/system/config'],
     );
 
-    TopNavigationComponent.setMenuEntry(menu, 1, this.translate.instant('MENU.SERVICES'), [
+    TopNavigationComponent.setMenuEntry(menu, 2, this.translate.instant('MENU.SERVICES'), [
       '/services',
     ]);
-    TopNavigationComponent.setSubmenuEntry(menu, 1, 0, this.translate.instant('MENU.SERVICES'), [
+    TopNavigationComponent.setSubmenuEntry(menu, 2, 0, this.translate.instant('MENU.SERVICES'), [
       '/services',
     ]);
     TopNavigationComponent.setSubmenuEntry(
       menu,
-      1,
+      2,
       1,
       this.translate.instant('MENU.FUNCTION_CONFIGURATION'),
       ['/services/functions'],
     );
 
-    TopNavigationComponent.setMenuEntry(menu, 2, this.translate.instant('MENU.ITEMS'), ['/items']);
-    TopNavigationComponent.setSubmenuEntry(menu, 2, 0, this.translate.instant('MENU.ITEM_TREE'), [
+    TopNavigationComponent.setMenuEntry(menu, 3, this.translate.instant('MENU.ITEMS'), ['/items']);
+    TopNavigationComponent.setSubmenuEntry(menu, 3, 0, this.translate.instant('MENU.ITEM_TREE'), [
       '/items',
     ]);
     TopNavigationComponent.setSubmenuEntry(
       menu,
-      2,
+      3,
       1,
       this.translate.instant('MENU.ITEM_CONFIGURATION'),
       ['/items/config'],
     );
     TopNavigationComponent.setSubmenuEntry(
       menu,
-      2,
+      3,
       2,
       this.translate.instant('MENU.ITEM_STRUCTS'),
       ['/items/structs'],
     );
     TopNavigationComponent.setSubmenuEntry(
       menu,
-      2,
+      3,
       3,
       this.translate.instant('MENU.ITEM_STRUCT_CONFIGURATION'),
       ['/items/struct_config'],
     );
 
-    TopNavigationComponent.setMenuEntry(menu, 3, this.translate.instant('MENU.LOGICS'), [
+    TopNavigationComponent.setMenuEntry(menu, 4, this.translate.instant('MENU.LOGICS'), [
       '/logics/list',
     ]);
-    TopNavigationComponent.setSubmenuEntry(menu, 3, 0, this.translate.instant('MENU.LOGICS_LIST'), [
+    TopNavigationComponent.setSubmenuEntry(menu, 4, 0, this.translate.instant('MENU.LOGICS_LIST'), [
       '/logics/list',
     ]);
     TopNavigationComponent.setSubmenuEntry(
       menu,
-      3,
+      4,
       1,
       this.translate.instant('MENU.LOGICS_GROUPS'),
       ['/logics/groups'],
     );
 
-    TopNavigationComponent.setMenuEntry(menu, 4, this.translate.instant('MENU.PLUGINS'), [
+    TopNavigationComponent.setMenuEntry(menu, 5, this.translate.instant('MENU.PLUGINS'), [
       '/plugins',
     ]);
     TopNavigationComponent.setSubmenuEntry(
       menu,
-      4,
+      5,
       0,
       this.translate.instant('MENU.PLUGINS_LIST'),
       ['/plugins'],
     );
     TopNavigationComponent.setSubmenuEntry(
       menu,
-      4,
+      5,
       1,
       this.translate.instant('MENU.PLUGINS_CONFIGURATION'),
       ['/plugins/config'],
     );
 
-    TopNavigationComponent.setMenuEntry(menu, 5, this.translate.instant('MENU.SCENES'), [
+    TopNavigationComponent.setMenuEntry(menu, 6, this.translate.instant('MENU.SCENES'), [
       '/scenes/list',
     ]);
-    TopNavigationComponent.setSubmenuEntry(menu, 5, 0, this.translate.instant('MENU.SCENE_LIST'), [
+    TopNavigationComponent.setSubmenuEntry(menu, 6, 0, this.translate.instant('MENU.SCENE_LIST'), [
       '/scenes/list',
     ]);
     TopNavigationComponent.setSubmenuEntry(
       menu,
-      5,
+      6,
       1,
       this.translate.instant('MENU.SCENE_CONFIGURATION'),
       ['/scenes/config'],
     );
 
-    TopNavigationComponent.setMenuEntry(menu, 6, this.translate.instant('MENU.SCHEDULERS'), [
+    TopNavigationComponent.setMenuEntry(menu, 7, this.translate.instant('MENU.SCHEDULERS'), [
       '/schedulers',
     ]);
-    TopNavigationComponent.setSubmenuEntry(menu, 6, 0, this.translate.instant('MENU.SCHEDULERS'), [
+    TopNavigationComponent.setSubmenuEntry(menu, 7, 0, this.translate.instant('MENU.SCHEDULERS'), [
       '/schedulers',
     ]);
-    TopNavigationComponent.setSubmenuEntry(menu, 6, 1, this.translate.instant('MENU.THREADS'), [
+    TopNavigationComponent.setSubmenuEntry(menu, 7, 1, this.translate.instant('MENU.THREADS'), [
       '/threads',
     ]);
 
-    TopNavigationComponent.setMenuEntry(menu, 7, this.translate.instant('MENU.LOGS'), [
+    TopNavigationComponent.setMenuEntry(menu, 8, this.translate.instant('MENU.LOGS'), [
       '/logs/display',
     ]);
     TopNavigationComponent.setSubmenuEntry(
       menu,
-      7,
+      8,
       0,
       this.translate.instant('MENU.LOGS_DISPLAY'),
       ['/logs/display'],
     );
     TopNavigationComponent.setSubmenuEntry(
       menu,
-      7,
+      8,
       1,
       this.translate.instant('MENU.LOGGER_CONFIGURATION'),
       ['/logs/logger-list'],
     );
     TopNavigationComponent.setSubmenuEntry(
       menu,
-      7,
+      8,
       2,
       this.translate.instant('MENU.LOGGING_CONFIGURATION'),
       ['/logs/logging-configuration'],

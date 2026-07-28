@@ -1,0 +1,167 @@
+<div class="shngbody">
+  <div class="shng-page-header">{{ 'MENU.DASHBOARD' | translate }}</div>
+  <div class="shng-page-body page-body">
+    <div class="dashboard-grid">
+      <div class="card widget widget-status">
+        <div class="card-header">
+          <span>{{ 'DASHBOARD.SYSTEM_STATUS' | translate }}</span>
+          @if (systemWidgetError()) {
+            <fa-icon
+              class="shng-status-warning widget-stale-icon"
+              [icon]="faExclamationTriangle"
+              [title]="staleTooltip(systemWidgetLastUpdated())"
+            ></fa-icon>
+          }
+        </div>
+        <div class="card-body" [class.stale]="systemWidgetError()">
+          <ul class="widget-list status-list">
+            <li>
+              <span class="shng-text-caption">{{ 'DASHBOARD.HOSTNAME' | translate }}</span>
+              <span class="widget-list-label">{{ systemInfo().node }}</span>
+            </li>
+            <li>
+              <span class="shng-text-caption">{{ 'DASHBOARD.SHNG_VERSION' | translate }}</span>
+              <span class="widget-list-label">{{ systemInfo().sh_vers }}</span>
+            </li>
+            <li>
+              <span class="shng-text-caption">{{ 'DASHBOARD.SHNG_UPTIME' | translate }}</span>
+              <span class="widget-list-label">{{ shUptimeString() }}</span>
+            </li>
+            <li>
+              <span class="shng-text-caption">{{ 'DASHBOARD.OSTYPE' | translate }}</span>
+              <span class="widget-list-label">{{ systemInfo().ostype }}</span>
+            </li>
+            <li>
+              <span class="shng-text-caption">{{ 'DASHBOARD.PYTHON' | translate }}</span>
+              <span class="widget-list-label">{{ pythonInfoString() }}</span>
+            </li>
+            <li>
+              <span class="shng-text-caption">{{ 'DASHBOARD.ITEM_COUNT' | translate }}</span>
+              <span class="widget-list-label">{{ itemCount() }}</span>
+            </li>
+            <li>
+              <span class="shng-text-caption">{{ 'DASHBOARD.LOGIC_COUNT' | translate }}</span>
+              <span class="widget-list-label">{{ logicCount() }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card widget widget-plugins">
+        <div class="card-header">
+          <span
+            >{{ 'DASHBOARD.STOPPED_PLUGINS' | translate }} ({{ stoppedPlugins().length }}/{{ pluginsTotal() }})</span
+          >
+          @if (pluginsError()) {
+            <fa-icon
+              class="shng-status-warning widget-stale-icon"
+              [icon]="faExclamationTriangle"
+              [title]="staleTooltip(pluginsLastUpdated())"
+            ></fa-icon>
+          }
+        </div>
+        <div class="card-body" [class.stale]="pluginsError()">
+          @if (stoppedPlugins().length === 0) {
+            <p class="shng-empty-hint">{{ 'DASHBOARD.NO_STOPPED_PLUGINS' | translate }}</p>
+          }
+          @if (stoppedPlugins().length > 0) {
+            <ul class="widget-list">
+              @for (plugin of stoppedPlugins(); track plugin.configname) {
+                <li>
+                  <fa-icon
+                    class="shng-status-error"
+                    [icon]="faPauseCircle"
+                    title="{{ 'PLUGIN.DISABLED' | translate }}"
+                  ></fa-icon>
+                  <a class="widget-list-label" routerLink="/plugins">{{ plugin.configname }}</a>
+                  <span class="shng-text-caption">({{ plugin.pluginname }})</span>
+                  @if (plugin.stoppable) {
+                    <button
+                      type="button"
+                      name="enable"
+                      title="{{ 'PLUGIN.START' | translate }}"
+                      class="btn btn-outline-primary btn-sm"
+                      [disabled]="startingPlugins().has(plugin.configname)"
+                      (click)="startPlugin(plugin.configname)"
+                    >
+                      @if (startingPlugins().has(plugin.configname)) {
+                        <i class="fas fa-spinner fa-spin"></i>
+                      } @else {
+                        <i class="fas fa-play"></i>
+                      }
+                    </button>
+                  }
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+
+      <div class="card widget widget-schedulers">
+        <div class="card-header">
+          <span>{{ 'DASHBOARD.OVERDUE_SCHEDULERS' | translate }}</span>
+          @if (schedulersError()) {
+            <fa-icon
+              class="shng-status-warning widget-stale-icon"
+              [icon]="faExclamationTriangle"
+              [title]="staleTooltip(schedulersLastUpdated())"
+            ></fa-icon>
+          }
+        </div>
+        <div class="card-body" [class.stale]="schedulersError()">
+          @if (overdueSchedulers().length === 0) {
+            <p class="shng-empty-hint">{{ 'DASHBOARD.NO_OVERDUE_SCHEDULERS' | translate }}</p>
+          }
+          @if (overdueSchedulers().length > 0) {
+            <ul class="widget-list">
+              @for (entry of overdueSchedulers(); track entry.name + entry.group) {
+                <li>
+                  <fa-icon
+                    class="shng-status-error"
+                    [icon]="faExclamationTriangle"
+                    title="{{ 'DASHBOARD.OVERDUE_SCHEDULERS' | translate }}"
+                  ></fa-icon>
+                  <span class="widget-list-label">{{ entry.name }}</span>
+                  <span class="shng-text-caption">({{ entry.group }})</span>
+                  <span class="shng-text-caption"
+                    >{{ 'DASHBOARD.SCHEDULED_FOR' | translate }} {{ schedulerNextDisplay(entry.next) }}</span
+                  >
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+
+      <div class="card widget widget-logs">
+        <div class="card-header">
+          <span>{{ 'DASHBOARD.RECENT_WARNINGS' | translate }}</span>
+          @if (logsError()) {
+            <fa-icon
+              class="shng-status-warning widget-stale-icon"
+              [icon]="faExclamationTriangle"
+              [title]="staleTooltip(logsLastUpdated())"
+            ></fa-icon>
+          }
+        </div>
+        <div class="card-body" [class.stale]="logsError()">
+          @if (memlogEntries().length === 0) {
+            <p class="shng-empty-hint">{{ 'DASHBOARD.NO_RECENT_WARNINGS' | translate }}</p>
+          }
+          @if (memlogEntries().length > 0) {
+            <ul class="widget-list memlog-list">
+              @for (entry of memlogEntries(); track $index) {
+                <li>
+                  <span class="memlog-time shng-text-caption">{{ memlogTimeDisplay(entry.time) }}</span>
+                  <span [class]="'memlog-level ' + levelClass(entry.level)">{{ entry.level }}</span>
+                  <span class="memlog-message">{{ entry.message }}</span>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

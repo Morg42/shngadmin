@@ -107,6 +107,7 @@ export class ServerApiService {
           wsHost: this._resolveWsHost(result.websocket_host),
           wsPort: result.websocket_port ?? '',
           loginRequired: result.login_required ?? false,
+          startPage: result.start_page ?? 'dashboard',
         });
 
         this.shared.setGuiLanguage();

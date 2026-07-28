@@ -46,6 +46,11 @@ export interface AppConfig {
   // restart button so it doesn't promise a restart it can't deliver.
   restartStopsOnly: boolean;
   fallbackLanguageOrder: string[];
+  // Server-side canonical default (etc/module.yaml admin: start_page) - which
+  // top-level route '' redirects to. Patched during APP_INITIALIZER
+  // (getServerBasicinfo), before the router's initial navigation resolves
+  // that redirect - see app.routes.ts.
+  startPage: string;
 
   // Language (may be updated by the user at runtime)
   defaultLanguage: string;
@@ -74,6 +79,7 @@ const DEFAULT_CONFIG: AppConfig = {
   resourceGraphPeriod: '24h',
   restartStopsOnly: false,
   fallbackLanguageOrder: ['en', 'de'],
+  startPage: 'dashboard',
   defaultLanguage: 'en',
 };
 
@@ -195,6 +201,9 @@ export class AppConfigService {
   }
   get tznameDST(): string {
     return this.snapshot.tznameDST;
+  }
+  get startPage(): string {
+    return this.snapshot.startPage;
   }
 
   // ----------------------------------------------------------------

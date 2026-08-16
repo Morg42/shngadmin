@@ -23,6 +23,7 @@
   grid-template-areas:
     'status plugins'
     'schedulers schedulers'
+    'database database'
     'logs logs';
   gap: var(--grid-gutter, 16px);
   /* Default grid stretch, not 'start': status and plugins share a row, so
@@ -57,6 +58,9 @@
 .widget-schedulers {
   grid-area: schedulers;
 }
+.widget-database {
+  grid-area: database;
+}
 .widget-logs {
   grid-area: logs;
 }
@@ -68,6 +72,7 @@
       'status'
       'plugins'
       'schedulers'
+      'database'
       'logs';
   }
 }
@@ -117,6 +122,35 @@ a.widget-list-label:hover {
 .status-list .shng-text-caption {
   flex: 0 0 auto;
   width: 9em;
+}
+
+/* Label ... dotted leader ... value, filling the row's full width - not
+   the fixed-caption-column layout status-list uses above, since these
+   values (driver name, version string) vary too much in length for a
+   fixed column to look right. */
+.dotted-list li {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.dotted-label {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.dotted-leader {
+  flex: 1 1 auto;
+  min-width: 12px;
+  border-bottom: 1px dotted var(--shng-border);
+  /* nudges the line up to sit near the text baseline rather than flush
+     against the row's bottom edge (where a descender like 'g' would go) */
+  margin-bottom: 0.3em;
+}
+
+.dotted-value {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 /* Log widget spans the full page width - readability needs the horizontal

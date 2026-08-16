@@ -109,7 +109,10 @@ describe('DashboardOverviewComponent', () => {
     setPluginState: jest.fn(() => of(true)),
   };
   const mockLogsApi = { getMemlogTail: () => of(MEMLOG_FIXTURE) };
-  const mockServerApi = { getSystemStats: () => of(SYSTEM_INFO_FIXTURE) };
+  const mockServerApi = {
+    getSystemStats: () => of(SYSTEM_INFO_FIXTURE),
+    getDatabaseInfo: () => of({ configured: false }),
+  };
   const mockItemsApi = { getItemList: () => of(itemListFixture) };
   const mockLogicsApi = { getLogics: () => of(LOGICS_FIXTURE) };
   const mockSchedulersApi = { getSchedulers: () => of(SCHEDULERS_FIXTURE) };
@@ -310,7 +313,10 @@ describe('DashboardOverviewComponent error/stale handling', () => {
 
     const mockPluginsApi = { getPluginsInfo, setPluginState: () => of(true) };
     const mockLogsApi = { getMemlogTail: () => of(MEMLOG_FIXTURE) };
-    const mockServerApi = { getSystemStats: () => of(SYSTEM_INFO_FIXTURE) };
+    const mockServerApi = {
+      getSystemStats: () => of(SYSTEM_INFO_FIXTURE),
+      getDatabaseInfo: () => of({ configured: false }),
+    };
     const mockItemsApi = { getItemList: () => of(itemListFixture) };
     const mockLogicsApi = { getLogics: () => of(LOGICS_FIXTURE) };
     const mockSchedulersApi = { getSchedulers: () => of([]) };
@@ -363,7 +369,10 @@ describe('DashboardOverviewComponent error/stale handling', () => {
       setPluginState: () => of({}),
     };
     const mockLogsApi = { getMemlogTail: () => of(null) };
-    const mockServerApi = { getSystemStats: () => of(SYSTEM_INFO_FIXTURE) };
+    const mockServerApi = {
+      getSystemStats: () => of(SYSTEM_INFO_FIXTURE),
+      getDatabaseInfo: () => of({ configured: false }),
+    };
     const mockItemsApi = { getItemList: () => of(itemListFixture) };
     const mockLogicsApi = { getLogics: () => of(LOGICS_FIXTURE) };
     const mockSchedulersApi = { getSchedulers: () => of([]) };
@@ -408,7 +417,10 @@ describe('DashboardOverviewComponent error/stale handling', () => {
     };
     const mockLogsApi = { getMemlogTail: () => of(MEMLOG_FIXTURE) };
     // All three mirror their real services' HTTP-error fallback shapes.
-    const mockServerApi = { getSystemStats: () => of({}) };
+    const mockServerApi = {
+      getSystemStats: () => of({}),
+      getDatabaseInfo: () => of({ configured: false }),
+    };
     const mockItemsApi = { getItemList: () => of([]) };
     const mockLogicsApi = { getLogics: () => of({}) };
     const mockSchedulersApi = { getSchedulers: () => of([]) };
@@ -459,7 +471,10 @@ describe('DashboardOverviewComponent error/stale handling', () => {
     // logicCount fails, the other two succeed - systemWidgetError should
     // still be true (any failure counts), but a last-updated time is
     // available since not everything failed.
-    const mockServerApi = { getSystemStats: () => of(SYSTEM_INFO_FIXTURE) };
+    const mockServerApi = {
+      getSystemStats: () => of(SYSTEM_INFO_FIXTURE),
+      getDatabaseInfo: () => of({ configured: false }),
+    };
     const mockItemsApi = { getItemList: () => of(itemListFixture) };
     const mockLogicsApi = { getLogics: () => of({}) };
     const mockSchedulersApi = { getSchedulers: () => of([]) };
@@ -508,6 +523,7 @@ describe('DashboardOverviewComponent with a non-virtualenv Python', () => {
     const mockLogsApi = { getMemlogTail: () => of(MEMLOG_FIXTURE) };
     const mockServerApi = {
       getSystemStats: () => of({ ...SYSTEM_INFO_FIXTURE, pyvirtual: false }),
+      getDatabaseInfo: () => of({ configured: false }),
     };
     const mockItemsApi = { getItemList: () => of(itemListFixture) };
     const mockLogicsApi = { getLogics: () => of(LOGICS_FIXTURE) };
@@ -554,7 +570,10 @@ describe('DashboardOverviewComponent startPlugin() feedback', () => {
     const getPluginsInfo = jest.fn(() => of(pluginsFixture));
     const mockPluginsApi = { getPluginsInfo, setPluginState: () => setPluginState$.asObservable() };
     const mockLogsApi = { getMemlogTail: () => of(MEMLOG_FIXTURE) };
-    const mockServerApi = { getSystemStats: () => of(SYSTEM_INFO_FIXTURE) };
+    const mockServerApi = {
+      getSystemStats: () => of(SYSTEM_INFO_FIXTURE),
+      getDatabaseInfo: () => of({ configured: false }),
+    };
     const mockItemsApi = { getItemList: () => of(itemListFixture) };
     const mockLogicsApi = { getLogics: () => of(LOGICS_FIXTURE) };
     const mockSchedulersApi = { getSchedulers: () => of([]) };
@@ -610,7 +629,10 @@ describe('DashboardOverviewComponent startPlugin() feedback', () => {
       setPluginState: () => of(false),
     };
     const mockLogsApi = { getMemlogTail: () => of(MEMLOG_FIXTURE) };
-    const mockServerApi = { getSystemStats: () => of(SYSTEM_INFO_FIXTURE) };
+    const mockServerApi = {
+      getSystemStats: () => of(SYSTEM_INFO_FIXTURE),
+      getDatabaseInfo: () => of({ configured: false }),
+    };
     const mockItemsApi = { getItemList: () => of(itemListFixture) };
     const mockLogicsApi = { getLogics: () => of(LOGICS_FIXTURE) };
     const mockSchedulersApi = { getSchedulers: () => of([]) };
@@ -740,7 +762,10 @@ describe('DashboardOverviewComponent overdueSchedulers wiring', () => {
       setPluginState: () => of({}),
     };
     const mockLogsApi = { getMemlogTail: () => of(MEMLOG_FIXTURE) };
-    const mockServerApi = { getSystemStats: () => of(SYSTEM_INFO_FIXTURE) };
+    const mockServerApi = {
+      getSystemStats: () => of(SYSTEM_INFO_FIXTURE),
+      getDatabaseInfo: () => of({ configured: false }),
+    };
     const mockItemsApi = { getItemList: () => of(itemListFixture) };
     const mockLogicsApi = { getLogics: () => of(LOGICS_FIXTURE) };
     const mockSchedulersApi = { getSchedulers: () => of([overdueEntry]) };
@@ -798,7 +823,10 @@ describe('DashboardOverviewComponent overdueSchedulers wiring', () => {
       setPluginState: () => of({}),
     };
     const mockLogsApi = { getMemlogTail: () => of(MEMLOG_FIXTURE) };
-    const mockServerApi = { getSystemStats: () => of(SYSTEM_INFO_FIXTURE) };
+    const mockServerApi = {
+      getSystemStats: () => of(SYSTEM_INFO_FIXTURE),
+      getDatabaseInfo: () => of({ configured: false }),
+    };
     const mockItemsApi = { getItemList: () => of(itemListFixture) };
     const mockLogicsApi = { getLogics: () => of(LOGICS_FIXTURE) };
     const mockSchedulersApi = { getSchedulers: () => of([inactiveEntry]) };
@@ -832,5 +860,115 @@ describe('DashboardOverviewComponent overdueSchedulers wiring', () => {
     await jest.advanceTimersByTimeAsync(0);
 
     expect(component.overdueSchedulers()).toEqual([]);
+  });
+});
+
+describe('DashboardOverviewComponent database widget', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  /** Only getDatabaseInfo() varies across these tests - every other data
+   *  source uses the same minimal fixtures as the main describe block
+   *  above, just inlined here since this block doesn't share its
+   *  beforeEach(). */
+  async function createComponent(
+    databaseInfoResponse: unknown,
+  ): Promise<DashboardOverviewComponent> {
+    jest.useFakeTimers();
+
+    const mockPluginsApi = { getPluginsInfo: () => of([]), setPluginState: () => of(true) };
+    const mockLogsApi = { getMemlogTail: () => of(MEMLOG_FIXTURE) };
+    const mockServerApi = {
+      getSystemStats: () => of(SYSTEM_INFO_FIXTURE),
+      getDatabaseInfo: () => of(databaseInfoResponse),
+    };
+    const mockItemsApi = { getItemList: () => of(itemListFixture) };
+    const mockLogicsApi = { getLogics: () => of(LOGICS_FIXTURE) };
+    const mockSchedulersApi = { getSchedulers: () => of([]) };
+
+    await TestBed.configureTestingModule({
+      imports: [DashboardOverviewComponent, translateTestingModule],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: PluginsApiService, useValue: mockPluginsApi },
+        { provide: LogsApiService, useValue: mockLogsApi },
+        { provide: ServerApiService, useValue: mockServerApi },
+        { provide: ItemsApiService, useValue: mockItemsApi },
+        { provide: LogicsApiService, useValue: mockLogicsApi },
+        { provide: SchedulersApiService, useValue: mockSchedulersApi },
+        { provide: AuthService, useValue: createMockAuthService() },
+        { provide: AppConfigService, useValue: createMockAppConfigService() },
+        { provide: MessageService, useValue: { add: () => {} } },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    })
+      .overrideComponent(DashboardOverviewComponent, {
+        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      })
+      .compileComponents();
+
+    const fixture = TestBed.createComponent(DashboardOverviewComponent);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+    await jest.advanceTimersByTimeAsync(0);
+    return component;
+  }
+
+  it('reports not configured when no database plugin is loaded', async () => {
+    const component = await createComponent({ configured: false });
+    expect(component.databaseInfo().configured).toBe(false);
+  });
+
+  it('exposes sqlite connection properties, with no host field', async () => {
+    const component = await createComponent({
+      configured: true,
+      driver: 'sqlite3',
+      database: 'smarthome',
+      connected: true,
+      version: '3.45.1',
+      query_timeout: 60,
+    });
+
+    const info = component.databaseInfo();
+    expect(info.driver).toBe('sqlite3');
+    expect(info.database).toBe('smarthome');
+    expect(info.host).toBeUndefined();
+    expect(info.version).toBe('3.45.1');
+    expect(info.query_timeout).toBe(60);
+  });
+
+  it('exposes host for a MySQL-family driver', async () => {
+    const component = await createComponent({
+      configured: true,
+      driver: 'pymysql',
+      database: 'smarthome',
+      host: '127.0.0.1',
+      connected: true,
+      version: '10.11.18-MariaDB',
+      query_timeout: 60,
+    });
+
+    expect(component.databaseInfo().host).toBe('127.0.0.1');
+  });
+
+  it('databaseConnectedClass is the ok class when connected', async () => {
+    const component = await createComponent({
+      configured: true,
+      driver: 'sqlite3',
+      connected: true,
+    });
+    expect(component.databaseConnectedClass()).toBe('shng-status-ok');
+  });
+
+  it('databaseConnectedClass is the error class when not connected', async () => {
+    const component = await createComponent({
+      configured: true,
+      driver: 'sqlite3',
+      connected: false,
+    });
+    expect(component.databaseConnectedClass()).toBe('shng-status-error');
   });
 });

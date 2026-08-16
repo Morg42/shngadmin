@@ -11,6 +11,7 @@
  *   - getShngServerStatus() — GET /api/server/status/ — passthrough; of({}) on error
  *   - restartShngServer() — PUT /api/server/restart/ — passthrough; of({}) on error
  *   - getSystemStats() — GET /api/system/info — passthrough; of({}) on error
+ *   - getDatabaseInfo() — GET /api/database/info — passthrough; of({ configured: false }) on error
  *   - getPypiInfo() — GET /api/server/pypi — passthrough; of([]) on error
  *   - downloadConfigBackup() — GET /api/files/backup/ (blob) — passthrough; of({}) on error
  */
@@ -192,6 +193,33 @@ describe('ServerApiService', () => {
       .expectOne('/api/system/info')
       .flush({ error: 'err' }, { status: 500, statusText: 'Server Error' });
     expect(result).toEqual({});
+  });
+
+  // -------------------------------------------------------------------------
+  // getDatabaseInfo
+  // -------------------------------------------------------------------------
+
+  it('getDatabaseInfo() sends GET /api/database/info', () => {
+    service.getDatabaseInfo().subscribe();
+    const req = http.expectOne('/api/database/info');
+    expect(req.request.method).toBe('GET');
+    req.flush({ configured: false });
+  });
+
+  it('getDatabaseInfo() returns the response', () => {
+    let result: unknown;
+    service.getDatabaseInfo().subscribe((r) => (result = r));
+    http.expectOne('/api/database/info').flush({ configured: true, driver: 'sqlite3' });
+    expect(result).toEqual({ configured: true, driver: 'sqlite3' });
+  });
+
+  it('getDatabaseInfo() returns { configured: false } on HTTP error', () => {
+    let result: unknown;
+    service.getDatabaseInfo().subscribe((r) => (result = r));
+    http
+      .expectOne('/api/database/info')
+      .flush({ error: 'err' }, { status: 500, statusText: 'Server Error' });
+    expect(result).toEqual({ configured: false });
   });
 
   // -------------------------------------------------------------------------

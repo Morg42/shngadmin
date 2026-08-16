@@ -16,6 +16,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { Subject, merge, timer } from 'rxjs';
 import { map, scan, switchMap, tap } from 'rxjs/operators';
+import { DatabaseInfo } from '../../common/models/database-info';
 import { MemlogEntry, MemlogResponse } from '../../common/models/memlog-entry';
 import { PlugininfoType } from '../../common/models/plugin-info';
 import { SchedulerInfo } from '../../common/models/scheduler-info';
@@ -284,6 +285,29 @@ export class DashboardOverviewComponent implements OnInit {
     const nowMs = Date.now();
     return this.rawSchedulers().filter((s) => isOverdueScheduler(s, nowMs));
   });
+
+  /** One-shot, like systemInfo - these are slowly-changing config facts
+   *  (driver/name/host/timeout), not something worth polling. Connection
+   *  state is a snapshot at page-load time, not live-monitored; a widget
+   *  that needs to watch for a database going down mid-session would be a
+   *  deliberate follow-up, not implied by "show its properties".
+   *
+   *  Card only renders at all when configured() is true - an optional
+   *  widget for an optional feature, so it fails closed (stays hidden) on
+   *  both "no database plugin loaded" and "request failed" rather than
+   *  showing a stale/error indicator the other four widgets use - there's
+   *  nothing to be stale about when the whole card is absent. */
+  readonly databaseInfo = toSignal(
+    this.serverApi.getDatabaseInfo().pipe(
+      tap((response) => this.log.log('DashboardOverview getDatabaseInfo', { response })),
+      map((response) => response as DatabaseInfo),
+    ),
+    { initialValue: { configured: false } as DatabaseInfo },
+  );
+
+  readonly databaseConnectedClass = computed(() =>
+    this.databaseInfo().connected ? 'shng-status-ok' : 'shng-status-error',
+  );
 
   readonly logsError = signal(false);
   readonly logsLastUpdated = signal<Date | null>(null);

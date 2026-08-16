@@ -224,6 +224,23 @@ export class ServerApiService {
     );
   }
 
+  /** `configured: false` on any HTTP error, same shape as a real "no
+   *  database plugin loaded" response - the dashboard widget that consumes
+   *  this stays hidden either way, no separate error state needed for an
+   *  explicitly optional widget. */
+  getDatabaseInfo() {
+    const url = this.appConfig.apiUrl + 'database/info';
+    return this.http.get(url).pipe(
+      catchError((err: HttpErrorResponse) => {
+        this.log.error(
+          'ServerApiService.getDatabaseInfo(): Could not read database info - ',
+          err?.error?.error || err.message || err,
+        );
+        return of({ configured: false });
+      }),
+    );
+  }
+
   getPypiInfo() {
     const url = this.appConfig.apiUrl + 'server/pypi';
     return this.http.get(url).pipe(

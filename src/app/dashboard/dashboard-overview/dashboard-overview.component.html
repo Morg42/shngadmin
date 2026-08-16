@@ -134,6 +134,56 @@
         </div>
       </div>
 
+      @if (databaseInfo().configured) {
+        <div class="card widget widget-database">
+          <div class="card-header">
+            <span>{{ 'DASHBOARD.DATABASE' | translate }}</span>
+          </div>
+          <div class="card-body">
+            <ul class="widget-list dotted-list">
+              <li>
+                <span class="dotted-label">{{ 'DASHBOARD.DB_DRIVER' | translate }}</span>
+                <span class="dotted-leader"></span>
+                <span class="dotted-value">{{ databaseInfo().driver }}</span>
+              </li>
+              <li>
+                <span class="dotted-label">{{ 'DASHBOARD.DB_NAME' | translate }}</span>
+                <span class="dotted-leader"></span>
+                <span class="dotted-value">{{ databaseInfo().database }}</span>
+              </li>
+              @if (databaseInfo().host) {
+                <li>
+                  <span class="dotted-label">{{ 'DASHBOARD.DB_HOST' | translate }}</span>
+                  <span class="dotted-leader"></span>
+                  <span class="dotted-value">{{ databaseInfo().host }}</span>
+                </li>
+              }
+              <li>
+                <span class="dotted-label">{{ 'DASHBOARD.DB_STATUS' | translate }}</span>
+                <span class="dotted-leader"></span>
+                <span class="dotted-value" [class]="databaseConnectedClass()">
+                  {{ (databaseInfo().connected ? 'DASHBOARD.DB_CONNECTED' : 'DASHBOARD.DB_DISCONNECTED') | translate }}
+                </span>
+              </li>
+              @if (databaseInfo().version) {
+                <li>
+                  <span class="dotted-label">{{ 'DASHBOARD.DB_VERSION' | translate }}</span>
+                  <span class="dotted-leader"></span>
+                  <span class="dotted-value">{{ databaseInfo().version }}</span>
+                </li>
+              }
+              @if (databaseInfo().query_timeout !== undefined) {
+                <li>
+                  <span class="dotted-label">{{ 'DASHBOARD.DB_QUERY_TIMEOUT' | translate }}</span>
+                  <span class="dotted-leader"></span>
+                  <span class="dotted-value">{{ databaseInfo().query_timeout }}s</span>
+                </li>
+              }
+            </ul>
+          </div>
+        </div>
+      }
+
       <div class="card widget widget-logs">
         <div class="card-header">
           <span>{{ 'DASHBOARD.RECENT_WARNINGS' | translate }}</span>

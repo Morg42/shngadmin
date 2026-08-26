@@ -31,7 +31,7 @@ describe('TopNavigationComponent', () => {
 
     const mockAuth = {
       ...createMockAuthService(),
-      login: jest.fn().mockReturnValue(of(false)),
+      ensureLoggedIn: jest.fn().mockReturnValue(of(false)),
     };
 
     await TestBed.configureTestingModule({
@@ -113,5 +113,55 @@ describe('TopNavigationComponent', () => {
     const detectChanges = jest.spyOn(component['cdr'], 'detectChanges');
     component['theme'].setPreference('dark');
     expect(detectChanges).toHaveBeenCalled();
+  });
+});
+
+describe('TopNavigationComponent auth-before-server-info ordering', () => {
+  // Regression test: getServerinfo() hits /api/server/info, which requires a
+  // valid auth token (unlike the public /api/server/ basic-info call).
+  // Calling it before the anonymous login that establishes a token only
+  // worked by accident, on a reload that reused a leftover valid token from
+  // sessionStorage - on a genuinely fresh session the backend silently
+  // dropped every field of the response (developer_mode included, no
+  // error), and nothing ever retried it. ensureLoggedIn() must settle first.
+  it('calls ensureLoggedIn() before getServerinfo()', async () => {
+    const callOrder: string[] = [];
+    const mockServerApi = {
+      getServerBasicinfo: () => of({}),
+      getServerinfo: jest.fn(() => {
+        callOrder.push('getServerinfo');
+        return of({});
+      }),
+      shng_serverinfo: {},
+    };
+    const mockAuth = {
+      ...createMockAuthService(),
+      ensureLoggedIn: jest.fn(() => {
+        callOrder.push('ensureLoggedIn');
+        return of(true);
+      }),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [TopNavigationComponent, translateTestingModule],
+      providers: [
+        provideRouter([{ path: '**', component: BlankTestComponent }]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: ServerApiService, useValue: mockServerApi },
+        { provide: AuthService, useValue: mockAuth },
+        { provide: AppConfigService, useValue: createMockAppConfigService() },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    })
+      .overrideComponent(TopNavigationComponent, {
+        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      })
+      .compileComponents();
+
+    const fixture = TestBed.createComponent(TopNavigationComponent);
+    fixture.detectChanges();
+
+    expect(callOrder).toEqual(['ensureLoggedIn', 'getServerinfo']);
   });
 });

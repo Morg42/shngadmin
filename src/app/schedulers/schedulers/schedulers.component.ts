@@ -33,7 +33,13 @@ export class SchedulersComponent implements OnInit {
   private appConfig = inject(AppConfigService);
   private readonly log = inject(LogService);
 
-  developerMode = this.appConfig.developerMode;
+  /** AppConfigService.developerMode is only populated once getServerinfo()
+   *  resolves (can race a deep-linked navigation here) - a signal off
+   *  config$ keeps the dev-only columns reactive under OnPush, matching
+   *  plugin-config.component.ts's fix for the same race. */
+  readonly developerMode = toSignal(this.appConfig.config$.pipe(map((cfg) => cfg.developerMode)), {
+    initialValue: false,
+  });
 
   /** Raw scheduler list as a signal; the API service returns of({}) on
    *  error, so normalize anything non-array to an empty list. */

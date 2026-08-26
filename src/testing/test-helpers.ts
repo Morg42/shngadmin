@@ -96,6 +96,7 @@ export function createMockAuthService() {
     loggedIn$: new BehaviorSubject<boolean>(false),
     logout: () => {},
     login: (_creds: unknown) => of(false),
+    ensureLoggedIn: () => of(true),
     getToken: () => null,
     isSecuredByLogin: () => true,
   };

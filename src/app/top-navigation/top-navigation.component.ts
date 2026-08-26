@@ -100,26 +100,41 @@ export class TopNavigationComponent implements OnInit {
       )
       .subscribe(() => this.currentUrl.set(this.router.url));
 
-    // One-shot initialisation: load server config, set up translate, attempt
-    // anonymous login.  After this the component reacts purely via observables.
-    this.dataServiceServer
-      .getServerinfo()
+    // One-shot initialisation: ensure a login (anonymous or otherwise) has
+    // settled, then load server config, set up translate. After this the
+    // component reacts purely via observables.
+    //
+    // ensureLoggedIn() must run FIRST: getServerinfo() hits
+    // /api/server/info, which requires a valid auth token (unlike
+    // /api/server/, the basic-info call APP_INITIALIZER already made).
+    // Calling it before a token exists previously worked only by accident,
+    // on a reload that reused a still-valid token left over in
+    // sessionStorage from an earlier anonymous login in the same tab - on a
+    // genuinely fresh session (e.g. after closing the browser, which clears
+    // sessionStorage) it fired unauthenticated, the backend silently
+    // dropped every field of the response (developer_mode included, no
+    // error - see modules/admin/api_server.py's authentication_needed
+    // handling), and nothing ever retried it. authGuard now also calls
+    // ensureLoggedIn() before activating a route when login isn't required;
+    // that and this share the same in-flight request rather than each
+    // firing their own anonymous login.
+    this.log.log('signIn');
+    this.authService
+      .ensureLoggedIn()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.isTouchDevice = !this.appConfig.clickDropdownHeader;
-        this.theme.applyServerDefault();
+      .subscribe((result: boolean) => {
+        this.log.log('Anonymous login:', { result });
+        // loggedIn$ will fire from AuthService.login() on success,
+        // triggering buildMenu() + markForCheck() via the subscription below.
 
-        this.setTitle(this.translate.instant('SmartHomeNG'));
-
-        const credentials = { username: '', password: '' };
-        this.log.log('signIn', { credentials });
-        this.authService
-          .login(credentials)
+        this.dataServiceServer
+          .getServerinfo()
           .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe((result: boolean) => {
-            this.log.log('Anonymous login:', { result });
-            // loggedIn$ will fire from AuthService.login() on success,
-            // triggering buildMenu() + markForCheck() via the subscription below.
+          .subscribe(() => {
+            this.isTouchDevice = !this.appConfig.clickDropdownHeader;
+            this.theme.applyServerDefault();
+
+            this.setTitle(this.translate.instant('SmartHomeNG'));
           });
       });
 

@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { BehaviorSubject } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { map, shareReplay, take } from 'rxjs/operators';
 
 import { sha512 } from 'js-sha512';
 import { AppConfigService } from './app-config.service';
@@ -43,6 +43,12 @@ export class AuthService {
   isRenewing: boolean;
 
   logTimestamp: number = 0;
+
+  // Caches the in-flight (or last-settled) anonymous login request so
+  // concurrent callers of ensureLoggedIn() - authGuard and
+  // TopNavigationComponent - share one request instead of each firing
+  // their own anonymous login POST.
+  private ensureLoggedIn$: Observable<boolean> | null = null;
 
   constructor() {
     this.isLoginRequired = true;
@@ -112,10 +118,29 @@ export class AuthService {
       );
   }
 
+  /**
+   * Resolves once an anonymous login attempt has settled - immediately with
+   * `true` if already logged in (real or anonymous), otherwise triggers (or
+   * joins an already in-flight) anonymous login and resolves with its
+   * result. Use this instead of calling login() directly wherever a caller
+   * merely needs a token to exist before proceeding (as opposed to actually
+   * submitting user-entered credentials, which is what the login form does).
+   */
+  ensureLoggedIn(): Observable<boolean> {
+    if (this.isLoggedIn()) {
+      return of(true);
+    }
+    if (!this.ensureLoggedIn$) {
+      this.ensureLoggedIn$ = this.login({ username: '', password: '' }).pipe(shareReplay(1));
+    }
+    return this.ensureLoggedIn$;
+  }
+
   logout() {
     this._token = null;
     sessionStorage.removeItem('token');
     this.currentUser = null;
+    this.ensureLoggedIn$ = null;
     this.loggedIn$.next(false);
   }
 

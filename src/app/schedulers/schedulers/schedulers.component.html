@@ -140,10 +140,10 @@
                     <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
                   }
                 </th>
-                @if (developerMode === false) {
+                @if (developerMode() === false) {
                   <th style="width: 100%; border-top: 0">{{ 'SCHEDULERS.CRONTAB' | translate }}</th>
                 }
-                @if (developerMode === true) {
+                @if (developerMode() === true) {
                   <th style="min-width: 150px; border-top: 0">{{ 'SCHEDULERS.CRONTAB' | translate }}</th>
                   <th style="min-width: 140px; border-top: 0">{{ 'SCHEDULERS.TASK_TYPE' | translate }}</th>
                   <th style="width: 100%; border-top: 0">{{ 'SCHEDULERS.TASK_NAME' | translate }}</th>
@@ -159,7 +159,7 @@
                   <td class="py-1">{{ scheduler.value }}</td>
                   <td class="py-1">{{ scheduler.cycle }}</td>
                   <td class="py-1">{{ scheduler.cron }}</td>
-                  @if (developerMode === true) {
+                  @if (developerMode() === true) {
                     <td class="py-1">{{ scheduler.task_type }}</td>
                     <td class="py-1">{{ scheduler.task_name }}</td>
                   }
@@ -202,10 +202,10 @@
                     <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
                   }
                 </th>
-                @if (developerMode === false) {
+                @if (developerMode() === false) {
                   <th style="width: 100%; border-top: 0">{{ 'SCHEDULERS.CRONTAB' | translate }}</th>
                 }
-                @if (developerMode === true) {
+                @if (developerMode() === true) {
                   <th style="min-width: 140px; border-top: 0">{{ 'SCHEDULERS.CRONTAB' | translate }}</th>
                   <th style="min-width: 140px; border-top: 0">{{ 'SCHEDULERS.TASK_TYPE' | translate }}</th>
                   <th style="width: 100%; border-top: 0">{{ 'SCHEDULERS.TASK_NAME' | translate }}</th>
@@ -221,7 +221,7 @@
                   <td class="py-1">{{ scheduler.value }}</td>
                   <td class="py-1">{{ scheduler.cycle }}</td>
                   <td class="py-1">{{ scheduler.cron }}</td>
-                  @if (developerMode === true) {
+                  @if (developerMode() === true) {
                     <td class="py-1">{{ scheduler.task_type }}</td>
                     <td class="py-1">{{ scheduler.task_name }}</td>
                   }
@@ -256,10 +256,10 @@
                     <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
                   }
                 </th>
-                @if (developerMode === false) {
+                @if (developerMode() === false) {
                   <th style="width: 100%; border-top: 0">{{ 'SCHEDULERS.VALUE' | translate }}</th>
                 }
-                @if (developerMode === true) {
+                @if (developerMode() === true) {
                   <th style="width: 130px; border-top: 0">{{ 'SCHEDULERS.VALUE' | translate }}</th>
                   <th style="border-top: 0">{{ 'SCHEDULERS.TRIGGERED_BY' | translate }}</th>
                   <th style="border-top: 0">{{ 'SCHEDULERS.TASK_TYPE' | translate }}</th>
@@ -274,7 +274,7 @@
                   <td class="py-1">{{ scheduler.next }}</td>
                   <td class="py-1">{{ scheduler.prio }}</td>
                   <td class="py-1">{{ scheduler.value }}</td>
-                  @if (developerMode === true) {
+                  @if (developerMode() === true) {
                     <td class="py-1">{{ scheduler.by }}</td>
                     <td class="py-1">{{ scheduler.task_type }}</td>
                     <td class="py-1">{{ scheduler.task_name }}</td>

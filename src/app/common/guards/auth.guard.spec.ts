@@ -5,7 +5,7 @@ import {
   RouterStateSnapshot,
   UrlTree,
 } from '@angular/router';
-import { firstValueFrom, isObservable, of } from 'rxjs';
+import { firstValueFrom, isObservable, NEVER, of } from 'rxjs';
 import { AppConfigService } from '../services/app-config.service';
 import { AuthService } from '../services/auth.service';
 import { authGuard } from './auth.guard';
@@ -42,22 +42,62 @@ describe('authGuard — already logged in', () => {
 });
 
 describe('authGuard — not logged in, login NOT required', () => {
-  beforeEach(() => {
+  it('resolves to true once ensureLoggedIn() settles successfully', async () => {
+    const ensureLoggedIn = jest.fn(() => of(true));
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
-        { provide: AuthService, useValue: { isLoggedIn: () => false } },
-        {
-          provide: AppConfigService,
-          useValue: { authReady$: of(false) },
-        },
+        { provide: AuthService, useValue: { isLoggedIn: () => false, ensureLoggedIn } },
+        { provide: AppConfigService, useValue: { authReady$: of(false) } },
       ],
     });
+
+    const result = await runGuard(mockState('/system'));
+
+    expect(result).toBe(true);
+    expect(ensureLoggedIn).toHaveBeenCalled();
   });
 
-  it('resolves to true (no login required)', async () => {
+  it('still resolves to true when the anonymous login attempt itself fails', async () => {
+    // A failed/slow anonymous login shouldn't force a login wall the
+    // server said isn't required - the route just constructs with
+    // whatever auth state exists (matching prior behaviour for the
+    // "server unreachable" case, now applied deliberately here too).
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([]),
+        {
+          provide: AuthService,
+          useValue: { isLoggedIn: () => false, ensureLoggedIn: () => of(false) },
+        },
+        { provide: AppConfigService, useValue: { authReady$: of(false) } },
+      ],
+    });
+
     const result = await runGuard(mockState('/system'));
+
     expect(result).toBe(true);
+  });
+
+  it('still resolves to true when ensureLoggedIn() never settles (timeout)', async () => {
+    jest.useFakeTimers();
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([]),
+        {
+          provide: AuthService,
+          useValue: { isLoggedIn: () => false, ensureLoggedIn: () => NEVER },
+        },
+        { provide: AppConfigService, useValue: { authReady$: of(false) } },
+      ],
+    });
+
+    const resultPromise = runGuard(mockState('/system'));
+    jest.advanceTimersByTime(3000);
+    const result = await resultPromise;
+
+    expect(result).toBe(true);
+    jest.useRealTimers();
   });
 });
 

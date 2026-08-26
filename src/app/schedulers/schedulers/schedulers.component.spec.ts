@@ -4,14 +4,14 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import fixtureData from '../../../testing/fixtures/api/schedulers/default.json';
 import {
   createMockAppConfigService,
   createMockAuthService,
   translateTestingModule,
 } from '../../../testing/test-helpers';
-import { AppConfigService } from '../../common/services/app-config.service';
+import { AppConfig, AppConfigService } from '../../common/services/app-config.service';
 import { AuthService } from '../../common/services/auth.service';
 import { SchedulersApiService } from '../../common/services/schedulers-api.service';
 import { SchedulersComponent } from './schedulers.component';
@@ -93,5 +93,93 @@ describe('SchedulersComponent', () => {
     const rows = triggerPanel.querySelectorAll('tbody tr');
     // fixture has no trigger schedulers — @empty renders exactly one hint row
     expect(rows.length).toBe(1);
+  });
+});
+
+describe('SchedulersComponent developer-mode race', () => {
+  // Regression test for the bug where developerMode was read once as a plain
+  // snapshot at field-initializer time - if getServerinfo() (the async call
+  // that patches developerMode in) resolves AFTER this component is
+  // constructed, the dev-only columns stayed hidden forever, even though
+  // developer mode really is active. Only navigating away and re-constructing
+  // the component (a fresh snapshot read) fixed it. Same race, same fix
+  // pattern as plugin-config.component.ts.
+  const config$ = new BehaviorSubject<AppConfig>({
+    loginRequired: null,
+    apiUrl: '/api/',
+    dataUrl: '',
+    hostIp: 'localhost',
+    wsHost: 'localhost',
+    wsPort: '',
+    clientIp: '',
+    tz: '',
+    tzname: 'CET',
+    tznameST: 'CET',
+    tznameDST: 'CEST',
+    coreBranch: '',
+    pluginsBranch: '',
+    itemtreeFullpath: true,
+    itemtreeSearchstart: 3,
+    developerMode: false,
+    clickDropdownHeader: true,
+    helpLocalAvailable: false,
+    darkModeDefault: false,
+    resourceGraphPeriod: '24h',
+    restartStopsOnly: false,
+    fallbackLanguageOrder: ['en', 'de'],
+    startPage: 'dashboard',
+    defaultLanguage: 'en',
+  });
+
+  const mockSchedulersApi = {
+    getSchedulers: () => of(fixtureData),
+  };
+
+  beforeEach(async () => {
+    config$.next({ ...config$.getValue(), developerMode: false });
+    await TestBed.configureTestingModule({
+      imports: [SchedulersComponent, translateTestingModule],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: SchedulersApiService, useValue: mockSchedulersApi },
+        { provide: AuthService, useValue: createMockAuthService() },
+        {
+          provide: AppConfigService,
+          useValue: { ...createMockAppConfigService(), config$: config$.asObservable() },
+        },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    })
+      .overrideComponent(SchedulersComponent, {
+        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      })
+      .compileComponents();
+  });
+
+  it('should reveal dev-only columns once developerMode arrives after construction', () => {
+    // Component constructed while developerMode is still false (the
+    // in-flight-request state a first, cold navigation would see).
+    const fixture: ComponentFixture<SchedulersComponent> =
+      TestBed.createComponent(SchedulersComponent);
+    fixture.detectChanges();
+
+    // p-tabpanel[2] = plugin schedulers, the first tab with dev-mode-gated columns
+    let headerCells = fixture.nativeElement
+      .querySelectorAll('p-tabpanel')[2]
+      .querySelectorAll('thead th');
+    // false-branch renders 1 dev-gated header th (crontab only); true-branch renders 3
+    const baseColumns = 5; // scheduler/next/prio/parameters/cycle, ungated
+    expect(headerCells.length).toBe(baseColumns + 1);
+
+    // getServerinfo() resolves after construction - config$ patches for real.
+    config$.next({ ...config$.getValue(), developerMode: true });
+    fixture.detectChanges();
+
+    headerCells = fixture.nativeElement
+      .querySelectorAll('p-tabpanel')[2]
+      .querySelectorAll('thead th');
+    expect(headerCells.length).toBe(baseColumns + 3);
   });
 });

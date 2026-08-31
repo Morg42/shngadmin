@@ -200,5 +200,9 @@ describe('SharedService', () => {
     it('returns empty string for empty dict', () => {
       expect(service.getDescription({})).toBe('');
     });
+
+    it('returns a plain string description unchanged (plugin.yaml single-language shorthand)', () => {
+      expect(service.getDescription('Serieller Port')).toBe('Serieller Port');
+    });
   });
 });

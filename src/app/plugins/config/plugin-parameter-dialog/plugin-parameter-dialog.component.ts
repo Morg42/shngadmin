@@ -24,7 +24,6 @@ import { TableModule } from 'primeng/table';
 import { DynamicFieldComponent } from '../../../common/components/dynamic-field/dynamic-field.component';
 import { ConfigParameter, TableColumn } from '../../../common/models/interfaces';
 import { PluginMetaInfo, PluginSectionConfig } from '../../../common/models/plugins-config';
-import { AppConfigService } from '../../../common/services/app-config.service';
 import { PluginsApiService } from '../../../common/services/plugins-api.service';
 import { SharedService } from '../../../common/services/shared.service';
 import {
@@ -58,7 +57,6 @@ export class PluginParameterDialogComponent {
   private readonly pluginsApi = inject(PluginsApiService);
   private readonly translate = inject(TranslateService);
   private readonly shared = inject(SharedService);
-  private readonly appConfig = inject(AppConfigService);
 
   readonly faExclamationTriangle = faExclamationTriangle;
 
@@ -193,7 +191,6 @@ export class PluginParameterDialogComponent {
       return parameters;
     }
 
-    const lang = this.appConfig.defaultLanguage;
     const metaParams = meta?.parameters ?? {};
     if (meta != null && (meta.parameters as unknown) !== 'NONE') {
       for (const param in metaParams) {
@@ -211,17 +208,7 @@ export class PluginParameterDialogComponent {
             vl.push({ label: 'false', value: false });
           }
 
-          let paramdesc = '';
-          if (pm.description !== undefined) {
-            paramdesc = pm.description[lang];
-            if (paramdesc === '' || paramdesc === undefined) {
-              paramdesc = pm.description[this.shared.getFallbackLanguage()];
-              if (paramdesc === '' || paramdesc === undefined) {
-                paramdesc = pm.description[this.shared.getFallbackLanguage(1)];
-              }
-            }
-          }
-          paramdesc = this.shared.mdLiteToHtml(paramdesc);
+          const paramdesc = this.shared.mdLiteToHtml(this.shared.getDescription(pm.description));
 
           const paramdata: ConfigParameter = {
             name: param,

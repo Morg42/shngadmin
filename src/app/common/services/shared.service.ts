@@ -261,10 +261,14 @@ export class SharedService {
     return order[index] ?? 'en';
   }
 
-  getDescription(descriptionDict: Record<string, string> | undefined | null): string {
-    if (!descriptionDict) {
+  getDescription(description: Record<string, string> | string | undefined | null): string {
+    if (!description) {
       return '';
     }
+    if (typeof description === 'string') {
+      return description;
+    }
+    const descriptionDict = description;
 
     const lang = this.appConfig.defaultLanguage;
     let desc = descriptionDict[lang];

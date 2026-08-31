@@ -27,6 +27,9 @@ describe('PluginParameterDialogComponent', () => {
       list_param: { type: 'list', description: { en: 'A list' } },
       bool_param: { type: 'bool', description: { en: 'A flag' } },
       fallback_param: { type: 'str', description: { de: 'Nur Deutsch' } },
+      // plugin.yaml also allows a bare string instead of a {de,en} dict (e.g.
+      // viessmann's `serialport` parameter) - regression coverage below.
+      plainstring_param: { type: 'str', description: 'Serieller Port' },
       // Some real plugin metadata declares 'instance' as a regular editable
       // parameter (multi-instance-capable plugins) - exercised by the
       // copy-from exclusion tests below.
@@ -83,7 +86,7 @@ describe('PluginParameterDialogComponent', () => {
   // ---------------------------------------------------------------------
 
   it('builds one row per meta parameter, with values read from currentConfig', () => {
-    expect(component.parameters().length).toBe(11);
+    expect(component.parameters().length).toBe(12);
     expect(param('knx_param')['value']).toBe('1/2/3');
     expect(param('port_param')['value']).toBe(8080);
   });
@@ -105,6 +108,10 @@ describe('PluginParameterDialogComponent', () => {
     // defaultLanguage 'en' is absent on fallback_param; getFallbackLanguage() ('en') also
     // misses; getFallbackLanguage(1) ('de') hits.
     expect(param('fallback_param')['desc']).toBe('Nur Deutsch');
+  });
+
+  it('accepts a plain-string description without throwing (regression: buildParameters used to index the string by language key, ending in undefined, which crashed mdLiteToHtml)', () => {
+    expect(param('plainstring_param')['desc']).toBe('Serieller Port');
   });
 
   it('classic/state/description are derived purely from meta', () => {

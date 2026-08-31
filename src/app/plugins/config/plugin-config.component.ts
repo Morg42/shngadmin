@@ -288,7 +288,7 @@ export class PluginConfigComponent implements OnInit {
           }
         }
         const plgdesc = this.shared.getDescription(
-          desc as Record<string, string> | null | undefined,
+          desc as Record<string, string> | string | null | undefined,
         );
         conf.desc = this.shared.mdLiteToHtml(plgdesc);
 

@@ -14,7 +14,7 @@ export interface PluginParamMeta {
   valid_max?: number;
   default?: unknown;
   mandatory?: boolean;
-  description?: Record<string, string>;
+  description?: Record<string, string> | string;
   hide?: boolean;
 }
 
@@ -22,7 +22,7 @@ export interface PluginMetaInfo {
   plugin?: {
     state?: string;
     type?: string;
-    description?: Record<string, string>;
+    description?: Record<string, string> | string;
   };
   parameters?: Record<string, PluginParamMeta>;
 }

@@ -144,9 +144,7 @@ export class AddPluginDialogComponent {
 
         for (const p in installed) {
           if (p in installed) {
-            installed[p]['disp_description'] = this.shared.getDescription(
-              installed[p].description as Record<string, string>,
-            );
+            installed[p]['disp_description'] = this.shared.getDescription(installed[p].description);
           }
         }
         this.plugins_installed.set(installed);

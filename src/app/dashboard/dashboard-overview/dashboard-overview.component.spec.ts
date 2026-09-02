@@ -954,6 +954,30 @@ describe('DashboardOverviewComponent database widget', () => {
     expect(component.databaseInfo().host).toBe('127.0.0.1');
   });
 
+  it('exposes journal_mode for a sqlite3 driver', async () => {
+    const component = await createComponent({
+      configured: true,
+      driver: 'sqlite3',
+      database: 'smarthome',
+      connected: true,
+      journal_mode: 'wal',
+    });
+
+    expect(component.databaseInfo().journal_mode).toBe('wal');
+  });
+
+  it('has no journal_mode for a MySQL-family driver', async () => {
+    const component = await createComponent({
+      configured: true,
+      driver: 'pymysql',
+      database: 'smarthome',
+      host: '127.0.0.1',
+      connected: true,
+    });
+
+    expect(component.databaseInfo().journal_mode).toBeUndefined();
+  });
+
   it('databaseConnectedClass is the ok class when connected', async () => {
     const component = await createComponent({
       configured: true,

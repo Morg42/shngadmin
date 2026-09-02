@@ -158,6 +158,13 @@
                   <span class="dotted-value">{{ databaseInfo().host }}</span>
                 </li>
               }
+              @if (databaseInfo().journal_mode) {
+                <li>
+                  <span class="dotted-label">{{ 'DASHBOARD.DB_JOURNAL_MODE' | translate }}</span>
+                  <span class="dotted-leader"></span>
+                  <span class="dotted-value">{{ databaseInfo().journal_mode?.toUpperCase() }}</span>
+                </li>
+              }
               <li>
                 <span class="dotted-label">{{ 'DASHBOARD.DB_STATUS' | translate }}</span>
                 <span class="dotted-leader"></span>

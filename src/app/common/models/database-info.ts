@@ -10,6 +10,7 @@ export interface DatabaseInfo {
   driver?: string;
   database?: string;
   host?: string;
+  journal_mode?: string;
   connected?: boolean;
   version?: string;
   query_timeout?: number;

@@ -90,6 +90,7 @@ body {
   padding: 14px 10px;
   text-decoration: none;
   font-size: var(--font-size-nav);
+  line-height: normal; /* match .dropbtn's button-default line-height so all tabs are the same height */
 }
 
 .dropdown {

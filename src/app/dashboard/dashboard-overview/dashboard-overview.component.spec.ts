@@ -995,4 +995,47 @@ describe('DashboardOverviewComponent database widget', () => {
     });
     expect(component.databaseConnectedClass()).toBe('shng-status-error');
   });
+
+  it('exposes reality-checked timescale status for a psycopg driver', async () => {
+    const component = await createComponent({
+      configured: true,
+      driver: 'psycopg2',
+      database: 'shng_test',
+      host: '127.0.0.1',
+      connected: true,
+      hypertable: true,
+      native_cagg: true,
+      // active in the database despite plugin.yaml never configuring it -
+      // the case reality-checking exists for.
+      native_retention: true,
+    });
+
+    const info = component.databaseInfo();
+    expect(info.hypertable).toBe(true);
+    expect(info.native_cagg).toBe(true);
+    expect(info.native_retention).toBe(true);
+  });
+
+  it('has no timescale status fields for a MySQL-family driver', async () => {
+    const component = await createComponent({
+      configured: true,
+      driver: 'pymysql',
+      database: 'smarthome',
+      host: '127.0.0.1',
+      connected: true,
+    });
+
+    const info = component.databaseInfo();
+    expect(info.hypertable).toBeUndefined();
+    expect(info.native_cagg).toBeUndefined();
+    expect(info.native_retention).toBeUndefined();
+  });
+
+  it('tristateLabel maps true/false/null|undefined to YES/NO/UNKNOWN', async () => {
+    const component = await createComponent({ configured: false });
+    expect(component.tristateLabel(true)).toBe('YES');
+    expect(component.tristateLabel(false)).toBe('NO');
+    expect(component.tristateLabel(null)).toBe('UNKNOWN');
+    expect(component.tristateLabel(undefined)).toBe('UNKNOWN');
+  });
 });

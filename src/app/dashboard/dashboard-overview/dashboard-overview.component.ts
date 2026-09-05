@@ -309,6 +309,11 @@ export class DashboardOverviewComponent implements OnInit {
     this.databaseInfo().connected ? 'shng-status-ok' : 'shng-status-error',
   );
 
+  /** Translation key for a reality-checked tri-state field (true/false/null - see DatabaseInfo). */
+  tristateLabel(value: boolean | null | undefined): string {
+    return value === true ? 'YES' : value === false ? 'NO' : 'UNKNOWN';
+  }
+
   readonly logsError = signal(false);
   readonly logsLastUpdated = signal<Date | null>(null);
 

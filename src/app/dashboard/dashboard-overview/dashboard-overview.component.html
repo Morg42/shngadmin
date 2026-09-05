@@ -179,6 +179,27 @@
                   <span class="dotted-value">{{ databaseInfo().version }}</span>
                 </li>
               }
+              @if (databaseInfo().hypertable !== undefined) {
+                <li>
+                  <span class="dotted-label">{{ 'DASHBOARD.DB_HYPERTABLE' | translate }}</span>
+                  <span class="dotted-leader"></span>
+                  <span class="dotted-value">{{ tristateLabel(databaseInfo().hypertable) | translate }}</span>
+                </li>
+              }
+              @if (databaseInfo().native_cagg !== undefined) {
+                <li>
+                  <span class="dotted-label">{{ 'DASHBOARD.DB_NATIVE_CAGG' | translate }}</span>
+                  <span class="dotted-leader"></span>
+                  <span class="dotted-value">{{ tristateLabel(databaseInfo().native_cagg) | translate }}</span>
+                </li>
+              }
+              @if (databaseInfo().native_retention !== undefined) {
+                <li>
+                  <span class="dotted-label">{{ 'DASHBOARD.DB_NATIVE_RETENTION' | translate }}</span>
+                  <span class="dotted-leader"></span>
+                  <span class="dotted-value">{{ tristateLabel(databaseInfo().native_retention) | translate }}</span>
+                </li>
+              }
               @if (databaseInfo().query_timeout !== undefined) {
                 <li>
                   <span class="dotted-label">{{ 'DASHBOARD.DB_QUERY_TIMEOUT' | translate }}</span>

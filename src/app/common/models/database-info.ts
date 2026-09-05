@@ -14,4 +14,11 @@ export interface DatabaseInfo {
   connected?: boolean;
   version?: string;
   query_timeout?: number;
+  // psycopg(2) only - reality-checked against the database itself, not
+  // plugin.yaml's config. null means the check itself failed (e.g. the
+  // TimescaleDB extension isn't installed); absent means not applicable
+  // (a non-psycopg driver, or the database is disconnected).
+  hypertable?: boolean | null;
+  native_cagg?: boolean | null;
+  native_retention?: boolean | null;
 }

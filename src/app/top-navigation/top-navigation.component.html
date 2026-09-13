@@ -36,12 +36,6 @@
       }
     }
 
-    @if (!(loggedIn() && loginRequired())) {
-      <a class="logout" style="color: var(--text-caption)"
-        ><i class="fas fa-sign-out-alt"></i>{{ 'BUTTON.LOGOUT' | translate }}</a
-      >
-      <a class="logout-small" style="color: var(--text-caption)"><i class="fas fa-sign-out-alt"></i></a>
-    }
     @if (loggedIn() && loginRequired()) {
       <a class="logout" (click)="logout()"><i class="fas fa-sign-out-alt"></i>{{ 'BUTTON.LOGOUT' | translate }}</a>
       <a class="logout-small" (click)="logout()"><i class="fas fa-sign-out-alt"></i></a>
@@ -88,9 +82,6 @@
 
   <!-- Mobile controls: shown only at ≤720px -->
   <div class="navbar-mobile">
-    @if (!(loggedIn() && loginRequired())) {
-      <a style="color: var(--text-caption)"><i class="fas fa-sign-out-alt"></i></a>
-    }
     @if (loggedIn() && loginRequired()) {
       <a (click)="logout()"><i class="fas fa-sign-out-alt"></i></a>
     }

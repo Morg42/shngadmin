@@ -85,6 +85,11 @@ export class LogDisplayComponent implements OnInit {
   readonly files = signal<DropDownEntry[]>([]);
   selectedFile: string | null = null;
 
+  // files() is ordered newest-first (current logfile, then dated rotations
+  // oldest-last) — see fillTimeframe(). "Older"/"newer" navigate that order.
+  readonly no_older_file = signal(true);
+  readonly no_newer_file = signal(true);
+
   displayLogfile = '';
   text_filter = '';
   level_filter = 'ALL';
@@ -155,6 +160,7 @@ export class LogDisplayComponent implements OnInit {
     if (this.selectedLog === null) {
       this.files.set([]);
       this.selectedFile = null;
+      this.updateFileNavState();
       this.readLogfile();
     } else {
       const files: DropDownEntry[] = [];
@@ -203,12 +209,34 @@ export class LogDisplayComponent implements OnInit {
 
       this.files.set(files);
       this.selectedFile = files[0].value;
+      this.updateFileNavState();
       this.readLogfile(0); // 0 = last (newest) chunk
     }
   }
 
   changedTimeframe() {
+    this.updateFileNavState();
     this.readLogfile(0); // 0 = last (newest) chunk
+  }
+
+  private updateFileNavState() {
+    const idx = this.files().findIndex((f) => f.value === this.selectedFile);
+    this.no_older_file.set(idx === -1 || idx >= this.files().length - 1);
+    this.no_newer_file.set(idx <= 0);
+  }
+
+  previousFile() {
+    const idx = this.files().findIndex((f) => f.value === this.selectedFile);
+    if (idx === -1 || idx >= this.files().length - 1) return;
+    this.selectedFile = this.files()[idx + 1].value;
+    this.changedTimeframe();
+  }
+
+  nextFile() {
+    const idx = this.files().findIndex((f) => f.value === this.selectedFile);
+    if (idx <= 0) return;
+    this.selectedFile = this.files()[idx - 1].value;
+    this.changedTimeframe();
   }
 
   filterLogChunk() {

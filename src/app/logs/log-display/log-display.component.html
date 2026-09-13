@@ -10,6 +10,16 @@
       (onChange)="fillTimeframe()"
     ></p-select>
     &nbsp; {{ 'LOGS.TIMEFRAME' | translate }}:
+    <button
+      pButton
+      type="button"
+      style="width: 25px"
+      title="{{ 'LOGS.PREVIOUS_FILE' | translate }}"
+      [disabled]="no_older_file()"
+      icon="fa fa-caret-left"
+      (click)="previousFile()"
+      class="ui-button-secondary"
+    ></button>
     <p-select
       [style]="{ width: '210px' }"
       [options]="files()"
@@ -17,6 +27,16 @@
       placeholder="{{ 'LOGS.SELECT_FILE' | translate }}"
       (onChange)="changedTimeframe()"
     ></p-select>
+    <button
+      pButton
+      type="button"
+      style="width: 25px"
+      title="{{ 'LOGS.NEXT_FILE' | translate }}"
+      [disabled]="no_newer_file()"
+      icon="fa fa-caret-right"
+      (click)="nextFile()"
+      class="ui-button-secondary"
+    ></button>
     &nbsp; &nbsp;
     <button
       pButton

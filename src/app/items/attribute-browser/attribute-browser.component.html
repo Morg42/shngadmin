@@ -36,8 +36,12 @@
     }
   }
   <ng-template #footer>
-    <button type="button" class="btn btn-sm ui-button-secondary" (click)="visible.set(false)">
-      {{ 'BUTTON.CLOSE' | translate }}
-    </button>
+    <button
+      pButton
+      type="button"
+      severity="secondary"
+      label="{{ 'BUTTON.CLOSE' | translate }}"
+      (click)="visible.set(false)"
+    ></button>
   </ng-template>
 </p-dialog>

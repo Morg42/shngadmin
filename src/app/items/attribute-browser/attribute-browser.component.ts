@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { ButtonDirective } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import {
@@ -16,7 +17,7 @@ import {
   selector: 'app-attribute-browser',
   templateUrl: './attribute-browser.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Dialog, FormsModule, InputText, TranslatePipe],
+  imports: [ButtonDirective, Dialog, FormsModule, InputText, TranslatePipe],
 })
 export class AttributeBrowserComponent {
   private readonly translate = inject(TranslateService);

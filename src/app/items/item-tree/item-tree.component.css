@@ -1,5 +1,12 @@
 /* p-tree base styles are in global styles.css */
 
+/* "Monitored" state icon: same pin glyph as "Monitor", rotated to read
+   as pinned-in rather than pin-poised */
+.item-tree-icon-rotated {
+  display: inline-block;
+  transform: rotate(45deg);
+}
+
 .shngbody {
   height: calc(100vh - var(--navbar-height));
   overflow: hidden;
@@ -81,6 +88,24 @@
 
 .items-detail-panel .card-header {
   flex: 0 0 auto;
+}
+
+/* float:right (the old layout here) doesn't participate in wrapping, so at
+   narrow widths the title text and the floated buttons/badges collided
+   instead of stacking - same issue already fixed for .log-toolbar. */
+.item-detail-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.item-detail-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
 }
 
 .items-detail-panel .card-text {

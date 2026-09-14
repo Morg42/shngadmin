@@ -92,19 +92,23 @@
   }
 
   <ng-template #footer>
-    <button type="button" class="btn btn-sm ui-button-secondary" (click)="visible.set(false)">
-      {{ 'BUTTON.ABORT' | translate }}
-    </button>
     <button
+      pButton
       type="button"
-      class="btn btn-shng-danger btn-sm"
+      severity="secondary"
+      label="{{ 'BUTTON.ABORT' | translate }}"
+      (click)="visible.set(false)"
+    ></button>
+    <button
+      pButton
+      type="button"
+      severity="danger"
       [disabled]="
         (deleteItemReferences() === null && !deleteItemReferencesFailed()) ||
         (deleteItemHasChildren && !deleteItemConfirmChildren)
       "
+      label="{{ 'ITEMS.DELETE ITEM' | translate }}"
       (click)="confirmDeleteItem()"
-    >
-      {{ 'ITEMS.DELETE ITEM' | translate }}
-    </button>
+    ></button>
   </ng-template>
 </p-dialog>

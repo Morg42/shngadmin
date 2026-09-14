@@ -24,14 +24,14 @@
           }
           <ng-template #footer>
             <button
+              pButton
               type="button"
               tabindex="1"
               autofocus="autofocus"
-              class="btn btn-primary btn-sm btn-shng"
+              severity="primary"
+              label="{{ 'BUTTON.CLOSE' | translate }}"
               (click)="closeAlert(itemdetails().value)"
-            >
-              {{ 'BUTTON.CLOSE' | translate }}
-            </button>
+            ></button>
           </ng-template>
         </p-dialog>
 
@@ -98,36 +98,45 @@
               </div>
               <div class="col shng_headline">
                 <button
+                  pButton
                   type="button"
-                  class="btn btn-sm ui-button-secondary"
                   style="margin-right: 5px"
                   id="btn-clear-search"
+                  severity="secondary"
                   [disabled]="!treeIsFiltered()"
+                  icon="fas fa-circle-notch"
+                  label="{{ 'ITEMS.RESET' | translate }}"
                   (click)="clearFilter($event, filter)"
-                >
-                  <fa-icon [icon]="faCircleNotch"></fa-icon> {{ 'ITEMS.RESET' | translate }}
-                </button>
+                ></button>
                 <button
+                  pButton
                   type="button"
-                  class="btn btn-sm ui-button-secondary"
                   style="margin-right: 5px"
                   id="btn-expand-all"
+                  severity="secondary"
+                  icon="fas fa-folder-open"
+                  label="{{ 'ITEMS.EXPAND ALL' | translate }}"
                   (click)="expandAll()"
-                >
-                  <fa-icon [icon]="faFolderOpen"></fa-icon>&nbsp;{{ 'ITEMS.EXPAND ALL' | translate }}
-                </button>
+                ></button>
                 <button
+                  pButton
                   type="button"
-                  class="btn btn-sm ui-button-secondary"
                   style="margin-right: 5px"
                   id="btn-collapse-all"
+                  severity="secondary"
+                  icon="fas fa-folder"
+                  label="{{ 'ITEMS.REDUCE ALL' | translate }}"
                   (click)="collapseAll()"
-                >
-                  <fa-icon [icon]="faFolder"></fa-icon> {{ 'ITEMS.REDUCE ALL' | translate }}
-                </button>
-                <button type="button" class="btn btn-shng btn-sm" id="btn-new-item" (click)="createItemDialog.open()">
-                  <fa-icon [icon]="faPlus"></fa-icon> {{ 'ITEMS.NEW ITEM' | translate }}
-                </button>
+                ></button>
+                <button
+                  pButton
+                  type="button"
+                  id="btn-new-item"
+                  severity="primary"
+                  icon="fas fa-plus"
+                  label="{{ 'ITEMS.NEW ITEM' | translate }}"
+                  (click)="createItemDialog.open()"
+                ></button>
               </div>
             </div>
           </div>
@@ -162,87 +171,83 @@
             </div>
             <div class="items-detail-panel">
               <div class="card">
-                <div class="card-header p-1 shng_heading">
-                  <button
-                    type="button"
-                    class="float-sm-right btn btn-sm ui-button-secondary"
-                    style="margin-left: 5px"
-                    id="btn-reload"
-                    (click)="getDetails(itemdetails().path)"
-                  >
-                    <fa-icon [icon]="faSync"></fa-icon> {{ 'ITEMS.RELOAD' | translate }}
-                  </button>
-                  @if (!isItemMonitored(itemdetails().path)) {
-                    <button
-                      type="button"
-                      class="float-sm-right btn btn-shng btn-sm"
-                      style="margin-left: 5px"
-                      id="btn-monitor-on"
-                      [disabled]="itemdetails().path === undefined"
-                      (click)="monitorItem(itemdetails().path, true)"
-                    >
-                      <fa-icon [icon]="faThumbtack"></fa-icon> {{ 'ITEMS.MONITOR' | translate }}
-                    </button>
-                  }
-                  @if (isItemMonitored(itemdetails().path)) {
-                    <button
-                      type="button"
-                      class="float-sm-right btn btn-shng btn-sm"
-                      style="margin-left: 5px"
-                      id="btn-monitor-off"
-                      [disabled]="itemdetails().path === undefined"
-                      (click)="monitorItem(itemdetails().path, false)"
-                    >
-                      <span style="display: inline-block; transform: rotate(45deg)"
-                        ><fa-icon [icon]="faThumbtack"></fa-icon
-                      ></span>
-                      {{ 'ITEMS.MONITORED' | translate }}
-                    </button>
-                  }
-                  <!-- Compact "more actions" (⋮) popup replacing what used to be four
-                       separate buttons (Edit/Delete/Rename/Copy) — didn't scale to
-                       narrow/mobile layouts. Menu items are never individually disabled
-                       (see itemActionsMenuItems()'s comment) — Copy always opens its
-                       dialog, which explains a non-persisted item's disabled state
-                       inline instead. -->
-                  <button
-                    type="button"
-                    class="float-sm-right btn btn-shng btn-sm"
-                    style="margin-left: 5px"
-                    id="btn-item-more-actions"
-                    [disabled]="itemdetails().path === undefined"
-                    (click)="itemActionsMenu.toggle($event)"
-                  >
-                    <fa-icon [icon]="faEllipsisVertical"></fa-icon>
-                  </button>
-                  <p-menu #itemActionsMenu [model]="itemActionsMenuItems()" [popup]="true" appendTo="body"></p-menu>
-                  @if ((renameItemDialog()?.failedReferencesCount() ?? 0) > 0) {
-                    <span
-                      class="float-sm-right"
-                      style="margin-left: 5px; color: var(--shng-orange); cursor: pointer"
-                      title="{{ 'ITEMS.RENAME_FAILED_REFERENCES_HINT' | translate }}"
-                      (click)="renameItemDialog()?.showFailedReferences()"
-                    >
-                      {{
-                        'ITEMS.RENAME_FAILED_REFERENCES'
-                          | translate: { count: renameItemDialog()!.failedReferencesCount() }
-                      }}
-                    </span>
-                  }
-                  @if ((renameItemDialog()?.copyReferencesTotalCount() ?? 0) > 0) {
-                    <span
-                      class="float-sm-right"
-                      style="margin-left: 5px; color: var(--shng-orange); cursor: pointer"
-                      title="{{ 'ITEMS.COPY_REFERENCES_NOTICE_HINT' | translate }}"
-                      (click)="renameItemDialog()?.showCopyReferences()"
-                    >
-                      {{
-                        'ITEMS.COPY_REFERENCES_NOTICE'
-                          | translate: { count: renameItemDialog()!.copyReferencesTotalCount() }
-                      }}
-                    </span>
-                  }
+                <div class="card-header p-1 shng_heading item-detail-header">
                   <strong>{{ 'ITEMS.ITEM DETAILS' | translate }}</strong>
+                  <div class="item-detail-header-actions">
+                    <button
+                      pButton
+                      type="button"
+                      id="btn-reload"
+                      severity="secondary"
+                      icon="fas fa-sync"
+                      label="{{ 'ITEMS.RELOAD' | translate }}"
+                      (click)="getDetails(itemdetails().path)"
+                    ></button>
+                    @if (!isItemMonitored(itemdetails().path)) {
+                      <button
+                        pButton
+                        type="button"
+                        id="btn-monitor-on"
+                        severity="primary"
+                        [disabled]="itemdetails().path === undefined"
+                        icon="fas fa-thumbtack"
+                        label="{{ 'ITEMS.MONITOR' | translate }}"
+                        (click)="monitorItem(itemdetails().path, true)"
+                      ></button>
+                    }
+                    @if (isItemMonitored(itemdetails().path)) {
+                      <button
+                        pButton
+                        type="button"
+                        id="btn-monitor-off"
+                        severity="primary"
+                        [disabled]="itemdetails().path === undefined"
+                        icon="fas fa-thumbtack item-tree-icon-rotated"
+                        label="{{ 'ITEMS.MONITORED' | translate }}"
+                        (click)="monitorItem(itemdetails().path, false)"
+                      ></button>
+                    }
+                    <!-- Compact "more actions" (⋮) popup replacing what used to be four
+                         separate buttons (Edit/Delete/Rename/Copy) — didn't scale to
+                         narrow/mobile layouts. Menu items are never individually disabled
+                         (see itemActionsMenuItems()'s comment) — Copy always opens its
+                         dialog, which explains a non-persisted item's disabled state
+                         inline instead. -->
+                    <button
+                      pButton
+                      type="button"
+                      id="btn-item-more-actions"
+                      severity="primary"
+                      [disabled]="itemdetails().path === undefined"
+                      icon="fas fa-ellipsis-v"
+                      (click)="itemActionsMenu.toggle($event)"
+                    ></button>
+                    <p-menu #itemActionsMenu [model]="itemActionsMenuItems()" [popup]="true" appendTo="body"></p-menu>
+                    @if ((renameItemDialog()?.failedReferencesCount() ?? 0) > 0) {
+                      <span
+                        style="color: var(--shng-orange); cursor: pointer"
+                        title="{{ 'ITEMS.RENAME_FAILED_REFERENCES_HINT' | translate }}"
+                        (click)="renameItemDialog()?.showFailedReferences()"
+                      >
+                        {{
+                          'ITEMS.RENAME_FAILED_REFERENCES'
+                            | translate: { count: renameItemDialog()!.failedReferencesCount() }
+                        }}
+                      </span>
+                    }
+                    @if ((renameItemDialog()?.copyReferencesTotalCount() ?? 0) > 0) {
+                      <span
+                        style="color: var(--shng-orange); cursor: pointer"
+                        title="{{ 'ITEMS.COPY_REFERENCES_NOTICE_HINT' | translate }}"
+                        (click)="renameItemDialog()?.showCopyReferences()"
+                      >
+                        {{
+                          'ITEMS.COPY_REFERENCES_NOTICE'
+                            | translate: { count: renameItemDialog()!.copyReferencesTotalCount() }
+                        }}
+                      </span>
+                    }
+                  </div>
                 </div>
                 <div class="card-body p-1" style="position: relative">
                   <div class="card-text" style="">
@@ -648,16 +653,16 @@
           <td class="py-1">{{ itemdata[1].last_update_by }}</td>
           <td class="py-1">
             <button
+              pButton
               type="button"
-              class="float-sm-right btn btn-shng btn-sm"
+              class="float-sm-right"
               style="margin-left: 5px"
               id="btn-monitor2t"
+              size="small"
+              severity="primary"
+              icon="fas fa-thumbtack item-tree-icon-rotated"
               (click)="monitorItem(itemdata[0], false)"
-            >
-              <span style="display: inline-block; transform: rotate(45deg)"
-                ><fa-icon [icon]="faThumbtack"></fa-icon
-              ></span>
-            </button>
+            ></button>
           </td>
         </tr>
       }

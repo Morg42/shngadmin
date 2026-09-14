@@ -40,7 +40,7 @@ import {
   syntaxHighlighting,
   unfoldAll,
 } from '@codemirror/language';
-import { gotoLine, openSearchPanel, searchKeymap } from '@codemirror/search';
+import { openSearchPanel, searchKeymap } from '@codemirror/search';
 import {
   Compartment,
   EditorSelection,
@@ -59,6 +59,7 @@ import {
   highlightSpecialChars,
   keymap,
   lineNumbers,
+  showDialog,
 } from '@codemirror/view';
 import { ThemeService } from '../../services/theme.service';
 
@@ -135,6 +136,11 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
   private themeComp = new Compartment();
 
   private _view?: EditorView;
+
+  /** Close handle for an open goto-line dialog, so a second trigger toggles
+   *  it shut instead of stacking a duplicate - @codemirror/search's own
+   *  gotoLine command has no such guard, it just opens another every call. */
+  private _gotoLineClose?: ReturnType<typeof showDialog>['close'];
 
   get view(): EditorView | undefined {
     return this._view;
@@ -277,11 +283,61 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
     }
   }
 
+  /**
+   * Opens the "go to line" dialog, or closes it if already open. Reimplements
+   * @codemirror/search's `gotoLine` command (same input parsing: line number,
+   * +/- relative offset, %  percentage, :column) via the public `showDialog`
+   * API instead of calling that command directly, because `showDialog` allows
+   * any number of simultaneous dialogs and `gotoLine` never guards against
+   * opening a second one - each click stacks another input row rather than
+   * toggling the existing one shut.
+   */
   triggerGotoLine() {
-    if (this._view) {
-      this._view.focus();
-      gotoLine(this._view);
+    if (!this._view) return;
+    if (this._gotoLineClose) {
+      this._view.dispatch({ effects: this._gotoLineClose });
+      this._gotoLineClose = undefined;
+      return;
     }
+    this._view.focus();
+    const view = this._view;
+    const state = view.state;
+    const line = String(state.doc.lineAt(state.selection.main.head).number);
+    const { close, result } = showDialog(view, {
+      label: state.phrase('Go to line'),
+      input: { type: 'text', name: 'line', value: line },
+      focus: true,
+      submitLabel: state.phrase('go'),
+    });
+    this._gotoLineClose = close;
+    result.then((form) => {
+      this._gotoLineClose = undefined;
+      const lineInput = form?.elements.namedItem('line') as HTMLInputElement | null;
+      const match = lineInput ? /^([+-])?(\d+)?(:\d+)?(%)?$/.exec(lineInput.value) : null;
+      if (!match) {
+        view.dispatch({ effects: close });
+        return;
+      }
+      const startLine = state.doc.lineAt(state.selection.main.head);
+      const [, sign, ln, cl, percent] = match;
+      const col = cl ? +cl.slice(1) : 0;
+      let target = ln ? +ln : startLine.number;
+      if (ln && percent) {
+        let pc = target / 100;
+        if (sign) pc = pc * (sign === '-' ? -1 : 1) + startLine.number / state.doc.lines;
+        target = Math.round(state.doc.lines * pc);
+      } else if (ln && sign) {
+        target = target * (sign === '-' ? -1 : 1) + startLine.number;
+      }
+      const docLine = state.doc.line(Math.max(1, Math.min(state.doc.lines, target)));
+      const selection = EditorSelection.cursor(
+        docLine.from + Math.max(0, Math.min(col, docLine.length)),
+      );
+      view.dispatch({
+        effects: [close, EditorView.scrollIntoView(selection.from, { y: 'center' })],
+        selection,
+      });
+    });
   }
 
   foldAtCursor() {

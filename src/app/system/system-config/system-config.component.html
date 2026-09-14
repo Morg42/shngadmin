@@ -44,12 +44,12 @@
                           <button
                             pButton
                             type="button"
-                            class="btn-shng btn btn-sm"
                             style="width: 100%"
                             [disabled]="configEtcChecking()"
                             (click)="checkConfigEtc(true)"
                             icon="fas fa-search"
                             label="{{ 'SYSTEM.CONFIG_ETC_CHECK' | translate }}"
+                            severity="primary"
                           ></button>
                         }
                       } @else if (rowData.name === 'config_etc' && col.field === 'desc') {
@@ -115,7 +115,8 @@
                           <button
                             pButton
                             type="button"
-                            class="float-sm-left btn btn-sm ui-button-secondary"
+                            severity="secondary"
+                            class="float-sm-left btn btn-sm"
                             (click)="change_password_dialog($event, rowData, col.field)"
                             style="margin-left: 5px"
                             label="{{ 'SYSTEM.SET_PASSWORD' | translate }}"
@@ -125,7 +126,8 @@
                           <button
                             pButton
                             type="button"
-                            class="float-sm-left btn btn-sm ui-button-secondary"
+                            severity="secondary"
+                            class="float-sm-left btn btn-sm"
                             (click)="change_password_dialog($event, rowData, col.field)"
                             style="margin-left: 5px"
                             label="{{ 'SYSTEM.CHANGE_PASSWORD' | translate }}"
@@ -178,7 +180,8 @@
                           <button
                             pButton
                             type="button"
-                            class="float-sm-left btn btn-sm ui-button-secondary"
+                            severity="secondary"
+                            class="float-sm-left btn btn-sm"
                             (click)="change_password_dialog($event, rowData, col.field)"
                             style="margin-left: 5px"
                             label="{{ 'SYSTEM.SET_PASSWORD' | translate }}"
@@ -188,7 +191,8 @@
                           <button
                             pButton
                             type="button"
-                            class="float-sm-left btn btn-sm ui-button-secondary"
+                            severity="secondary"
+                            class="float-sm-left btn btn-sm"
                             (click)="change_password_dialog($event, rowData, col.field)"
                             style="margin-left: 5px"
                             label="{{ 'SYSTEM.CHANGE_PASSWORD' | translate }}"
@@ -298,7 +302,8 @@
     <button
       pButton
       type="button"
-      class="float-sm-left btn btn-sm ui-button-warning"
+      severity="warn"
+      class="float-sm-left btn btn-sm"
       style="float: left"
       [disabled]="!restart_core_button()"
       (click)="restartShng()"
@@ -310,16 +315,13 @@
       type="button"
       tabindex="1"
       autofocus="autofocus"
-      class="btn btn-primary btn-sm btn-shng"
       style="float: right"
       [disabled]="!data_changed()"
       (click)="saveSettings()"
       icon="fas fa-check"
       label="{{ 'BUTTON.SAVE_SETTINGS' | translate }}"
+      severity="primary"
     ></button>
-    <!--
-      <button pButton type="button" tabindex="1" autofocus="autofocus" class="btn btn-primary btn-sm btn-shng" style="float: right;" [disabled]="!data_changed()" (click)="saveSettings()"><i class="fas fa-check"></i> {{'BUTTON.SAVE_SETTINGS'|translate}}</button>
--->
   </div>
 </div>
 
@@ -345,7 +347,7 @@
       icon="pi pi-times"
       (click)="validation_dialog_display = false"
       label="{{ 'BUTTON.CLOSE' | translate }}"
-      class="ui-button-success"
+      severity="success"
     ></button>
   </ng-template>
 </p-dialog>
@@ -411,7 +413,7 @@
         [disabled]="configEtcEnabling()"
         (click)="enableConfigEtc()"
         label="{{ 'SYSTEM.CONFIG_ETC_ENABLE' | translate }}"
-        class="ui-button-success"
+        severity="success"
       ></button>
     }
     <button
@@ -420,7 +422,7 @@
       icon="pi pi-times"
       (click)="configEtcCheckDialogVisible.set(false)"
       label="{{ 'BUTTON.CLOSE' | translate }}"
-      class="ui-button-secondary"
+      severity="secondary"
     ></button>
   </ng-template>
 </p-dialog>
@@ -513,7 +515,7 @@
       icon="pi pi-times"
       (click)="pwd_change_dialog_display = false"
       label="{{ 'BUTTON.ABORT' | translate }}"
-      class="ui-button-secondary"
+      severity="secondary"
     ></button>
     <button
       pButton
@@ -522,7 +524,7 @@
       icon="pi pi-check"
       (click)="change_password($event)"
       label="{{ 'BUTTON.CHANGE' | translate }}"
-      class="ui-button-success"
+      severity="success"
     ></button>
   </ng-template>
 </p-dialog>

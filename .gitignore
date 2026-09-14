@@ -30,6 +30,11 @@ yarn-error.log
 testem.log
 /typings
 
+# Playwright run artifacts - baseline snapshots under e2e/**/*-snapshots/ are committed
+/test-results/
+/playwright-report/
+/blob-report/
+
 # System files
 .DS_Store
 Thumbs.db

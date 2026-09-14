@@ -6,31 +6,32 @@
       type="button"
       [disabled]="!(myEditFilename() === '' || myTextarea() === myTextareaOrig())"
       icon="far fa-file"
-      style="margin-right: 10px"
       (click)="newConfig()"
-      class="float-sm-left ui-button-success"
+      severity="success"
     ></button>
     <button
       pButton
       type="button"
       [disabled]="myEditFilename() === ''"
       icon="far fa-trash-alt"
-      style="margin-right: 0; width: 25px"
       (click)="deleteConfig()"
-      class="float-sm-left ui-button-danger"
+      severity="danger"
     ></button>
   </div>
 
   <div slot="buttons-right">
+    @if (myEditFilename() !== '') {
+      {{ 'STRUCT_CONFIG.CONFIG_FILE' | translate }}: <strong>{{ structsDir() }}/{{ myEditFilename() }}.yaml</strong>
+    }
     <button
       pButton
       label="{{ 'BUTTON.SAVE' | translate }}"
       type="button"
       [disabled]="myEditFilename() === '' || myTextarea() === myTextareaOrig()"
       icon="fa fa-check"
-      style="margin-right: 0"
+      style="margin-left: auto"
       (click)="saveConfig()"
-      class="float-sm-right ui-button-success"
+      severity="success"
     ></button>
     <button
       pButton
@@ -38,9 +39,8 @@
       type="button"
       [disabled]="myEditFilename() === '' || myTextarea() === myTextareaOrig()"
       icon="fa fa-times"
-      style="margin-right: 10px"
       (click)="myTextarea.set(myTextareaOrig())"
-      class="float-sm-right ui-button-secondary"
+      severity="secondary"
     ></button>
     <button
       pButton
@@ -48,13 +48,9 @@
       type="button"
       [disabled]="false"
       icon="fa fa-info"
-      style="margin-right: 10px"
       (click)="this.editorHelp_display = true"
-      class="float-sm-right ui-button-success"
+      severity="secondary"
     ></button>
-    @if (myEditFilename() !== '') {
-      {{ 'STRUCT_CONFIG.CONFIG_FILE' | translate }}: <strong>{{ structsDir() }}/{{ myEditFilename() }}.yaml</strong>
-    }
   </div>
 
   <div slot="filelist">
@@ -132,7 +128,7 @@
       (click)="this.addFile()"
       [disabled]="!this.add_enabled"
       label="{{ 'BUTTON.ADD' | translate }}"
-      class="ui-button-success"
+      severity="success"
       autofocus
     ></button>
     <button
@@ -141,7 +137,7 @@
       icon="pi pi-times"
       (click)="newconfig_display = false"
       label="{{ 'BUTTON.ABORT' | translate }}"
-      class="ui-button-secondary"
+      severity="secondary"
     ></button>
   </ng-template>
 </p-dialog>
@@ -173,7 +169,7 @@
       type="button"
       (click)="error_display.set(false)"
       label="{{ 'BUTTON.CLOSE' | translate }}"
-      class="ui-button-success"
+      severity="success"
     ></button>
   </ng-template>
 </p-dialog>
@@ -196,7 +192,7 @@
       icon="fa fa-trash-alt"
       (click)="DeleteConfigConfirm()"
       label="{{ 'BUTTON.DELETE' | translate }}"
-      class="ui-button-danger"
+      severity="danger"
     ></button>
     <button
       pButton
@@ -204,7 +200,7 @@
       icon="fa fa-times"
       (click)="confirmdelete_display = false"
       label="{{ 'BUTTON.ABORT' | translate }}"
-      class="ui-button-secondary"
+      severity="secondary"
     ></button>
   </ng-template>
 </p-dialog>
@@ -267,7 +263,7 @@
       type="button"
       (click)="editorHelp_display = false"
       label="{{ 'BUTTON.CLOSE' | translate }}"
-      class="ui-button-success"
+      severity="success"
     ></button>
   </ng-template>
 </p-dialog>

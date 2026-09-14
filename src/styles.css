@@ -195,6 +195,16 @@ dl {
   pointer-events: none !important;
 }
 
+/* PrimeNG's Button never sets its own line-height, so it falls back to the
+   browser default ("normal", ~1.15) instead of this app's --line-height-base
+   (1.5) - the same fix already applied to the legacy .btn/.form-control
+   families (below). Other form fields (p-select etc.) end up taller because
+   they do carry an explicit 1.5 line-height, so a pButton sitting next to a
+   dropdown in the same toolbar renders a few px shorter without this. */
+.p-button {
+  line-height: var(--line-height-base);
+}
+
 /* ================================================================
    Page-frame for non-tab pages (B / C layout types)
    Mirrors PrimeNG p-tabs visually so all pages look consistent.
@@ -306,57 +316,6 @@ textarea {
   color: #fff;
   background-color: #286090 !important;
   border-color: #204d74;
-}
-
-.ui-button-success {
-  background-color: var(--shng-blue) !important;
-}
-.ui-button-success:hover:not([disabled]) {
-  background-color: #286090 !important;
-  border-color: #204d74 !important;
-}
-
-.ui-button-secondary {
-  background-color: var(--shng-secondary-button) !important;
-  border-color: #cccccc !important;
-  color: #555555 !important;
-}
-.ui-button-secondary:hover:not([disabled]) {
-  background-color: #868e96 !important;
-  border-color: #868e96 !important;
-  color: #fff !important;
-}
-
-.ui-button-danger {
-  background-color: var(--shng-red) !important;
-  border-color: #cccccc !important;
-}
-.ui-button-danger:hover:not([disabled]) {
-  background-color: #8f0606 !important;
-  border-color: #8f0606 !important;
-}
-
-/* Disruptive-but-not-destructive actions (reload/unload a running plugin
-   or logic, restart SmartHomeNG) — a middle step between confirm (blue)
-   and delete (red). */
-.ui-button-warning {
-  background-color: var(--shng-amber) !important;
-  border-color: var(--shng-amber) !important;
-  color: #fff !important;
-}
-.ui-button-warning:hover:not([disabled]) {
-  background-color: #9c6709 !important;
-  border-color: #9c6709 !important;
-}
-
-.ui-button-secondary2 {
-  background-color: #f0f0f0 !important;
-  border-color: #f5f5f5 !important;
-  color: #555555 !important;
-}
-
-.ui-button-secondary.ui-state-focus {
-  background-color: var(--shng-red) !important;
 }
 
 .ui-fileupload-buttonbar .ui-button {
@@ -505,111 +464,6 @@ a.text-shng:hover {
   font-weight: var(--font-weight-bold) !important;
 }
 
-.btn-shng {
-  color: #fff;
-  background-color: var(--shng-blue);
-  /* border-color: #2e6da4; */
-}
-.btn-shng:disabled,
-.btn-shng[disabled] {
-  color: #fff;
-  background-color: #a6c1d9;
-  /* border-color: #2e6da4; */
-}
-.btn-shng:hover:enabled {
-  color: #fff;
-  background-color: #286090;
-  border-color: #204d74;
-}
-.btn-shng-default {
-  color: #fff;
-  background-color: #337ab7;
-  border-color: #2e6da4;
-}
-.btn-shng-default:hover {
-  color: #fff;
-  background-color: #286090;
-  border-color: #204d74;
-}
-
-.btn-shng-secondary {
-  color: #fff;
-  background-color: #e0e0e0;
-}
-
-.btn-shng-outline-secondary {
-  color: #868e96;
-  background-color: transparent;
-  background-image: none;
-  border-color: #c8ccd0;
-}
-
-.btn-shng-outline-secondary:hover {
-  color: #fff;
-  background-color: #868e96;
-  border-color: #868e96;
-}
-
-.btn-shng-outline-secondary:focus,
-.btn-shng-outline-secondary.focus {
-  /*
-    box-shadow: 0 0 0 0.2rem rgba(134, 142, 150, 0.5);
-  */
-}
-
-.btn-shng-outline-secondary.disabled,
-.btn-shng-outline-secondary:disabled {
-  color: #c8ccd0;
-  background-color: transparent;
-}
-
-.btn-shng-outline-secondary:not([disabled]):not(.disabled):active,
-.btn-shng-outline-secondary:not([disabled]):not(.disabled).active,
-.show > .btn-shng-outline-secondary.dropdown-toggle {
-  color: #212529;
-  background-color: #c8ccd0;
-  border-color: #c8ccd0;
-  /*
-    box-shadow: 0 0 0 0.2rem rgba(134, 142, 150, 0.5);
-  */
-}
-
-.btn-shng-success {
-  color: #fff;
-  background-color: #408000;
-  border-color: #408000;
-}
-
-.btn-shng-success:hover {
-  color: #fff;
-  background-color: #1f601f;
-  border-color: #1f601f;
-}
-
-.btn-shng-success:focus,
-.btn-success.focus {
-  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.5);
-}
-
-.btn-shng-danger {
-  color: #fff;
-  background-color: var(--shng-red);
-  border-color: var(--shng-red);
-}
-
-.btn-shng-danger:disabled,
-.btn-shng-danger[disabled] {
-  color: #fff;
-  background-color: #d99a9a;
-  border-color: #d99a9a;
-}
-
-.btn-shng-danger:hover:enabled {
-  color: #fff;
-  background-color: #b34700;
-  border-color: #b34700;
-}
-
 .shng_headline {
   color: var(--text-caption);
   font-size: var(--font-size-base);
@@ -637,7 +491,7 @@ a.text-shng:hover {
    These reproduce the Bootstrap 4 rules for every class that
    appears in this project's templates, allowing the Bootstrap
    package to be removed entirely.  The shng custom classes
-   (btn-shng, text-shng, shng_heading, etc.) are defined above
+   (text-shng, shng_heading, etc.) are defined above
    and are not part of Bootstrap — they remain unchanged.
    ============================================================ */
 
@@ -838,8 +692,8 @@ a.text-shng:hover {
 }
 
 /* --- Buttons (base + variants used in templates) ---
-   btn-shng and btn-primary colors are defined above;
-   this block adds the structural rules they both depend on.  */
+   btn-primary colors are defined above;
+   this block adds the structural rules it depends on.  */
 .btn {
   display: inline-block;
   font-weight: var(--font-weight-normal);
@@ -866,6 +720,13 @@ a.text-shng:hover {
   cursor: not-allowed;
   pointer-events: none;
 }
+/* PrimeNG's own base layer already handles disabled pButton/p-button
+   elements (cursor/pointer-events/opacity via the themeable
+   semantic.disabledOpacity token, set in ShngPreset in main.ts) - this
+   used to hand-roll the same thing here before that token was found, and
+   is now redundant for anything carrying PrimeNG's .p-disabled/.p-component
+   classes. Kept only for .btn (the Bootstrap-remnant family, never
+   PrimeNG-rendered, so it gets none of PrimeNG's base handling). */
 .btn-sm {
   padding: 0.25rem 0.5rem;
   font-size: var(--font-size-base); /* old: --font-size-sm */
@@ -879,21 +740,6 @@ a.text-shng:hover {
 .btn-block {
   display: block;
   width: 100%;
-}
-
-.btn-outline-dark {
-  color: #343a40;
-  background-color: transparent;
-  border-color: #343a40;
-}
-.btn-outline-dark:hover:not([disabled]) {
-  color: #fff;
-  background-color: #343a40;
-  border-color: #343a40;
-}
-.btn-outline-dark:disabled {
-  color: #343a40;
-  opacity: 0.65;
 }
 
 .btn-outline-danger {
@@ -932,6 +778,23 @@ a.text-shng:hover {
 .btn-outline {
   background-color: transparent;
   border-color: currentColor;
+}
+
+/* Neutral/gray severities can't rely on opacity alone to distinguish disabled
+   from active — with no hue to fall back on, a dimmed gray still just reads
+   as "a gray button", not "unavailable". Swap to the dedicated disabled
+   token instead (PrimeNG's native severity="secondary" class, confirmed via
+   the style guide at /dev/style-guide that it needs this override). */
+.p-button-secondary:disabled,
+.p-button-secondary[disabled] {
+  color: var(--shng-disabled) !important;
+  border-color: var(--shng-disabled) !important;
+  background-color: transparent !important;
+  /* !important: PrimeNG's own .p-component:disabled rule (semantic.disabledOpacity,
+     main.ts) sets opacity too, loads after this file, and matches at equal
+     specificity for .p-button-secondary - needs to lose here since this neutral
+     severity wants a lower opacity than the app-wide default. */
+  opacity: 0.5 !important;
 }
 
 /* ================================================================
@@ -1101,8 +964,8 @@ a.text-shng:hover {
 }
 
 /* Items view "more actions" (⋮) menu — flags the Delete entry the same red
-   as the standalone .btn-shng-danger buttons used elsewhere, since a plain
-   MenuItem has no built-in severity/danger styling of its own. */
+   as severity="danger" pButtons used elsewhere, since a plain MenuItem has
+   no built-in severity/danger styling of its own. */
 .p-menu-item.menu-item-danger .p-menu-item-link {
   color: var(--shng-red);
 }
@@ -1274,10 +1137,9 @@ a.text-shng:hover {
    semantic variables plus the handful of hardcoded light-only colours
    (mostly black-tint rgba() overlays, which read as barely-visible on
    a dark background and need a white-tint equivalent instead).
-   Deliberately does NOT touch: brand-coloured buttons (.ui-button-*,
-   .btn-shng-*) — already high-contrast on both backgrounds — or the
-   "legacy" .ui-table/plugin-webinterface sections, which exist for
-   markup injected by third-party plugin webinterfaces, not this app.
+   Deliberately does NOT touch the "legacy" .ui-table/plugin-webinterface
+   sections, which exist for markup injected by third-party plugin
+   webinterfaces, not this app.
    ================================================================ */
 .dark-mode {
   color-scheme: dark;
@@ -1297,10 +1159,6 @@ a.text-shng:hover {
   --text-caption: #a0a0a0;
   --text-placeholder: #6b6b6b;
   --text-link: #6fa8dc;
-}
-
-.dark-mode .ui-button-secondary {
-  color: #ddd !important;
 }
 
 .dark-mode .table-striped tbody tr:nth-of-type(odd) {

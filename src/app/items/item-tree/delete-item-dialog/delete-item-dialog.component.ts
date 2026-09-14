@@ -13,6 +13,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService, TreeNode } from 'primeng/api';
+import { ButtonDirective } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 import { ItemDetails } from '../../../common/models/item-details';
@@ -29,7 +30,7 @@ import { ItemsApiService } from '../../../common/services/items-api.service';
   selector: 'app-delete-item-dialog',
   templateUrl: './delete-item-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Dialog, FormsModule, ToggleSwitch, TranslatePipe],
+  imports: [ButtonDirective, Dialog, FormsModule, ToggleSwitch, TranslatePipe],
 })
 export class DeleteItemDialogComponent {
   private readonly destroyRef = inject(DestroyRef);

@@ -58,7 +58,7 @@
                         (appConfig.restartStopsOnly ? 'BUTTON.QUIT_SHNG_INTERACTIVE' : 'BUTTON.RESTART_SHNG')
                           | translate
                       }}"
-                      class="ui-button-warning"
+                      severity="warn"
                     ></button>
                   </td>
                 </tr>
@@ -79,7 +79,7 @@
                       [disabled]="backup_disabled() || shng_statuscode() !== 20"
                       (click)="this.downloadBackup()"
                       label="{{ 'BUTTON.DOWNLOAD' | translate }}"
-                      class="ui-button-success"
+                      severity="success"
                     ></button>
                     &nbsp;
                     <button
@@ -89,7 +89,7 @@
                       [disabled]="restore_disabled() || shng_statuscode() !== 20"
                       (click)="this.restoreBackup()"
                       label="{{ 'BUTTON.RESTORE' | translate }}"
-                      class="ui-button-danger"
+                      severity="danger"
                     ></button>
                   </td>
                 </tr>
@@ -168,7 +168,7 @@
                       (click)="createPwdHash()"
                       id="create_hash"
                       label="{{ 'BUTTON.CREATE_HASH' | translate }}"
-                      class="ui-button-success"
+                      severity="success"
                     ></button>
                   </td>
                 </tr>
@@ -213,7 +213,7 @@
                 type="button"
                 style="margin-right: 0; margin-left: auto"
                 (click)="checkEval()"
-                class="ui-button-success"
+                severity="success"
               ></button>
             </div>
 
@@ -264,7 +264,8 @@
                   type="button"
                   style="margin-right: 10px"
                   (click)="checkYaml()"
-                  class="float-sm-right ui-button-success"
+                  severity="success"
+                  class="float-sm-right"
                 ></button>
               </div>
               <div style="width: 50%; padding-left: 0">
@@ -312,7 +313,8 @@
                   type="button"
                   style="margin-right: 10px"
                   (click)="convertYaml()"
-                  class="float-sm-right ui-button-success"
+                  severity="success"
+                  class="float-sm-right"
                 ></button>
               </div>
               <div style="width: 50%; padding-left: 0">
@@ -396,7 +398,7 @@
                           type="button"
                           (click)="deleteCacheEntry(i)"
                           label="{{ 'BUTTON.DELETE' | translate }}"
-                          class="ui-button-danger"
+                          severity="danger"
                         ></button>
                       </td>
                     </tr>
@@ -412,7 +414,7 @@
                   type="button"
                   (click)="deleteCacheSelected()"
                   label="{{ 'BUTTON.DELETE_SELECTED' | translate }}"
-                  class="ui-button-danger"
+                  severity="danger"
                 ></button>
               }
               @if (cacheInfo().length === 0) {
@@ -421,7 +423,7 @@
                   type="button"
                   (click)="loadCacheOrphans()"
                   label="{{ 'BUTTON.UPDATE' | translate }}"
-                  class="ui-button-success"
+                  severity="success"
                 ></button>
               }
             </div>
@@ -448,7 +450,7 @@
       icon="pi pi-check"
       (click)="show_backup_confirm.set(false)"
       label="{{ 'BUTTON.OK' | translate }}"
-      class="ui-button-success"
+      severity="success"
     ></button>
   </ng-template>
 </p-dialog>
@@ -489,7 +491,7 @@
       icon="fa fa-times"
       (click)="show_restore_chooser.set(false)"
       label="{{ 'BUTTON.CLOSE' | translate }}"
-      class="ui-button-success"
+      severity="success"
     ></button>
   </ng-template>
 </p-dialog>

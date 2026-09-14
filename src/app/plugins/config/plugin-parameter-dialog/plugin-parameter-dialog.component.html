@@ -141,7 +141,7 @@
         icon="fa fa-check"
         (click)="saveConfig()"
         label="{{ 'BUTTON.SAVE' | translate }}"
-        class="ui-button-success"
+        severity="success"
       ></button>
       <button
         pButton
@@ -149,7 +149,7 @@
         icon="fa fa-times"
         (click)="abort()"
         label="{{ 'BUTTON.ABORT' | translate }}"
-        class="ui-button-secondary"
+        severity="secondary"
       ></button>
     }
     @if (isReadonly() === true) {
@@ -159,7 +159,7 @@
         icon="fa fa-times"
         (click)="visible.set(false)"
         label="{{ 'BUTTON.CLOSE' | translate }}"
-        class="ui-button-success"
+        severity="success"
       ></button>
     }
   </ng-template>
@@ -187,7 +187,7 @@
       icon="pi pi-times"
       (click)="validation_dialog_display = false"
       label="{{ 'BUTTON.CLOSE' | translate }}"
-      class="ui-button-success"
+      severity="success"
     ></button>
   </ng-template>
 </p-dialog>

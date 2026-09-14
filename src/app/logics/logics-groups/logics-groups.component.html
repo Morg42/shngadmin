@@ -9,16 +9,15 @@
         [disabled]="!(myEditGroup() === '' || !this.groupChanged())"
         icon="far fa-file"
         (click)="newGroup()"
-        class="ui-button-success"
+        severity="success"
       ></button>
       <button
         pButton
         type="button"
         [disabled]="myEditGroup() === ''"
         icon="far fa-trash-alt"
-        style="width: 25px"
         (click)="deleteGroup()"
-        class="ui-button-danger"
+        severity="danger"
       ></button>
       <button
         pButton
@@ -27,7 +26,7 @@
         [disabled]="myEditGroup() === '' || groupList().length < 2"
         icon="fa fa-code-merge"
         (click)="openMergeDialog()"
-        class="ui-button-secondary"
+        severity="secondary"
       ></button>
     </div>
     <div class="button-toolbar-right">
@@ -38,7 +37,7 @@
         [disabled]="!this.groupChanged()"
         icon="fa fa-times"
         (click)="this.discardChanges()"
-        class="ui-button-secondary"
+        severity="secondary"
       ></button>
       <button
         pButton
@@ -47,7 +46,7 @@
         [disabled]="!this.groupChanged()"
         icon="fa fa-check"
         (click)="saveGroup()"
-        class="ui-button-success"
+        severity="success"
       ></button>
     </div>
   </div>
@@ -68,7 +67,8 @@
               type="button"
               icon="far fa-file"
               [label]="'BUTTON.CREATE' | translate"
-              class="ui-button-success btn-sm"
+              severity="success"
+              class="btn-sm"
               style="margin-left: 12px"
               (click)="createUnknownGroup(gname)"
             ></button>
@@ -213,7 +213,7 @@
       (click)="this.addGroup()"
       [disabled]="!this.add_enabled"
       label="{{ 'BUTTON.ADD' | translate }}"
-      class="ui-button-success"
+      severity="success"
       autofocus
     ></button>
     <button
@@ -222,7 +222,7 @@
       icon="pi pi-times"
       (click)="this.newGroupAbort()"
       label="{{ 'BUTTON.ABORT' | translate }}"
-      class="ui-button-secondary"
+      severity="secondary"
     ></button>
   </ng-template>
 </p-dialog>
@@ -254,7 +254,7 @@
       type="button"
       (click)="error_display = false"
       label="{{ 'BUTTON.CLOSE' | translate }}"
-      class="ui-button-success"
+      severity="success"
     ></button>
   </ng-template>
 </p-dialog>
@@ -277,7 +277,7 @@
       icon="fa fa-trash-alt"
       (click)="DeleteGroupConfirm()"
       label="{{ 'BUTTON.DELETE' | translate }}"
-      class="ui-button-danger"
+      severity="danger"
     ></button>
     <button
       pButton
@@ -285,7 +285,7 @@
       icon="fa fa-times"
       (click)="confirmdelete_display = false"
       label="{{ 'BUTTON.ABORT' | translate }}"
-      class="ui-button-secondary"
+      severity="secondary"
     ></button>
   </ng-template>
 </p-dialog>
@@ -333,7 +333,7 @@
       (click)="executeMerge()"
       [disabled]="!mergeTargetName()"
       label="{{ 'LOGIC_GROUPS.MERGE_CONFIRM' | translate }}"
-      class="ui-button-success"
+      severity="success"
     ></button>
     <button
       pButton
@@ -341,7 +341,7 @@
       icon="fa fa-times"
       (click)="mergeDialog.set(false)"
       label="{{ 'BUTTON.ABORT' | translate }}"
-      class="ui-button-secondary"
+      severity="secondary"
     ></button>
   </ng-template>
 </p-dialog>

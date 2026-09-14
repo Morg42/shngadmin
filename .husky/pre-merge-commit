@@ -37,4 +37,11 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+echo "[pre-merge-commit] visual regression (e2e)"
+npm run test:e2e
+if [ $? -ne 0 ]; then
+    echo "[pre-merge-commit] visual regression FAILED — review the diff (npx playwright show-report), then either fix the regression or, if the change is intentional, run 'npm run test:e2e -- --update-snapshots', review the new baseline, and commit it before merging again" >&2
+    exit 1
+fi
+
 echo "[pre-merge-commit] all checks passed"

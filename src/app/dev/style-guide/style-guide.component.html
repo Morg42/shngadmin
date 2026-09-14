@@ -1,0 +1,44 @@
+<div class="style-guide">
+  <h1>Button style guide</h1>
+  <p>
+    Every severity in filled / outlined / text variants, enabled and disabled. Hover/focus/active states are real -
+    mouse over any button below. Toggle the app's theme switcher to check dark mode; this page follows the current theme
+    like everything else.
+  </p>
+
+  <table class="style-guide-table">
+    <thead>
+      <tr>
+        <th>Severity</th>
+        <th colspan="2">Filled</th>
+        <th colspan="2">Outlined</th>
+        <th colspan="2">Text</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (severity of severities; track severity) {
+        <tr [attr.data-severity]="severity">
+          <td class="severity-label">{{ severity }}</td>
+          <td>
+            <button pButton [severity]="severity" label="Enabled" type="button"></button>
+          </td>
+          <td>
+            <button pButton [severity]="severity" label="Disabled" type="button" disabled></button>
+          </td>
+          <td>
+            <button pButton [severity]="severity" [outlined]="true" label="Enabled" type="button"></button>
+          </td>
+          <td>
+            <button pButton [severity]="severity" [outlined]="true" label="Disabled" type="button" disabled></button>
+          </td>
+          <td>
+            <button pButton [severity]="severity" [text]="true" label="Enabled" type="button"></button>
+          </td>
+          <td>
+            <button pButton [severity]="severity" [text]="true" label="Disabled" type="button" disabled></button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

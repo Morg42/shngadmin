@@ -106,9 +106,14 @@
           (valueChange)="attr.value = $event"
           style="flex: 1"
         ></app-attribute-value-input>
-        <button type="button" class="btn btn-shng-danger btn-sm" (click)="removeAttributeRow($index)">
-          <fa-icon [icon]="faTrashAlt"></fa-icon>
-        </button>
+        <button
+          pButton
+          type="button"
+          size="small"
+          severity="danger"
+          icon="fas fa-trash-alt"
+          (click)="removeAttributeRow($index)"
+        ></button>
       </div>
       @if (attributeCatalogService.attributeDescription(attr.key)) {
         <small style="color: var(--text-muted)">{{ attributeCatalogService.attributeDescription(attr.key) }}</small>
@@ -116,12 +121,24 @@
     </div>
   }
   <div style="display: flex; gap: 8px; margin-top: 8px">
-    <button type="button" class="btn btn-shng btn-sm" (click)="addAttributeRow()">
-      <fa-icon [icon]="faPlus"></fa-icon> {{ 'ITEMS.ADD ATTRIBUTE' | translate }}
-    </button>
-    <button type="button" class="btn btn-shng btn-sm" (click)="attributeBrowser.open()">
-      <fa-icon [icon]="faList"></fa-icon> {{ 'ITEMS.BROWSE ATTRIBUTES' | translate }}
-    </button>
+    <button
+      pButton
+      type="button"
+      size="small"
+      severity="primary"
+      icon="fas fa-plus"
+      label="{{ 'ITEMS.ADD ATTRIBUTE' | translate }}"
+      (click)="addAttributeRow()"
+    ></button>
+    <button
+      pButton
+      type="button"
+      size="small"
+      severity="primary"
+      icon="fas fa-list"
+      label="{{ 'ITEMS.BROWSE ATTRIBUTES' | translate }}"
+      (click)="attributeBrowser.open()"
+    ></button>
   </div>
 
   @if (newItemError() !== '') {
@@ -129,17 +146,21 @@
   }
 
   <ng-template #footer>
-    <button type="button" class="btn btn-sm ui-button-secondary" (click)="visible.set(false)">
-      {{ 'BUTTON.ABORT' | translate }}
-    </button>
     <button
+      pButton
       type="button"
-      class="btn btn-primary btn-sm btn-shng"
+      severity="secondary"
+      label="{{ 'BUTTON.ABORT' | translate }}"
+      (click)="visible.set(false)"
+    ></button>
+    <button
+      pButton
+      type="button"
+      severity="primary"
       [disabled]="!newItemNameValid"
+      label="{{ (newItemMissingAncestors.length > 0 ? 'ITEMS.CREATE_WITH_PATH_BUTTON' : 'BUTTON.CREATE') | translate }}"
       (click)="submitNewItem()"
-    >
-      {{ (newItemMissingAncestors.length > 0 ? 'ITEMS.CREATE_WITH_PATH_BUTTON' : 'BUTTON.CREATE') | translate }}
-    </button>
+    ></button>
   </ng-template>
 </p-dialog>
 

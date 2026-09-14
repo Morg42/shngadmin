@@ -17,16 +17,7 @@ import { RenameItemDialogComponent } from './rename-item-dialog/rename-item-dial
 
 import { TranslateDirective, TranslatePipe, TranslateService } from '@ngx-translate/core';
 
-import {
-  faCircleNotch,
-  faEllipsisVertical,
-  faFolder,
-  faFolderOpen,
-  faPlus,
-  faSearch,
-  faSync,
-  faThumbtack,
-} from '@fortawesome/free-solid-svg-icons';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 import { MenuItem, PrimeTemplate, TreeNode } from 'primeng/api';
 import { TreeNodeSelectEvent } from 'primeng/tree';
@@ -44,8 +35,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { Bind } from 'primeng/bind';
+import { ButtonDirective } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { Menu } from 'primeng/menu';
 import { Ripple } from 'primeng/ripple';
@@ -74,10 +65,10 @@ type MonitoredItem = [string, Record<string, unknown>];
     Tab,
     TabPanels,
     TabPanel,
+    ButtonDirective,
     Dialog,
     TranslateDirective,
     Tooltip,
-    FaIconComponent,
     Tree,
     PrimeTemplate,
     ToggleSwitch,
@@ -105,13 +96,6 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
   private readonly deleteItemDialog = viewChild(DeleteItemDialogComponent);
 
   faSearch = faSearch;
-  faCircleNotch = faCircleNotch;
-  faFolder = faFolder;
-  faFolderOpen = faFolderOpen;
-  faSync = faSync;
-  faThumbtack = faThumbtack;
-  faPlus = faPlus;
-  faEllipsisVertical = faEllipsisVertical;
 
   readonly itemcount = signal(0);
   readonly itemdetails = signal<ItemDetails>(<ItemDetails>{});

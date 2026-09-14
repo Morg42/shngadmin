@@ -77,19 +77,16 @@
                   <span class="shng-text-caption">({{ plugin.pluginname }})</span>
                   @if (plugin.stoppable) {
                     <button
+                      pButton
                       type="button"
                       name="enable"
                       title="{{ 'PLUGIN.START' | translate }}"
-                      class="btn btn-outline-primary btn-sm"
+                      [icon]="startingPlugins().has(plugin.configname) ? 'fas fa-spinner fa-spin' : 'fas fa-play'"
+                      severity="primary"
+                      size="small"
                       [disabled]="startingPlugins().has(plugin.configname)"
                       (click)="startPlugin(plugin.configname)"
-                    >
-                      @if (startingPlugins().has(plugin.configname)) {
-                        <i class="fas fa-spinner fa-spin"></i>
-                      } @else {
-                        <i class="fas fa-play"></i>
-                      }
-                    </button>
+                    ></button>
                   }
                 </li>
               }

@@ -39,14 +39,17 @@
             (ngModelChange)="updateListRow($index, $event)"
             style="flex: 1"
           />
-          <button type="button" class="btn btn-shng-danger btn-sm" (click)="removeListRow($index)">
-            <fa-icon [icon]="faTrashAlt"></fa-icon>
-          </button>
+          <button
+            pButton
+            type="button"
+            size="small"
+            severity="danger"
+            icon="fas fa-trash-alt"
+            (click)="removeListRow($index)"
+          ></button>
         </div>
       }
-      <button type="button" class="btn btn-shng btn-sm" (click)="addListRow()">
-        <fa-icon [icon]="faPlus"></fa-icon>
-      </button>
+      <button pButton type="button" size="small" severity="primary" icon="fas fa-plus" (click)="addListRow()"></button>
     </div>
   }
   @case ('dict') {
@@ -69,14 +72,17 @@
             placeholder="value"
             style="flex: 1"
           />
-          <button type="button" class="btn btn-shng-danger btn-sm" (click)="removeDictRow($index)">
-            <fa-icon [icon]="faTrashAlt"></fa-icon>
-          </button>
+          <button
+            pButton
+            type="button"
+            size="small"
+            severity="danger"
+            icon="fas fa-trash-alt"
+            (click)="removeDictRow($index)"
+          ></button>
         </div>
       }
-      <button type="button" class="btn btn-shng btn-sm" (click)="addDictRow()">
-        <fa-icon [icon]="faPlus"></fa-icon>
-      </button>
+      <button pButton type="button" size="small" severity="primary" icon="fas fa-plus" (click)="addDictRow()"></button>
     </div>
   }
   @default {

@@ -253,7 +253,7 @@
       (click)="this.addPlugin()"
       [disabled]="!this.add_enabled"
       label="{{ 'BUTTON.ADD' | translate }}"
-      class="ui-button-success"
+      severity="success"
       autofocus
     ></button>
     <button
@@ -262,7 +262,7 @@
       icon="pi pi-times"
       (click)="setconfig_display = false"
       label="{{ 'BUTTON.ABORT' | translate }}"
-      class="ui-button-secondary"
+      severity="secondary"
     ></button>
   </ng-template>
 </p-dialog>

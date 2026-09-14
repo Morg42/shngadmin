@@ -52,7 +52,7 @@
                   (click)="newLogic()"
                   icon="fa fa-plus"
                   label="{{ 'BUTTON.NEW_LOGIC' | translate }}"
-                  class="ui-button-success"
+                  severity="success"
                 ></button>
               </div>
               <div class="tab-content">
@@ -226,79 +226,96 @@
                                           <td class="p-1" style="white-space: nowrap">
                                             @if (logic.enabled) {
                                               <button
+                                                pButton
+                                                icon="fas fa-hand-pointer"
                                                 name="trigger"
                                                 title="{{ 'LOGICS.TRIGGER' | translate }}"
-                                                class="btn btn-outline-dark btn-sm mr-1"
+                                                severity="secondary"
+                                                size="small"
+                                                class="mr-1"
                                                 (click)="triggerLogic(logic.name)"
-                                              >
-                                                <i class="fas fa-hand-pointer"></i>
-                                              </button>
+                                              ></button>
                                               <button
+                                                pButton
+                                                icon="fas fa-sync"
                                                 name="reload"
                                                 title="{{ 'LOGICS.RELOAD' | translate }}"
-                                                class="btn btn-outline-dark btn-sm mr-1"
+                                                severity="secondary"
+                                                size="small"
+                                                class="mr-1"
                                                 (click)="reloadLogic(logic.name)"
-                                              >
-                                                <i class="fas fa-sync"></i>
-                                              </button>
+                                              ></button>
                                               <button
+                                                pButton
+                                                icon="fas fa-pause"
                                                 name="disable"
                                                 title="{{ 'LOGICS.DISABLE' | translate }}"
-                                                class="btn btn-outline-dark btn-sm mr-1"
+                                                severity="secondary"
+                                                size="small"
+                                                class="mr-1"
                                                 (click)="disableLogic(logic.name)"
-                                              >
-                                                <i class="fas fa-pause"></i>
-                                              </button>
+                                              ></button>
                                             } @else {
                                               <button
+                                                pButton
+                                                icon="fas fa-hand-pointer"
                                                 disabled="true"
                                                 name="trigger"
                                                 title="{{ 'LOGICS.TRIGGER' | translate }}"
-                                                class="btn btn-outline-dark btn-sm mr-1"
-                                              >
-                                                <i class="fas fa-hand-pointer"></i>
-                                              </button>
+                                                severity="secondary"
+                                                size="small"
+                                                class="mr-1"
+                                              ></button>
                                               <button
+                                                pButton
+                                                icon="fas fa-sync"
                                                 name="reload"
                                                 title="{{ 'LOGICS.RELOAD' | translate }}"
-                                                class="btn btn-outline-dark btn-sm mr-1"
+                                                severity="secondary"
+                                                size="small"
+                                                class="mr-1"
                                                 (click)="reloadLogic(logic.name)"
-                                              >
-                                                <i class="fas fa-sync"></i>
-                                              </button>
+                                              ></button>
                                               <button
+                                                pButton
+                                                icon="fas fa-play"
                                                 name="enable"
                                                 title="{{ 'LOGICS.ENABLE' | translate }}"
-                                                class="btn btn-outline-primary btn-sm mr-1"
+                                                severity="primary"
+                                                size="small"
+                                                class="mr-1"
                                                 (click)="enableLogic(logic.name)"
-                                              >
-                                                <i class="fas fa-play"></i>
-                                              </button>
+                                              ></button>
                                             }
                                             <button
+                                              pButton
+                                              icon="fas fa-eject"
                                               name="unload"
                                               title="{{ 'LOGICS.UNLOAD' | translate }}"
-                                              class="btn btn-outline-dark btn-sm mr-1"
+                                              severity="secondary"
+                                              size="small"
+                                              class="mr-1"
                                               (click)="unloadLogic(logic.name)"
-                                            >
-                                              <i class="fas fa-eject"></i>
-                                            </button>
+                                            ></button>
                                             <button
+                                              pButton
+                                              icon="fa fa-pen"
                                               name="rename"
                                               title="{{ 'LOGIC_EDIT.RENAME' | translate }}"
-                                              class="btn btn-outline-dark btn-sm mr-1"
+                                              severity="secondary"
+                                              size="small"
+                                              class="mr-1"
                                               (click)="openRenameDialog(logic.name, logic.filename)"
-                                            >
-                                              <i class="fa fa-pen"></i>
-                                            </button>
+                                            ></button>
                                             <button
+                                              pButton
+                                              icon="far fa-trash-alt"
                                               name="delete"
                                               title="{{ 'LOGICS.DELETE' | translate }}"
-                                              class="btn btn-outline-danger btn-sm"
+                                              severity="danger"
+                                              size="small"
                                               (click)="deleteLogic(logic.name, logic.filename)"
-                                            >
-                                              <i class="far fa-trash-alt" aria-hidden="true"></i>
-                                            </button>
+                                            ></button>
                                           </td>
                                         </tr>
                                       }
@@ -386,23 +403,26 @@
                             <td class="p-1">
                               @if (logic.filename !== '') {
                                 <button
+                                  pButton
+                                  icon="fas fa-plus"
                                   name="add"
                                   title="{{ 'LOGICS.ADD' | translate }}"
                                   type="submit"
-                                  class="btn btn-outline-primary btn-sm mr-1"
+                                  severity="primary"
+                                  size="small"
+                                  class="mr-1"
                                   (click)="loadLogic(logic.name)"
-                                >
-                                  <i class="fas fa-plus"></i>
-                                </button>
+                                ></button>
                               }
                               <button
+                                pButton
+                                icon="far fa-trash-alt"
                                 name="delete"
                                 title="{{ 'LOGICS.DELETE' | translate }}"
-                                class="btn btn-outline-danger btn-sm"
+                                severity="danger"
+                                size="small"
                                 (click)="deleteLogic(logic.name, logic.filename)"
-                              >
-                                <i class="far fa-trash-alt" aria-hidden="true"></i>
-                              </button>
+                              ></button>
                             </td>
                           </tr>
                         }
@@ -427,7 +447,7 @@
                   (click)="newLogic()"
                   icon="fa fa-plus"
                   label="{{ 'BUTTON.NEW_LOGIC' | translate }}"
-                  class="ui-button-success"
+                  severity="success"
                 ></button>
               </div>
               <div class="tab-content">
@@ -587,79 +607,96 @@
                             <td class="p-1" style="white-space: nowrap">
                               @if (logic.enabled) {
                                 <button
+                                  pButton
+                                  icon="fas fa-hand-pointer"
                                   name="trigger"
                                   title="{{ 'LOGICS.TRIGGER' | translate }}"
-                                  class="btn btn-outline-dark btn-sm mr-1"
+                                  severity="secondary"
+                                  size="small"
+                                  class="mr-1"
                                   (click)="triggerLogic(logic.name)"
-                                >
-                                  <i class="fas fa-hand-pointer"></i>
-                                </button>
+                                ></button>
                                 <button
+                                  pButton
+                                  icon="fas fa-sync"
                                   name="reload"
                                   title="{{ 'LOGICS.RELOAD' | translate }}"
-                                  class="btn btn-outline-dark btn-sm mr-1"
+                                  severity="secondary"
+                                  size="small"
+                                  class="mr-1"
                                   (click)="reloadLogic(logic.name)"
-                                >
-                                  <i class="fas fa-sync"></i>
-                                </button>
+                                ></button>
                                 <button
+                                  pButton
+                                  icon="fas fa-pause"
                                   name="disable"
                                   title="{{ 'LOGICS.DISABLE' | translate }}"
-                                  class="btn btn-outline-dark btn-sm mr-1"
+                                  severity="secondary"
+                                  size="small"
+                                  class="mr-1"
                                   (click)="disableLogic(logic.name)"
-                                >
-                                  <i class="fas fa-pause"></i>
-                                </button>
+                                ></button>
                               } @else {
                                 <button
+                                  pButton
+                                  icon="fas fa-hand-pointer"
                                   disabled="true"
                                   name="trigger"
                                   title="{{ 'LOGICS.TRIGGER' | translate }}"
-                                  class="btn btn-outline-dark btn-sm mr-1"
-                                >
-                                  <i class="fas fa-hand-pointer"></i>
-                                </button>
+                                  severity="secondary"
+                                  size="small"
+                                  class="mr-1"
+                                ></button>
                                 <button
+                                  pButton
+                                  icon="fas fa-sync"
                                   name="reload"
                                   title="{{ 'LOGICS.RELOAD' | translate }}"
-                                  class="btn btn-outline-dark btn-sm mr-1"
+                                  severity="secondary"
+                                  size="small"
+                                  class="mr-1"
                                   (click)="reloadLogic(logic.name)"
-                                >
-                                  <i class="fas fa-sync"></i>
-                                </button>
+                                ></button>
                                 <button
+                                  pButton
+                                  icon="fas fa-play"
                                   name="enable"
                                   title="{{ 'LOGICS.ENABLE' | translate }}"
-                                  class="btn btn-outline-primary btn-sm mr-1"
+                                  severity="primary"
+                                  size="small"
+                                  class="mr-1"
                                   (click)="enableLogic(logic.name)"
-                                >
-                                  <i class="fas fa-play"></i>
-                                </button>
+                                ></button>
                               }
                               <button
+                                pButton
+                                icon="fas fa-eject"
                                 name="unload"
                                 title="{{ 'LOGICS.UNLOAD' | translate }}"
-                                class="btn btn-outline-dark btn-sm mr-1"
+                                severity="secondary"
+                                size="small"
+                                class="mr-1"
                                 (click)="unloadLogic(logic.name)"
-                              >
-                                <i class="fas fa-eject"></i>
-                              </button>
+                              ></button>
                               <button
+                                pButton
+                                icon="fa fa-pen"
                                 name="rename"
                                 title="{{ 'LOGIC_EDIT.RENAME' | translate }}"
-                                class="btn btn-outline-dark btn-sm mr-1"
+                                severity="secondary"
+                                size="small"
+                                class="mr-1"
                                 (click)="openRenameDialog(logic.name, logic.filename)"
-                              >
-                                <i class="fa fa-pen"></i>
-                              </button>
+                              ></button>
                               <button
+                                pButton
+                                icon="far fa-trash-alt"
                                 name="delete"
                                 title="{{ 'LOGICS.DELETE' | translate }}"
-                                class="btn btn-outline-danger btn-sm"
+                                severity="danger"
+                                size="small"
                                 (click)="deleteLogic(logic.name, logic.filename)"
-                              >
-                                <i class="far fa-trash-alt" aria-hidden="true"></i>
-                              </button>
+                              ></button>
                             </td>
                           </tr>
                         }
@@ -710,23 +747,26 @@
                           <td class="p-1">
                             @if (logic.filename !== '') {
                               <button
+                                pButton
+                                icon="fas fa-plus"
                                 name="add"
                                 title="{{ 'LOGICS.ADD' | translate }}"
                                 type="submit"
-                                class="btn btn-outline-primary btn-sm mr-1"
+                                severity="primary"
+                                size="small"
+                                class="mr-1"
                                 (click)="loadLogic(logic.name)"
-                              >
-                                <i class="fas fa-plus"></i>
-                              </button>
+                              ></button>
                             }
                             <button
+                              pButton
+                              icon="far fa-trash-alt"
                               name="delete"
                               title="{{ 'LOGICS.DELETE' | translate }}"
-                              class="btn btn-outline-danger btn-sm"
+                              severity="danger"
+                              size="small"
                               (click)="deleteLogic(logic.name, logic.filename)"
-                            >
-                              <i class="far fa-trash-alt" aria-hidden="true"></i>
-                            </button>
+                            ></button>
                           </td>
                         </tr>
                       }
@@ -839,9 +879,13 @@
     </div>
   </div>
   <ng-template #footer>
-    <button type="button" class="btn btn-primary btn-sm btn-shng" (click)="showLogicDetails = false">
-      {{ 'BUTTON.CLOSE' | translate }}
-    </button>
+    <button
+      pButton
+      type="button"
+      severity="primary"
+      label="{{ 'BUTTON.CLOSE' | translate }}"
+      (click)="showLogicDetails = false"
+    ></button>
   </ng-template>
 </p-dialog>
 
@@ -863,7 +907,7 @@
       icon="fa fa-trash-alt"
       (click)="deleteLogicConfirm(true)"
       label="{{ 'BUTTON.DELETE_WITH_CODE' | translate }}"
-      class="ui-button-danger"
+      severity="danger"
     ></button>
     <button
       pButton
@@ -871,7 +915,7 @@
       icon="fa fa-trash-alt"
       (click)="deleteLogicConfirm(false)"
       label="{{ 'BUTTON.DELETE_CONFIG' | translate }}"
-      class="ui-button-danger"
+      severity="danger"
     ></button>
     <button
       pButton
@@ -879,7 +923,7 @@
       icon="fa fa-times"
       (click)="deleteLogicAbort()"
       label="{{ 'BUTTON.ABORT' | translate }}"
-      class="ui-button-secondary"
+      severity="secondary"
     ></button>
   </ng-template>
 </p-dialog>
@@ -960,7 +1004,7 @@
       (click)="this.wrongNewLogicName = ''; this.createLogic()"
       [disabled]="!newlogic_add_enabled"
       label="{{ 'BUTTON.CREATE' | translate }}"
-      class="ui-button-success"
+      severity="success"
     ></button>
     <button
       pButton
@@ -969,7 +1013,7 @@
       icon="pi pi-times"
       (click)="this.wrongNewLogicName = ''; newlogic_display = false"
       label="{{ 'BUTTON.ABORT' | translate }}"
-      class="ui-button-secondary"
+      severity="secondary"
     ></button>
   </ng-template>
 </p-dialog>
@@ -1008,7 +1052,7 @@
       (click)="doRename()"
       [disabled]="!renameEnabled"
       label="{{ 'BUTTON.RENAME' | translate }}"
-      class="ui-button-success"
+      severity="success"
     ></button>
     <button
       pButton
@@ -1016,7 +1060,7 @@
       icon="fa fa-times"
       (click)="rename_display.set(false)"
       label="{{ 'BUTTON.ABORT' | translate }}"
-      class="ui-button-secondary"
+      severity="secondary"
     ></button>
   </ng-template>
 </p-dialog>

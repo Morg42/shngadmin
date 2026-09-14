@@ -35,8 +35,133 @@ import { ServerApiService } from './app/common/services/server-api.service';
 import { WebsocketPluginService } from './app/common/services/websocket-plugin.service';
 import { environment } from './environments/environment';
 
+/**
+ * Filled/outlined/text button colors for the severities this app actually
+ * uses (secondary/success/danger/warn — info/help/contrast are unused and
+ * keep Aura's stock colors). Ported from the `.ui-button-*`/`.btn-outline-*`
+ * CSS these severities replace (src/styles.css) so the values match what's
+ * already on screen today, not a fresh color choice. `success` is this app's
+ * established "brand blue" action color (pre-existing naming quirk, not
+ * something this migration renames) — not the conventional green.
+ *
+ * One deliberate deviation: the old `.btn-outline-*`/`.ui-button-*` hover
+ * state fully inverts to a solid fill with white text. PrimeNG's `outlined`/
+ * `text` token schema has no separate hover-text-color slot (only
+ * hoverBackground/activeBackground), so replicating that exactly would mean
+ * fighting the component with more `!important` CSS — the same pattern this
+ * migration exists to get rid of. Using PrimeNG's own light color-mix tint
+ * convention (same mechanism Aura's stock severities already use) instead.
+ */
+const buttonColorScheme = {
+  root: {
+    secondary: {
+      background: 'var(--shng-secondary-button)',
+      hoverBackground: '#868e96',
+      activeBackground: '#868e96',
+      borderColor: 'var(--shng-border)',
+      hoverBorderColor: '#868e96',
+      activeBorderColor: '#868e96',
+      color: 'var(--text-secondary)',
+      hoverColor: '#ffffff',
+      activeColor: '#ffffff',
+      focusRing: { color: 'var(--text-secondary)', shadow: 'none' },
+    },
+    success: {
+      background: 'var(--shng-blue)',
+      hoverBackground: '#286090',
+      activeBackground: '#286090',
+      borderColor: 'var(--shng-blue)',
+      hoverBorderColor: '#204d74',
+      activeBorderColor: '#204d74',
+      color: '#ffffff',
+      hoverColor: '#ffffff',
+      activeColor: '#ffffff',
+      focusRing: { color: 'var(--shng-blue)', shadow: 'none' },
+    },
+    danger: {
+      background: 'var(--shng-red)',
+      hoverBackground: '#8f0606',
+      activeBackground: '#8f0606',
+      borderColor: 'var(--shng-border)',
+      hoverBorderColor: '#8f0606',
+      activeBorderColor: '#8f0606',
+      color: '#ffffff',
+      hoverColor: '#ffffff',
+      activeColor: '#ffffff',
+      focusRing: { color: 'var(--shng-red)', shadow: 'none' },
+    },
+    warn: {
+      background: 'var(--shng-amber)',
+      hoverBackground: '#9c6709',
+      activeBackground: '#9c6709',
+      borderColor: 'var(--shng-amber)',
+      hoverBorderColor: '#9c6709',
+      activeBorderColor: '#9c6709',
+      color: '#ffffff',
+      hoverColor: '#ffffff',
+      activeColor: '#ffffff',
+      focusRing: { color: 'var(--shng-amber)', shadow: 'none' },
+    },
+  },
+  outlined: {
+    secondary: {
+      hoverBackground: 'color-mix(in srgb, var(--text-secondary), transparent 90%)',
+      activeBackground: 'color-mix(in srgb, var(--text-secondary), transparent 80%)',
+      borderColor: 'var(--text-secondary)',
+      color: 'var(--text-secondary)',
+    },
+    success: {
+      hoverBackground: 'color-mix(in srgb, var(--shng-blue), transparent 90%)',
+      activeBackground: 'color-mix(in srgb, var(--shng-blue), transparent 80%)',
+      borderColor: 'var(--shng-blue)',
+      color: 'var(--shng-blue)',
+    },
+    danger: {
+      hoverBackground: 'color-mix(in srgb, var(--shng-red), transparent 90%)',
+      activeBackground: 'color-mix(in srgb, var(--shng-red), transparent 80%)',
+      borderColor: 'var(--shng-red)',
+      color: 'var(--shng-red)',
+    },
+    warn: {
+      hoverBackground: 'color-mix(in srgb, var(--shng-amber), transparent 90%)',
+      activeBackground: 'color-mix(in srgb, var(--shng-amber), transparent 80%)',
+      borderColor: 'var(--shng-amber)',
+      color: 'var(--shng-amber)',
+    },
+  },
+  text: {
+    secondary: {
+      hoverBackground: 'color-mix(in srgb, var(--text-secondary), transparent 90%)',
+      activeBackground: 'color-mix(in srgb, var(--text-secondary), transparent 80%)',
+      color: 'var(--text-secondary)',
+    },
+    success: {
+      hoverBackground: 'color-mix(in srgb, var(--shng-blue), transparent 90%)',
+      activeBackground: 'color-mix(in srgb, var(--shng-blue), transparent 80%)',
+      color: 'var(--shng-blue)',
+    },
+    danger: {
+      hoverBackground: 'color-mix(in srgb, var(--shng-red), transparent 90%)',
+      activeBackground: 'color-mix(in srgb, var(--shng-red), transparent 80%)',
+      color: 'var(--shng-red)',
+    },
+    warn: {
+      hoverBackground: 'color-mix(in srgb, var(--shng-amber), transparent 90%)',
+      activeBackground: 'color-mix(in srgb, var(--shng-amber), transparent 80%)',
+      color: 'var(--shng-amber)',
+    },
+  },
+};
+
 const ShngPreset = definePreset(Aura, {
   semantic: {
+    // Global disabled-button opacity for every PrimeNG component (applied via
+    // PrimeNG's own base .p-disabled/.p-component:disabled rule) - overridden
+    // here instead of a hand-written CSS rule so it's set once, app-wide, the
+    // same way the rest of this preset already works. Matches the value this
+    // app's own pre-existing .btn:disabled rule (styles.css) already used, so
+    // Bootstrap-remnant and PrimeNG-rendered buttons dim by the same amount.
+    disabledOpacity: '0.65',
     primary: {
       50: '#f0f5fa',
       100: '#dce8f3',
@@ -55,6 +180,12 @@ const ShngPreset = definePreset(Aura, {
     tabs: {
       activeBar: {
         height: '2px',
+      },
+    },
+    button: {
+      colorScheme: {
+        light: buttonColorScheme,
+        dark: buttonColorScheme,
       },
     },
   },

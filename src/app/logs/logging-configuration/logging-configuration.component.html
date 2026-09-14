@@ -11,7 +11,7 @@
         [disabled]="false"
         icon="fa fa-info"
         (click)="editorHelp_display.set(true)"
-        class="ui-button-success"
+        severity="secondary"
       ></button>
       <button
         pButton
@@ -20,7 +20,7 @@
         [disabled]="myEditFilename === '' || myTextarea() === myTextareaOrig()"
         icon="fa fa-times"
         (click)="myTextarea.set(myTextareaOrig())"
-        class="ui-button-secondary"
+        severity="secondary"
       ></button>
       <button
         pButton
@@ -29,7 +29,7 @@
         [disabled]="myTextarea() === myTextareaOrig()"
         icon="fa fa-check"
         (click)="saveConfig()"
-        class="ui-button-success"
+        severity="success"
       ></button>
     </div>
   </div>
@@ -80,7 +80,7 @@
       type="button"
       (click)="error_display.set(false)"
       label="{{ 'BUTTON.CLOSE' | translate }}"
-      class="ui-button-success"
+      severity="success"
     ></button>
   </ng-template>
 </p-dialog>
@@ -143,7 +143,7 @@
       type="button"
       (click)="editorHelp_display.set(false)"
       label="{{ 'BUTTON.CLOSE' | translate }}"
-      class="ui-button-success"
+      severity="success"
     ></button>
   </ng-template>
 </p-dialog>

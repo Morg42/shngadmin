@@ -2,6 +2,7 @@ import { inject } from '@angular/core';
 import { Routes } from '@angular/router';
 import { appReadyGuard } from './common/guards/app-ready.guard';
 import { authGuard } from './common/guards/auth.guard';
+import { devOnlyGuard } from './common/guards/dev-only.guard';
 import { AppConfigService } from './common/services/app-config.service';
 import { LoginComponent } from './login/login.component';
 import { NotFoundComponent } from './not-found/not-found.component';
@@ -91,6 +92,12 @@ export const appRoutes: Routes = [
     path: 'logs',
     canActivate: [appReadyGuard, authGuard],
     loadChildren: () => import('./logs/logs.routes').then((r) => r.LOGS_ROUTES),
+  },
+
+  {
+    path: 'dev',
+    canActivate: [devOnlyGuard],
+    loadChildren: () => import('./dev/dev.routes').then((r) => r.DEV_ROUTES),
   },
 
   { path: 'login', component: LoginComponent },

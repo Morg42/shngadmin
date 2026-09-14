@@ -153,14 +153,15 @@
               <td class="py-1">{{ plugin.version }}</td>
               <td class="py-1" (click)="$event.stopPropagation()">
                 @if (plugin.webif_url !== '') {
-                  <button name="webif" class="btn btn-outline-primary btn-sm" (click)="goToLink(plugin.webif_url)">
-                    <i
-                      class="fas fa-link"
-                      aria-hidden="true"
-                      title="{{ 'PLUGIN.OPEN_WEBIF' | translate }}"
-                      style="color: var(--shng-blue)"
-                    ></i>
-                  </button>
+                  <button
+                    pButton
+                    name="webif"
+                    title="{{ 'PLUGIN.OPEN_WEBIF' | translate }}"
+                    icon="fas fa-link"
+                    severity="primary"
+                    size="small"
+                    (click)="goToLink(plugin.webif_url)"
+                  ></button>
                 }
                 @if (plugin.webif_url === '') {
                   <a style="padding-right: 35px"></a>
@@ -170,66 +171,65 @@
                 @if (plugin.documentation_config_doc !== undefined && plugin.documentation_config_doc !== '') {
                   <!-- configuration information -->
                   <button
+                    pButton
                     name="configdoc"
-                    class="btn btn-outline-dark btn-sm mr-1"
+                    title="{{ 'PLUGIN.OPEN_CONFIGINFO' | translate }}"
+                    icon="fas fa-info fa-lg fa-icon-grey"
+                    severity="secondary"
+                    size="small"
+                    class="mr-1"
                     (click)="goToLink(plugin.documentation_config_doc)"
-                  >
-                    <i
-                      class="fas fa-info fa-lg fa-icon-grey"
-                      aria-hidden="true"
-                      title="{{ 'PLUGIN.OPEN_CONFIGINFO' | translate }}"
-                    ></i>
-                  </button>
+                  ></button>
                 }
                 @if (plugin.documentation_user_doc !== undefined && plugin.documentation_user_doc !== '') {
                   <!-- plugin documentation (user_doc) -->
                   <button
+                    pButton
                     name="plugindoc"
-                    class="btn btn-outline-dark btn-sm mr-1"
+                    title="{{ 'PLUGIN.OPEN_DOC' | translate }}"
+                    icon="fas fa-book fa-lg fa-icon-grey"
+                    severity="secondary"
+                    size="small"
+                    class="mr-1"
                     (click)="goToLink(plugin.documentation_user_doc)"
-                  >
-                    <i
-                      class="fas fa-book fa-lg fa-icon-grey"
-                      aria-hidden="true"
-                      title="{{ 'PLUGIN.OPEN_DOC' | translate }}"
-                    ></i>
-                  </button>
+                  ></button>
                 }
                 @if (plugin.metadata.documentation !== undefined && plugin.metadata.documentation !== '') {
                   <!-- Additional information -->
                   <button
+                    pButton
                     name="additionaldoc"
-                    class="btn btn-outline-dark btn-sm mr-1"
+                    title="{{ 'PLUGIN.OPEN_ADDITIONAL' | translate }}"
+                    icon="fas fa-file-alt fa-lg fa-icon-grey"
+                    severity="secondary"
+                    size="small"
+                    class="mr-1"
                     (click)="goToLink(plugin.metadata.documentation)"
-                  >
-                    <i
-                      class="fas fa-file-alt fa-lg fa-icon-grey"
-                      aria-hidden="true"
-                      title="{{ 'PLUGIN.OPEN_ADDITIONAL' | translate }}"
-                    ></i>
-                  </button>
+                  ></button>
                 }
                 @if (plugin.metadata.support !== undefined && plugin.metadata.support !== '') {
                   <button
+                    pButton
                     name="support"
-                    class="btn btn-outline-dark btn-sm mr-1"
+                    title="{{ 'PLUGIN.OPEN_SUPPORT_THREAD' | translate }}"
+                    icon="fas fa-comment-dots fa-lg fa-icon-grey"
+                    severity="secondary"
+                    size="small"
+                    class="mr-1"
                     (click)="goToLink(plugin.metadata.support)"
-                  >
-                    <i
-                      class="fas fa-comment-dots fa-lg fa-icon-grey"
-                      aria-hidden="true"
-                      title="{{ 'PLUGIN.OPEN_SUPPORT_THREAD' | translate }}"
-                    ></i>
-                  </button>
+                  ></button>
                 }
                 @if (plugin.blog_url !== undefined && plugin.blog_url !== '') {
-                  <button name="blog" class="btn btn-outline-dark btn-sm mr-1" (click)="goToLink(plugin.blog_url)">
-                    <i
-                      class="fas fa-blog fa-lg fa-icon-grey"
-                      aria-hidden="true"
-                      title="{{ 'PLUGIN.OPEN_BLOGS' | translate }}"
-                    ></i>
-                  </button>
+                  <button
+                    pButton
+                    name="blog"
+                    title="{{ 'PLUGIN.OPEN_BLOGS' | translate }}"
+                    icon="fas fa-blog fa-lg fa-icon-grey"
+                    severity="secondary"
+                    size="small"
+                    class="mr-1"
+                    (click)="goToLink(plugin.blog_url)"
+                  ></button>
                 }
               </td>
 
@@ -237,22 +237,26 @@
                 @if (plugin.stoppable) {
                   @if (plugin.stopped) {
                     <button
+                      pButton
                       name="enable"
                       title="{{ 'PLUGIN.START' | translate }}"
-                      class="btn btn-outline-primary btn-sm mr-1"
+                      icon="fas fa-play"
+                      severity="primary"
+                      size="small"
+                      class="mr-1"
                       (click)="startPlugin(plugin.configname)"
-                    >
-                      <i class="fas fa-play"></i>
-                    </button>
+                    ></button>
                   } @else {
                     <button
+                      pButton
                       name="disable"
                       title="{{ 'PLUGIN.STOP' | translate }}"
-                      class="btn btn-outline-warning btn-sm mr-1"
+                      icon="fas fa-pause"
+                      severity="warn"
+                      size="small"
+                      class="mr-1"
                       (click)="stopPlugin(plugin.configname)"
-                    >
-                      <i class="fas fa-pause"></i>
-                    </button>
+                    ></button>
                   }
                 }
               </td>
@@ -478,14 +482,14 @@
 
     <ng-template #footer>
       <button
+        pButton
         type="button"
         tabindex="1"
         autofocus="autofocus"
-        class="btn btn-primary btn-sm btn-shng"
+        severity="primary"
+        label="{{ 'BUTTON.CLOSE' | translate }}"
         (click)="showPluginDetails = false"
-      >
-        {{ 'BUTTON.CLOSE' | translate }}
-      </button>
+      ></button>
     </ng-template>
   </p-dialog>
 }

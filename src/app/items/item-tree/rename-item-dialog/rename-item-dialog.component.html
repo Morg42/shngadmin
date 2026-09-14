@@ -110,21 +110,21 @@
       }
       <div style="display: flex; gap: 8px; flex-shrink: 0">
         <button
+          pButton
           type="button"
-          class="btn btn-sm ui-button-secondary"
+          severity="secondary"
           [disabled]="renameItemSubmitting()"
+          label="{{ 'BUTTON.ABORT' | translate }}"
           (click)="visible.set(false)"
-        >
-          {{ 'BUTTON.ABORT' | translate }}
-        </button>
+        ></button>
         <button
+          pButton
           type="button"
-          class="btn btn-primary btn-sm btn-shng"
+          severity="primary"
           [disabled]="!renameItemNewPathValid || renameItemSubmitting()"
+          label="{{ (isCopy() ? 'BUTTON.COPY' : 'BUTTON.RENAME') | translate }}"
           (click)="submitRenameItem()"
-        >
-          {{ (isCopy() ? 'BUTTON.COPY' : 'BUTTON.RENAME') | translate }}
-        </button>
+        ></button>
       </div>
     </div>
   </ng-template>
@@ -151,15 +151,19 @@
   <p>{{ 'ITEMS.MISSING_PARENTS_QUESTION' | translate }}</p>
   <ng-template #footer>
     <button
+      pButton
       type="button"
-      class="btn btn-sm ui-button-secondary"
+      severity="secondary"
+      label="{{ 'BUTTON.ABORT' | translate }}"
       (click)="renameItemConfirmCreateParents_display.set(false)"
-    >
-      {{ 'BUTTON.ABORT' | translate }}
-    </button>
-    <button type="button" class="btn btn-primary btn-sm btn-shng" (click)="confirmCreateMissingParents()">
-      {{ 'ITEMS.MISSING_PARENTS_CREATE' | translate }}
-    </button>
+    ></button>
+    <button
+      pButton
+      type="button"
+      severity="primary"
+      label="{{ 'ITEMS.MISSING_PARENTS_CREATE' | translate }}"
+      (click)="confirmCreateMissingParents()"
+    ></button>
   </ng-template>
 </p-dialog>
 
@@ -191,9 +195,13 @@
     </tbody>
   </table>
   <ng-template #footer>
-    <button type="button" class="btn btn-sm ui-button-secondary" (click)="onRenameFailedReferencesVisibleChange(false)">
-      {{ 'BUTTON.CLOSE' | translate }}
-    </button>
+    <button
+      pButton
+      type="button"
+      severity="secondary"
+      label="{{ 'BUTTON.CLOSE' | translate }}"
+      (click)="onRenameFailedReferencesVisibleChange(false)"
+    ></button>
   </ng-template>
 </p-dialog>
 
@@ -242,8 +250,12 @@
     </tbody>
   </table>
   <ng-template #footer>
-    <button type="button" class="btn btn-sm ui-button-secondary" (click)="onCopyReferencesVisibleChange(false)">
-      {{ 'BUTTON.CLOSE' | translate }}
-    </button>
+    <button
+      pButton
+      type="button"
+      severity="secondary"
+      label="{{ 'BUTTON.CLOSE' | translate }}"
+      (click)="onCopyReferencesVisibleChange(false)"
+    ></button>
   </ng-template>
 </p-dialog>

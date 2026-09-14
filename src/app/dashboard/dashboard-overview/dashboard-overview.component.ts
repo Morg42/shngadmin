@@ -14,6 +14,7 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faExclamationTriangle, faPauseCircle } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
+import { ButtonDirective } from 'primeng/button';
 import { Subject, merge, timer } from 'rxjs';
 import { map, scan, switchMap, tap } from 'rxjs/operators';
 import { DatabaseInfo } from '../../common/models/database-info';
@@ -80,7 +81,7 @@ export function isOverdueScheduler(entry: SchedulerInfo, nowMs: number): boolean
   templateUrl: './dashboard-overview.component.html',
   styleUrls: ['./dashboard-overview.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FaIconComponent, TranslatePipe, RouterLink],
+  imports: [FaIconComponent, TranslatePipe, RouterLink, ButtonDirective],
 })
 export class DashboardOverviewComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);

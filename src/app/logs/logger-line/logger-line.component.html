@@ -101,22 +101,26 @@
 
 <td class="py-1">
   <button
-    name="delete"
+    pButton
+    icon="far fa-hand-paper"
+    name="handlers"
     title="{{ 'LOGGERS.HANDLER' | translate }}"
-    class="btn btn-outline-dark btn-sm mr-1"
+    severity="secondary"
+    size="small"
+    class="mr-1"
     (click)="chooseHandlers(loggerName)"
-  >
-    <i class="far fa-hand-paper" aria-hidden="true"></i>
-  </button>
+  ></button>
   @if (loggerIsDeletable(loggerName)) {
     <button
+      pButton
+      icon="far fa-trash-alt"
       name="delete"
       title="{{ 'LOGGERS.DELETE' | translate }}"
-      class="btn btn-outline-danger btn-sm mr-1"
+      severity="danger"
+      size="small"
+      class="mr-1"
       (click)="deleteLogger(loggerName)"
-    >
-      <i class="far fa-trash-alt" aria-hidden="true"></i>
-    </button>
+    ></button>
   }
 </td>
 
@@ -138,7 +142,7 @@
       icon="fa fa-trash-alt"
       (click)="deleteLoggerConfirm()"
       label="{{ 'BUTTON.DELETE' | translate }}"
-      class="ui-button-danger"
+      severity="danger"
     ></button>
     <button
       pButton
@@ -146,7 +150,7 @@
       icon="fa fa-times"
       (click)="deleteLoggerAbort()"
       label="{{ 'BUTTON.ABORT' | translate }}"
-      class="ui-button-secondary"
+      severity="secondary"
     ></button>
   </ng-template>
 </p-dialog>
@@ -239,7 +243,7 @@
       (click)="this.doModifyHandlers()"
       [disabled]="!handlersChangeEnabled"
       label="{{ 'BUTTON.CHANGE' | translate }}"
-      class="ui-button-success"
+      severity="success"
       autofocus
     ></button>
 
@@ -250,7 +254,7 @@
       icon="pi pi-times"
       (click)="chooseHandlers_display = false"
       label="{{ 'BUTTON.ABORT' | translate }}"
-      class="ui-button-secondary"
+      severity="secondary"
     ></button>
   </ng-template>
 </p-dialog>

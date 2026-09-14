@@ -9,9 +9,30 @@
 
 /* .shng-page-header is global — see styles.css */
 
+/* Flex + wrap, same mechanism .log-filter-row already uses below, so both
+   rows react to narrow viewports the same way. The help button previously
+   used float:right, which doesn't participate in wrapping at all - it stayed
+   pinned to the row's true right edge regardless of how much space the rest
+   of the row had, which looked like it was pushing the row below out of
+   alignment when that row wrapped on its own account. margin-left:auto is
+   the flex-native way to say "far right, but only when there's room". */
 .log-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
   flex-shrink: 0;
   padding-top: 8px;
+}
+
+/* Extra breathing room before a new logical group within the row (was a
+   couple of &nbsp; characters before) */
+.log-toolbar-group {
+  margin-left: 10px;
+}
+
+.log-toolbar-help {
+  margin-left: auto;
 }
 
 .log-filter-row {

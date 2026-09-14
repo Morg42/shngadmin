@@ -10,9 +10,8 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { AutoComplete } from 'primeng/autocomplete';
+import { ButtonDirective } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
 import { ToggleSwitch } from 'primeng/toggleswitch';
@@ -33,7 +32,7 @@ import { ItemsApiService } from '../../common/services/items-api.service';
   selector: 'app-attribute-value-input',
   templateUrl: './attribute-value-input.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AutoComplete, FaIconComponent, FormsModule, InputText, Select, ToggleSwitch],
+  imports: [AutoComplete, ButtonDirective, FormsModule, InputText, Select, ToggleSwitch],
 })
 export class AttributeValueInputComponent {
   private itemsApi = inject(ItemsApiService);
@@ -47,9 +46,6 @@ export class AttributeValueInputComponent {
   readonly validList = input<string[]>();
   readonly value = input<unknown>();
   readonly valueChange = output<unknown>();
-
-  faPlus = faPlus;
-  faTrashAlt = faTrashAlt;
 
   /** Derived from value() whenever the parent passes a new one, but locally
    *  mutable by the row editors below (add/remove/update a row) without a

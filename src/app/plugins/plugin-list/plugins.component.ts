@@ -19,6 +19,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { TranslateDirective, TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Bind } from 'primeng/bind';
+import { ButtonDirective } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { ProgressSpinner } from 'primeng/progressspinner';
@@ -38,6 +39,7 @@ import { PluginsApiService } from '../../common/services/plugins-api.service';
     FaIconComponent,
     NgOptimizedImage,
     Bind,
+    ButtonDirective,
     Dialog,
     InputText,
     ProgressSpinner,

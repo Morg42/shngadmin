@@ -14,6 +14,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService, TreeNode } from 'primeng/api';
+import { ButtonDirective } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { ProgressSpinner } from 'primeng/progressspinner';
@@ -40,7 +41,16 @@ import { computeMissingAncestors, findAndExpandNodeByPath } from '../item-tree-p
   selector: 'app-rename-item-dialog',
   templateUrl: './rename-item-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Dialog, FormsModule, InputText, ProgressSpinner, ToggleSwitch, TranslatePipe, Tree],
+  imports: [
+    ButtonDirective,
+    Dialog,
+    FormsModule,
+    InputText,
+    ProgressSpinner,
+    ToggleSwitch,
+    TranslatePipe,
+    Tree,
+  ],
 })
 export class RenameItemDialogComponent {
   private readonly destroyRef = inject(DestroyRef);

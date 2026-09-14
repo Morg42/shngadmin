@@ -1,7 +1,7 @@
 <div class="shngbody">
   <div class="shng-page-header">{{ 'MENU.LOGS_DISPLAY' | translate }}</div>
   <div class="log-toolbar">
-    SmartHomeNG {{ 'LOGS.LOGFILE' | translate }}:
+    <span>SmartHomeNG {{ 'LOGS.LOGFILE' | translate }}:</span>
     <p-select
       [style]="{ width: '300px' }"
       [options]="logs()"
@@ -9,16 +9,15 @@
       placeholder="{{ 'LOGS.SELECT_LOG' | translate }}"
       (onChange)="fillTimeframe()"
     ></p-select>
-    &nbsp; {{ 'LOGS.TIMEFRAME' | translate }}:
+    <span class="log-toolbar-group">{{ 'LOGS.TIMEFRAME' | translate }}:</span>
     <button
       pButton
       type="button"
-      style="width: 25px"
       title="{{ 'LOGS.PREVIOUS_FILE' | translate }}"
       [disabled]="no_older_file()"
       icon="fa fa-caret-left"
       (click)="previousFile()"
-      class="ui-button-secondary"
+      severity="secondary"
     ></button>
     <p-select
       [style]="{ width: '210px' }"
@@ -30,29 +29,37 @@
     <button
       pButton
       type="button"
-      style="width: 25px"
       title="{{ 'LOGS.NEXT_FILE' | translate }}"
       [disabled]="no_newer_file()"
       icon="fa fa-caret-right"
       (click)="nextFile()"
-      class="ui-button-secondary"
+      severity="secondary"
     ></button>
-    &nbsp; &nbsp;
     <button
       pButton
       id="reloadLogButton"
       type="button"
+      class="log-toolbar-group"
       (click)="readLogfile(chunk_no())"
       [disabled]="selectedLog === null || selectedFile === null"
       label="{{ 'BUTTON.RELOAD_LOG' | translate }}"
-      class="ui-button-secondary"
+      severity="secondary"
+    ></button>
+    <button
+      pButton
+      type="button"
+      title="{{ 'BUTTON.HELP' | translate }}"
+      icon="fa fa-info"
+      (click)="editorHelp_display.set(true)"
+      severity="secondary"
+      class="log-toolbar-help"
     ></button>
   </div>
 
   <div
     class="log-filter-row"
     [class.log-filter-row--fullscreen]="editorFullscreen()"
-    style="display: flex; align-items: center; flex-wrap: wrap; gap: 4px; width: 98%"
+    style="display: flex; align-items: center; flex-wrap: wrap; gap: 4px"
   >
     <div>{{ 'LOGS.FILTER' | translate }}:</div>
     <input
@@ -77,91 +84,81 @@
       style="margin-top: 2px; margin-left: 12px; margin-right: 10px"
       icon="fa fa-filter"
       (click)="text_filter = ''; level_filter = 'ALL'; filterLogChunk()"
-      class="ui-button-success"
+      severity="secondary"
     ></button>
     <button
       pButton
       type="button"
-      style="margin-top: 2px; width: 25px"
+      style="margin-top: 2px"
       title="{{ 'LOGS.GOTO_LINE' | translate }}"
-      icon="fa fa-level-down"
+      icon="fa fa-hashtag"
       (click)="gotoLine()"
-      class="ui-button-success"
+      severity="secondary"
     ></button>
     <button
       pButton
       type="button"
-      style="margin-top: 2px; margin-left: 2px; width: 25px"
+      style="margin-top: 2px; margin-left: 2px"
       title="{{ 'LOGS.TOGGLE_WRAP' | translate }}"
       icon="fa fa-align-justify"
       (click)="toggleLineWrap()"
-      class="ui-button-success"
+      severity="secondary"
     ></button>
 
     <button
       pButton
       type="button"
-      style="margin-top: 2px; margin-left: 31px; width: 25px"
+      style="margin-top: 2px; margin-left: 31px"
       [disabled]="first_chunk()"
       icon="fa fa-fast-backward"
       (click)="readLogfile(1)"
-      class="ui-button-success"
+      severity="secondary"
     ></button>
     <button
       pButton
       type="button"
-      style="margin-top: 2px; margin-left: 2px; margin-right: 5px; width: 25px"
+      style="margin-top: 2px; margin-left: 2px; margin-right: 5px"
       [disabled]="first_chunk()"
       icon="fa fa-step-backward"
       (click)="readLogfile(chunk_no() - 1)"
-      class="ui-button-success"
+      severity="secondary"
     ></button>
     {{ chunk_no() }}{{ logfile_chunk()?.chunks ? ' / ' + logfile_chunk()!.chunks : '' }}
     <button
       pButton
       type="button"
-      style="margin-top: 2px; margin-left: 5px; width: 25px"
+      style="margin-top: 2px; margin-left: 5px"
       [disabled]="last_chunk()"
       icon="fa fa-step-forward"
       (click)="readLogfile(chunk_no() + 1)"
-      class="ui-button-success"
+      severity="secondary"
     ></button>
     <button
       pButton
       type="button"
-      style="margin-top: 2px; margin-left: 2px; width: 25px"
+      style="margin-top: 2px; margin-left: 2px"
       [disabled]="last_chunk()"
       icon="fa fa-fast-forward"
       (click)="readLogfile(0)"
-      class="ui-button-success"
+      severity="secondary"
     ></button>
     <button
       pButton
       type="button"
-      style="margin-top: 2px; margin-left: 10px; width: 25px"
+      style="margin-top: 2px; margin-left: 10px"
       title="{{ 'LOGS.SCROLL_DOWN' | translate }}"
       icon="fa fa-arrow-circle-down"
       (click)="scrollDown()"
-      class="ui-button-success"
+      severity="secondary"
     ></button>
     <button
       pButton
       type="button"
-      style="margin-top: 2px; margin-left: 2px; width: 25px"
+      style="margin-top: 2px; margin-left: 2px"
       title="{{ (editorFullscreen() ? 'LOGS.EXIT_FULLSCREEN' : 'LOGS.ENTER_FULLSCREEN') | translate }}"
       [icon]="editorFullscreen() ? 'fa fa-compress' : 'fa fa-expand'"
       (click)="toggleEditorFullscreen()"
-      class="ui-button-success"
-    ></button>
-
-    <button
-      pButton
-      type="button"
-      [disabled]="false"
-      icon="fa fa-info"
-      style="margin-right: 10px; width: 25px"
-      (click)="editorHelp_display.set(true)"
-      class="float-sm-right ui-button-success"
+      severity="secondary"
     ></button>
   </div>
 
@@ -255,7 +252,7 @@
       type="button"
       (click)="editorHelp_display.set(false)"
       label="{{ 'BUTTON.CLOSE' | translate }}"
-      class="ui-button-success"
+      severity="success"
     ></button>
   </ng-template>
 </p-dialog>

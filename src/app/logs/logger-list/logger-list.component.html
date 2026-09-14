@@ -24,7 +24,8 @@
               (click)="newLogicLogger()"
               icon="fa fa-plus"
               label="{{ 'BUTTON.NEW_LOGGER' | translate }}"
-              class="ui-button-success float-sm-left"
+              severity="success"
+              class="float-sm-left"
             ></button>
             <table class="table table-striped table-hover loggerList shng-list-table">
               <thead>
@@ -74,7 +75,8 @@
               (click)="newPluginLogger()"
               icon="fa fa-plus"
               label="{{ 'BUTTON.NEW_LOGGER' | translate }}"
-              class="ui-button-success float-sm-left"
+              severity="success"
+              class="float-sm-left"
             ></button>
             <table class="table table-striped table-hover loggerList shng-list-table">
               <thead>
@@ -123,7 +125,8 @@
               (click)="newItemLogger()"
               icon="fa fa-plus"
               label="{{ 'BUTTON.NEW_LOGGER' | translate }}"
-              class="ui-button-success float-sm-left"
+              severity="success"
+              class="float-sm-left"
             ></button>
             <table class="table table-striped table-hover loggerList shng-list-table">
               <thead border="0">
@@ -172,7 +175,8 @@
               (click)="newAdvancedLogger()"
               icon="fa fa-plus"
               label="{{ 'BUTTON.NEW_LOGGER' | translate }}"
-              class="ui-button-success float-sm-left"
+              severity="success"
+              class="float-sm-left"
             ></button>
             <table class="table table-striped table-hover loggerList shng-list-table">
               <thead>
@@ -350,7 +354,7 @@
       (click)="this.createLogger()"
       [disabled]="!newlogger_add_enabled()"
       label="{{ 'BUTTON.CREATE' | translate }}"
-      class="ui-button-success"
+      severity="success"
       autofocus
     ></button>
     <button
@@ -360,7 +364,7 @@
       icon="pi pi-times"
       (click)="newlogger_display.set(false)"
       label="{{ 'BUTTON.ABORT' | translate }}"
-      class="ui-button-secondary"
+      severity="secondary"
     ></button>
   </ng-template>
 </p-dialog>

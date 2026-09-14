@@ -13,11 +13,10 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faList, faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { AutoComplete } from 'primeng/autocomplete';
+import { ButtonDirective } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
@@ -42,8 +41,8 @@ import { computeMissingAncestors } from '../item-tree-path.utils';
     AttributeBrowserComponent,
     AttributeValueInputComponent,
     AutoComplete,
+    ButtonDirective,
     Dialog,
-    FaIconComponent,
     FormsModule,
     InputText,
     Select,
@@ -61,10 +60,6 @@ export class CreateItemDialogComponent {
   readonly attributeCatalogService = inject(AttributeCatalogService);
 
   private readonly attrNameInputs = viewChildren('attrNameInput', { read: ElementRef });
-
-  faList = faList;
-  faPlus = faPlus;
-  faTrashAlt = faTrashAlt;
 
   readonly visible = model(false);
   /** Default parent/filename for a newly opened dialog - read once, at

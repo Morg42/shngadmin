@@ -1,7 +1,7 @@
 @switch (inputKind) {
   @case ('select') {
     <p-select
-      [options]="row().valid_list"
+      [options]="selectOptions"
       [showClear]="true"
       [placeholder]="placeholder"
       [(ngModel)]="row()[col().field]"
@@ -12,15 +12,15 @@
     </p-select>
   }
   @case ('number') {
-    <input
+    <p-inputnumber
       [(ngModel)]="row()[col().field]"
-      type="number"
       [min]="validMin"
       [max]="validMax"
-      pInputText
+      [useGrouping]="false"
       [placeholder]="placeholder"
       [name]="col().field"
       style="width: 100%"
+      [inputStyle]="{ width: '100%' }"
       (ngModelChange)="onChanged()"
     />
   }

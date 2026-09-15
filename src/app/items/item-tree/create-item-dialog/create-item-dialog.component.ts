@@ -25,6 +25,12 @@ import { Tooltip } from 'primeng/tooltip';
 import { AttributeCatalogService } from '../../../common/services/attribute-catalog.service';
 import { FilesApiService } from '../../../common/services/files-api.service';
 import { ItemsApiService } from '../../../common/services/items-api.service';
+import { SharedService } from '../../../common/services/shared.service';
+import {
+  formatValidationError,
+  StringTypeValidators,
+  validateAttributeRows,
+} from '../../../common/utils/input-validation.utils';
 import { AttributeBrowserComponent } from '../../attribute-browser/attribute-browser.component';
 import { AttributeValueInputComponent } from '../../attribute-value-input/attribute-value-input.component';
 import { computeMissingAncestors } from '../item-tree-path.utils';
@@ -57,6 +63,7 @@ export class CreateItemDialogComponent {
   private readonly filesApi = inject(FilesApiService);
   private readonly translate = inject(TranslateService);
   private readonly messageService = inject(MessageService);
+  private readonly shared = inject(SharedService);
   readonly attributeCatalogService = inject(AttributeCatalogService);
 
   private readonly attrNameInputs = viewChildren('attrNameInput', { read: ElementRef });
@@ -189,8 +196,33 @@ export class CreateItemDialogComponent {
     this.newItemFilename = this.newItemFilename.replace(/\.ya?ml$/i, '');
   }
 
+  private readonly attributeValidators: StringTypeValidators = {
+    isKnxGroupaddress: (v) => this.shared.is_knx_groupaddress(v),
+    isMac: (v) => this.shared.is_mac(v),
+    isIpv4: (v) => this.shared.is_ipv4(v),
+    isIpv6: (v) => this.shared.is_ipv6(v),
+    isHostname: (v) => this.shared.is_hostname(v),
+  };
+
   submitNewItem() {
     if (!this.newItemNameValid) return;
+
+    const invalid = validateAttributeRows(
+      this.newItemAttributes,
+      (key) => ({
+        type: this.attributeCatalogService.attributeType(key),
+        valid_min: this.attributeCatalogService.attributeValidMin(key),
+        valid_max: this.attributeCatalogService.attributeValidMax(key),
+      }),
+      this.attributeValidators,
+    );
+    if (invalid) {
+      this.newItemError.set(
+        `'${invalid.key}': ${formatValidationError(invalid.error, (k) => this.translate.instant(k))}`,
+      );
+      return;
+    }
+
     this.stripFilenameExtension();
 
     const config: Record<string, unknown> = { type: this.newItemType };

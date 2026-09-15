@@ -249,17 +249,6 @@ export class SceneConfigurationComponent implements OnInit {
       });
   }
 
-  reloadScene() {
-    // this.log.log('reloadPlugin', {pluginConfigName});
-
-    this.sceneApiService
-      .reloadScene(this.myEditFilename())
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((response) => {
-        this.log.log('reloadScene', '\nresponse', { response });
-      });
-  }
-
   reloadScenes() {
     // this.log.log('reloadPlugin', {pluginConfigName});
 

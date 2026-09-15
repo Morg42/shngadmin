@@ -56,12 +56,13 @@ describe('DynamicFieldComponent', () => {
   });
 
   // -------------------------------------------------------------------------
-  // inputKind: bool-typed parameters get a synthetic true/false valid_list
-  // in system-config.component.ts's fillParamData(), so they should always
-  // resolve to the 'select' branch, never the unhandled 'none' fallthrough.
+  // inputKind: a bool-typed parameter always resolves to 'select' - either
+  // from its own valid_list, or from resolveSelectOptions() synthesizing
+  // true/false when it doesn't have one. Rows here are never deletable, so
+  // the select's clear (x) is the only way to represent "not set".
   // -------------------------------------------------------------------------
 
-  it('resolves a bool parameter (with its synthetic valid_list) to the select kind', () => {
+  it('resolves a bool parameter with an explicit valid_list to the select kind', () => {
     setRow({
       name: 'dark_mode',
       value: null,
@@ -73,5 +74,24 @@ describe('DynamicFieldComponent', () => {
       ],
     });
     expect(component.inputKind).toBe('select');
+  });
+
+  it('resolves a bool parameter with no valid_list to the select kind too', () => {
+    setRow({ name: 'dark_mode', value: null, default: false, type: 'bool' });
+    expect(component.inputKind).toBe('select');
+    expect(component.selectOptions).toEqual([
+      { label: 'true', value: true },
+      { label: 'false', value: false },
+    ]);
+  });
+
+  it('resolves a genuine password parameter to the password kind', () => {
+    setRow({ name: 'api_key', value: null, default: '', type: 'password' });
+    expect(component.inputKind).toBe('password');
+  });
+
+  it('resolves a list-typed parameter to plain text (no list editor in this table)', () => {
+    setRow({ name: 'hosts', value: null, default: [], type: 'list' });
+    expect(component.inputKind).toBe('text');
   });
 });

@@ -22,6 +22,12 @@ import { Select } from 'primeng/select';
 import { ItemDetails } from '../../../common/models/item-details';
 import { AttributeCatalogService } from '../../../common/services/attribute-catalog.service';
 import { ItemsApiService } from '../../../common/services/items-api.service';
+import { SharedService } from '../../../common/services/shared.service';
+import {
+  formatValidationError,
+  StringTypeValidators,
+  validateAttributeRows,
+} from '../../../common/utils/input-validation.utils';
 import { AttributeBrowserComponent } from '../../attribute-browser/attribute-browser.component';
 import { AttributeValueInputComponent } from '../../attribute-value-input/attribute-value-input.component';
 
@@ -52,6 +58,7 @@ import { AttributeValueInputComponent } from '../../attribute-value-input/attrib
 export class EditItemDialogComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly itemsApi = inject(ItemsApiService);
+  private readonly shared = inject(SharedService);
   private readonly translate = inject(TranslateService);
   private readonly messageService = inject(MessageService);
   readonly attributeCatalogService = inject(AttributeCatalogService);
@@ -132,9 +139,33 @@ export class EditItemDialogComponent {
     );
   }
 
+  private readonly attributeValidators: StringTypeValidators = {
+    isKnxGroupaddress: (v) => this.shared.is_knx_groupaddress(v),
+    isMac: (v) => this.shared.is_mac(v),
+    isIpv4: (v) => this.shared.is_ipv4(v),
+    isIpv6: (v) => this.shared.is_ipv6(v),
+    isHostname: (v) => this.shared.is_hostname(v),
+  };
+
   submitEditItem() {
     const path = this.itemDetails()?.path;
     if (!path) return;
+
+    const invalid = validateAttributeRows(
+      this.editItemAttributes(),
+      (key) => ({
+        type: this.attributeCatalogService.attributeType(key),
+        valid_min: this.attributeCatalogService.attributeValidMin(key),
+        valid_max: this.attributeCatalogService.attributeValidMax(key),
+      }),
+      this.attributeValidators,
+    );
+    if (invalid) {
+      this.editItemError.set(
+        `'${invalid.key}': ${formatValidationError(invalid.error, (k) => this.translate.instant(k))}`,
+      );
+      return;
+    }
 
     const config: Record<string, unknown> = { type: this.editItemType() };
     for (const attr of this.editItemAttributes()) {

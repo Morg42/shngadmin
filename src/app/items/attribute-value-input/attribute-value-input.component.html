@@ -1,7 +1,7 @@
 @switch (inputKind) {
   @case ('select') {
     <p-select
-      [options]="validList()"
+      [options]="selectOptions"
       [showClear]="true"
       [ngModel]="value()"
       (ngModelChange)="emitValue($event)"
@@ -12,7 +12,15 @@
     <p-toggleSwitch [ngModel]="value()" (ngModelChange)="emitValue($event)"></p-toggleSwitch>
   }
   @case ('number') {
-    <input type="text" pInputText [ngModel]="value()" (ngModelChange)="emitValue($event)" style="width: 100%" />
+    <p-inputnumber
+      [ngModel]="value()"
+      (ngModelChange)="emitValue($event)"
+      [min]="validMin() ?? null"
+      [max]="validMax() ?? null"
+      [useGrouping]="false"
+      style="width: 100%"
+      [inputStyle]="{ width: '100%' }"
+    />
   }
   @case ('password') {
     <input type="password" pInputText [ngModel]="value()" (ngModelChange)="emitValue($event)" style="width: 100%" />

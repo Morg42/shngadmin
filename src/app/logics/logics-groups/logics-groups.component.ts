@@ -12,7 +12,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { PrimeTemplate, SelectItem } from 'primeng/api';
+import { MessageService, PrimeTemplate, SelectItem } from 'primeng/api';
 import { Bind } from 'primeng/bind';
 import { ButtonDirective } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
@@ -51,6 +51,7 @@ export class LogicsGroupsComponent implements OnInit {
   private dataService = inject(LogicsApiService);
   private titleService = inject(Title);
   private readonly log = inject(LogService);
+  private readonly messageService = inject(MessageService);
 
   private readonly groupDescEl = viewChild.required<ElementRef<HTMLElement>>('groupDesc');
 
@@ -444,6 +445,12 @@ export class LogicsGroupsComponent implements OnInit {
         this.selectedGroup.set({ label: targetName, value: targetName });
         this.mergeDialog.set(false);
         this.mergeTargetName.set('');
+
+        this.messageService.add({
+          severity: 'success',
+          summary: this.translate.instant('LOGIC_GROUPS.MERGED'),
+          life: 5000,
+        });
       });
   }
 }

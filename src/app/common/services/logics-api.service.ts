@@ -107,6 +107,9 @@ export class LogicsApiService {
     action = action.toLowerCase();
     // this.log.warn('LogicsApiService.setLogicState', {logicName}, {action});
 
+    // Clear a sticky error toast from a previous attempt so a retry that succeeds doesn't leave it stuck on screen.
+    this.messageService.clear();
+
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'logics/' + encodeURIComponent(logicName) + '?action=' + action;
     if (filename !== '') {

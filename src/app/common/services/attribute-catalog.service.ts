@@ -139,4 +139,12 @@ export class AttributeCatalogService {
   attributeValidList(key: string): string[] | undefined {
     return this.attributeCatalog()[key]?.valid_list;
   }
+
+  attributeValidMin(key: string): number | undefined {
+    return this.attributeCatalog()[key]?.valid_min;
+  }
+
+  attributeValidMax(key: string): number | undefined {
+    return this.attributeCatalog()[key]?.valid_max;
+  }
 }

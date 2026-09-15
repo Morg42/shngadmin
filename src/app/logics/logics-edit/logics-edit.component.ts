@@ -15,7 +15,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CompletionContext } from '@codemirror/autocomplete';
 import { KeyBinding } from '@codemirror/view';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { PrimeTemplate } from 'primeng/api';
+import { MessageService, PrimeTemplate } from 'primeng/api';
 import { AutoComplete } from 'primeng/autocomplete';
 import { Bind } from 'primeng/bind';
 import { ButtonDirective } from 'primeng/button';
@@ -39,6 +39,11 @@ import { LogService } from '../../common/services/log.service';
 import { LogicsApiService } from '../../common/services/logics-api.service';
 import { PluginsApiService } from '../../common/services/plugins-api.service';
 import { SharedService } from '../../common/services/shared.service';
+import {
+  formatValidationError,
+  StringTypeValidators,
+  validateValue,
+} from '../../common/utils/input-validation.utils';
 
 @Component({
   selector: 'app-logics-edit',
@@ -78,6 +83,7 @@ export class LogicsEditComponent implements OnInit {
   private itemsapiService = inject(ItemsApiService);
   private translate = inject(TranslateService);
   private titleService = inject(Title);
+  private messageService = inject(MessageService);
   private readonly log = inject(LogService);
 
   readonly logic = signal<LogicsinfoType>({} as LogicsinfoType);
@@ -243,23 +249,6 @@ export class LogicsEditComponent implements OnInit {
           if (param in this.pluginParameters) {
             const paramdef = this.pluginParameters[param];
 
-            const vl: { label: string; value: unknown }[] = [];
-            const validList = paramdef['valid_list'] as unknown[];
-            if (validList !== undefined) {
-              for (let i = 0; i < validList.length; i++) {
-                const wrk = { label: String(validList[i]), value: validList[i] };
-                vl.push(wrk);
-              }
-            }
-
-            // generate a valid_list for bool parameters
-            if (paramdef['type'] === 'bool') {
-              if (vl.length === 0) {
-                vl.push({ label: 'true', value: true });
-                vl.push({ label: 'false', value: false });
-              }
-            }
-
             // fill description with active language
             const paramdesc = this.shared.getDescription(
               paramdef['description'] as Record<string, string>,
@@ -278,7 +267,7 @@ export class LogicsEditComponent implements OnInit {
             const paramdata: ConfigParameter = {
               name: param,
               type: paramdef['type'] as string,
-              valid_list: vl,
+              valid_list: paramdef['valid_list'] as unknown[] | undefined,
               valid_min: paramdef['valid_min'],
               valid_max: paramdef['valid_max'],
               default: paramdef['default'],
@@ -561,7 +550,7 @@ export class LogicsEditComponent implements OnInit {
     return;
   }
 
-  saveCode(reload = false) {
+  saveCode(reload = false, onSaved?: (loaded?: boolean) => void) {
     // this.log.log('LoggingConfigurationComponent.saveCode');
     this.fileService
       .saveFile('logics', this.myEditFilename(), this.myTextarea())
@@ -571,7 +560,9 @@ export class LogicsEditComponent implements OnInit {
         this.myTextareaOrig.set(this.myTextarea());
         this.logicChanged.set(this.hasLogicChanged());
         if (reload) {
-          this.loadLogic(this.logic().name); // reloadLogic
+          this.loadLogic(this.logic().name, onSaved); // reloadLogic
+        } else {
+          onSaved?.();
         }
       });
   }
@@ -598,8 +589,32 @@ export class LogicsEditComponent implements OnInit {
     this.logicChanged.set(this.hasLogicChanged());
   }
 
-  saveParameters(reload: boolean) {
+  private readonly parameterValidators: StringTypeValidators = {
+    isKnxGroupaddress: (v) => this.shared.is_knx_groupaddress(v),
+    isMac: (v) => this.shared.is_mac(v),
+    isIpv4: (v) => this.shared.is_ipv4(v),
+    isIpv6: (v) => this.shared.is_ipv6(v),
+    isHostname: (v) => this.shared.is_hostname(v),
+  };
+
+  saveParameters(reload: boolean, onSaved?: (loaded?: boolean) => void) {
     // this.log.log('LoggingConfigurationComponent.saveParameters');
+
+    for (const parameter of this.parameters()) {
+      const errors = validateValue(parameter, this.parameterValidators);
+      if (errors.length > 0) {
+        this.messageService.clear();
+        this.messageService.add({
+          severity: 'error',
+          summary: parameter.name,
+          detail: formatValidationError(errors[errors.length - 1], (key) =>
+            this.translate.instant(key),
+          ),
+          sticky: true,
+        });
+        return;
+      }
+    }
 
     const params: Record<string, unknown> = {};
 
@@ -657,21 +672,37 @@ export class LogicsEditComponent implements OnInit {
         this.logicChanged.set(this.hasLogicChanged());
 
         if (reload) {
-          this.loadLogic(this.logic().name); // reloadLogic
+          this.loadLogic(this.logic().name, onSaved); // reloadLogic
+        } else {
+          onSaved?.();
         }
       });
   }
 
   saveLogic(reload = false) {
+    const notifySaved = (loaded?: boolean) => {
+      if (loaded === false) {
+        // load failed - setLogicState() already showed an error toast for it
+        return;
+      }
+      this.messageService.add({
+        severity: 'success',
+        summary: this.translate.instant(
+          loaded ? 'LOGIC_EDIT.SAVED_AND_LOADED' : 'LOGIC_EDIT.SAVED',
+        ),
+        life: 5000,
+      });
+    };
+
     if (this.codeChanged()) {
       if (this.parametersChanged()) {
         this.saveCode();
       } else {
-        this.saveCode(reload);
+        this.saveCode(reload, notifySaved);
       }
     }
     if (this.parametersChanged()) {
-      this.saveParameters(reload);
+      this.saveParameters(reload, notifySaved);
     }
   }
 
@@ -699,7 +730,7 @@ export class LogicsEditComponent implements OnInit {
       });
   }
 
-  loadLogic(logicName: string) {
+  loadLogic(logicName: string, onLoaded?: (loaded?: boolean) => void) {
     this.log.log('loadLogic', { logicName });
     // this.log.warn('myLogicName', this.myLogicName, 'myEditFilename', this.myEditFilename);
 
@@ -710,7 +741,9 @@ export class LogicsEditComponent implements OnInit {
       .setLogicState(logicName, 'load')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        this.myLogicIsLoaded.set(response !== false);
+        const loaded = response !== false;
+        this.myLogicIsLoaded.set(loaded);
+        onLoaded?.(loaded);
       });
   }
 
@@ -786,6 +819,11 @@ export class LogicsEditComponent implements OnInit {
           this.rename_display.set(false);
           const newFilename = newFilenameArg !== '' ? newFile + '.py' : this.myEditFilename();
           this.router.navigate(['/logics/edit', `${newName}|${newFilename}`]);
+          this.messageService.add({
+            severity: 'success',
+            summary: this.translate.instant('LOGIC_EDIT.RENAMED'),
+            life: 5000,
+          });
         }
       });
   }

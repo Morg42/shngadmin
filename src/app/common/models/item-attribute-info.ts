@@ -6,5 +6,7 @@
 export interface ItemAttributeInfo {
   type: string;
   valid_list?: string[];
+  valid_min?: number;
+  valid_max?: number;
   description?: { de?: string; en?: string };
 }

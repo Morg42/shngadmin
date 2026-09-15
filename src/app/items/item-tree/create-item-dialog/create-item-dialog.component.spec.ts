@@ -183,6 +183,23 @@ describe('CreateItemDialogComponent', () => {
     expect(mockItemsApi.createItem).not.toHaveBeenCalled();
   });
 
+  it('submitNewItem() rejects an out-of-range attribute value without calling the API', () => {
+    component.newItemName = 'mynewitem';
+    component.newItemAttributes = [{ key: 'database_maxage', value: -5 }];
+
+    const attrCatalog = TestBed.inject(AttributeCatalogService) as unknown as {
+      attributeType: jest.Mock;
+      attributeValidMin: jest.Mock;
+    };
+    attrCatalog.attributeType.mockReturnValue('num');
+    attrCatalog.attributeValidMin.mockReturnValue(0);
+
+    component.submitNewItem();
+
+    expect(mockItemsApi.createItem).not.toHaveBeenCalled();
+    expect(component.newItemError()).toContain('database_maxage');
+  });
+
   it('submitNewItem() with no missing ancestors creates the item directly, createMissingParents false', () => {
     component.newItemParent = '';
     component.newItemName = 'mynewitem';

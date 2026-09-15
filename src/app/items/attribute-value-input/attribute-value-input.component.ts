@@ -12,10 +12,17 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { AutoComplete } from 'primeng/autocomplete';
 import { ButtonDirective } from 'primeng/button';
+import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 import { ItemsApiService } from '../../common/services/items-api.service';
+import {
+  InputKind,
+  resolveInputKind,
+  resolveSelectOptions,
+  SelectOption,
+} from '../../common/utils/input-type.utils';
 
 /**
  * Type-aware input control for an item attribute's value — driven by the
@@ -32,7 +39,15 @@ import { ItemsApiService } from '../../common/services/items-api.service';
   selector: 'app-attribute-value-input',
   templateUrl: './attribute-value-input.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AutoComplete, ButtonDirective, FormsModule, InputText, Select, ToggleSwitch],
+  imports: [
+    AutoComplete,
+    ButtonDirective,
+    FormsModule,
+    InputNumber,
+    InputText,
+    Select,
+    ToggleSwitch,
+  ],
 })
 export class AttributeValueInputComponent {
   private itemsApi = inject(ItemsApiService);
@@ -44,6 +59,8 @@ export class AttributeValueInputComponent {
    *  '(' matters. */
   readonly type = input('');
   readonly validList = input<string[]>();
+  readonly validMin = input<number>();
+  readonly validMax = input<number>();
   readonly value = input<unknown>();
   readonly valueChange = output<unknown>();
 
@@ -65,36 +82,19 @@ export class AttributeValueInputComponent {
     return this.type().split('(')[0];
   }
 
-  get inputKind():
-    | 'select'
-    | 'toggle'
-    | 'list'
-    | 'dict'
-    | 'password'
-    | 'autocomplete'
-    | 'number'
-    | 'text' {
-    if ((this.validList()?.length ?? 0) > 0) return 'select';
-    switch (this.baseType) {
-      case 'bool':
-        return 'toggle';
-      case 'list':
-        return 'list';
-      case 'dict':
-        return 'dict';
-      case 'password':
-        return 'password';
-      case 'int':
-      case 'float':
-      case 'num':
-      case 'scene':
-        return 'number';
-      case 'str':
-        return 'autocomplete';
-      default:
-        // foo, ip, ipv4, ipv6, mac, knx_ga — no dedicated control, plain text
-        return 'text';
-    }
+  /** Options for the 'select' input kind - the attribute's own valid_list,
+   *  or a synthesized true/false pair for a bool that doesn't define one. */
+  get selectOptions(): SelectOption[] | undefined {
+    return resolveSelectOptions(this.type(), this.validList());
+  }
+
+  get inputKind(): InputKind | 'autocomplete' {
+    // Every attribute row here has its own delete button, so removing the
+    // row - not clearing the value in place - is how "not set, use
+    // default" is represented; a toggle is fine, there's no in-widget
+    // unset state to lose.
+    const resolved = resolveInputKind(this.type(), (this.validList()?.length ?? 0) > 0, 'toggle');
+    return resolved === 'text' && this.baseType === 'str' ? 'autocomplete' : resolved;
   }
 
   /** Lazily loaded on first use (only the str/autocomplete control needs

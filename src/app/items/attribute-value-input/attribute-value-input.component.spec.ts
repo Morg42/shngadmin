@@ -74,6 +74,27 @@ describe('AttributeValueInputComponent', () => {
   });
 
   // ---------------------------------------------------------------------
+  // selectOptions
+  // ---------------------------------------------------------------------
+
+  it('maps validList to label/value pairs', () => {
+    fixture.componentRef.setInput('type', 'str');
+    fixture.componentRef.setInput('validList', ['rw', 'ro']);
+    expect(component.selectOptions).toEqual([
+      { label: 'rw', value: 'rw' },
+      { label: 'ro', value: 'ro' },
+    ]);
+  });
+
+  it('synthesizes true/false options for a bool with no validList', () => {
+    fixture.componentRef.setInput('type', 'bool');
+    expect(component.selectOptions).toEqual([
+      { label: 'true', value: true },
+      { label: 'false', value: false },
+    ]);
+  });
+
+  // ---------------------------------------------------------------------
   // list editor
   // ---------------------------------------------------------------------
 

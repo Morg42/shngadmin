@@ -161,4 +161,26 @@ describe('EditItemDialogComponent', () => {
 
     expect(mockItemsApi.editItem).not.toHaveBeenCalled();
   });
+
+  it('submitEditItem() rejects an out-of-range attribute value without calling the API', () => {
+    fixture.componentRef.setInput('itemDetails', {
+      path: 'a',
+      type: 'num',
+      editable_config: { type: 'num' },
+    } as ItemDetails);
+    component.visible.set(true);
+    component.editItemAttributes.set([{ key: 'database_maxage', value: -5 }]);
+
+    const attrCatalog = TestBed.inject(AttributeCatalogService) as unknown as {
+      attributeType: jest.Mock;
+      attributeValidMin: jest.Mock;
+    };
+    attrCatalog.attributeType.mockReturnValue('num');
+    attrCatalog.attributeValidMin.mockReturnValue(0);
+
+    component.submitEditItem();
+
+    expect(mockItemsApi.editItem).not.toHaveBeenCalled();
+    expect(component.editItemError()).toContain('database_maxage');
+  });
 });

@@ -34,7 +34,7 @@ describe('LogicsEditComponent', () => {
     getLogic: () => of({ name: 'testlogic', group: '', enabled: true, logic_description: '' }),
     getLogicState: () => of({}),
     setLogicState: () => of({}),
-    saveLogicParameters: () => of({}),
+    saveLogicParameters: jest.fn().mockReturnValue(of({})),
   };
 
   beforeEach(async () => {
@@ -183,5 +183,44 @@ describe('LogicsEditComponent', () => {
     component.logicGroupChips.set(['alpha']);
     component.onGroupChipsChange();
     expect(component.logicChanged()).toBe(true);
+  });
+
+  // -------------------------------------------------------------------------
+  // saveParameters(): validates plugin parameters before saving - previously
+  // this table had no submit-time validation at all.
+  // -------------------------------------------------------------------------
+
+  describe('saveParameters', () => {
+    it('saves when every parameter passes validation', () => {
+      component.parameters.set([{ name: 'cycle', type: 'int', value: 30 }]);
+
+      component.saveParameters(false);
+
+      expect(mockLogicsApi.saveLogicParameters).toHaveBeenCalled();
+    });
+
+    it('rejects an out-of-range parameter without saving, shows a sticky error toast', () => {
+      component.parameters.set([{ name: 'my_param', type: 'int', value: 5, valid_min: 10 }]);
+      mockLogicsApi.saveLogicParameters.mockClear();
+      const messageService = TestBed.inject(MessageService);
+      const addSpy = jest.spyOn(messageService, 'add');
+
+      component.saveParameters(false);
+
+      expect(mockLogicsApi.saveLogicParameters).not.toHaveBeenCalled();
+      expect(addSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ severity: 'error', summary: 'my_param', sticky: true }),
+      );
+    });
+
+    it('does not call onSaved when validation fails', () => {
+      component.parameters.set([{ name: 'my_param', type: 'mac', value: 'not-a-mac' }]);
+      (component as any).shared.is_mac = () => false;
+      const onSaved = jest.fn();
+
+      component.saveParameters(true, onSaved);
+
+      expect(onSaved).not.toHaveBeenCalled();
+    });
   });
 });

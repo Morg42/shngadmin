@@ -102,6 +102,8 @@
         <app-attribute-value-input
           [type]="attributeCatalogService.attributeType(attr.key)"
           [validList]="attributeCatalogService.attributeValidList(attr.key)"
+          [validMin]="attributeCatalogService.attributeValidMin(attr.key)"
+          [validMax]="attributeCatalogService.attributeValidMax(attr.key)"
           [value]="attr.value"
           (valueChange)="attr.value = $event"
           style="flex: 1"

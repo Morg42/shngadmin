@@ -17,7 +17,7 @@ import { Title } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'primeng/accordion';
-import { PrimeTemplate } from 'primeng/api';
+import { MessageService, PrimeTemplate } from 'primeng/api';
 import { Bind } from 'primeng/bind';
 import { ButtonDirective } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
@@ -73,6 +73,7 @@ export class LogicsListComponent implements OnInit {
   private router = inject(Router);
   private translate = inject(TranslateService);
   private titleService = inject(Title);
+  private messageService = inject(MessageService);
 
   /** Emits to re-fetch the logics list (after every state-changing action). */
   private readonly refresh$ = new Subject<void>();
@@ -531,6 +532,11 @@ export class LogicsListComponent implements OnInit {
         if (result === true) {
           this.rename_display.set(false);
           this.refreshLogics();
+          this.messageService.add({
+            severity: 'success',
+            summary: this.translate.instant('LOGIC_EDIT.RENAMED'),
+            life: 5000,
+          });
         }
       });
   }

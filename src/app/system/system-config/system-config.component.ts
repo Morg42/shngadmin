@@ -17,6 +17,11 @@ import { ServerApiService } from '../../common/services/server-api.service';
 
 import { ConfigParameter, TableColumn } from '../../common/models/interfaces';
 import { SharedService } from '../../common/services/shared.service';
+import {
+  formatValidationError,
+  StringTypeValidators,
+  validateValue,
+} from '../../common/utils/input-validation.utils';
 
 import { NgStyle } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -241,23 +246,6 @@ export class SystemConfigComponent implements OnInit {
     param: string,
     data: Record<string, unknown>,
   ) {
-    // fill valuelist
-    const vl: { label: string; value: unknown }[] = [];
-    if (meta['parameters'][param]['valid_list'] !== undefined) {
-      for (let i = 0; i < meta['parameters'][param]['valid_list'].length; i++) {
-        vl.push({
-          label: String(meta['parameters'][param]['valid_list'][i]),
-          value: meta['parameters'][param]['valid_list'][i],
-        });
-      }
-    }
-
-    // generate a valid_list for bool parameters
-    if (meta['parameters'][param]['type'] === 'bool') {
-      vl.push({ label: 'true', value: true });
-      vl.push({ label: 'false', value: false });
-    }
-
     // fill description with active language
     //    const paramdesc = this.shared.getDescription(meta['parameters'][param]['description']);
     let paramdesc = '';
@@ -281,7 +269,7 @@ export class SystemConfigComponent implements OnInit {
       name: param,
       type: meta['parameters'][param]['type'],
       gui_type: meta['parameters'][param]['gui_type'],
-      valid_list: vl,
+      valid_list: meta['parameters'][param]['valid_list'],
       valid_min: meta['parameters'][param]['valid_min'],
       valid_max: meta['parameters'][param]['valid_max'],
       default: meta['parameters'][param]['default'],
@@ -444,80 +432,34 @@ export class SystemConfigComponent implements OnInit {
     }
   }
 
+  private readonly parameterValidators: StringTypeValidators = {
+    isKnxGroupaddress: (v) => this.shared.is_knx_groupaddress(v),
+    isMac: (v) => this.shared.is_mac(v),
+    isIpv4: (v) => this.shared.is_ipv4(v),
+    isIpv6: (v) => this.shared.is_ipv6(v),
+    isHostname: (v) => this.shared.is_hostname(v),
+  };
+
   check_value_restrictions(parameter: ConfigParameter) {
-    let error_found = false;
-    let error_text = '';
-
-    // this.log.log('check_value_restrictions', {parameter});
-
     if (parameter['value'] === undefined) {
       parameter['value'] = null;
     }
 
-    const type = (parameter.type ?? '').toLowerCase();
-    const value = parameter.value as string;
-    const numVal = Number(parameter.value);
-    const validMin = parameter['valid_min'] as number | undefined;
-    const validMax = parameter['valid_max'] as number | undefined;
-
-    // checking data types
-    if (parameter.value !== null && parameter.value !== '') {
-      error_text = "'" + value + "' ";
-      if (type === 'knx_ga' && !this.shared.is_knx_groupaddress(value)) {
-        error_found = true;
-        error_text += this.translate.instant('PLUGIN.INVALID_KNX_ADDRESS');
-      }
-      if (type === 'mac' && !this.shared.is_mac(value)) {
-        error_found = true;
-        error_text += this.translate.instant('PLUGIN.INVALID_MAC_ADDRESS');
-      }
-      if (type === 'ipv4' && !this.shared.is_ipv4(value)) {
-        error_found = true;
-        error_text += this.translate.instant('PLUGIN.INVALID_IP_ADDRESS') + ' (v4)';
-      }
-      if (type === 'ipv6' && !this.shared.is_ipv6(value)) {
-        error_found = true;
-        error_text += this.translate.instant('PLUGIN.INVALID_IP_ADDRESS') + ' (v6)';
-      }
-      if (type === 'ip') {
-        if (!this.shared.is_ipv4(value) && !this.shared.is_ipv6(value)) {
-          if (!this.shared.is_hostname(value)) {
-            error_found = true;
-            error_text += this.translate.instant('PLUGIN.INVALID_HOSTNAME');
-          }
-        }
-      }
+    const errors = validateValue(parameter, this.parameterValidators);
+    if (errors.length === 0) {
+      return true;
     }
 
-    // check valid minimum and maximum value
-    if (parameter.value !== null && validMin !== undefined && numVal < validMin) {
-      error_found = true;
-      error_text = this.translate.instant('PLUGIN.DEFINED_MIN') + " '" + validMin + "'";
-      error_text += ', ' + this.translate.instant('PLUGIN.ACTUAL_VALUE') + " '" + value + "'";
-    }
-    if (parameter.value !== null && validMax !== undefined && numVal > validMax) {
-      error_found = true;
-      error_text = this.translate.instant('PLUGIN.DEFINED_MAX') + " '" + validMax + "'";
-      error_text += ', ' + this.translate.instant('PLUGIN.ACTUAL_VALUE') + " '" + value + "'";
-    }
-
-    // check if value is mandantory
-    if ((parameter.value === null || parameter.value === '') && parameter['mandatory']) {
-      error_found = true;
-      error_text = this.translate.instant('PLUGIN.MANDATORY_VALUE');
-    }
-
-    if (error_found) {
-      this.validation_dialog_text.push(
-        this.translate.instant('PLUGIN.PARAMETER') + " '" + parameter['name'] + "': " + error_text,
-      );
-      this.validation_dialog_parameter = parameter['name'];
-
-      this.validation_dialog_display = true;
-      this.log.warn('Parameter ' + "'" + parameter['name'] + "'", error_text);
-      return false;
-    }
-    return true;
+    const error_text = formatValidationError(errors[errors.length - 1], (key) =>
+      this.translate.instant(key),
+    );
+    this.validation_dialog_text.push(
+      this.translate.instant('PLUGIN.PARAMETER') + " '" + parameter['name'] + "': " + error_text,
+    );
+    this.validation_dialog_parameter = parameter['name'];
+    this.validation_dialog_display = true;
+    this.log.warn('Parameter ' + "'" + parameter['name'] + "'", error_text);
+    return false;
   }
 
   saveSettings() {

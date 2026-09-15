@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
 import {
   createMockAppConfigService,
@@ -66,6 +67,7 @@ describe('PluginParameterDialogComponent', () => {
       providers: [
         { provide: PluginsApiService, useValue: mockPluginsApi },
         { provide: AppConfigService, useValue: createMockAppConfigService() },
+        MessageService,
       ],
     }).compileComponents();
 
@@ -91,11 +93,9 @@ describe('PluginParameterDialogComponent', () => {
     expect(param('port_param')['value']).toBe(8080);
   });
 
-  it('bool type gets synthetic true/false valid_list options', () => {
-    expect(param('bool_param')['valid_list']).toEqual([
-      { label: 'true', value: true },
-      { label: 'false', value: false },
-    ]);
+  it('passes a bool parameter through with no valid_list of its own - dynamic-field synthesizes true/false, see input-type.utils.spec.ts', () => {
+    expect(param('bool_param')['type']).toBe('bool');
+    expect(param('bool_param')['valid_list']).toBeUndefined();
   });
 
   it('list type stringifies the default using the shared delimiter', () => {

@@ -16,7 +16,7 @@ import { FormsModule } from '@angular/forms';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { PrimeTemplate } from 'primeng/api';
+import { MessageService, PrimeTemplate } from 'primeng/api';
 import { ButtonDirective } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { Select } from 'primeng/select';
@@ -27,10 +27,11 @@ import { PluginMetaInfo, PluginSectionConfig } from '../../../common/models/plug
 import { PluginsApiService } from '../../../common/services/plugins-api.service';
 import { SharedService } from '../../../common/services/shared.service';
 import {
+  formatValidationError,
   StringTypeValidators,
-  validateParameterValue,
+  validateValue,
   ValidationError,
-} from '../plugin-parameter-validation';
+} from '../../../common/utils/input-validation.utils';
 
 /** Extracted from PluginConfigComponent's parameter-edit flow (former
  *  rowClicked()/saveConfig()). Bundles the validation-errors sub-dialog,
@@ -56,6 +57,7 @@ export class PluginParameterDialogComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly pluginsApi = inject(PluginsApiService);
   private readonly translate = inject(TranslateService);
+  private readonly messageService = inject(MessageService);
   private readonly shared = inject(SharedService);
 
   readonly faExclamationTriangle = faExclamationTriangle;
@@ -196,25 +198,13 @@ export class PluginParameterDialogComponent {
       for (const param in metaParams) {
         if (metaParams.hasOwnProperty(param)) {
           const pm = metaParams[param];
-          const vl: { label: string; value: unknown }[] = [];
-          if (pm.valid_list !== undefined) {
-            for (let i = 0; i < pm.valid_list.length; i++) {
-              vl.push({ label: String(pm.valid_list[i]), value: pm.valid_list[i] });
-            }
-          }
-
-          if (pm.type === 'bool') {
-            vl.push({ label: 'true', value: true });
-            vl.push({ label: 'false', value: false });
-          }
-
           const paramdesc = this.shared.mdLiteToHtml(this.shared.getDescription(pm.description));
 
           const paramdata: ConfigParameter = {
             name: param,
             type: pm.type,
             gui_type: pm.gui_type,
-            valid_list: vl,
+            valid_list: pm.valid_list,
             valid_min: pm.valid_min,
             valid_max: pm.valid_max,
             default: pm.default,
@@ -286,50 +276,7 @@ export class PluginParameterDialogComponent {
   };
 
   private validationErrorToText(error: ValidationError): string {
-    switch (error.code) {
-      case 'invalid_knx_address':
-        return "'" + error.value + "' " + this.translate.instant('PLUGIN.INVALID_KNX_ADDRESS');
-      case 'invalid_mac_address':
-        return "'" + error.value + "' " + this.translate.instant('PLUGIN.INVALID_MAC_ADDRESS');
-      case 'invalid_ip_address':
-        return (
-          "'" +
-          error.value +
-          "' " +
-          this.translate.instant('PLUGIN.INVALID_IP_ADDRESS') +
-          ' (' +
-          error.version +
-          ')'
-        );
-      case 'invalid_hostname':
-        return "'" + error.value + "' " + this.translate.instant('PLUGIN.INVALID_HOSTNAME');
-      case 'below_min':
-        return (
-          this.translate.instant('PLUGIN.DEFINED_MIN') +
-          " '" +
-          error.min +
-          "'" +
-          ', ' +
-          this.translate.instant('PLUGIN.ACTUAL_VALUE') +
-          " '" +
-          error.value +
-          "'"
-        );
-      case 'above_max':
-        return (
-          this.translate.instant('PLUGIN.DEFINED_MAX') +
-          " '" +
-          error.max +
-          "'" +
-          ', ' +
-          this.translate.instant('PLUGIN.ACTUAL_VALUE') +
-          " '" +
-          error.value +
-          "'"
-        );
-      case 'mandatory_value':
-        return this.translate.instant('PLUGIN.MANDATORY_VALUE');
-    }
+    return formatValidationError(error, (key) => this.translate.instant(key));
   }
 
   saveConfig(): void {
@@ -362,7 +309,7 @@ export class PluginParameterDialogComponent {
         parameters[i]['value'] = null;
       }
 
-      const errors = validateParameterValue(parameters[i], this.parameterValidators);
+      const errors = validateValue(parameters[i], this.parameterValidators);
 
       if (errors.length > 0) {
         errorsFound = true;
@@ -423,6 +370,12 @@ export class PluginParameterDialogComponent {
         if (response !== true) {
           this.saveError.set(this.translate.instant('PLUGIN.SAVE_FAILED'));
           this.visible.set(true);
+        } else {
+          this.messageService.add({
+            severity: 'success',
+            summary: this.translate.instant('PLUGIN.SAVED'),
+            life: 5000,
+          });
         }
       });
   }

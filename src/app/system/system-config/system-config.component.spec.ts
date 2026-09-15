@@ -103,4 +103,53 @@ describe('SystemConfigComponent', () => {
     const firstParamName = Object.keys(fixtureData.common.meta.parameters)[0];
     expect(component.common_parameters()[0].name).toBe(firstParamName);
   });
+
+  // -------------------------------------------------------------------------
+  // check_value_restrictions() - delegates to the shared validateValue(),
+  // these confirm the delegation preserves the dialog/log side effects the
+  // old hand-rolled version had.
+  // -------------------------------------------------------------------------
+
+  describe('check_value_restrictions', () => {
+    it('passes a well-formed value and touches nothing', () => {
+      component.validation_dialog_text = [];
+      const ok = component.check_value_restrictions({ name: 'p', type: 'str', value: 'x' });
+      expect(ok).toBe(true);
+      expect(component.validation_dialog_display).toBe(false);
+      expect(component.validation_dialog_text).toEqual([]);
+    });
+
+    it('flags a value below valid_min, opens the validation dialog with the parameter name', () => {
+      component.validation_dialog_text = [];
+      component.validation_dialog_display = false;
+      const ok = component.check_value_restrictions({
+        name: 'my_param',
+        type: 'int',
+        value: 5,
+        valid_min: 10,
+      });
+      expect(ok).toBe(false);
+      expect(component.validation_dialog_display).toBe(true);
+      expect(component.validation_dialog_parameter).toBe('my_param');
+      expect(component.validation_dialog_text[0]).toContain('my_param');
+    });
+
+    it('flags a bad format value using SharedService through the shared validators', () => {
+      (component as any).shared = { ...mockSharedService, is_mac: () => false };
+      component.validation_dialog_text = [];
+      const ok = component.check_value_restrictions({ name: 'p', type: 'mac', value: 'zz' });
+      expect(ok).toBe(false);
+    });
+
+    it('flags a missing mandatory value', () => {
+      component.validation_dialog_text = [];
+      const ok = component.check_value_restrictions({
+        name: 'p',
+        type: 'str',
+        value: '',
+        mandatory: true,
+      });
+      expect(ok).toBe(false);
+    });
+  });
 });

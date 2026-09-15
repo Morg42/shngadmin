@@ -4,6 +4,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
+import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
 import fixtureData from '../../../testing/fixtures/api/logics/default.json';
 import {
@@ -40,6 +41,7 @@ describe('LogicsListComponent', () => {
         { provide: LogicsApiService, useValue: mockLogicsApi },
         { provide: AuthService, useValue: createMockAuthService() },
         { provide: AppConfigService, useValue: createMockAppConfigService() },
+        MessageService,
         {
           provide: ActivatedRoute,
           useValue: {

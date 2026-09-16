@@ -34,7 +34,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Bind } from 'primeng/bind';
 import { ButtonDirective } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
@@ -164,6 +164,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
   private titleService = inject(Title);
   private appConfig = inject(AppConfigService);
   private readonly log = inject(LogService);
+  private readonly route = inject(ActivatedRoute);
 
   showItemAlert = false;
 
@@ -182,7 +183,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
     this.log.log('ItemTreeComponent.ngOnInit:');
 
     this.setTitle(this.translate.instant('ITEMS.ITEMS'));
-    this.getItemtree();
+    this.getItemtree(this.route.snapshot.queryParamMap.get('select') ?? undefined);
     this.attributeCatalogService.loadAttributeCatalog();
 
     // Defer the WebSocket connection until wsPort is available (same reasoning

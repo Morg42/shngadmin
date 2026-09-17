@@ -11,8 +11,7 @@ import {
   createMockAppConfigService,
   createMockAttributeCatalogService,
   createMockAuthService,
-  createMockWebsocketPluginService,
-  createMockWebsocketService,
+  createMockStreamService,
   translateTestingModule,
 } from '../../../testing/test-helpers';
 import { AppConfigService } from '../../common/services/app-config.service';
@@ -21,8 +20,7 @@ import { AuthService } from '../../common/services/auth.service';
 import { ItemsApiService } from '../../common/services/items-api.service';
 import { PluginsApiService } from '../../common/services/plugins-api.service';
 import { ServerApiService } from '../../common/services/server-api.service';
-import { WebsocketPluginService } from '../../common/services/websocket-plugin.service';
-import { WebsocketService } from '../../common/services/websocket.service';
+import { StreamService } from '../../common/services/stream.service';
 import { ItemTreeComponent } from './item-tree.component';
 
 describe('ItemTreeComponent', () => {
@@ -36,12 +34,11 @@ describe('ItemTreeComponent', () => {
       shng_serverinfo: {},
     };
 
-    const mockWebsocketPlugin = {
-      ...createMockWebsocketPluginService(),
+    const mockStream = {
+      ...createMockStreamService(),
       connect: jest.fn(),
       disconnect: jest.fn(),
       getMonitoredItems: jest.fn(),
-      monitor: { items: [] },
     };
 
     const mockItemsApi = {
@@ -75,8 +72,7 @@ describe('ItemTreeComponent', () => {
         { provide: ItemsApiService, useValue: mockItemsApi },
         { provide: PluginsApiService, useValue: mockPluginsApi },
         { provide: AttributeCatalogService, useValue: createMockAttributeCatalogService() },
-        { provide: WebsocketService, useValue: createMockWebsocketService() },
-        { provide: WebsocketPluginService, useValue: mockWebsocketPlugin },
+        { provide: StreamService, useValue: mockStream },
         MessageService,
       ],
       schemas: [NO_ERRORS_SCHEMA],
@@ -84,12 +80,8 @@ describe('ItemTreeComponent', () => {
       .overrideComponent(ItemTreeComponent, {
         set: {
           imports: [TranslatePipe, Tree],
-          // Component declares its own providers; override them with mocks so the
-          // real WebsocketPluginService constructor doesn't run and build a ws:// URL
-          providers: [
-            { provide: WebsocketService, useValue: createMockWebsocketService() },
-            { provide: WebsocketPluginService, useValue: mockWebsocketPlugin },
-          ],
+          // Component declares its own providers; override with a mock so ngOnInit's connect() call stays inert
+          providers: [{ provide: StreamService, useValue: mockStream }],
           schemas: [NO_ERRORS_SCHEMA],
         },
       })

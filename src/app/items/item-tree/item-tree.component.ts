@@ -27,8 +27,7 @@ import { ItemTree } from '../../common/models/item-tree';
 import { ItemsApiService } from '../../common/services/items-api.service';
 import { LogService } from '../../common/services/log.service';
 import { SharedService } from '../../common/services/shared.service';
-import { WebsocketPluginService } from '../../common/services/websocket-plugin.service';
-import { WebsocketService } from '../../common/services/websocket.service';
+import { StreamService } from '../../common/services/stream.service';
 
 import { NgTemplateOutlet } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -55,7 +54,7 @@ type MonitoredItem = [string, Record<string, unknown>];
   selector: 'app-items',
   templateUrl: 'item-tree.component.html',
   styleUrls: ['item-tree.component.css'],
-  providers: [WebsocketService, WebsocketPluginService],
+  providers: [StreamService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     Bind,
@@ -126,7 +125,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
   readonly deleteItem_display = signal(false);
 
   /** Delegate to SharedService (true root singleton) so the list survives
-   *  navigation — WebsocketPluginService is component-scoped and gets destroyed.
+   *  navigation — StreamService is component-scoped and gets destroyed.
    *  monitoredItemsList is a signal, so reading it here (from a getter invoked
    *  during template evaluation) keeps this reactive under OnPush. */
   get monitoredItems(): MonitoredItem[] {
@@ -159,7 +158,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
   private itemsApi = inject(ItemsApiService);
   private translate = inject(TranslateService);
   private readonly attributeCatalogService = inject(AttributeCatalogService);
-  private websocketPluginService = inject(WebsocketPluginService);
+  private streamService = inject(StreamService);
   public shared = inject(SharedService);
   private titleService = inject(Title);
   private appConfig = inject(AppConfigService);
@@ -186,15 +185,14 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
     this.getItemtree(this.route.snapshot.queryParamMap.get('select') ?? undefined);
     this.attributeCatalogService.loadAttributeCatalog();
 
-    // Defer the WebSocket connection until wsPort is available (same reasoning
-    // as system.component — see serverReady$ comment there).
+    // Defer the stream connection until server config is available (same reasoning as system.component).
     this.appConfig.serverReady$.pipe(take(1), takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      this.websocketPluginService.connect();
+      this.streamService.connect();
       // Re-register monitored items that survived navigation or a reload
       // (SharedService restores paths from localStorage - see its comment).
       if (this.monitoredItems.length > 0) {
         const monitoredDataFunction = this.monitoredDataFunction.bind(this);
-        this.websocketPluginService.getMonitoredItems(this.monitoredItems, monitoredDataFunction);
+        this.streamService.getMonitoredItems(this.monitoredItems, monitoredDataFunction);
         this.fetchDataForEmptyMonitoredItems();
       }
     });
@@ -210,7 +208,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
   }
 
   /** Items restored from localStorage start with an empty data placeholder -
-   *  the websocket only pushes a fresh value on the item's NEXT change,
+   *  the stream only pushes a fresh value on the item's NEXT change,
    *  which could be a long wait for a rarely-changing item, so fetch each
    *  placeholder's current details right away instead of leaving it blank. */
   private fetchDataForEmptyMonitoredItems() {
@@ -246,7 +244,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
   }
 
   ngOnDestroy(): void {
-    this.websocketPluginService.disconnect();
+    this.streamService.disconnect();
   }
 
   /** Rebuilding filteredTree (via structuredClone in filterNodes()) creates new
@@ -359,8 +357,8 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
     return caller;
   }
 
-  /** Callback handed to WebsocketPluginService.getMonitoredItems() - invoked
-   *  directly from handleResponseItem() on every 'item' websocket message, so
+  /** Callback handed to StreamService.getMonitoredItems() - invoked
+   *  directly from handleResponseItem() on every 'item' stream event, so
    *  this is the only place monitored values actually get updated. Publishes
    *  one new array (immutable update) covering every item in the message,
    *  rather than one signal write per item. */
@@ -377,7 +375,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
 
   /** Immutably patches the data half of every [path, data] entry in
    *  shared.monitoredItemsList whose path is a key of updates, leaving
-   *  other entries untouched - shared by the websocket push handler above
+   *  other entries untouched - shared by the stream push handler above
    *  and the one-off details fetch for restored placeholder rows. */
   private applyMonitoredDataUpdates(updates: Map<string, Record<string, unknown>>) {
     this.shared.monitoredItemsList.update((items) =>
@@ -407,7 +405,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
       this.sortMonitoredItems();
       // bind the callback function to the context of the item-tree component
       const monitoredDataFunction = this.monitoredDataFunction.bind(this);
-      this.websocketPluginService.getMonitoredItems(this.monitoredItems, monitoredDataFunction);
+      this.streamService.getMonitoredItems(this.monitoredItems, monitoredDataFunction);
     } else {
       // stop monitoring the item — removes all entries with this path, not just the first
       this.shared.monitoredItemsList.update((items) => items.filter((item) => item[0] !== path));
@@ -599,7 +597,7 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
    *  [model] via *ngFor with no trackBy - it can't tell that "new" array
    *  apart from a different one, so it tears down and rebuilds every <li>
    *  (and its click listener) on every unrelated CD tick that happens while
-   *  the popup is open (e.g. a websocket-pushed monitored-item update). If
+   *  the popup is open (e.g. a stream-pushed monitored-item update). If
    *  that teardown lands between a real click's mousedown and mouseup,
    *  Chrome drops the click entirely instead of retargeting it - a silent
    *  no-op, confirmed live via DOM/click instrumentation, not fixable by

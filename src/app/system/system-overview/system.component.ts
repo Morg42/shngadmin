@@ -33,14 +33,13 @@ import { SystemInfo } from '../../common/models/system-info';
 import { LogService } from '../../common/services/log.service';
 import { ServerApiService } from '../../common/services/server-api.service';
 import { SharedService } from '../../common/services/shared.service';
-import { WebsocketPluginService } from '../../common/services/websocket-plugin.service';
-import { WebsocketService } from '../../common/services/websocket.service';
+import { StreamService } from '../../common/services/stream.service';
 
 @Component({
   selector: 'app-system',
   templateUrl: './system.component.html',
   styleUrls: ['./system.component.css'],
-  providers: [WebsocketService, WebsocketPluginService],
+  providers: [StreamService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     Bind,
@@ -62,7 +61,7 @@ export class SystemComponent implements OnDestroy, OnInit {
   private http = inject(HttpClient);
   private serverApi = inject(ServerApiService);
   private translate = inject(TranslateService);
-  private websocketPluginService = inject(WebsocketPluginService);
+  private streamService = inject(StreamService);
   public shared = inject(SharedService);
   private titleService = inject(Title);
   private appConfig = inject(AppConfigService);
@@ -146,38 +145,38 @@ export class SystemComponent implements OnDestroy, OnInit {
   readonly chartdataLoad = computed(() =>
     this.updateChartData(
       SystemComponent.emptyDataset('Load'),
-      this.websocketPluginService.systemload().series,
+      this.streamService.systemload().series,
     ),
   );
   readonly chartdataSystemMemory = computed(() =>
     this.updateChartData(
       SystemComponent.emptyDataset('Memory (MByte)'),
-      this.websocketPluginService.systemmemory().series,
+      this.streamService.systemmemory().series,
     ),
   );
   readonly chartdataSwap = computed(() =>
     this.updateChartData(
       SystemComponent.emptyDataset('Swap used (MByte)'),
-      this.websocketPluginService.systemswap().series,
+      this.streamService.systemswap().series,
     ),
   );
   readonly chartdataMemory = computed(() =>
     this.updateChartData(
       SystemComponent.emptyDataset('Memory (MByte)'),
-      this.websocketPluginService.memory().series,
+      this.streamService.memory().series,
     ),
   );
   readonly chartdataThreads = computed(() =>
     this.updateChartData(
       SystemComponent.emptyDataset('Threads'),
-      this.websocketPluginService.threads().series,
+      this.streamService.threads().series,
     ),
   );
   /** Two source signals, one chart - the old combineLatest becomes a plain
    *  computed reading both. Active workers = started minus idle. */
   readonly chartdataWorkerThreads = computed(() => {
-    const workerSeries = this.websocketPluginService.workerThreads().series;
-    const idleSeries = this.websocketPluginService.idleWorkerThreads().series;
+    const workerSeries = this.streamService.workerThreads().series;
+    const idleSeries = this.streamService.idleWorkerThreads().series;
     const len = Math.min(workerSeries.length, idleSeries.length);
     const activeSeries: [number, number, { time: string }][] = [];
     for (let i = 0; i < len; i++) {
@@ -196,7 +195,7 @@ export class SystemComponent implements OnDestroy, OnInit {
   readonly chartdataDisk = computed(() =>
     this.updateChartData(
       SystemComponent.emptyDataset('% disc usage'),
-      this.websocketPluginService.disk().series,
+      this.streamService.disk().series,
     ),
   );
 
@@ -217,7 +216,7 @@ export class SystemComponent implements OnDestroy, OnInit {
   }
 
   ngOnDestroy(): void {
-    this.websocketPluginService.disconnect();
+    this.streamService.disconnect();
     this.pypiPollStop$.complete();
   }
 
@@ -362,21 +361,21 @@ export class SystemComponent implements OnDestroy, OnInit {
   initCharts() {
     this.log.log('initCharts()');
 
-    // Defer the WebSocket connection until wsPort is available.
+    // Defer the stream connection until server config is available.
     // getServerBasicinfo() (APP_INITIALIZER) does not return websocket_port,
     // so wsPort is '' until getServerinfo() completes from TopNavigationComponent.
-    // serverReady$ emits once wsPort becomes non-empty, which is the correct
-    // moment to open the connection and start requesting chart series data.
+    // serverReady$ emits once wsPort becomes non-empty, which is also a safe
+    // moment to open the stream and start requesting chart series data.
     this.appConfig.serverReady$.pipe(take(1), takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       const period = this.appConfig.resourceGraphPeriod;
-      this.websocketPluginService.connect();
-      this.websocketPluginService.getSeriesLoad(period);
-      this.websocketPluginService.getSeriesSystemMemory(period);
-      this.websocketPluginService.getSeriesSwap(period);
-      this.websocketPluginService.getSeriesMemory(period);
-      this.websocketPluginService.getSeriesThreads(period);
-      this.websocketPluginService.getSeriesWorkerThreads(period);
-      this.websocketPluginService.getSeriesDisk(period);
+      this.streamService.connect();
+      this.streamService.getSeriesLoad(period);
+      this.streamService.getSeriesSystemMemory(period);
+      this.streamService.getSeriesSwap(period);
+      this.streamService.getSeriesMemory(period);
+      this.streamService.getSeriesThreads(period);
+      this.streamService.getSeriesWorkerThreads(period);
+      this.streamService.getSeriesDisk(period);
     });
   }
 

@@ -15,7 +15,7 @@ export class SharedService {
 
   /** Persists the monitored-item list across item-tree component navigation
    *  AND across full page reloads (item paths only - see loadMonitoredPaths).
-   *  Stored here because WebsocketPluginService is component-scoped. A signal
+   *  Stored here because StreamService is component-scoped. A signal
    *  so item-tree's live table stays reactive under OnPush without a manual
    *  ping subscription - every update publishes a new array reference. */
   public readonly monitoredItemsList = signal<[string, Record<string, unknown>][]>(

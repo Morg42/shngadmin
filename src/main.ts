@@ -32,7 +32,7 @@ import { appRoutes } from './app/app.routes';
 import { getBaseUrl, jwtOptionsFactory } from './app/bootstrap.utils';
 import { connectivityInterceptor } from './app/common/interceptors/connectivity.interceptor';
 import { ServerApiService } from './app/common/services/server-api.service';
-import { WebsocketPluginService } from './app/common/services/websocket-plugin.service';
+import { StreamService } from './app/common/services/stream.service';
 import { environment } from './environments/environment';
 
 /**
@@ -244,7 +244,7 @@ bootstrapApplication(AppComponent, {
       multi: true,
     },
     MessageService,
-    WebsocketPluginService,
+    StreamService,
     TranslateService,
     provideAnimationsAsync(),
     provideHttpClient(withInterceptorsFromDi(), withInterceptors([connectivityInterceptor])),

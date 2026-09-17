@@ -110,22 +110,28 @@ export function createMockOlddataService() {
   };
 }
 
-/** Minimal stub for WebsocketService. */
-export function createMockWebsocketService() {
+/** Minimal stub for StreamService. */
+export function createMockStreamService() {
   return {
     connect: () => {},
-    send: () => {},
-    messages$: new BehaviorSubject(null),
-    open$: new BehaviorSubject(null),
-  };
-}
-
-/** Minimal stub for WebsocketPluginService. */
-export function createMockWebsocketPluginService() {
-  return {
-    connect: () => {},
-    send: () => {},
-    messages$: new BehaviorSubject(null),
+    disconnect: () => {},
+    getMonitoredItems: () => {},
+    getSeriesLoad: () => {},
+    getSeriesSystemMemory: () => {},
+    getSeriesSwap: () => {},
+    getSeriesMemory: () => {},
+    getSeriesThreads: () => {},
+    getSeriesWorkerThreads: () => {},
+    getSeriesDisk: () => {},
+    systemload: signal({ series: [], tsdiff: 0 }),
+    systemmemory: signal({ series: [], tsdiff: 0 }),
+    systemswap: signal({ series: [], tsdiff: 0 }),
+    memory: signal({ series: [], tsdiff: 0 }),
+    threads: signal({ series: [], tsdiff: 0 }),
+    workerThreads: signal({ series: [], tsdiff: 0 }),
+    idleWorkerThreads: signal({ series: [], tsdiff: 0 }),
+    activeWorkerThreads: signal({ series: [], tsdiff: 0 }),
+    disk: signal({ series: [], tsdiff: 0 }),
   };
 }
 

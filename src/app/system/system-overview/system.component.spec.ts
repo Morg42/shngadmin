@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -11,21 +11,21 @@ import systeminfoFixture from '../../../testing/fixtures/systeminfo.json';
 import {
   createMockAppConfigService,
   createMockAuthService,
-  createMockWebsocketService,
+  createMockStreamService,
   translateTestingModule,
 } from '../../../testing/test-helpers';
 import { AppConfigService } from '../../common/services/app-config.service';
 import { AuthService } from '../../common/services/auth.service';
 import { ServerApiService } from '../../common/services/server-api.service';
-import { WebsocketPluginService } from '../../common/services/websocket-plugin.service';
-import { WebsocketService } from '../../common/services/websocket.service';
+import { StreamService } from '../../common/services/stream.service';
 import { SystemComponent } from './system.component';
 
 describe('SystemComponent', () => {
   let component: SystemComponent;
   let fixture: ComponentFixture<SystemComponent>;
 
-  const mockWebsocketPlugin = {
+  const mockStream = {
+    ...createMockStreamService(),
     connect: jest.fn(),
     disconnect: jest.fn(),
     getSeriesLoad: jest.fn(),
@@ -35,14 +35,6 @@ describe('SystemComponent', () => {
     getSeriesThreads: jest.fn(),
     getSeriesWorkerThreads: jest.fn(),
     getSeriesDisk: jest.fn(),
-    systemload: signal({ series: [], tsdiff: 0 }),
-    systemmemory: signal({ series: [], tsdiff: 0 }),
-    systemswap: signal({ series: [], tsdiff: 0 }),
-    memory: signal({ series: [], tsdiff: 0 }),
-    threads: signal({ series: [], tsdiff: 0 }),
-    workerThreads: signal({ series: [], tsdiff: 0 }),
-    idleWorkerThreads: signal({ series: [], tsdiff: 0 }),
-    disk: signal({ series: [], tsdiff: 0 }),
   };
 
   const mockServerApi = {
@@ -63,18 +55,14 @@ describe('SystemComponent', () => {
         { provide: AuthService, useValue: createMockAuthService() },
         { provide: AppConfigService, useValue: createMockAppConfigService() },
         { provide: ServerApiService, useValue: mockServerApi },
-        { provide: WebsocketService, useValue: createMockWebsocketService() },
-        { provide: WebsocketPluginService, useValue: mockWebsocketPlugin },
+        { provide: StreamService, useValue: mockStream },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
       .overrideComponent(SystemComponent, {
         set: {
           imports: [TranslatePipe, CommonModule],
-          providers: [
-            { provide: WebsocketService, useValue: createMockWebsocketService() },
-            { provide: WebsocketPluginService, useValue: mockWebsocketPlugin },
-          ],
+          providers: [{ provide: StreamService, useValue: mockStream }],
           schemas: [NO_ERRORS_SCHEMA],
         },
       })

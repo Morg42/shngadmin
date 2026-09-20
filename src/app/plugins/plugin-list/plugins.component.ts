@@ -18,16 +18,20 @@ import {
   faPlayCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { TranslateDirective, TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { MessageService } from 'primeng/api';
 import { Bind } from 'primeng/bind';
 import { ButtonDirective } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { Subject, merge, of } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { finalize, map, switchMap, tap } from 'rxjs/operators';
 import { PlugininfoType } from '../../common/models/plugin-info';
 import { LogService } from '../../common/services/log.service';
 import { PluginsApiService } from '../../common/services/plugins-api.service';
+
+/** Load/unload/reload lifecycle actions live on the /plugins/config page - this page only ever drives start/stop. */
+type PluginRunStateAction = 'start' | 'stop';
 
 @Component({
   selector: 'app-plugins',
@@ -52,6 +56,7 @@ export class PluginsComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private pluginsDataService = inject(PluginsApiService);
   private translate = inject(TranslateService);
+  private readonly messageService = inject(MessageService);
   private titleService = inject(Title);
   private readonly log = inject(LogService);
 
@@ -64,6 +69,9 @@ export class PluginsComponent implements OnInit {
   private readonly refresh$ = new Subject<void>();
 
   readonly loading = signal(true);
+
+  readonly spinner_display = signal(false);
+  readonly spinner_header = signal('');
 
   /** Base plugin list, sorted by pluginname+configname; refetched on every
    *  refresh$ emission. */
@@ -162,25 +170,56 @@ export class PluginsComponent implements OnInit {
     window.open(url, '_blank');
   }
 
-  stopPlugin(pluginConfigName: string) {
-    // this.log.log('stopPlugin', {pluginConfigName});
+  private _runStateAction(pluginConfigName: string, action: PluginRunStateAction): void {
+    const spinnerKey: Record<PluginRunStateAction, string> = {
+      start: 'PLUGIN.STARTING',
+      stop: 'PLUGIN.STOPPING',
+    };
+    const successKey: Record<PluginRunStateAction, string> = {
+      start: 'PLUGIN.STARTED',
+      stop: 'PLUGIN.STOPPED_OK',
+    };
+    const errorKey: Record<PluginRunStateAction, string> = {
+      start: 'PLUGIN.START_FAILED',
+      stop: 'PLUGIN.STOP_FAILED',
+    };
+
+    this.spinner_display.set(true);
+    this.spinner_header.set(this.translate.instant(spinnerKey[action]));
 
     this.pluginsDataService
-      .setPluginState(pluginConfigName, 'stop')
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((response) => {
+      .setPluginState(pluginConfigName, action)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.spinner_display.set(false);
+        }),
+      )
+      .subscribe((result) => {
         this.getPlugins();
+        if (result === true) {
+          this.messageService.add({
+            severity: 'success',
+            summary: this.translate.instant(successKey[action]),
+            detail: pluginConfigName,
+            life: 3000,
+          });
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: this.translate.instant(errorKey[action]),
+            detail: pluginConfigName,
+            sticky: true,
+          });
+        }
       });
   }
 
-  startPlugin(pluginConfigName: string) {
-    // this.log.log('startPlugin', {pluginConfigName});
+  stopPlugin(pluginConfigName: string) {
+    this._runStateAction(pluginConfigName, 'stop');
+  }
 
-    this.pluginsDataService
-      .setPluginState(pluginConfigName, 'start')
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((response) => {
-        this.getPlugins();
-      });
+  startPlugin(pluginConfigName: string) {
+    this._runStateAction(pluginConfigName, 'start');
   }
 }

@@ -22,4 +22,5 @@ module.exports = {
   '/api/**': { ...PROXY_DEFAULTS },
   '/admin/**': { ...PROXY_DEFAULTS },
   '/plugin/**': { ...PROXY_DEFAULTS },
+  '/gstatic/**': { ...PROXY_DEFAULTS },
 };

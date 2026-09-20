@@ -1,6 +1,17 @@
 <div class="shngbody">
   <div class="shng-page-header">
     <span>{{ 'MENU.PLUGINS_LIST' | translate }}</span>
+    @if (spinner_display()) {
+      <span
+        style="margin-left: 1rem; font-size: var(--font-size-base); color: var(--text-muted); vertical-align: middle"
+      >
+        <p-progressSpinner
+          [style]="{ width: '18px', height: '18px' }"
+          styleClass="plugin-loading-spinner"
+        ></p-progressSpinner>
+        &nbsp;{{ spinner_header() }}
+      </span>
+    }
     <span style="position: relative; display: inline-block; margin-left: auto">
       <input
         pInputText

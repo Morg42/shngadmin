@@ -5,7 +5,8 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import { of } from 'rxjs';
+import { MessageService } from 'primeng/api';
+import { Subject, of } from 'rxjs';
 import fixtureData from '../../../testing/fixtures/api/plugins/info/default.json';
 import {
   createMockAppConfigService,
@@ -23,7 +24,7 @@ describe('PluginsComponent', () => {
 
   const mockPluginsApi = {
     getPluginsInfo: () => of(fixtureData),
-    setPluginState: () => of({}),
+    setPluginState: () => of(true),
   };
 
   beforeEach(async () => {
@@ -36,6 +37,7 @@ describe('PluginsComponent', () => {
         { provide: PluginsApiService, useValue: mockPluginsApi },
         { provide: AuthService, useValue: createMockAuthService() },
         { provide: AppConfigService, useValue: createMockAppConfigService() },
+        MessageService,
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
@@ -143,5 +145,69 @@ describe('PluginsComponent', () => {
     component.sortBy('pluginname'); // now descending
     component.sortBy('configname'); // new field → ascending again
     expect(component.sortOrder()).toBe(1);
+  });
+
+  // -------------------------------------------------------------------------
+  // startPlugin/stopPlugin: spinner + toast feedback
+  // -------------------------------------------------------------------------
+
+  it('startPlugin() calls setPluginState with "start"', () => {
+    const setPluginState = jest.spyOn(mockPluginsApi, 'setPluginState');
+
+    component.startPlugin('willy_tel');
+
+    expect(setPluginState).toHaveBeenCalledWith('willy_tel', 'start');
+  });
+
+  it('stopPlugin() calls setPluginState with "stop"', () => {
+    const setPluginState = jest.spyOn(mockPluginsApi, 'setPluginState');
+
+    component.stopPlugin('willy_tel');
+
+    expect(setPluginState).toHaveBeenCalledWith('willy_tel', 'stop');
+  });
+
+  it('startPlugin() shows the spinner while the request is in flight, then clears it on completion', () => {
+    const pending = new Subject<boolean>();
+    jest.spyOn(mockPluginsApi, 'setPluginState').mockReturnValueOnce(pending);
+
+    component.startPlugin('willy_tel');
+    expect(component.spinner_display()).toBe(true);
+
+    pending.next(true);
+    pending.complete();
+    expect(component.spinner_display()).toBe(false);
+  });
+
+  it('startPlugin() shows a success toast on success', () => {
+    const messageService = TestBed.inject(MessageService);
+    const addSpy = jest.spyOn(messageService, 'add');
+
+    component.startPlugin('willy_tel');
+
+    expect(addSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ severity: 'success', detail: 'willy_tel' }),
+    );
+  });
+
+  it('stopPlugin() shows a sticky error toast on failure', () => {
+    jest.spyOn(mockPluginsApi, 'setPluginState').mockReturnValueOnce(of(false));
+    const messageService = TestBed.inject(MessageService);
+    const addSpy = jest.spyOn(messageService, 'add');
+
+    component.stopPlugin('willy_tel');
+
+    expect(addSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ severity: 'error', detail: 'willy_tel', sticky: true }),
+    );
+  });
+
+  it('startPlugin() refetches the plugin list after the action settles', () => {
+    const getPluginsInfo = jest.spyOn(mockPluginsApi, 'getPluginsInfo');
+    getPluginsInfo.mockClear();
+
+    component.startPlugin('willy_tel');
+
+    expect(getPluginsInfo).toHaveBeenCalledTimes(1);
   });
 });

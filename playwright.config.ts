@@ -20,7 +20,12 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command: 'npm start',
+    // /dev/style-guide needs no backend, but the app shell (top nav/auth)
+    // still calls it on every route regardless - piping out vite's proxy
+    // ECONNREFUSED noise here (not a real error for this suite) keeps a
+    // shng-less run's output free of messages that never affect pass/fail.
+    command:
+      "npm start 2>&1 | grep --line-buffered -vE 'http proxy error:|AggregateError \\[ECONNREFUSED\\]|at internalConnectMultiple \\(node:net|at afterConnectMultiple \\(node:net'",
     url: 'http://localhost:4200',
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,

@@ -8,6 +8,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
 
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService, PrimeTemplate, SelectItem } from 'primeng/api';
@@ -47,6 +48,7 @@ import { ServicesApiService } from '../../common/services/services-api.service';
 })
 export class ItemConfigurationComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
+  private readonly route = inject(ActivatedRoute);
   private translate = inject(TranslateService);
   private fileService = inject(FilesApiService);
   private dataService = inject(ServicesApiService);
@@ -87,20 +89,28 @@ export class ItemConfigurationComponent implements OnInit {
   ngOnInit() {
     // this.log.log('LoggingConfigurationComponent.ngOnInit');
 
-    this.getItemFile('');
+    const requestedFilename = this.route.snapshot.queryParamMap.get('file') ?? '';
+    this.getItemFile(requestedFilename);
 
     this.setTitle(this.translate.instant('MENU.ITEM_CONFIGURATION'));
-    this.loadFileList();
+    this.loadFileList(requestedFilename);
   }
 
-  private loadFileList() {
+  private loadFileList(selectFilename = '') {
     this.fileService
       .getfileList('items')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
         const files = <string[]>response;
         this.filelist.set(files);
-        this.itemFiles.set(files.map((f) => <SelectItem>{ label: f, value: f }));
+        const itemFiles = files.map((f) => <SelectItem>{ label: f, value: f });
+        this.itemFiles.set(itemFiles);
+        if (selectFilename) {
+          const selected = itemFiles.find((f) => f.value === selectFilename + '.yaml');
+          if (selected) {
+            this.selectedItemfile = selected;
+          }
+        }
       });
   }
 

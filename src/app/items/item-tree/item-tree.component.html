@@ -596,7 +596,12 @@
                                   {{ 'ITEMS.DEFINED IN' | translate }}
                                 </td>
                                 <td class="py-1" style="height: 45px; vertical-align: bottom">
-                                  {{ definedInFilename }}
+                                  <a
+                                    class="text-shng"
+                                    [routerLink]="['/items/config']"
+                                    [queryParams]="{ file: itemdetails().filename }"
+                                    >{{ definedInFilename }}</a
+                                  >
                                 </td>
                               </tr>
                             }

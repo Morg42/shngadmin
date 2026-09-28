@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { ActivatedRoute, provideRouter } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
@@ -76,5 +76,69 @@ describe('ItemConfigurationComponent', () => {
 
   it('should set first itemFile value to first fixture filename', () => {
     expect(component.itemFiles()[0].value).toBe(fixtureFileList[0]);
+  });
+});
+
+describe('ItemConfigurationComponent with a file query param', () => {
+  let component: ItemConfigurationComponent;
+  let fixture: ComponentFixture<ItemConfigurationComponent>;
+
+  const requestedFilename = 'test_mqtt';
+  const fileContents = '# test_mqtt.yaml\n';
+
+  const mockFilesApi = {
+    getfileList: () => of(fixtureFileList),
+    readFile: () => of(fileContents),
+    saveFile: () => of(true),
+    deleteFile: () => of(true),
+  };
+
+  const mockServicesApi = {
+    CheckYamlText: () => of('OK'),
+  };
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [ItemConfigurationComponent, translateTestingModule],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: FilesApiService, useValue: mockFilesApi },
+        { provide: ServicesApiService, useValue: mockServicesApi },
+        { provide: AuthService, useValue: createMockAuthService() },
+        { provide: AppConfigService, useValue: createMockAppConfigService() },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              queryParamMap: {
+                get: (key: string) => (key === 'file' ? requestedFilename : null),
+              },
+            },
+          },
+        },
+        MessageService,
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    })
+      .overrideComponent(ItemConfigurationComponent, {
+        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      })
+      .compileComponents();
+
+    fixture = TestBed.createComponent(ItemConfigurationComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('loads the requested file into the editor', () => {
+    expect(component.myEditFilename()).toBe(requestedFilename);
+    expect(component.myTextarea()).toBe(fileContents);
+    expect(component.cmReadOnly()).toBe(false);
+  });
+
+  it('preselects the requested file in the file listbox', () => {
+    expect(component.selectedItemfile.value).toBe(requestedFilename + '.yaml');
   });
 });

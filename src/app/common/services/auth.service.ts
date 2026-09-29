@@ -4,7 +4,6 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, shareReplay, take } from 'rxjs/operators';
 
-import { sha512 } from 'js-sha512';
 import { AppConfigService } from './app-config.service';
 import { LogService } from './log.service';
 
@@ -72,21 +71,11 @@ export class AuthService {
     this.log.log('authService.login() entering');
     this.logTimestamp = this.getTimestamp();
 
-    const send_hash = 'shNG0160$';
-    const send_credentials: Record<string, string> = {};
-
-    send_credentials.username = '';
-    if (credentials.username !== '') {
-      send_credentials.username = sha512(credentials.username + send_hash);
-    }
-
-    send_credentials.password = '';
-    if (credentials.password !== '') {
-      send_credentials.password = sha512(sha512(credentials.password) + send_hash);
-    }
+    // sent as-is: the API is only ever meant to be reachable over https, per the admin module's TLS docs
+    const send_credentials = { username: credentials.username, password: credentials.password };
 
     const apiUrl = '/api/';
-    this.log.log('login', apiUrl + 'authenticate/user', { send_credentials });
+    this.log.log('login', apiUrl + 'authenticate/user', { username: send_credentials.username });
     return this.http
       .post<{ token?: string }>(apiUrl + 'authenticate/user', JSON.stringify(send_credentials))
       .pipe(

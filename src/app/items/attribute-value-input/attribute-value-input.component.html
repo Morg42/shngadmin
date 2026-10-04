@@ -22,6 +22,16 @@
       [inputStyle]="{ width: '100%' }"
     />
   }
+  @case ('decimal') {
+    <input
+      appDecimalInput
+      type="text"
+      pInputText
+      [ngModel]="value()"
+      (ngModelChange)="emitValue($event)"
+      style="width: 100%"
+    />
+  }
   @case ('password') {
     <input type="password" pInputText [ngModel]="value()" (ngModelChange)="emitValue($event)" style="width: 100%" />
   }

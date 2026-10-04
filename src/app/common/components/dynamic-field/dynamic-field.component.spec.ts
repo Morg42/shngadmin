@@ -94,4 +94,50 @@ describe('DynamicFieldComponent', () => {
     setRow({ name: 'hosts', value: null, default: [], type: 'list' });
     expect(component.inputKind).toBe('text');
   });
+
+  // -------------------------------------------------------------------------
+  // number input: int types go through p-inputnumber, whose keypress handling
+  // drops a decimal sign; float/num use the decimal text input.
+  // -------------------------------------------------------------------------
+
+  function input(): HTMLInputElement {
+    return fixture.nativeElement.querySelector('input');
+  }
+
+  function typeDecimal(text: string) {
+    input().value = text;
+    input().dispatchEvent(new Event('input'));
+  }
+
+  it('resolves float and num parameters to the decimal kind', () => {
+    for (const type of ['float', 'num']) {
+      setRow({ name: 'x', value: null, type });
+      expect(component.inputKind).toBe('decimal');
+    }
+  });
+
+  it.each(['53.6', '53,6'])('accepts "%s" as a decimal value for a num parameter', (text) => {
+    const row: ConfigParameter = { name: 'lat', value: null, type: 'num' };
+    setRow(row);
+    typeDecimal(text);
+    expect(row['value']).toBe(53.6);
+  });
+
+  it('displays a stored decimal value at full precision', async () => {
+    setRow({ name: 'lat', value: 53.603133, type: 'num' });
+    await fixture.whenStable();
+    expect(input().value).toBe('53.603133');
+  });
+
+  it('drops the decimal sign for an int parameter', () => {
+    const row: ConfigParameter = { name: 'port', value: null, type: 'int' };
+    setRow(row);
+    for (const char of '53.6') {
+      const code = char.charCodeAt(0);
+      input().dispatchEvent(
+        new KeyboardEvent('keypress', { key: char, keyCode: code, charCode: code }),
+      );
+    }
+    expect(row['value']).toBe(536);
+  });
 });

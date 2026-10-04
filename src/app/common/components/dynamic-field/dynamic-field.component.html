@@ -24,6 +24,18 @@
       (ngModelChange)="onChanged()"
     />
   }
+  @case ('decimal') {
+    <input
+      appDecimalInput
+      [(ngModel)]="row()[col().field]"
+      type="text"
+      pInputText
+      [placeholder]="placeholder"
+      [name]="col().field"
+      style="width: 100%"
+      (ngModelChange)="onChanged()"
+    />
+  }
   @case ('password') {
     <input
       [(ngModel)]="row()[col().field]"

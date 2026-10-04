@@ -8,7 +8,15 @@
  *  mac, knx_ga, foo, timestamp. A subtyped list like 'list(num)' is matched
  *  by its base, before '('. */
 
-export type InputKind = 'select' | 'toggle' | 'number' | 'password' | 'list' | 'dict' | 'text';
+export type InputKind =
+  | 'select'
+  | 'toggle'
+  | 'number'
+  | 'decimal'
+  | 'password'
+  | 'list'
+  | 'dict'
+  | 'text';
 
 /** Whether a bool value should render as a toggle or a clearable dropdown -
  *  a per-consumer choice, not a per-value one. A dropdown with a clear (x)
@@ -20,7 +28,8 @@ export type InputKind = 'select' | 'toggle' | 'number' | 'password' | 'list' | '
  *  default), so there's no in-widget unset state to lose. */
 export type BoolStyle = 'toggle' | 'clearable-select';
 
-const NUMERIC_TYPES = new Set(['int', 'float', 'num', 'scene']);
+const INTEGER_TYPES = new Set(['int', 'scene']);
+const DECIMAL_TYPES = new Set(['float', 'num']);
 
 export function resolveInputKind(
   type: string | undefined,
@@ -45,8 +54,11 @@ export function resolveInputKind(
   if (base === 'password') {
     return 'password';
   }
-  if (NUMERIC_TYPES.has(base)) {
+  if (INTEGER_TYPES.has(base)) {
     return 'number';
+  }
+  if (DECIMAL_TYPES.has(base)) {
+    return 'decimal';
   }
   // str, ip, ipv4, ipv6, mac, knx_ga, foo, timestamp - no dedicated control,
   // plain text; format-specific values are still checked by validateValue().

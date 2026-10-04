@@ -11,9 +11,15 @@ describe('resolveInputKind', () => {
     expect(resolveInputKind('bool', false, 'clearable-select')).toBe('select');
   });
 
-  it('maps the numeric types to number', () => {
-    for (const type of ['int', 'float', 'num', 'scene']) {
+  it('maps the integer types to number', () => {
+    for (const type of ['int', 'scene']) {
       expect(resolveInputKind(type, false, 'clearable-select')).toBe('number');
+    }
+  });
+
+  it('maps the fractional types to decimal', () => {
+    for (const type of ['float', 'num']) {
+      expect(resolveInputKind(type, false, 'clearable-select')).toBe('decimal');
     }
   });
 

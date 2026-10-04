@@ -4,6 +4,7 @@ import { Bind } from 'primeng/bind';
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
+import { DecimalInputDirective } from '../../directives/decimal-input.directive';
 import { ConfigParameter, TableColumn } from '../../models/interfaces';
 import {
   InputKind,
@@ -16,7 +17,7 @@ import {
   selector: 'app-dynamic-field',
   templateUrl: './dynamic-field.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Bind, Select, FormsModule, InputText, InputNumber],
+  imports: [Bind, Select, FormsModule, InputText, InputNumber, DecimalInputDirective],
 })
 export class DynamicFieldComponent {
   /** row is written into via ngModel (row[col.field]) and is otherwise the

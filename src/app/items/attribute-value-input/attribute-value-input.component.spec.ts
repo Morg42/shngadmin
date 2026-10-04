@@ -54,11 +54,31 @@ describe('AttributeValueInputComponent', () => {
     expect(component.inputKind).toBe('password');
   });
 
-  it('picks "number" for int/float/num/scene', () => {
-    for (const t of ['int', 'float', 'num', 'scene']) {
+  it('picks "number" for int/scene', () => {
+    for (const t of ['int', 'scene']) {
       fixture.componentRef.setInput('type', t);
       expect(component.inputKind).toBe('number');
     }
+  });
+
+  it('picks "decimal" for float/num', () => {
+    for (const t of ['float', 'num']) {
+      fixture.componentRef.setInput('type', t);
+      expect(component.inputKind).toBe('decimal');
+    }
+  });
+
+  it('emits a decimal value typed into a num attribute, point or comma', () => {
+    const emitted: unknown[] = [];
+    component.valueChange.subscribe((v) => emitted.push(v));
+    fixture.componentRef.setInput('type', 'num');
+    fixture.detectChanges();
+    const input: HTMLInputElement = fixture.nativeElement.querySelector('input');
+    for (const text of ['0.5', '0,25']) {
+      input.value = text;
+      input.dispatchEvent(new Event('input'));
+    }
+    expect(emitted).toEqual([0.5, 0.25]);
   });
 
   it('picks "autocomplete" for str', () => {

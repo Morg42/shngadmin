@@ -16,6 +16,7 @@ import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
 import { ToggleSwitch } from 'primeng/toggleswitch';
+import { DecimalInputDirective } from '../../common/directives/decimal-input.directive';
 import { ItemsApiService } from '../../common/services/items-api.service';
 import {
   InputKind,
@@ -42,6 +43,7 @@ import {
   imports: [
     AutoComplete,
     ButtonDirective,
+    DecimalInputDirective,
     FormsModule,
     InputNumber,
     InputText,

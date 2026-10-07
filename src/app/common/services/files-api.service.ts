@@ -10,6 +10,8 @@ export interface LoggingConfigSaveResult {
   result: 'ok' | 'error';
   config_reloaded?: boolean;
   config_restored?: boolean;
+  /** SmartHomeNG runs with `-d`: logging.yaml was saved, but is ignored until a restart without `-d` */
+  debug_mode?: boolean;
   description?: string;
 }
 

@@ -42,8 +42,10 @@
       [foldable]="true"
     ></app-code-editor>
     @if (saveResult(); as sr) {
-      @if (sr.result === 'ok') {
+      @if (sr.result === 'ok' && !sr.debug_mode) {
         <p-message severity="success" [text]="'LOGGING.SAVE_OK' | translate" styleClass="mt-2 w-full" />
+      } @else if (sr.debug_mode) {
+        <!-- the sticky toast explains it -->
       } @else if (sr.config_restored) {
         <p-message severity="warn" [text]="'LOGGING.SAVE_ERROR_RESTORED' | translate" styleClass="mt-2 w-full" />
       } @else {

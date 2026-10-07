@@ -286,6 +286,12 @@
                                 <td class="py-1">{{ itemdetails().description }}</td>
                               </tr>
                             }
+                            @if (itemdetails().remark !== undefined && itemdetails().remark !== '') {
+                              <tr>
+                                <td class="py-1">{{ 'ITEMS.REMARK' | translate }}</td>
+                                <td class="py-1">{{ itemdetails().remark }}</td>
+                              </tr>
+                            }
                             @if (itemdetails().struct !== undefined) {
                               <tr>
                                 <td class="py-1">{{ 'ITEMS.STRUCT' | translate }}</td>

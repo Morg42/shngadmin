@@ -4,6 +4,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
+import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
 import {
   createMockAppConfigService,
@@ -12,7 +13,7 @@ import {
 } from '../../../testing/test-helpers';
 import { AppConfigService } from '../../common/services/app-config.service';
 import { AuthService } from '../../common/services/auth.service';
-import { FilesApiService } from '../../common/services/files-api.service';
+import { FilesApiService, LoggingConfigSaveResult } from '../../common/services/files-api.service';
 import { ServicesApiService } from '../../common/services/services-api.service';
 import { LoggingConfigurationComponent } from './logging-configuration.component';
 
@@ -30,6 +31,7 @@ describe('LoggingConfigurationComponent', () => {
   const mockFilesApi = {
     readFile: () => of(loggingFixtureText),
     saveFile: () => of(true),
+    saveLoggingConfig: jest.fn(() => of<LoggingConfigSaveResult>({ result: 'ok' })),
   };
 
   const mockServicesApi = {
@@ -47,6 +49,7 @@ describe('LoggingConfigurationComponent', () => {
         { provide: ServicesApiService, useValue: mockServicesApi },
         { provide: AuthService, useValue: createMockAuthService() },
         { provide: AppConfigService, useValue: createMockAppConfigService() },
+        MessageService,
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
@@ -78,5 +81,38 @@ describe('LoggingConfigurationComponent', () => {
 
   it('should contain YAML version header in loaded content', () => {
     expect(component.myTextarea()).toContain('version: 1');
+  });
+
+  describe('saveConfig() while SmartHomeNG runs in debug mode (-d)', () => {
+    const debugModeResult: LoggingConfigSaveResult = {
+      result: 'ok',
+      config_reloaded: false,
+      debug_mode: true,
+    };
+
+    it('shows a sticky warning toast instead of the "applied" success message', () => {
+      mockFilesApi.saveLoggingConfig.mockReturnValueOnce(of(debugModeResult));
+      const addSpy = jest.spyOn(TestBed.inject(MessageService), 'add');
+
+      component.saveConfig();
+
+      expect(addSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          severity: 'warn',
+          sticky: true,
+          detail: 'LOGGING.SAVE_DEBUG_MODE',
+        }),
+      );
+      expect(fixture.nativeElement.querySelector('p-message[severity="success"]')).toBeNull();
+    });
+
+    it('does not show the toast after a regular save', () => {
+      mockFilesApi.saveLoggingConfig.mockReturnValueOnce(of({ result: 'ok' }));
+      const addSpy = jest.spyOn(TestBed.inject(MessageService), 'add');
+
+      component.saveConfig();
+
+      expect(addSpy).not.toHaveBeenCalled();
+    });
   });
 });

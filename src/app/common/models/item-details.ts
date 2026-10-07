@@ -6,6 +6,7 @@ export interface ItemDetails {
   path: string;
   name: string;
   description?: string;
+  remark?: string;
   type: string;
   struct?: string;
   value: string | boolean;

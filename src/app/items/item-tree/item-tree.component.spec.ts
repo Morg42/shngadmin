@@ -14,6 +14,7 @@ import {
   createMockStreamService,
   translateTestingModule,
 } from '../../../testing/test-helpers';
+import { ItemDetails } from '../../common/models/item-details';
 import { AppConfigService } from '../../common/services/app-config.service';
 import { AttributeCatalogService } from '../../common/services/attribute-catalog.service';
 import { AuthService } from '../../common/services/auth.service';
@@ -155,5 +156,41 @@ describe('ItemTreeComponent', () => {
     fixture.detectChanges();
 
     expect(component.itemActionsMenuItems()).not.toBe(first);
+  });
+
+  describe('item details: description and remark', () => {
+    const showDetails = (details: Partial<ItemDetails>): string => {
+      component.itemdetails.set({
+        path: 'a.b',
+        name: 'b',
+        type: 'num',
+        config: {},
+        editable_config: {},
+        logics: [],
+        ...details,
+      } as ItemDetails);
+      component.itemdetailsloaded.set(true);
+      fixture.detectChanges();
+      return (
+        (fixture.nativeElement as HTMLElement).querySelector('.item-details-table')?.textContent ??
+        ''
+      );
+    };
+
+    it('shows the remark if set', () => {
+      expect(showDetails({ remark: 'check battery' })).toContain('check battery');
+    });
+
+    it('shows the description if set', () => {
+      expect(showDetails({ description: 'Kitchen window' })).toContain('Kitchen window');
+    });
+
+    it('shows no remark row if the remark is empty or missing', () => {
+      const withEmpty = showDetails({ remark: '' });
+      const withMissing = showDetails({});
+
+      expect(withEmpty).not.toContain('ITEMS.REMARK');
+      expect(withMissing).not.toContain('ITEMS.REMARK');
+    });
   });
 });

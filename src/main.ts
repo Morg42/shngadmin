@@ -6,6 +6,7 @@ import {
   provideZonelessChangeDetection,
 } from '@angular/core';
 
+import { DOCUMENT } from '@angular/common';
 import {
   HttpClient,
   provideHttpClient,
@@ -33,6 +34,7 @@ import { getBaseUrl, jwtOptionsFactory } from './app/bootstrap.utils';
 import { connectivityInterceptor } from './app/common/interceptors/connectivity.interceptor';
 import { ServerApiService } from './app/common/services/server-api.service';
 import { StreamService } from './app/common/services/stream.service';
+import { suppressBrowserTypeaheadOnSelect } from './app/common/utils/select-typeahead';
 import { environment } from './environments/environment';
 
 /**
@@ -243,6 +245,15 @@ bootstrapApplication(AppComponent, {
       deps: [ServerApiService],
       multi: true,
     },
+    {
+      // Keeps Firefox-family find-as-you-type from hijacking keys typed on a focused select.
+      provide: APP_INITIALIZER,
+      useFactory: (doc: Document) => () => {
+        suppressBrowserTypeaheadOnSelect(doc);
+      },
+      deps: [DOCUMENT],
+      multi: true,
+    },
     MessageService,
     StreamService,
     TranslateService,
@@ -252,6 +263,11 @@ bootstrapApplication(AppComponent, {
     // selector) since dark mode here is an explicit user/admin choice, not
     // OS-preference-driven — see ThemeService, which toggles this class on
     // <html>.
-    providePrimeNG({ theme: { preset: ShngPreset, options: { darkModeSelector: '.dark-mode' } } }),
+    // Overlays (select, autocomplete, ...) attach to <body> so they are not
+    // clipped by, or scroll with, a dialog's content area.
+    providePrimeNG({
+      overlayAppendTo: 'body',
+      theme: { preset: ShngPreset, options: { darkModeSelector: '.dark-mode' } },
+    }),
   ],
 }).catch((err) => console.log(err));

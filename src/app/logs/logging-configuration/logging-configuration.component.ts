@@ -11,7 +11,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { PrimeTemplate } from 'primeng/api';
+import { MessageService, PrimeTemplate } from 'primeng/api';
 import { Bind } from 'primeng/bind';
 import { ButtonDirective } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
@@ -41,6 +41,7 @@ export class LoggingConfigurationComponent implements OnInit {
   private fileService = inject(FilesApiService);
   private dataService = inject(ServicesApiService);
   private translate = inject(TranslateService);
+  private readonly messageService = inject(MessageService);
   private titleService = inject(Title);
 
   // -----------------------------------------------------
@@ -95,6 +96,14 @@ export class LoggingConfigurationComponent implements OnInit {
             this.saveResult.set(result);
             if (result.result === 'ok') {
               this.myTextareaOrig.set(this.myTextarea());
+            }
+            if (result.debug_mode) {
+              this.messageService.add({
+                severity: 'warn',
+                summary: this.translate.instant('LOGGING.SAVE_DEBUG_MODE_SUMMARY'),
+                detail: this.translate.instant('LOGGING.SAVE_DEBUG_MODE'),
+                sticky: true,
+              });
             }
           });
       });

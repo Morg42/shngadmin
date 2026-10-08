@@ -201,7 +201,7 @@ export class StreamService {
         description?: string;
       }>(this.appConfig.apiUrl + 'stream/' + encodeURIComponent(this.connectionId), patch)
       .subscribe({
-        // bare-resource PATCH returns errors as 200 {result:'error'}, not a real status - see rest.py
+        // HTTPError -> real status (error handler below); any other server exception -> 200 {result:'error'}
         next: (response) => {
           if (response?.result === 'error') {
             this.log.warn('StreamService: subscription patch failed', response.description);

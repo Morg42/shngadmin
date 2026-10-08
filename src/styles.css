@@ -243,70 +243,6 @@ textarea {
   font-family: var(--font-family-mono) !important;
 }
 
-/* Legacy PrimeNG v7/v8 utility class — kept because some plugin webinterfaces
-   still inject markup that references it. New code should not use this class. */
-.ui-state-highlight {
-  background-color: var(--shng-blue) !important;
-}
-
-/* Legacy PrimeNG TurboTable overrides — kept for plugin webinterfaces that
-   still use PrimeNG v7/v8 table markup. New code uses p-table (PrimeNG v17+). */
-.ui-table .ui-table-thead > tr {
-  background-color: #f0f0f0 !important;
-  border: 0 solid var(--shng-border) !important;
-  border-bottom-color: var(--shng-border) !important;
-}
-
-.ui-table .ui-table-thead > tr > th,
-.ui-table .ui-table-tfoot > tr > td {
-  background-color: #ffffff !important;
-  border: 0 solid var(--shng-border) !important;
-  border-bottom-color: var(--shng-border) !important;
-  color: #1b1d1f !important;
-}
-
-.ui-table .ui-table-tbody > tr {
-  background-color: #f0f0f0 !important;
-  border-top: 1px solid var(--shng-border) !important;
-  border-bottom: 1px solid var(--shng-border) !important;
-  border-bottom-color: var(--shng-border) !important;
-}
-.ui-table .ui-table-tbody > tr > td {
-  border: 0 solid var(--shng-border) !important;
-  border-top: 1px solid var(--shng-border) !important;
-  border-bottom: 1px solid var(--shng-border) !important;
-  background-color: inherit;
-  border-top-color: var(--shng-border) !important;
-  border-bottom-color: var(--shng-border) !important;
-}
-
-.ui-table .ui-table-tbody > tr.ui-state-highlight {
-  background-color: #186ba0 !important;
-  color: #ffffff !important;
-}
-
-.ui-table .ui-sortable-column.ui-state-highlight {
-  background-color: #ffffff !important;
-  border-bottom-color: var(--shng-border) !important;
-  color: #1b1d1f !important;
-}
-
-.ui-table .ui-table-tbody > tr:nth-child(even) {
-  background-color: #ffffff !important;
-}
-
-.ui-table .ui-sortable-column .ui-sortable-column-icon {
-  color: var(--shng-blue) !important;
-}
-
-.ui-button.ui-state-active {
-  background-color: var(--shng-blue) !important;
-}
-
-.ui-button.ui-state-passive {
-  background-color: #444444 !important;
-}
-
 .btn-primary {
   color: var(--text-on-dark);
   background-color: var(--shng-blue) !important;
@@ -318,71 +254,12 @@ textarea {
   border-color: #204d74;
 }
 
-.ui-fileupload-buttonbar .ui-button {
-  background-color: var(--shng-blue) !important;
-}
-
 ui-inputswitch {
   color: var(--shng-blue) !important;
 }
 
 .fa-icon-grey {
   color: var(--text-caption);
-}
-
-.ui-table .ui-table-tbody > tr.ui-state-highlight {
-  background-color: #186ba0;
-  color: #ffffff;
-}
-.ui-table .ui-table-tbody > tr.ui-contextmenu-selected {
-  background-color: var(--shng-blue);
-  color: #ffffff;
-}
-.ui-table .ui-sortable-column.ui-state-highlight .ui-sortable-column-icon {
-  color: #ffffff;
-}
-.ui-table .ui-sortable-column:not(.ui-state-highlight):hover {
-  background-color: #eeeeee;
-  border-bottom-color: var(--shng-border) !important;
-  color: #212121;
-}
-.ui-table .ui-sortable-column:not(.ui-state-highlight):hover .ui-sortable-column-icon {
-  border-bottom-color: var(--shng-border) !important;
-  color: #212121;
-}
-.ui-table.ui-table-hoverable-rows
-  .ui-table-tbody
-  > tr:not(.ui-state-highlight):not(.ui-contextmenu-selected):hover {
-  cursor: pointer;
-  border-bottom-color: var(--shng-border) !important;
-  background-color: #eeeeee;
-  color: #212121;
-}
-
-/* Vertical centering via display:table — used by legacy modal dialogs from
-   plugin webinterfaces. Modern code uses PrimeNG p-dialog instead.
-   pointer-events:none on the wrapper lets clicks fall through to the backdrop
-   so the modal can still be dismissed by clicking outside it. */
-.vertical-alignment-helper {
-  display: table;
-  height: 100%;
-  width: 100%;
-  pointer-events: none;
-}
-.vertical-align-center {
-  /* To center vertically */
-  display: table-cell;
-  vertical-align: middle;
-  pointer-events: none;
-}
-.modal-content {
-  /* Bootstrap sets the size of the modal in the modal-dialog class, we need to inherit it */
-  width: inherit;
-  max-width: inherit; /* For Bootstrap 4 - to avoid the modal window stretching full width */
-  height: inherit;
-  /* To center horizontally */
-  margin: 0 auto;
-  pointer-events: all;
 }
 
 /* Legacy plugin webinterface styles — injected by backend plugins that
@@ -1137,7 +1014,7 @@ a.text-shng:hover {
    semantic variables plus the handful of hardcoded light-only colours
    (mostly black-tint rgba() overlays, which read as barely-visible on
    a dark background and need a white-tint equivalent instead).
-   Deliberately does NOT touch the "legacy" .ui-table/plugin-webinterface
+   Deliberately does NOT touch the "legacy" plugin-webinterface
    sections, which exist for markup injected by third-party plugin
    webinterfaces, not this app.
    ================================================================ */

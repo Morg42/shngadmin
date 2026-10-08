@@ -1,6 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 
+import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -10,6 +11,8 @@ import { LogService } from './log.service';
 interface ApiResult {
   result: string;
   description?: string;
+  /** Hints for the user that accompany a successful result (see PluginController.handle_plugin_lifecycle()). */
+  warnings?: string[];
 }
 
 /** Dispatched server-side in modules/admin/api_plugin.py's PluginController.update():
@@ -24,6 +27,7 @@ export class PluginsApiService {
   private appConfig = inject(AppConfigService);
   private readonly log = inject(LogService);
   private readonly messageService = inject(MessageService);
+  private readonly translate = inject(TranslateService);
 
   // ---------------------------------------------------------------------
   //  Get information about the plugins installed in ../plugins directory
@@ -288,6 +292,15 @@ export class PluginsApiService {
         if (result) {
           // this.log.log('PluginsApiService.setPluginState', '- config', config, '\nresult', {result});
           if (result.result === 'ok') {
+            // Sticky: the user has to act on it (restart), so it must not vanish on its own.
+            for (const warning of result.warnings ?? []) {
+              this.messageService.add({
+                severity: 'warn',
+                summary: this.translate.instant('PLUGIN.INSTANCE_NAME_WARNING'),
+                detail: warning,
+                sticky: true,
+              });
+            }
             return true;
           } else {
             this.log.error(

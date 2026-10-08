@@ -16,7 +16,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { MessageService } from 'primeng/api';
-import { createMockAppConfigService } from '../../../testing/test-helpers';
+import { createMockAppConfigService, translateTestingModule } from '../../../testing/test-helpers';
 import { AppConfigService } from './app-config.service';
 import { PluginsApiService } from './plugins-api.service';
 
@@ -26,6 +26,7 @@ describe('PluginsApiService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [translateTestingModule],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -254,6 +255,32 @@ describe('PluginsApiService', () => {
     service.setPluginState('myplugin', 'start').subscribe((r) => (result = r));
     http.expectOne((r) => r.url.includes('myplugin')).flush({ result: 'ok' });
     expect(result).toBe(true);
+  });
+
+  it('setPluginState() shows one sticky warn toast per backend warning', () => {
+    const addSpy = jest.spyOn(TestBed.inject(MessageService), 'add');
+    let result: unknown;
+    service.setPluginState('myplugin', 'load').subscribe((r) => (result = r));
+    http
+      .expectOne((r) => r.url.includes('myplugin'))
+      .flush({ result: 'ok', warnings: ['keeps default instance name', 'second warning'] });
+
+    expect(result).toBe(true);
+    expect(addSpy).toHaveBeenCalledTimes(2);
+    expect(addSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        severity: 'warn',
+        detail: 'keeps default instance name',
+        sticky: true,
+      }),
+    );
+  });
+
+  it('setPluginState() shows no toast when the backend sends no warnings', () => {
+    const addSpy = jest.spyOn(TestBed.inject(MessageService), 'add');
+    service.setPluginState('myplugin', 'load').subscribe();
+    http.expectOne((r) => r.url.includes('myplugin')).flush({ result: 'ok' });
+    expect(addSpy).not.toHaveBeenCalled();
   });
 
   it('setPluginState() returns false when backend result is not ok', () => {

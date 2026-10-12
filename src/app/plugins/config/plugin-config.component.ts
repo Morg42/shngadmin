@@ -349,14 +349,18 @@ export class PluginConfigComponent implements OnInit {
     }
   }
 
-  private _runLifecycleAction(configname: string, action: PluginLifecycleAction): void {
+  private _runLifecycleAction(
+    configname: string,
+    action: PluginLifecycleAction,
+    wasDisabled = false,
+  ): void {
     const spinnerKey: Record<PluginLifecycleAction, string> = {
       load: 'PLUGIN.LOADING',
       unload: 'PLUGIN.UNLOADING',
       reload: 'PLUGIN.RELOADING',
     };
     const successKey: Record<PluginLifecycleAction, string> = {
-      load: 'PLUGIN.LOADED',
+      load: wasDisabled ? 'PLUGIN.ACTIVATED_AND_LOADED' : 'PLUGIN.LOADED',
       unload: 'PLUGIN.UNLOADED',
       reload: 'PLUGIN.RELOADED',
     };
@@ -386,33 +390,34 @@ export class PluginConfigComponent implements OnInit {
             detail: configname,
             life: 3000,
           });
-        } else {
-          this.messageService.add({
-            severity: 'error',
-            summary: this.translate.instant(errorKey[action]),
-            detail: configname,
-            sticky: true,
+        } else if (wasDisabled) {
+          // The server enables the section before loading it, so a failed load can still have changed it.
+          this.reloadPluginList(() => {
+            const nowEnabled =
+              this.configuredplugins().find((p) => p.confname === configname)?.enabled === 'true';
+            this._showLifecycleError(
+              configname,
+              nowEnabled ? 'PLUGIN.ACTIVATED_LOAD_FAILED' : errorKey[action],
+            );
           });
+        } else {
+          this._showLifecycleError(configname, errorKey[action]);
         }
       });
   }
 
+  private _showLifecycleError(configname: string, messageKey: string): void {
+    this.messageService.add({
+      severity: 'error',
+      summary: this.translate.instant(messageKey),
+      detail: configname,
+      sticky: true,
+    });
+  }
+
+  /** Loading a disabled plugin enables it server-side first. */
   loadPlugin(row: ConfiguredPlugin): void {
-    // load_plugin() silently no-ops for a disabled plugin server-side (by
-    // design - see lib/plugin.py) and returns the same generic failure as
-    // any other load error. Catch it here, where the disabled state is
-    // already known, rather than showing a misleading "check the
-    // parameters" message for something that was never about parameters.
-    if (row.enabled === 'false') {
-      this.messageService.add({
-        severity: 'warn',
-        summary: this.translate.instant('PLUGIN.LOAD_DISABLED'),
-        detail: row.confname,
-        sticky: true,
-      });
-      return;
-    }
-    this._runLifecycleAction(row.confname, 'load');
+    this._runLifecycleAction(row.confname, 'load', row.enabled === 'false');
   }
 
   unloadPlugin(confname: string): void {

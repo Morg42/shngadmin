@@ -169,6 +169,53 @@ describe('ServerApiService', () => {
   });
 
   // -------------------------------------------------------------------------
+  // stopShngServer
+  // -------------------------------------------------------------------------
+
+  it('stopShngServer() sends PUT /api/server/stop/', () => {
+    service.stopShngServer().subscribe();
+    const req = http.expectOne('/api/server/stop/');
+    expect(req.request.method).toBe('PUT');
+    req.flush({ result: 'ok' });
+  });
+
+  it('stopShngServer() returns {} on HTTP error', () => {
+    let result: unknown;
+    service.stopShngServer().subscribe((r) => (result = r));
+    http
+      .expectOne('/api/server/stop/')
+      .flush({ error: 'err' }, { status: 500, statusText: 'Server Error' });
+    expect(result).toEqual({});
+  });
+
+  // -------------------------------------------------------------------------
+  // poweroffHost / rebootHost
+  // -------------------------------------------------------------------------
+
+  it('poweroffHost() sends PUT /api/server/poweroff/', () => {
+    service.poweroffHost().subscribe();
+    const req = http.expectOne('/api/server/poweroff/');
+    expect(req.request.method).toBe('PUT');
+    req.flush({ result: 'ok' });
+  });
+
+  it('rebootHost() sends PUT /api/server/reboot/', () => {
+    service.rebootHost().subscribe();
+    const req = http.expectOne('/api/server/reboot/');
+    expect(req.request.method).toBe('PUT');
+    req.flush({ result: 'ok' });
+  });
+
+  it('poweroffHost() returns the response, including the error text of a failed command', () => {
+    let result: unknown;
+    service.poweroffHost().subscribe((r) => (result = r));
+    http
+      .expectOne('/api/server/poweroff/')
+      .flush({ result: 'error', text: 'Interactive authentication required' });
+    expect(result).toEqual({ result: 'error', text: 'Interactive authentication required' });
+  });
+
+  // -------------------------------------------------------------------------
   // getSystemStats
   // -------------------------------------------------------------------------
 

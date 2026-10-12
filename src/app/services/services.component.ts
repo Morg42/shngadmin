@@ -109,6 +109,8 @@ export class ServicesComponent implements OnInit {
   readonly backup_disabled = signal(false);
   readonly restore_disabled = signal(false);
   readonly show_backup_confirm = signal(false);
+  /** Host power action waiting for the user's confirmation, null if none. */
+  readonly pendingPowerAction = signal<'poweroff' | 'reboot' | null>(null);
   readonly show_restore_chooser = signal(false);
 
   // -----------------------------------------------------
@@ -373,6 +375,58 @@ export class ServicesComponent implements OnInit {
         this.shng_status.set(this.translate_shngStatus('Restart clicked'));
         this.shng_statuscode.set(-1);
       });
+  }
+
+  // -------------------------------------------------------
+  // stop SmartHomeNG server application (without restarting it)
+  //
+  stopShng() {
+    this.dataServiceServer
+      .stopShngServer()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((response) => {
+        const res = response as { result?: string };
+        this.log.log('stopShng', res.result);
+        this.shng_status.set(this.translate_shngStatus('Stopping'));
+        this.shng_statuscode.set(-1);
+      });
+  }
+
+  // -------------------------------------------------------
+  // power off / reboot the host system (after confirmation)
+  //
+  askPowerAction(action: 'poweroff' | 'reboot') {
+    this.pendingPowerAction.set(action);
+  }
+
+  cancelPowerAction() {
+    this.pendingPowerAction.set(null);
+  }
+
+  confirmPowerAction() {
+    const action = this.pendingPowerAction();
+    this.pendingPowerAction.set(null);
+    if (action === null) {
+      return;
+    }
+    const request =
+      action === 'poweroff'
+        ? this.dataServiceServer.poweroffHost()
+        : this.dataServiceServer.rebootHost();
+    request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((response) => {
+      const res = response as { result?: string; text?: string };
+      this.log.log('confirmPowerAction', action, res.result);
+      if (res.result === 'ok') {
+        this.shng_status.set(this.translate_shngStatus('Stopping'));
+        this.shng_statuscode.set(-1);
+      } else {
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translate.instant('SERVICES.POWER_ACTION_FAILED'),
+          detail: res.text ?? '',
+        });
+      }
+    });
   }
 
   downloadBackup() {

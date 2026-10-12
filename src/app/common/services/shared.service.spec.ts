@@ -205,4 +205,23 @@ describe('SharedService', () => {
       expect(service.getDescription('Serieller Port')).toBe('Serieller Port');
     });
   });
+
+  // -------------------------------------------------------------------------
+  // mdLiteToHtml
+  // -------------------------------------------------------------------------
+
+  describe('mdLiteToHtml()', () => {
+    it('converts newlines to <br>', () => {
+      expect(service.mdLiteToHtml('one\ntwo')).toBe('one<br>two');
+    });
+
+    it('renders **bold** and *italic* between spaces', () => {
+      expect(service.mdLiteToHtml('a **bold** b')).toBe('a <b><mark>bold</mark></b> b');
+      expect(service.mdLiteToHtml('a *it* b')).toBe('a <i><mark>it</mark></i> b');
+    });
+
+    it('returns text without markup unchanged', () => {
+      expect(service.mdLiteToHtml('plain text')).toBe('plain text');
+    });
+  });
 });

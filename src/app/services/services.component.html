@@ -60,8 +60,51 @@
                       }}"
                       severity="warn"
                     ></button>
+                    @if (!appConfig.restartStopsOnly) {
+                      &nbsp;
+                      <button
+                        pButton
+                        type="button"
+                        id="stop_shng"
+                        icon="fa fa-power-off"
+                        [disabled]="shng_statuscode() !== 20"
+                        (click)="this.stopShng()"
+                        label="{{ 'BUTTON.STOP_SHNG' | translate }}"
+                        severity="danger"
+                      ></button>
+                    }
                   </td>
                 </tr>
+                @if (appConfig.systemPowerAvailable) {
+                  <tr>
+                    <td class="row-icon">
+                      <img src="assets/img/computer-cables.svg" alt="Icon host system" width="48" height="48" />
+                    </td>
+                    <td>{{ 'SERVICES.HOST_SYSTEM' | translate }}</td>
+                    <td></td>
+                    <td class="row-button">
+                      <button
+                        pButton
+                        type="button"
+                        id="reboot_host"
+                        icon="fa fa-redo"
+                        (click)="askPowerAction('reboot')"
+                        label="{{ 'BUTTON.REBOOT_HOST' | translate }}"
+                        severity="warn"
+                      ></button>
+                      &nbsp;
+                      <button
+                        pButton
+                        type="button"
+                        id="poweroff_host"
+                        icon="fa fa-power-off"
+                        (click)="askPowerAction('poweroff')"
+                        label="{{ 'BUTTON.POWEROFF_HOST' | translate }}"
+                        severity="danger"
+                      ></button>
+                    </td>
+                  </tr>
+                }
                 <tr>
                   <td class="row-icon">
                     <img src="assets/img/backup.svg" alt="SmartHomeNG logo" width="48" height="48" />
@@ -451,6 +494,38 @@
       (click)="show_backup_confirm.set(false)"
       label="{{ 'BUTTON.OK' | translate }}"
       severity="success"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  header="{{ (pendingPowerAction() === 'reboot' ? 'BUTTON.REBOOT_HOST' : 'BUTTON.POWEROFF_HOST') | translate }}"
+  [visible]="pendingPowerAction() !== null"
+  (visibleChange)="$event || cancelPowerAction()"
+  [modal]="true"
+  [style]="{ width: '500px', minWidth: '400px' }"
+  [minY]="70"
+  [baseZIndex]="10000"
+>
+  <span>{{
+    (pendingPowerAction() === 'reboot' ? 'SERVICES.REBOOT_HOST_CONFIRM' : 'SERVICES.POWEROFF_HOST_CONFIRM') | translate
+  }}</span>
+  <ng-template pTemplate="footer">
+    <button
+      type="button"
+      pButton
+      icon="fa fa-times"
+      (click)="cancelPowerAction()"
+      label="{{ 'BUTTON.ABORT' | translate }}"
+      severity="secondary"
+    ></button>
+    <button
+      type="button"
+      pButton
+      icon="pi pi-check"
+      (click)="confirmPowerAction()"
+      label="{{ 'BUTTON.OK' | translate }}"
+      severity="danger"
     ></button>
   </ng-template>
 </p-dialog>

@@ -126,6 +126,7 @@ describe('SchedulersComponent developer-mode race', () => {
     darkModeDefault: false,
     resourceGraphPeriod: '24h',
     restartStopsOnly: false,
+    systemPowerAvailable: false,
     fallbackLanguageOrder: ['en', 'de'],
     startPage: 'dashboard',
     defaultLanguage: 'en',

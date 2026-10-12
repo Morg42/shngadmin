@@ -45,6 +45,9 @@ export interface AppConfig {
   // stop it (see lib/smarthome.py SmartHome.restart()). Used to relabel the
   // restart button so it doesn't promise a restart it can't deliver.
   restartStopsOnly: boolean;
+  // True if smarthome.yaml allows host power actions (allow_system_power)
+  // and the host platform supports them.
+  systemPowerAvailable: boolean;
   fallbackLanguageOrder: string[];
   // Server-side canonical default (etc/module.yaml admin: start_page) - which
   // top-level route '' redirects to. Patched during APP_INITIALIZER
@@ -78,6 +81,7 @@ const DEFAULT_CONFIG: AppConfig = {
   darkModeDefault: false,
   resourceGraphPeriod: '24h',
   restartStopsOnly: false,
+  systemPowerAvailable: false,
   fallbackLanguageOrder: ['en', 'de'],
   startPage: 'dashboard',
   defaultLanguage: 'en',
@@ -177,6 +181,9 @@ export class AppConfigService {
   }
   get restartStopsOnly(): boolean {
     return this.snapshot.restartStopsOnly;
+  }
+  get systemPowerAvailable(): boolean {
+    return this.snapshot.systemPowerAvailable;
   }
   get coreBranch(): string {
     return this.snapshot.coreBranch;

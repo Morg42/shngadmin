@@ -193,4 +193,29 @@ describe('ItemTreeComponent', () => {
       expect(withMissing).not.toContain('ITEMS.REMARK');
     });
   });
+
+  describe('item details: value editor', () => {
+    const valueEditor = (type: string): HTMLTextAreaElement | null => {
+      component.itemdetails.set({
+        path: 'a.b',
+        name: 'b',
+        type,
+        value: "{'a': 1}",
+        config: {},
+        editable_config: {},
+        logics: [],
+      } as unknown as ItemDetails);
+      component.itemdetailsloaded.set(true);
+      fixture.detectChanges();
+      return (fixture.nativeElement as HTMLElement).querySelector('textarea#item_value');
+    };
+
+    it.each(['str', 'list', 'dict', 'foo'])('offers a text editor for %s items', (type) => {
+      expect(valueEditor(type)).not.toBeNull();
+    });
+
+    it('keeps the value of other types read-only', () => {
+      expect(valueEditor('timestamp')).toBeNull();
+    });
+  });
 });

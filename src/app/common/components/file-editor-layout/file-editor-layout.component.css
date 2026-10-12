@@ -51,6 +51,16 @@
   gap: 6px;
 }
 
+/* Slot wrapper as flex row: caller's margin-left:auto right-aligns the buttons, a filename label stays left. */
+:host ::ng-deep .file-editor-buttons-right > * {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
 .file-editor-list {
   grid-column: 1;
   grid-row: 2;

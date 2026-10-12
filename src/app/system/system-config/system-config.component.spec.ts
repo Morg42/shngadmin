@@ -15,6 +15,7 @@ import { AppConfigService } from '../../common/services/app-config.service';
 import { AuthService } from '../../common/services/auth.service';
 import { ConfigApiService } from '../../common/services/config-api.service';
 import { ServerApiService } from '../../common/services/server-api.service';
+import { SharedService } from '../../common/services/shared.service';
 import { SystemConfigComponent } from './system-config.component';
 
 describe('SystemConfigComponent', () => {
@@ -40,12 +41,14 @@ describe('SystemConfigComponent', () => {
 
   const mockServerApi = {
     restartShngServer: () => of({ result: 'ok' }),
+    getServerinfo: jest.fn(() => of({})),
   };
 
   const mockSharedService = {
     setGuiLanguage: () => {},
     getDescription: (d: any) => (d ? (d['en'] ?? d['de'] ?? '') : ''),
     getFallbackLanguage: () => 'en',
+    mdLiteToHtml: SharedService.prototype.mdLiteToHtml,
     is_knx_groupaddress: () => true,
     is_mac: () => true,
     is_ipv4: () => true,
@@ -54,6 +57,7 @@ describe('SystemConfigComponent', () => {
   };
 
   beforeEach(async () => {
+    mockServerApi.getServerinfo.mockClear();
     await TestBed.configureTestingModule({
       imports: [SystemConfigComponent, translateTestingModule],
       providers: [
@@ -110,6 +114,21 @@ describe('SystemConfigComponent', () => {
   // old hand-rolled version had.
   // -------------------------------------------------------------------------
 
+  describe('fillParamData', () => {
+    it('renders the parameter description through the shared mini-markdown', () => {
+      const meta = {
+        parameters: { p: { type: 'str', description: { en: 'line one\nline **two** end' } } },
+      };
+      const paramdata = component.fillParamData(meta, 'p', { p: 'x' });
+      expect(paramdata.desc).toBe('line one<br>line <b><mark>two</mark></b> end');
+    });
+
+    it('yields an empty description when the parameter has none', () => {
+      const paramdata = component.fillParamData({ parameters: { p: { type: 'str' } } }, 'p', {});
+      expect(paramdata.desc).toBe('');
+    });
+  });
+
   describe('check_value_restrictions', () => {
     it('passes a well-formed value and touches nothing', () => {
       component.validation_dialog_text = [];
@@ -150,6 +169,40 @@ describe('SystemConfigComponent', () => {
         mandatory: true,
       });
       expect(ok).toBe(false);
+    });
+  });
+  describe('saveSettings: live options', () => {
+    const param = (name: string) => component.common_parameters().find((p) => p.name === name)!;
+
+    it('does not offer a restart when only live options changed', () => {
+      param('deprecated_warnings').value = true;
+      component.saveSettings();
+      expect(component.restart_core_button()).toBe(false);
+    });
+
+    it('offers a restart when an option that is not live changed', () => {
+      param('tz').value = 'Europe/Vienna';
+      component.saveSettings();
+      expect(component.restart_core_button()).toBe(true);
+    });
+
+    it('offers a restart when live and non-live options changed together', () => {
+      param('deprecated_warnings').value = true;
+      param('tz').value = 'Europe/Vienna';
+      component.saveSettings();
+      expect(component.restart_core_button()).toBe(true);
+    });
+
+    it('offers a restart when an option of another section changed', () => {
+      component.http_parameters()[0].value = 'changed';
+      component.saveSettings();
+      expect(component.restart_core_button()).toBe(true);
+    });
+
+    it('reloads the server info so live options reach the UI', () => {
+      param('deprecated_warnings').value = true;
+      component.saveSettings();
+      expect(mockServerApi.getServerinfo).toHaveBeenCalledTimes(1);
     });
   });
 });

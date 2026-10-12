@@ -46,6 +46,8 @@ interface ParameterMeta {
   valid_max?: unknown;
   default?: unknown;
   mandatory?: boolean;
+  /** True if a saved change applies to the running core without a restart. */
+  live?: boolean;
   description?: Record<string, string>;
 }
 
@@ -98,7 +100,6 @@ export class SystemConfigComponent implements OnInit {
   private readonly log = inject(LogService);
 
   readonly config = signal<SystemConfig | null>(null);
-  lang!: string;
 
   readonly common_parameters = signal<ConfigParameter[]>([]);
   readonly common_parameter_cols = signal<TableColumn[]>([]);
@@ -193,7 +194,6 @@ export class SystemConfigComponent implements OnInit {
   }
 
   fillDialogData() {
-    this.lang = this.appConfig.defaultLanguage;
     this.fillCommonDialogData();
     this.fillHttpDialogData();
     this.fillWebsocketDialogData();
@@ -246,24 +246,9 @@ export class SystemConfigComponent implements OnInit {
     param: string,
     data: Record<string, unknown>,
   ) {
-    // fill description with active language
-    //    const paramdesc = this.shared.getDescription(meta['parameters'][param]['description']);
-    let paramdesc = '';
-    if (meta['parameters'][param]['description'] !== undefined) {
-      paramdesc = meta['parameters'][param]['description'][this.lang];
-      if (paramdesc === '' || paramdesc === undefined) {
-        paramdesc = meta['parameters'][param]['description'][this.shared.getFallbackLanguage()];
-        if (paramdesc === '' || paramdesc === undefined) {
-          paramdesc = meta['parameters'][param]['description'][this.shared.getFallbackLanguage(1)];
-        }
-      }
-    }
-
-    paramdesc = paramdesc.replace(new RegExp('\n', 'g'), '<br>');
-    paramdesc = paramdesc.replace(new RegExp(' \\*\\*', 'g'), ' <b><mark>');
-    paramdesc = paramdesc.replace(new RegExp('\\*\\* ', 'g'), '</mark></b> ');
-    paramdesc = paramdesc.replace(new RegExp(' \\*', 'g'), ' <i><mark>');
-    paramdesc = paramdesc.replace(new RegExp('\\* ', 'g'), '</mark></i> ');
+    const paramdesc = this.shared.mdLiteToHtml(
+      this.shared.getDescription(meta['parameters'][param]['description']),
+    );
 
     const paramdata = {
       name: param,
@@ -274,6 +259,7 @@ export class SystemConfigComponent implements OnInit {
       valid_max: meta['parameters'][param]['valid_max'],
       default: meta['parameters'][param]['default'],
       mandatory: meta['parameters'][param]['mandatory'],
+      live: meta['parameters'][param]['live'],
       value: data[param],
       desc: paramdesc,
     };
@@ -432,6 +418,23 @@ export class SystemConfigComponent implements OnInit {
     }
   }
 
+  /** True if any changed parameter needs a core restart to take effect, i.e. is not flagged live. */
+  private restartNeeded(): boolean {
+    const changed = (now: ConfigParameter[], before: ConfigParameter[]) =>
+      now.filter((p, i) => p.value !== before[i].value);
+    const otherSectionChanged = [
+      changed(this.http_parameters(), this.http_parameters_beforeEdit),
+      changed(this.websocket_parameters(), this.websocket_parameters_beforeEdit),
+      changed(this.admin_parameters(), this.admin_parameters_beforeEdit),
+      changed(this.mqtt_parameters(), this.mqtt_parameters_beforeEdit),
+    ].some((params) => params.length > 0);
+    const commonNeedsRestart = changed(
+      this.common_parameters(),
+      this.common_parameters_beforeEdit,
+    ).some((p) => !p['live']);
+    return otherSectionChanged || commonNeedsRestart;
+  }
+
   private readonly parameterValidators: StringTypeValidators = {
     isKnxGroupaddress: (v) => this.shared.is_knx_groupaddress(v),
     isMac: (v) => this.shared.is_mac(v),
@@ -505,6 +508,9 @@ export class SystemConfigComponent implements OnInit {
     if (errors_found) {
       return;
     }
+
+    // evaluated before the values are normalized for sending, which would show up as changes
+    const restartNeeded = this.restartNeeded();
 
     const data: Record<string, any> = {};
     data['common'] = {};
@@ -590,7 +596,11 @@ export class SystemConfigComponent implements OnInit {
           this.mqtt_parameters_beforeEdit = JSON.parse(JSON.stringify(this.mqtt_parameters()));
 
           this.data_changed.set(false);
-          this.restart_core_button.set(true);
+          this.restart_core_button.set(restartNeeded);
+          this.dataServiceServer
+            .getServerinfo()
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe();
         } else {
           this.log.warn('saveSettings', 'fail');
         }

@@ -27,6 +27,7 @@ export interface ServerInfo {
   dark_mode: boolean;
   resource_graph_period: string;
   restart_stops_only: boolean;
+  system_power_available: boolean;
   daemon_knx: string;
   daemon_ow: string;
   daemon_mqtt: string;

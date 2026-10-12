@@ -3,7 +3,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA, Renderer2 } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
 import fixtureData from '../../../testing/fixtures/api/plugins/config/default.json';
@@ -235,7 +235,7 @@ describe('PluginConfigComponent', () => {
   // loadPlugin/unloadPlugin/reloadPlugin
   // -------------------------------------------------------------------------
 
-  it('loadPlugin() short-circuits with a disabled-specific toast, no API call, for a disabled plugin', () => {
+  it('loadPlugin() loads a disabled plugin and reports it as activated and loaded', () => {
     const setPluginState = jest.spyOn(mockPluginsApi, 'setPluginState');
     const messageService = TestBed.inject(MessageService);
     const addSpy = jest.spyOn(messageService, 'add');
@@ -244,11 +244,45 @@ describe('PluginConfigComponent', () => {
 
     component.loadPlugin(row);
 
-    expect(setPluginState).not.toHaveBeenCalled();
+    expect(setPluginState).toHaveBeenCalledWith('cli', 'load');
     expect(addSpy).toHaveBeenCalledWith(
       expect.objectContaining({
-        severity: 'warn',
-        summary: expect.any(String),
+        severity: 'success',
+        summary: TestBed.inject(TranslateService).instant('PLUGIN.ACTIVATED_AND_LOADED'),
+        detail: 'cli',
+      }),
+    );
+  });
+
+  it('loadPlugin() reports an enabled plugin as just loaded', () => {
+    const messageService = TestBed.inject(MessageService);
+    const addSpy = jest.spyOn(messageService, 'add');
+    const row = makePlugin('cli', '-cli');
+    row.enabled = 'true';
+
+    component.loadPlugin(row);
+
+    expect(addSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        severity: 'success',
+        summary: TestBed.inject(TranslateService).instant('PLUGIN.LOADED'),
+      }),
+    );
+  });
+
+  it('loadPlugin() tells the user the plugin was activated when loading a disabled plugin fails', () => {
+    jest.spyOn(mockPluginsApi, 'setPluginState').mockReturnValueOnce(of(false));
+    const messageService = TestBed.inject(MessageService);
+    const addSpy = jest.spyOn(messageService, 'add');
+    const row = makePlugin('cli', '-cli');
+    row.enabled = 'false';
+
+    component.loadPlugin(row);
+
+    expect(addSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        severity: 'error',
+        summary: TestBed.inject(TranslateService).instant('PLUGIN.ACTIVATED_LOAD_FAILED'),
         detail: 'cli',
         sticky: true,
       }),

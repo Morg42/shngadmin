@@ -154,6 +154,7 @@ export class ServerApiService {
           darkModeDefault: this.shng_serverinfo.dark_mode,
           resourceGraphPeriod: this.shng_serverinfo.resource_graph_period,
           restartStopsOnly: this.shng_serverinfo.restart_stops_only,
+          systemPowerAvailable: this.shng_serverinfo.system_power_available,
           fallbackLanguageOrder: fallbackOrder,
           wsHost: this._resolveWsHost(this.shng_serverinfo.websocket_host),
           wsPort: this.shng_serverinfo.websocket_port ?? '',
@@ -198,12 +199,29 @@ export class ServerApiService {
   }
 
   restartShngServer() {
-    this.log.log('restartShngServer');
-    const url = this.appConfig.apiUrl + 'server/restart/';
+    return this.putServerAction('restart');
+  }
+
+  stopShngServer() {
+    return this.putServerAction('stop');
+  }
+
+  poweroffHost() {
+    return this.putServerAction('poweroff');
+  }
+
+  rebootHost() {
+    return this.putServerAction('reboot');
+  }
+
+  /** Issues PUT /api/server/<action>/; yields {} on HTTP error. */
+  private putServerAction(action: 'restart' | 'stop' | 'poweroff' | 'reboot') {
+    this.log.log(`putServerAction: ${action}`);
+    const url = this.appConfig.apiUrl + `server/${action}/`;
     return this.http.put(url, JSON.stringify('')).pipe(
       catchError((err: HttpErrorResponse) => {
         this.log.error(
-          'ServerApiService (restartShngServer): Could not restart server - ',
+          `ServerApiService (putServerAction): Could not ${action} - `,
           err?.error?.error || err.message || err,
         );
         return of({});

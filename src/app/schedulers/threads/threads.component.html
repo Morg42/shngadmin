@@ -1,5 +1,17 @@
 <div class="shngbody">
   <div class="shng-page-header">{{ 'MENU.THREADS' | translate }}</div>
+  <div class="button-toolbar">
+    <div class="button-toolbar-left">
+      <button
+        pButton
+        type="button"
+        label="{{ 'THREADS.RELOAD' | translate }}"
+        icon="fas fa-sync"
+        severity="secondary"
+        (click)="reload()"
+      ></button>
+    </div>
+  </div>
   <div class="body-content">
     <table class="table table-striped table-hover shng-list-table">
       <thead>
@@ -10,6 +22,8 @@
               <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
             }
           </th>
+          <th>{{ 'THREADS.TYPE' | translate }}</th>
+          <th>{{ 'THREADS.RUNTIME' | translate }}</th>
           <th class="sortable-th" (click)="sortBy('id')">
             {{ 'THREADS.THREAD-ID' | translate }}
             @if (sortField() === 'id') {
@@ -35,13 +49,104 @@
         @for (thread of threadsList(); track thread.id) {
           <tr>
             <td class="py-1">{{ thread.name }}</td>
+            <td class="py-1">{{ thread.task?.type }}</td>
+            <td class="py-1">
+              @if (thread.task) {
+                <span class="task-runtime" [class.shng-status-warning]="thread.task.overdue">{{
+                  formatRuntime(thread.task.runtime)
+                }}</span>
+                @if (thread.task.cancel_requested !== null) {
+                  <div class="cancel-state small">
+                    {{ 'THREADS.CANCEL_PENDING' | translate: { count: thread.task.cancel_requests } }}
+                  </div>
+                }
+              }
+            </td>
             <td class="py-1">{{ thread.id }}</td>
             <td class="py-1">{{ thread.native_id }}</td>
             <td class="py-1">{{ $any(thread.alive) | translate }}</td>
-            <td class="py-1" width="200px"></td>
+            <td class="py-1 text-nowrap" width="220px">
+              @if (thread.task) {
+                <button
+                  pButton
+                  class="stack-button"
+                  type="button"
+                  size="small"
+                  severity="secondary"
+                  label="{{ 'THREADS.STACK' | translate }}"
+                  (click)="showStack(thread)"
+                ></button>
+                @if (thread.task.cancellable) {
+                  <button
+                    pButton
+                    class="cancel-button ms-1"
+                    type="button"
+                    size="small"
+                    severity="danger"
+                    label="{{ 'THREADS.CANCEL' | translate }}"
+                    (click)="askCancel(thread)"
+                  ></button>
+                }
+              }
+            </td>
           </tr>
         }
       </tbody>
     </table>
   </div>
+
+  <p-dialog
+    [header]="stackThreadName()"
+    [visible]="stackVisible()"
+    (visibleChange)="stackVisible.set($event)"
+    [modal]="true"
+    [style]="{ width: '900px', minWidth: '400px' }"
+    [baseZIndex]="10000"
+  >
+    @if (stackTaskFinished()) {
+      <p>{{ 'THREADS.TASK_FINISHED' | translate }}</p>
+    } @else {
+      <pre class="stack-trace">{{ stackText() }}</pre>
+    }
+    <!-- p-dialog picks up pTemplates once at content init, so the template must not sit inside @if -->
+    <ng-template pTemplate="footer">
+      @if (stackCancellable()) {
+        <button
+          pButton
+          type="button"
+          severity="danger"
+          label="{{ 'THREADS.CANCEL_LOGIC' | translate }}"
+          (click)="askCancelFromStack()"
+        ></button>
+      }
+    </ng-template>
+  </p-dialog>
+
+  <p-dialog
+    [header]="'THREADS.CANCEL_LOGIC' | translate"
+    [visible]="cancelTarget() !== null"
+    (visibleChange)="$event || abortCancel()"
+    [modal]="true"
+    [style]="{ width: '560px', maxWidth: '95vw' }"
+    [baseZIndex]="10001"
+  >
+    <p>{{ 'THREADS.CANCEL_CONFIRM' | translate: { name: cancelTarget()?.name } }}</p>
+    <p class="small">{{ 'THREADS.CANCEL_HINT' | translate }}</p>
+    <ng-template pTemplate="footer">
+      <button
+        pButton
+        type="button"
+        severity="danger"
+        label="{{ 'THREADS.CANCEL_LOGIC' | translate }}"
+        (click)="confirmCancel()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        severity="secondary"
+        label="{{ 'BUTTON.CLOSE' | translate }}"
+        (click)="abortCancel()"
+      ></button>
+    </ng-template>
+  </p-dialog>
 </div>

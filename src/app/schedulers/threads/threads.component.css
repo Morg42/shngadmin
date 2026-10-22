@@ -17,3 +17,10 @@
   border: 1px solid var(--shng-border);
   border-top: 0; /* header bottom-border acts as the divider */
 }
+
+.stack-trace {
+  max-height: 60vh;
+  overflow: auto;
+  font-size: 0.8rem;
+  white-space: pre;
+}

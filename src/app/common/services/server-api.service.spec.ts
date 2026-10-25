@@ -250,6 +250,28 @@ describe('ServerApiService', () => {
     expect(result).toEqual({});
   });
 
+  it('getPullStatus() sends GET /api/server/pull_status and returns the response', () => {
+    let result: unknown;
+    const response = {
+      result: 'ok',
+      repos: [{ repo: 'core', state: 'behind', behind: 3, ahead: 0, text: '' }],
+    };
+    service.getPullStatus().subscribe((r) => (result = r));
+    const req = http.expectOne('/api/server/pull_status');
+    expect(req.request.method).toBe('GET');
+    req.flush(response);
+    expect(result).toEqual(response);
+  });
+
+  it('getPullStatus() returns {} on HTTP error', () => {
+    let result: unknown;
+    service.getPullStatus().subscribe((r) => (result = r));
+    http
+      .expectOne('/api/server/pull_status')
+      .flush({ error: 'err' }, { status: 500, statusText: 'Server Error' });
+    expect(result).toEqual({});
+  });
+
   it('getServerinfo() patches the pull availability into the app config', () => {
     const patch = jest.spyOn(TestBed.inject(AppConfigService), 'patch');
     service.getServerinfo().subscribe();

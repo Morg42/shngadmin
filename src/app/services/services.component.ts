@@ -24,7 +24,14 @@ import { ServicesApiService } from '../common/services/services-api.service';
 
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ServerInfo } from '../common/models/server-info';
-import { PullResponse, PullTarget } from '../common/models/server-pull';
+import {
+  PullRepoCheck,
+  PullRepoName,
+  PullRepoState,
+  PullResponse,
+  PullStatusResponse,
+  PullTarget,
+} from '../common/models/server-pull';
 import { SharedService } from '../common/services/shared.service';
 
 import { NgOptimizedImage } from '@angular/common';
@@ -116,6 +123,10 @@ export class ServicesComponent implements OnInit {
   /** Result of the last pull, shown in a dialog until closed; null if there is none. */
   readonly pullResult = signal<PullResponse | null>(null);
   readonly pullRunning = signal(false);
+  /** Per checkout how it stands against its upstream; a checkout is missing if that is not known. */
+  readonly pullChecks = signal<Partial<Record<PullRepoName, PullRepoCheck>>>({});
+  readonly pullStatusPending = signal(false);
+  readonly pullRepoNames: PullRepoName[] = ['core', 'plugins'];
   /** True if the last pull moved a checkout, i.e. the running core is older than the files on disk. */
   readonly pullRestartNeeded = computed(
     () => this.pullResult()?.repos.some((repo) => repo.changed) ?? false,
@@ -212,6 +223,7 @@ export class ServicesComponent implements OnInit {
         this.setTitle(this.translate.instant('SERVICES.SERVICES'));
 
         this.loadCacheOrphans();
+        this.loadPullStatus();
       });
   }
 
@@ -421,7 +433,63 @@ export class ServicesComponent implements OnInit {
           : { result: 'error', text: this.translate.instant('SERVICES.PULL_FAILED'), repos: [] },
       );
       this.pullRunning.set(false);
+      this.loadPullStatus();
     });
+  }
+
+  // -------------------------------------------------------
+  // how the server's checkouts stand against their upstream (fetches, so it can take a moment)
+  //
+  loadPullStatus() {
+    if (!this.pullAvailable('core') && !this.pullAvailable('plugins')) {
+      return;
+    }
+    this.pullStatusPending.set(true);
+    this.dataServiceServer
+      .getPullStatus()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((response) => {
+        const checks: Partial<Record<PullRepoName, PullRepoCheck>> = {};
+        for (const check of (response as Partial<PullStatusResponse>).repos ?? []) {
+          checks[check.repo] = check;
+        }
+        this.pullChecks.set(checks);
+        this.pullStatusPending.set(false);
+      });
+  }
+
+  private pullAvailable(repo: PullRepoName): boolean {
+    return repo === 'core' ? this.appConfig.corePullAvailable : this.appConfig.pluginsPullAvailable;
+  }
+
+  /** Branch the checkout is on. */
+  pullBranch(repo: PullRepoName): string {
+    return repo === 'core' ? this.appConfig.coreBranch : this.appConfig.pluginsBranch;
+  }
+
+  /** State of a checkout against its upstream; undefined if not (yet) known. */
+  pullStateOf(repo: PullRepoName): PullRepoState | undefined {
+    return this.pullAvailable(repo) ? this.pullChecks()[repo]?.state : 'no_upstream';
+  }
+
+  /**
+   * True if the pull button for the target makes sense. Only a known state disables it: a
+   * checkout that is up to date, or one that cannot be fast-forwarded. While the state is
+   * unknown (still fetching, fetch failed) the button stays usable.
+   */
+  canPull(target: PullTarget): boolean {
+    if (this.pullRunning()) {
+      return false;
+    }
+    const repos = target === 'all' ? this.pullRepoNames : [target];
+    if (!repos.every((repo) => this.pullAvailable(repo))) {
+      return false;
+    }
+    const states = repos.map((repo) => this.pullStateOf(repo));
+    if (states.some((state) => state === 'diverged' || state === 'blocked')) {
+      return false;
+    }
+    return !states.every((state) => state === 'current' || state === 'ahead');
   }
 
   closePullResult() {

@@ -81,14 +81,49 @@
                       <img ngSrc="assets/img/logo_small_76x76.png" alt="SmartHomeNG logo" width="48" height="48" />
                     </td>
                     <td>{{ 'SERVICES.PULL_TITLE' | translate }}</td>
-                    <td>core: {{ appConfig.coreBranch }}, plugins: {{ appConfig.pluginsBranch }}</td>
+                    <td>
+                      <div class="pull-status">
+                        <div>
+                          @for (repo of pullRepoNames; track repo) {
+                            <div [attr.title]="pullChecks()[repo]?.text || null">
+                              {{ repo }}: {{ pullBranch(repo) }} &middot;
+                              @if (pullStateOf(repo); as state) {
+                                <strong>{{
+                                  'SERVICES.PULL_STATE.' + state
+                                    | translate
+                                      : {
+                                          count:
+                                            state === 'ahead' ? pullChecks()[repo]?.ahead : pullChecks()[repo]?.behind,
+                                        }
+                                }}</strong>
+                              } @else if (pullStatusPending()) {
+                                <i class="pi pi-spin pi-spinner"></i>
+                              } @else {
+                                <strong>{{ 'SERVICES.PULL_STATE.unknown' | translate }}</strong>
+                              }
+                            </div>
+                          }
+                        </div>
+                        <button
+                          pButton
+                          type="button"
+                          id="pull_refresh"
+                          icon="fa fa-sync"
+                          severity="secondary"
+                          [text]="true"
+                          [disabled]="pullStatusPending() || pullRunning()"
+                          (click)="loadPullStatus()"
+                          title="{{ 'SERVICES.PULL_REFRESH' | translate }}"
+                        ></button>
+                      </div>
+                    </td>
                     <td class="row-button">
                       <button
                         pButton
                         type="button"
                         id="pull_core"
                         icon="fa fa-download"
-                        [disabled]="pullRunning() || !appConfig.corePullAvailable"
+                        [disabled]="!canPull('core')"
                         (click)="pull('core')"
                         label="{{ 'BUTTON.PULL_CORE' | translate }}"
                         severity="success"
@@ -99,7 +134,7 @@
                         type="button"
                         id="pull_plugins"
                         icon="fa fa-download"
-                        [disabled]="pullRunning() || !appConfig.pluginsPullAvailable"
+                        [disabled]="!canPull('plugins')"
                         (click)="pull('plugins')"
                         label="{{ 'BUTTON.PULL_PLUGINS' | translate }}"
                         severity="success"
@@ -110,7 +145,7 @@
                         type="button"
                         id="pull_all"
                         icon="fa fa-download"
-                        [disabled]="pullRunning() || !appConfig.corePullAvailable || !appConfig.pluginsPullAvailable"
+                        [disabled]="!canPull('all')"
                         (click)="pull('all')"
                         label="{{ 'BUTTON.PULL_ALL' | translate }}"
                         severity="success"

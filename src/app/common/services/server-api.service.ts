@@ -216,6 +216,20 @@ export class ServerApiService {
     return this.putServerAction('reboot');
   }
 
+  /** Fetches the upstreams and yields a PullStatusResponse, {} on HTTP error. */
+  getPullStatus() {
+    const url = this.appConfig.apiUrl + 'server/pull_status';
+    return this.http.get(url).pipe(
+      catchError((err: HttpErrorResponse) => {
+        this.log.error(
+          'ServerApiService.getPullStatus(): Could not read pull status - ',
+          err?.error?.error || err.message || err,
+        );
+        return of({});
+      }),
+    );
+  }
+
   /** Fast-forwards the core checkout; yields a PullResponse, {} on HTTP error. */
   pullCore() {
     return this.putServerAction('pull_core');

@@ -12,7 +12,12 @@ import {
   createMockAuthService,
   translateTestingModule,
 } from '../../testing/test-helpers';
-import { PullRepoResult, PullResponse } from '../common/models/server-pull';
+import {
+  PullRepoCheck,
+  PullRepoResult,
+  PullResponse,
+  PullStatusResponse,
+} from '../common/models/server-pull';
 import { AppConfigService } from '../common/services/app-config.service';
 import { AuthService } from '../common/services/auth.service';
 import { FilesApiService } from '../common/services/files-api.service';
@@ -27,6 +32,14 @@ const pullRepo = (repo: PullRepoResult['repo'], changed: boolean): PullRepoResul
   text: changed ? 'Updating a1b2c3..d4e5f6' : 'Already up to date.',
   changed,
 });
+
+const pullCheck = (
+  repo: PullRepoCheck['repo'],
+  state: PullRepoCheck['state'],
+  behind = 0,
+): PullRepoCheck => ({ repo, state, behind, ahead: 0, text: '' });
+
+const pullStatus = (...repos: PullRepoCheck[]): PullStatusResponse => ({ result: 'ok', repos });
 
 const pullResponse = (...repos: PullRepoResult[]): PullResponse => ({ result: 'ok', repos });
 
@@ -44,6 +57,7 @@ describe('ServicesComponent', () => {
     stopShngServer: jest.fn(() => of({ result: 'ok' })),
     poweroffHost: jest.fn((): Observable<unknown> => of({ result: 'ok' })),
     rebootHost: jest.fn((): Observable<unknown> => of({ result: 'ok' })),
+    getPullStatus: jest.fn((): Observable<unknown> => of(pullStatus())),
     pullCore: jest.fn((): Observable<unknown> => of(pullResponse(pullRepo('core', true)))),
     pullPlugins: jest.fn((): Observable<unknown> => of(pullResponse(pullRepo('plugins', true)))),
     pullAll: jest.fn(
@@ -84,6 +98,7 @@ describe('ServicesComponent', () => {
       corePullAvailable: false,
       pluginsPullAvailable: false,
     };
+    mockServerApi.getPullStatus.mockClear();
     mockServerApi.pullCore.mockClear();
     mockServerApi.pullPlugins.mockClear();
     mockServerApi.pullAll.mockClear();
@@ -352,6 +367,130 @@ describe('ServicesComponent', () => {
       button('pull_core')!.click();
       component.closePullResult();
       expect(component.pullResult()).toBeNull();
+    });
+  });
+
+  describe('pull status', () => {
+    const button = (id: string) =>
+      fixture.nativeElement.querySelector(`#${id}`) as HTMLButtonElement | null;
+
+    const recreateWithPullAvailable = (
+      core: boolean,
+      plugins: boolean,
+      status: Observable<unknown> = of(pullStatus()),
+    ) => {
+      mockAppConfig.corePullAvailable = core;
+      mockAppConfig.pluginsPullAvailable = plugins;
+      mockServerApi.getPullStatus.mockReturnValueOnce(status);
+      fixture = TestBed.createComponent(ServicesComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    };
+
+    it('is not requested if no checkout can be pulled', () => {
+      expect(mockServerApi.getPullStatus).not.toHaveBeenCalled();
+    });
+
+    it('is requested once when the page opens', () => {
+      recreateWithPullAvailable(true, true);
+      expect(mockServerApi.getPullStatus).toHaveBeenCalledTimes(1);
+    });
+
+    it('is stored per checkout', () => {
+      recreateWithPullAvailable(
+        true,
+        true,
+        of(pullStatus(pullCheck('core', 'behind', 3), pullCheck('plugins', 'current'))),
+      );
+      expect(component.pullStateOf('core')).toBe('behind');
+      expect(component.pullStateOf('plugins')).toBe('current');
+      expect(component.pullStatusPending()).toBe(false);
+    });
+
+    it('reports a checkout without upstream as such, without asking the server', () => {
+      recreateWithPullAvailable(true, false);
+      expect(component.pullStateOf('plugins')).toBe('no_upstream');
+    });
+
+    it('leaves the state unknown if the status request failed', () => {
+      recreateWithPullAvailable(true, true, of({}));
+      expect(component.pullStateOf('core')).toBeUndefined();
+      expect(component.pullStatusPending()).toBe(false);
+    });
+
+    it('keeps the buttons usable while the status is still being fetched', () => {
+      recreateWithPullAvailable(true, true, new Subject<unknown>());
+      expect(component.pullStatusPending()).toBe(true);
+      expect(button('pull_core')!.disabled).toBe(false);
+      expect(button('pull_plugins')!.disabled).toBe(false);
+      expect(button('pull_all')!.disabled).toBe(false);
+    });
+
+    it('keeps the buttons usable if the status request failed', () => {
+      recreateWithPullAvailable(true, true, of({}));
+      expect(button('pull_core')!.disabled).toBe(false);
+      expect(button('pull_all')!.disabled).toBe(false);
+    });
+
+    it('disables the button of a checkout that is up to date', () => {
+      recreateWithPullAvailable(
+        true,
+        true,
+        of(pullStatus(pullCheck('core', 'current'), pullCheck('plugins', 'behind', 2))),
+      );
+      expect(button('pull_core')!.disabled).toBe(true);
+      expect(button('pull_plugins')!.disabled).toBe(false);
+      expect(button('pull_all')!.disabled).toBe(false);
+    });
+
+    it('disables the button of a checkout that is only ahead of its upstream', () => {
+      recreateWithPullAvailable(
+        true,
+        true,
+        of(pullStatus(pullCheck('core', 'ahead'), pullCheck('plugins', 'behind', 1))),
+      );
+      expect(button('pull_core')!.disabled).toBe(true);
+      expect(button('pull_all')!.disabled).toBe(false);
+    });
+
+    it('disables pull all if nothing is behind', () => {
+      recreateWithPullAvailable(
+        true,
+        true,
+        of(pullStatus(pullCheck('core', 'current'), pullCheck('plugins', 'current'))),
+      );
+      expect(button('pull_all')!.disabled).toBe(true);
+    });
+
+    it.each(['diverged', 'blocked'] as const)(
+      'disables the button of a %s checkout and pull all',
+      (state) => {
+        recreateWithPullAvailable(
+          true,
+          true,
+          of(pullStatus(pullCheck('core', 'behind', 1), pullCheck('plugins', state, 1))),
+        );
+        expect(button('pull_core')!.disabled).toBe(false);
+        expect(button('pull_plugins')!.disabled).toBe(true);
+        expect(button('pull_all')!.disabled).toBe(true);
+      },
+    );
+
+    it('is requested again by the refresh button', () => {
+      recreateWithPullAvailable(true, true);
+      button('pull_refresh')!.click();
+      expect(mockServerApi.getPullStatus).toHaveBeenCalledTimes(2);
+    });
+
+    it('cannot be refreshed while it is being fetched', () => {
+      recreateWithPullAvailable(true, true, new Subject<unknown>());
+      expect(button('pull_refresh')!.disabled).toBe(true);
+    });
+
+    it('is requested again after a pull', () => {
+      recreateWithPullAvailable(true, true);
+      button('pull_core')!.click();
+      expect(mockServerApi.getPullStatus).toHaveBeenCalledTimes(2);
     });
   });
 });

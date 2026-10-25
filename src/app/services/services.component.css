@@ -116,3 +116,9 @@ p-tabs {
   white-space: pre-wrap;
   margin: 0.25rem 0 0;
 }
+
+.pull-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

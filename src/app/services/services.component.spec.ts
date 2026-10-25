@@ -5,13 +5,14 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import cacheFixture from '../../testing/fixtures/api/services/cachecheck/default.json';
 import {
   createMockAppConfigService,
   createMockAuthService,
   translateTestingModule,
 } from '../../testing/test-helpers';
+import { PullRepoResult, PullResponse } from '../common/models/server-pull';
 import { AppConfigService } from '../common/services/app-config.service';
 import { AuthService } from '../common/services/auth.service';
 import { FilesApiService } from '../common/services/files-api.service';
@@ -19,6 +20,15 @@ import { ServerApiService } from '../common/services/server-api.service';
 import { ServicesApiService } from '../common/services/services-api.service';
 import { UserPreferencesService } from '../common/services/user-preferences.service';
 import { ServicesComponent } from './services.component';
+
+const pullRepo = (repo: PullRepoResult['repo'], changed: boolean): PullRepoResult => ({
+  repo,
+  status: 'ok',
+  text: changed ? 'Updating a1b2c3..d4e5f6' : 'Already up to date.',
+  changed,
+});
+
+const pullResponse = (...repos: PullRepoResult[]): PullResponse => ({ result: 'ok', repos });
 
 describe('ServicesComponent', () => {
   let component: ServicesComponent;
@@ -34,6 +44,12 @@ describe('ServicesComponent', () => {
     stopShngServer: jest.fn(() => of({ result: 'ok' })),
     poweroffHost: jest.fn((): Observable<unknown> => of({ result: 'ok' })),
     rebootHost: jest.fn((): Observable<unknown> => of({ result: 'ok' })),
+    pullCore: jest.fn((): Observable<unknown> => of(pullResponse(pullRepo('core', true)))),
+    pullPlugins: jest.fn((): Observable<unknown> => of(pullResponse(pullRepo('plugins', true)))),
+    pullAll: jest.fn(
+      (): Observable<unknown> =>
+        of(pullResponse(pullRepo('core', true), pullRepo('plugins', true))),
+    ),
     downloadConfigBackup: () => of(new Blob()),
   };
 
@@ -56,6 +72,8 @@ describe('ServicesComponent', () => {
   let mockAppConfig: ReturnType<typeof createMockAppConfigService> & {
     restartStopsOnly: boolean;
     systemPowerAvailable: boolean;
+    corePullAvailable: boolean;
+    pluginsPullAvailable: boolean;
   };
 
   beforeEach(async () => {
@@ -63,7 +81,12 @@ describe('ServicesComponent', () => {
       ...createMockAppConfigService(),
       restartStopsOnly: false,
       systemPowerAvailable: false,
+      corePullAvailable: false,
+      pluginsPullAvailable: false,
     };
+    mockServerApi.pullCore.mockClear();
+    mockServerApi.pullPlugins.mockClear();
+    mockServerApi.pullAll.mockClear();
     mockServerApi.stopShngServer.mockClear();
     mockServerApi.poweroffHost.mockClear();
     mockServerApi.rebootHost.mockClear();
@@ -209,6 +232,126 @@ describe('ServicesComponent', () => {
       component.askPowerAction('poweroff');
       component.confirmPowerAction();
       expect(component.shng_statuscode()).toBe(-1);
+    });
+  });
+
+  describe('pull row', () => {
+    const button = (id: string) =>
+      fixture.nativeElement.querySelector(`#${id}`) as HTMLButtonElement | null;
+
+    const recreateWithPullAvailable = (core: boolean, plugins: boolean) => {
+      mockAppConfig.corePullAvailable = core;
+      mockAppConfig.pluginsPullAvailable = plugins;
+      fixture = TestBed.createComponent(ServicesComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    };
+
+    it('is hidden unless the server reports a pullable checkout', () => {
+      expect(button('pull_core')).toBeNull();
+      expect(button('pull_plugins')).toBeNull();
+      expect(button('pull_all')).toBeNull();
+    });
+
+    it('enables only the buttons whose checkouts can be pulled', () => {
+      recreateWithPullAvailable(true, false);
+      expect(button('pull_core')!.disabled).toBe(false);
+      expect(button('pull_plugins')!.disabled).toBe(true);
+      expect(button('pull_all')!.disabled).toBe(true);
+    });
+
+    it('enables pull all if both checkouts can be pulled', () => {
+      recreateWithPullAvailable(true, true);
+      expect(button('pull_all')!.disabled).toBe(false);
+    });
+
+    it.each([
+      ['pull_core', 'pullCore'],
+      ['pull_plugins', 'pullPlugins'],
+      ['pull_all', 'pullAll'],
+    ] as const)('%s calls only %s', (id, method) => {
+      recreateWithPullAvailable(true, true);
+      button(id)!.click();
+      for (const m of ['pullCore', 'pullPlugins', 'pullAll'] as const) {
+        expect(mockServerApi[m]).toHaveBeenCalledTimes(m === method ? 1 : 0);
+      }
+    });
+
+    it('shows the per-repository result and a restart hint if a checkout changed', () => {
+      recreateWithPullAvailable(true, true);
+      button('pull_all')!.click();
+      fixture.detectChanges();
+      expect(component.pullResult()!.repos.map((r) => r.repo)).toEqual(['core', 'plugins']);
+      expect(fixture.nativeElement.querySelector('#pull_restart_hint')).not.toBeNull();
+    });
+
+    it('shows no restart hint if nothing changed', () => {
+      recreateWithPullAvailable(true, true);
+      mockServerApi.pullCore.mockReturnValueOnce(of(pullResponse(pullRepo('core', false))));
+      button('pull_core')!.click();
+      fixture.detectChanges();
+      expect(component.pullResult()).not.toBeNull();
+      expect(fixture.nativeElement.querySelector('#pull_restart_hint')).toBeNull();
+    });
+
+    it('keeps the restart hint when a later checkout failed after an earlier one changed', () => {
+      recreateWithPullAvailable(true, true);
+      mockServerApi.pullAll.mockReturnValueOnce(
+        of({
+          result: 'error',
+          repos: [
+            pullRepo('core', true),
+            { repo: 'plugins', status: 'error', text: 'fatal: Not possible', changed: false },
+          ],
+        }),
+      );
+      button('pull_all')!.click();
+      fixture.detectChanges();
+      expect(component.pullResult()!.result).toBe('error');
+      expect(fixture.nativeElement.querySelector('#pull_restart_hint')).not.toBeNull();
+    });
+
+    it('reports a refused request as an error result', () => {
+      recreateWithPullAvailable(true, true);
+      mockServerApi.pullCore.mockReturnValueOnce(
+        of({ result: 'error', text: 'A pull is already running', repos: [] }),
+      );
+      button('pull_core')!.click();
+      expect(component.pullResult()).toEqual({
+        result: 'error',
+        text: 'A pull is already running',
+        repos: [],
+      });
+    });
+
+    it('reports a failed request (no usable response) as an error result', () => {
+      recreateWithPullAvailable(true, true);
+      mockServerApi.pullCore.mockReturnValueOnce(of({}));
+      button('pull_core')!.click();
+      expect(component.pullResult()!.result).toBe('error');
+      expect(component.pullResult()!.repos).toEqual([]);
+      expect(component.pullResult()!.text).toBeTruthy();
+    });
+
+    it('disables the buttons while a pull is running', () => {
+      recreateWithPullAvailable(true, true);
+      const pending = new Subject<unknown>();
+      mockServerApi.pullCore.mockReturnValueOnce(pending);
+      button('pull_core')!.click();
+      fixture.detectChanges();
+      expect(button('pull_core')!.disabled).toBe(true);
+      expect(button('pull_all')!.disabled).toBe(true);
+      pending.next(pullResponse(pullRepo('core', true)));
+      pending.complete();
+      fixture.detectChanges();
+      expect(button('pull_core')!.disabled).toBe(false);
+    });
+
+    it('closes the result', () => {
+      recreateWithPullAvailable(true, true);
+      button('pull_core')!.click();
+      component.closePullResult();
+      expect(component.pullResult()).toBeNull();
     });
   });
 });

@@ -48,6 +48,10 @@ export interface AppConfig {
   // True if smarthome.yaml allows host power actions (allow_system_power)
   // and the host platform supports them.
   systemPowerAvailable: boolean;
+  // True if the core / plugins checkout of the backend is on a branch with an
+  // upstream, i.e. it can be updated with "git pull" from the Services page.
+  corePullAvailable: boolean;
+  pluginsPullAvailable: boolean;
   fallbackLanguageOrder: string[];
   // Server-side canonical default (etc/module.yaml admin: start_page) - which
   // top-level route '' redirects to. Patched during APP_INITIALIZER
@@ -82,6 +86,8 @@ const DEFAULT_CONFIG: AppConfig = {
   resourceGraphPeriod: '24h',
   restartStopsOnly: false,
   systemPowerAvailable: false,
+  corePullAvailable: false,
+  pluginsPullAvailable: false,
   fallbackLanguageOrder: ['en', 'de'],
   startPage: 'dashboard',
   defaultLanguage: 'en',
@@ -184,6 +190,12 @@ export class AppConfigService {
   }
   get systemPowerAvailable(): boolean {
     return this.snapshot.systemPowerAvailable;
+  }
+  get corePullAvailable(): boolean {
+    return this.snapshot.corePullAvailable;
+  }
+  get pluginsPullAvailable(): boolean {
+    return this.snapshot.pluginsPullAvailable;
   }
   get coreBranch(): string {
     return this.snapshot.coreBranch;

@@ -1,7 +1,7 @@
 {
   "name": "shngadmin",
   "version": "1.12.2",
-  "internalVersion": "1.12.2.1",
+  "internalVersion": "2.0.0-dev.1",
   "scripts": {
     "ng": "ng",
     "prestart": "node scripts/generate-version.js",

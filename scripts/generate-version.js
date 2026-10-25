@@ -2,7 +2,7 @@
  * Pre-build script: injects git version info into src/app/git-version.auto.ts.
  *
  * Generates a version string that matches the format SmartHomeNG core uses:
- *   v{semver}-{short-hash}.{branch}
+ *   v{semver}+{short-hash}.{branch}
  * plus separate ref and path constants for the detail display.
  *
  * Run automatically via the `prebuild` and `prestart` npm hooks.

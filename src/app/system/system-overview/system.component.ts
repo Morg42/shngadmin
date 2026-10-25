@@ -201,7 +201,7 @@ export class SystemComponent implements OnDestroy, OnInit {
 
   appName = APP_NAME;
   appVersion = 'v' + APP_VERSION; // short form used in page titles / navbar
-  appVersionDetail = APP_VERSION_DETAIL; // v{semver}-{commit}.{branch}
+  appVersionDetail = APP_VERSION_DETAIL; // v{semver}+{commit}.{branch}
   appVersionRef = APP_VERSION_REF; // (heads/branch)
 
   public setTitle(newTitle: string) {

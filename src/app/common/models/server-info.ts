@@ -28,6 +28,8 @@ export interface ServerInfo {
   resource_graph_period: string;
   restart_stops_only: boolean;
   system_power_available: boolean;
+  core_pull_available: boolean;
+  plugins_pull_available: boolean;
   daemon_knx: string;
   daemon_ow: string;
   daemon_mqtt: string;

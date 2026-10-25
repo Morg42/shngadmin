@@ -216,6 +216,52 @@ describe('ServerApiService', () => {
   });
 
   // -------------------------------------------------------------------------
+  // pullCore / pullPlugins / pullAll
+  // -------------------------------------------------------------------------
+
+  it.each([
+    ['pullCore', 'pull_core'],
+    ['pullPlugins', 'pull_plugins'],
+    ['pullAll', 'pull_all'],
+  ] as const)('%s() sends PUT /api/server/%s/', (method, action) => {
+    service[method]().subscribe();
+    const req = http.expectOne(`/api/server/${action}/`);
+    expect(req.request.method).toBe('PUT');
+    req.flush({ result: 'ok', repos: [] });
+  });
+
+  it('pullAll() returns the per-repository results', () => {
+    let result: unknown;
+    const response = {
+      result: 'error',
+      repos: [{ repo: 'core', status: 'skipped', text: 'not pulled', changed: false }],
+    };
+    service.pullAll().subscribe((r) => (result = r));
+    http.expectOne('/api/server/pull_all/').flush(response);
+    expect(result).toEqual(response);
+  });
+
+  it('pullCore() returns {} on HTTP error', () => {
+    let result: unknown;
+    service.pullCore().subscribe((r) => (result = r));
+    http
+      .expectOne('/api/server/pull_core/')
+      .flush({ error: 'err' }, { status: 500, statusText: 'Server Error' });
+    expect(result).toEqual({});
+  });
+
+  it('getServerinfo() patches the pull availability into the app config', () => {
+    const patch = jest.spyOn(TestBed.inject(AppConfigService), 'patch');
+    service.getServerinfo().subscribe();
+    http
+      .expectOne('/api/server/info')
+      .flush({ core_pull_available: true, plugins_pull_available: false });
+    expect(patch).toHaveBeenCalledWith(
+      expect.objectContaining({ corePullAvailable: true, pluginsPullAvailable: false }),
+    );
+  });
+
+  // -------------------------------------------------------------------------
   // getSystemStats
   // -------------------------------------------------------------------------
 

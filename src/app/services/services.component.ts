@@ -24,6 +24,7 @@ import { ServicesApiService } from '../common/services/services-api.service';
 
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ServerInfo } from '../common/models/server-info';
+import { PullResponse, PullTarget } from '../common/models/server-pull';
 import { SharedService } from '../common/services/shared.service';
 
 import { NgOptimizedImage } from '@angular/common';
@@ -112,6 +113,13 @@ export class ServicesComponent implements OnInit {
   /** Host power action waiting for the user's confirmation, null if none. */
   readonly pendingPowerAction = signal<'poweroff' | 'reboot' | null>(null);
   readonly show_restore_chooser = signal(false);
+  /** Result of the last pull, shown in a dialog until closed; null if there is none. */
+  readonly pullResult = signal<PullResponse | null>(null);
+  readonly pullRunning = signal(false);
+  /** True if the last pull moved a checkout, i.e. the running core is older than the files on disk. */
+  readonly pullRestartNeeded = computed(
+    () => this.pullResult()?.repos.some((repo) => repo.changed) ?? false,
+  );
 
   // -----------------------------------------------------
   //  Vars for the EVAL syntax checker
@@ -390,6 +398,34 @@ export class ServicesComponent implements OnInit {
         this.shng_status.set(this.translate_shngStatus('Stopping'));
         this.shng_statuscode.set(-1);
       });
+  }
+
+  // -------------------------------------------------------
+  // update the core and/or plugins checkout of the server (git pull); the
+  // core has to be restarted separately to run the updated code
+  //
+  pull(target: PullTarget) {
+    const request =
+      target === 'core'
+        ? this.dataServiceServer.pullCore()
+        : target === 'plugins'
+          ? this.dataServiceServer.pullPlugins()
+          : this.dataServiceServer.pullAll();
+    this.pullRunning.set(true);
+    request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((response) => {
+      const res = response as Partial<PullResponse>;
+      this.log.log('pull', target, res.result);
+      this.pullResult.set(
+        res.repos !== undefined
+          ? (res as PullResponse)
+          : { result: 'error', text: this.translate.instant('SERVICES.PULL_FAILED'), repos: [] },
+      );
+      this.pullRunning.set(false);
+    });
+  }
+
+  closePullResult() {
+    this.pullResult.set(null);
   }
 
   // -------------------------------------------------------

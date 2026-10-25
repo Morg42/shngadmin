@@ -75,6 +75,49 @@
                     }
                   </td>
                 </tr>
+                @if (appConfig.corePullAvailable || appConfig.pluginsPullAvailable) {
+                  <tr>
+                    <td class="row-icon">
+                      <img ngSrc="assets/img/logo_small_76x76.png" alt="SmartHomeNG logo" width="48" height="48" />
+                    </td>
+                    <td>{{ 'SERVICES.PULL_TITLE' | translate }}</td>
+                    <td>core: {{ appConfig.coreBranch }}, plugins: {{ appConfig.pluginsBranch }}</td>
+                    <td class="row-button">
+                      <button
+                        pButton
+                        type="button"
+                        id="pull_core"
+                        icon="fa fa-download"
+                        [disabled]="pullRunning() || !appConfig.corePullAvailable"
+                        (click)="pull('core')"
+                        label="{{ 'BUTTON.PULL_CORE' | translate }}"
+                        severity="success"
+                      ></button>
+                      &nbsp;
+                      <button
+                        pButton
+                        type="button"
+                        id="pull_plugins"
+                        icon="fa fa-download"
+                        [disabled]="pullRunning() || !appConfig.pluginsPullAvailable"
+                        (click)="pull('plugins')"
+                        label="{{ 'BUTTON.PULL_PLUGINS' | translate }}"
+                        severity="success"
+                      ></button>
+                      &nbsp;
+                      <button
+                        pButton
+                        type="button"
+                        id="pull_all"
+                        icon="fa fa-download"
+                        [disabled]="pullRunning() || !appConfig.corePullAvailable || !appConfig.pluginsPullAvailable"
+                        (click)="pull('all')"
+                        label="{{ 'BUTTON.PULL_ALL' | translate }}"
+                        severity="success"
+                      ></button>
+                    </td>
+                  </tr>
+                }
                 @if (appConfig.systemPowerAvailable) {
                   <tr>
                     <td class="row-icon">
@@ -494,6 +537,41 @@
       (click)="show_backup_confirm.set(false)"
       label="{{ 'BUTTON.OK' | translate }}"
       severity="success"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  header="{{ 'SERVICES.PULL_RESULT_TITLE' | translate }}"
+  [visible]="pullResult() !== null"
+  (visibleChange)="$event || closePullResult()"
+  [modal]="true"
+  [style]="{ width: '700px', minWidth: '400px' }"
+  [minY]="70"
+  [baseZIndex]="10000"
+>
+  @if (pullResult(); as res) {
+    @if (res.text) {
+      <p-message severity="error">{{ res.text }}</p-message>
+    }
+    @for (repo of res.repos; track repo.repo) {
+      <div class="pull-repo">
+        <strong>{{ repo.repo }}</strong
+        >: {{ 'SERVICES.PULL_STATUS.' + repo.status | translate }}
+        <pre class="pull-output">{{ repo.text }}</pre>
+      </div>
+    }
+    @if (pullRestartNeeded()) {
+      <p-message id="pull_restart_hint" severity="warn">{{ 'SERVICES.PULL_RESTART_REQUIRED' | translate }}</p-message>
+    }
+  }
+  <ng-template pTemplate="footer">
+    <button
+      type="button"
+      pButton
+      icon="pi pi-check"
+      (click)="closePullResult()"
+      label="{{ 'BUTTON.OK' | translate }}"
     ></button>
   </ng-template>
 </p-dialog>

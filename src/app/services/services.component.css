@@ -107,3 +107,12 @@ p-tabs {
     padding-bottom: calc(var(--page-padding) / 2);
   }
 }
+
+.pull-repo {
+  margin-bottom: 1rem;
+}
+
+.pull-output {
+  white-space: pre-wrap;
+  margin: 0.25rem 0 0;
+}

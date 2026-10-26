@@ -36,6 +36,7 @@ import { Bind } from 'primeng/bind';
 import { ButtonDirective } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
+import { Message } from 'primeng/message';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { Select } from 'primeng/select';
 import { AppComponent } from '../../app.component';
@@ -58,6 +59,8 @@ export interface ConfiguredPlugin {
    *  informational here - start/stop control lives on the /plugins page. */
   running: boolean;
   enabled: string;
+  /** A pull updated the plugin's files; it runs the old code until reloaded or the core restarts. */
+  reloadPending: boolean;
   type?: string;
 }
 
@@ -86,6 +89,7 @@ type PluginLifecycleAction = 'load' | 'unload' | 'reload';
     InputText,
     Select,
     TranslatePipe,
+    Message,
     AddPluginDialogComponent,
     PluginParameterDialogComponent,
   ],
@@ -115,6 +119,11 @@ export class PluginConfigComponent implements OnInit {
   readonly developerMode = toSignal(
     inject(AppConfigService).config$.pipe(map((cfg) => cfg.developerMode)),
     { initialValue: false },
+  );
+
+  /** True if a pull updated any plugin that has not been reloaded since. */
+  readonly anyReloadPending = computed(() =>
+    this.rawConfiguredplugins().some((p) => p.reloadPending),
   );
 
   readonly sortField = signal('');
@@ -268,6 +277,7 @@ export class PluginConfigComponent implements OnInit {
           loaded: !!plugin_config[plg]._loaded,
           running: !!plugin_config[plg]._running,
           enabled: 'true',
+          reloadPending: !!plugin_config[plg]._reload_pending,
         };
 
         if (plugin_config[plg].plugin_enabled === 'False') {

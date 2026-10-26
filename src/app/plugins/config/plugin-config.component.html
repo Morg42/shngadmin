@@ -66,6 +66,11 @@
   </div>
 
   <div class="body-content shng-page-body">
+    @if (anyReloadPending()) {
+      <p-message id="reload_pending_hint" severity="warn" styleClass="mb-2">{{
+        'PLUGIN.RELOAD_PENDING' | translate
+      }}</p-message>
+    }
     <table class="table table-striped table-hover shng-list-table" style="width: 100%">
       <thead>
         <tr class="shng_heading">
@@ -90,7 +95,7 @@
             }
           </th>
           <th style="border: 0">{{ 'PLUGIN.DESCRIPTION' | translate }}</th>
-          @if (developerMode()) {
+          @if (developerMode() || anyReloadPending()) {
             <th style="width: 110px; border: 0; text-align: right">{{ 'PLUGIN.ACTIONS' | translate }}</th>
           }
           <th style="width: 40px; border: 0"></th>
@@ -144,9 +149,9 @@
             </td>
             <td [style.opacity]="row.loaded ? '1' : '0.5'">{{ row['instance'] }}</td>
             <td [style.opacity]="row.loaded ? '1' : '0.5'"><div [innerHTML]="row['desc']"></div></td>
-            @if (developerMode()) {
+            @if (developerMode() || anyReloadPending()) {
               <td style="text-align: right; white-space: nowrap" (click)="$event.stopPropagation()">
-                @if (!row.loaded) {
+                @if (developerMode() && !row.loaded) {
                   <button
                     pButton
                     icon="fas fa-upload"
@@ -158,17 +163,20 @@
                     (click)="loadPlugin(row)"
                   ></button>
                 }
-                @if (row.loaded) {
+                @if (row.loaded && (developerMode() || row.reloadPending)) {
                   <button
                     pButton
                     icon="fas fa-sync"
                     name="reload"
                     title="{{ 'BUTTON.RELOAD' | translate }}"
                     severity="warn"
+                    [class.reload-pending]="row.reloadPending"
                     size="small"
                     class="mr-1"
                     (click)="reloadPlugin(row.confname)"
                   ></button>
+                }
+                @if (developerMode() && row.loaded) {
                   <button
                     pButton
                     icon="fas fa-eject"

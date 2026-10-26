@@ -51,6 +51,9 @@ input::-webkit-inner-spin-button {
      (already used app-wide for error/warning TEXT) so a routine
      operational button doesn't read as an alarm. */
   --shng-amber: #c9820c;
+  /* Marks the one button among amber ones that needs doing now (reload of a
+     plugin whose files a pull updated) — a hue clearly apart from --shng-amber. */
+  --shng-attention: #e8590c;
 
   --shng-disabled: #bbb;
   --shng-border: #dee2e5;

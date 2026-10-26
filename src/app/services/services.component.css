@@ -112,6 +112,19 @@ p-tabs {
   margin-bottom: 1rem;
 }
 
+.pull-updated {
+  margin-top: 0.25rem;
+}
+
+.pull-raw {
+  margin-top: 0.25rem;
+}
+
+.pull-raw summary {
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
 .pull-output {
   white-space: pre-wrap;
   margin: 0.25rem 0 0;

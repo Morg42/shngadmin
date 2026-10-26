@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { Observable, of, Subject } from 'rxjs';
@@ -31,6 +31,7 @@ const pullRepo = (repo: PullRepoResult['repo'], changed: boolean): PullRepoResul
   status: 'ok',
   text: changed ? 'Updating a1b2c3..d4e5f6' : 'Already up to date.',
   changed,
+  files: [],
 });
 
 const pullCheck = (
@@ -41,7 +42,11 @@ const pullCheck = (
 
 const pullStatus = (...repos: PullRepoCheck[]): PullStatusResponse => ({ result: 'ok', repos });
 
-const pullResponse = (...repos: PullRepoResult[]): PullResponse => ({ result: 'ok', repos });
+const pullResponse = (...repos: PullRepoResult[]): PullResponse => ({
+  result: 'ok',
+  repos,
+  impact: { restart: repos.some((r) => r.changed) ? ['core: lib changed'] : [], reload: [] },
+});
 
 describe('ServicesComponent', () => {
   let component: ServicesComponent;
@@ -51,7 +56,7 @@ describe('ServicesComponent', () => {
   const serverInfoStub = { backup_stem: 'mybackup', default_language: 'de' };
 
   const mockServerApi = {
-    getServerinfo: () => of(serverInfoStub),
+    getServerinfo: jest.fn((): Observable<unknown> => of(serverInfoStub)),
     getShngServerStatus: () => of({ code: 20, text: 'running' }),
     restartShngServer: () => of({ result: 'ok' }),
     stopShngServer: jest.fn(() => of({ result: 'ok' })),
@@ -262,6 +267,22 @@ describe('ServicesComponent', () => {
       fixture.detectChanges();
     };
 
+    it('refresh re-reads the server info, so branch and availability follow the checkouts', () => {
+      recreateWithPullAvailable(true, false);
+      expect(button('pull_plugins')!.disabled).toBe(true);
+      mockServerApi.getServerinfo.mockImplementationOnce(() => {
+        mockAppConfig.pluginsPullAvailable = true;
+        return of(serverInfoStub);
+      });
+      mockServerApi.getPullStatus.mockClear();
+
+      button('pull_refresh')!.click();
+      fixture.detectChanges();
+
+      expect(mockServerApi.getPullStatus).toHaveBeenCalledTimes(1);
+      expect(button('pull_plugins')!.disabled).toBe(false);
+    });
+
     it('is hidden unless the server reports a pullable checkout', () => {
       expect(button('pull_core')).toBeNull();
       expect(button('pull_plugins')).toBeNull();
@@ -309,6 +330,106 @@ describe('ServicesComponent', () => {
       expect(fixture.nativeElement.querySelector('#pull_restart_hint')).toBeNull();
     });
 
+    describe('result per repository', () => {
+      const pluginsPulled = (files: string[], status: PullRepoResult['status'] = 'ok') =>
+        of({
+          result: 'ok',
+          repos: [{ ...pullRepo('plugins', true), files, status }],
+          impact: { restart: [], reload: [] },
+        } as PullResponse);
+
+      const show = (response: ReturnType<typeof pluginsPulled>) => {
+        recreateWithPullAvailable(true, true);
+        mockServerApi.pullPlugins.mockReturnValueOnce(response);
+        button('pull_plugins')!.click();
+        fixture.detectChanges();
+      };
+
+      it('lists the updated plugins once each, without files outside a plugin directory', () => {
+        show(
+          pluginsPulled([
+            '__init__.py',
+            'hue2/__init__.py',
+            'hue2/webif/__init__.py',
+            'mqtt2/plugin.yaml',
+          ]),
+        );
+        expect(component.updatedAreas(component.pullResult()!.repos[0])).toEqual(['hue2', 'mqtt2']);
+        expect(fixture.nativeElement.querySelector('.pull-updated').textContent).toContain(
+          'hue2, mqtt2',
+        );
+      });
+
+      it('keeps the raw git output in a container that is collapsed after a successful pull', () => {
+        show(pluginsPulled(['hue2/__init__.py']));
+        const details = fixture.nativeElement.querySelector(
+          'details.pull-raw',
+        ) as HTMLDetailsElement;
+        expect(details).not.toBeNull();
+        expect(details.open).toBe(false);
+        expect(details.querySelector('pre')!.textContent).toContain('Updating a1b2c3..d4e5f6');
+      });
+
+      it('opens the raw output if the repository was not pulled', () => {
+        show(pluginsPulled([], 'error'));
+        expect(
+          (fixture.nativeElement.querySelector('details.pull-raw') as HTMLDetailsElement).open,
+        ).toBe(true);
+      });
+    });
+
+    it('names the reasons for the restart', () => {
+      recreateWithPullAvailable(true, true);
+      button('pull_all')!.click();
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('#pull_restart_hint').textContent).toContain(
+        'core: lib changed',
+      );
+    });
+
+    describe('when only plugins need a reload', () => {
+      const reloadResponse: PullResponse = {
+        result: 'ok',
+        repos: [pullRepo('plugins', true)],
+        impact: { restart: [], reload: ['hue_a', 'hue_b'] },
+      };
+
+      beforeEach(() => {
+        recreateWithPullAvailable(true, true);
+        mockServerApi.pullPlugins.mockReturnValueOnce(of(reloadResponse));
+        button('pull_plugins')!.click();
+        fixture.detectChanges();
+      });
+
+      it('shows the plugins instead of a restart hint', () => {
+        expect(fixture.nativeElement.querySelector('#pull_restart_hint')).toBeNull();
+        expect(fixture.nativeElement.querySelector('#pull_reload_hint')).not.toBeNull();
+        expect(component.pullReloadPlugins()).toEqual(['hue_a', 'hue_b']);
+      });
+
+      it('showPluginsToReload() closes the result and opens the plugin configuration', () => {
+        const navigate = jest.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+        component.showPluginsToReload();
+        expect(navigate).toHaveBeenCalledWith(['/plugins/config']);
+        expect(component.pullResult()).toBeNull();
+      });
+    });
+
+    it('says so if the changes need neither a restart nor a reload', () => {
+      recreateWithPullAvailable(true, true);
+      mockServerApi.pullPlugins.mockReturnValueOnce(
+        of({
+          result: 'ok',
+          repos: [pullRepo('plugins', true)],
+          impact: { restart: [], reload: [] },
+        } as PullResponse),
+      );
+      button('pull_plugins')!.click();
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('#pull_nothing_needed_hint')).not.toBeNull();
+      expect(fixture.nativeElement.querySelector('#pull_restart_hint')).toBeNull();
+    });
+
     it('keeps the restart hint when a later checkout failed after an earlier one changed', () => {
       recreateWithPullAvailable(true, true);
       mockServerApi.pullAll.mockReturnValueOnce(
@@ -316,8 +437,15 @@ describe('ServicesComponent', () => {
           result: 'error',
           repos: [
             pullRepo('core', true),
-            { repo: 'plugins', status: 'error', text: 'fatal: Not possible', changed: false },
+            {
+              repo: 'plugins',
+              status: 'error',
+              text: 'fatal: Not possible',
+              changed: false,
+              files: [],
+            },
           ],
+          impact: { restart: ['core: lib changed'], reload: [] },
         }),
       );
       button('pull_all')!.click();

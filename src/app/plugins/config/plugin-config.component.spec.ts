@@ -5,7 +5,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import fixtureData from '../../../testing/fixtures/api/plugins/config/default.json';
 import {
   createMockAppConfigService,
@@ -26,7 +26,7 @@ describe('PluginConfigComponent', () => {
   const pluginConfigKeys = Object.keys(fixtureData.plugin_config);
 
   const mockPluginsApi = {
-    getPluginsConfig: () => of(fixtureData),
+    getPluginsConfig: (): Observable<unknown> => of(fixtureData),
     setPluginConfig: () => of(true),
     setPluginState: () => of(true),
     getInstalledPlugins: () => of({}),
@@ -452,5 +452,67 @@ describe('PluginConfigComponent', () => {
     component.onPluginAdded('backend');
 
     expect(component.dialog_display()).toBe(false);
+  });
+
+  // -------------------------------------------------------------------------
+  // Plugins updated by a pull (_reload_pending): marked until reloaded
+  // -------------------------------------------------------------------------
+
+  describe('plugins waiting for a reload', () => {
+    const withPending = (pending: string[]) => ({
+      ...fixtureData,
+      plugin_config: Object.fromEntries(
+        Object.entries(fixtureData.plugin_config).map(([name, section]) => [
+          name,
+          { ...section, _reload_pending: pending.includes(name) },
+        ]),
+      ),
+    });
+
+    const reloadButtons = () =>
+      Array.from(
+        fixture.nativeElement.querySelectorAll('button[name="reload"]') as NodeListOf<HTMLElement>,
+      );
+
+    const recreateWithPending = (pending: string[]) => {
+      mockPluginsApi.getPluginsConfig = () => of(withPending(pending));
+      fixture = TestBed.createComponent(PluginConfigComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    };
+
+    it('nothing is pending by default and no reload button shows without developer mode', () => {
+      expect(component.anyReloadPending()).toBe(false);
+      expect(fixture.nativeElement.querySelector('#reload_pending_hint')).toBeNull();
+      expect(reloadButtons()).toHaveLength(0);
+    });
+
+    it('marks the pending plugin and shows its reload button despite developer mode being off', () => {
+      recreateWithPending(['backend']);
+
+      expect(component.anyReloadPending()).toBe(true);
+      expect(
+        component.configuredplugins().find((p) => p.confname === 'backend')!.reloadPending,
+      ).toBe(true);
+      expect(component.configuredplugins().find((p) => p.confname === 'cli')!.reloadPending).toBe(
+        false,
+      );
+      expect(fixture.nativeElement.querySelector('#reload_pending_hint')).not.toBeNull();
+      expect(reloadButtons()).toHaveLength(1);
+    });
+
+    it('highlights only the reload button of the pending plugin', () => {
+      recreateWithPending(['backend', 'cli']);
+
+      const highlighted = reloadButtons().filter((b) => b.classList.contains('reload-pending'));
+      expect(highlighted).toHaveLength(2);
+      expect(reloadButtons()).toHaveLength(2);
+    });
+
+    it('has no reload button for a pending plugin that is not loaded', () => {
+      recreateWithPending(['blockly']);
+
+      expect(reloadButtons()).toHaveLength(0);
+    });
   });
 });

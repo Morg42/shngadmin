@@ -33,6 +33,8 @@ export interface PluginSectionConfig {
   instance?: string;
   _meta?: PluginMetaInfo;
   _loaded?: boolean;
+  /** True if a pull updated the plugin's files and it still runs the old code (until reloaded or the core restarts). */
+  _reload_pending?: boolean;
   /** Only meaningful when _loaded is true (mirrors SmartPlugin.alive). */
   _running?: boolean;
   plugin_enabled?: boolean | string;

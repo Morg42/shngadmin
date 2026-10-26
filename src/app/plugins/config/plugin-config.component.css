@@ -32,3 +32,13 @@
 ::ng-deep .plugin-loading-spinner svg {
   vertical-align: middle;
 }
+
+/* !important: PrimeNG's severity styles load after this file and match at equal specificity. */
+.reload-pending {
+  background: var(--shng-attention) !important;
+  border-color: var(--shng-attention) !important;
+  color: #fff !important;
+  box-shadow:
+    0 0 0 2px var(--shng-page-bg),
+    0 0 0 4px var(--shng-attention) !important;
+}

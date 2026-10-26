@@ -112,7 +112,7 @@
                           severity="secondary"
                           [text]="true"
                           [disabled]="pullStatusPending() || pullRunning()"
-                          (click)="loadPullStatus()"
+                          (click)="refreshPull()"
                           title="{{ 'SERVICES.PULL_REFRESH' | translate }}"
                         ></button>
                       </div>
@@ -593,14 +593,46 @@
       <div class="pull-repo">
         <strong>{{ repo.repo }}</strong
         >: {{ 'SERVICES.PULL_STATUS.' + repo.status | translate }}
-        <pre class="pull-output">{{ repo.text }}</pre>
+        @if (updatedAreas(repo).length > 0) {
+          <div class="pull-updated">
+            {{
+              (repo.repo === 'plugins' ? 'SERVICES.PULL_UPDATED_PLUGINS' : 'SERVICES.PULL_UPDATED_CORE') | translate
+            }}:
+            {{ updatedAreas(repo).join(', ') }}
+          </div>
+        }
+        <details class="pull-raw" [open]="repo.status !== 'ok'">
+          <summary>{{ 'SERVICES.PULL_GIT_OUTPUT' | translate }}</summary>
+          <pre class="pull-output">{{ repo.text }}</pre>
+        </details>
       </div>
     }
-    @if (pullRestartNeeded()) {
-      <p-message id="pull_restart_hint" severity="warn">{{ 'SERVICES.PULL_RESTART_REQUIRED' | translate }}</p-message>
+    @if (pullRestartReasons().length > 0) {
+      <p-message id="pull_restart_hint" severity="warn"
+        >{{ 'SERVICES.PULL_RESTART_REQUIRED' | translate }} ({{ pullRestartReasons().join(', ') }})</p-message
+      >
+    } @else if (pullReloadPlugins().length > 0) {
+      <p-message id="pull_reload_hint" severity="info">{{
+        'SERVICES.PULL_RELOAD_REQUIRED' | translate: { plugins: pullReloadPlugins().join(', ') }
+      }}</p-message>
+    } @else if (pullNothingNeeded()) {
+      <p-message id="pull_nothing_needed_hint" severity="info">{{
+        'SERVICES.PULL_NOTHING_REQUIRED' | translate
+      }}</p-message>
     }
   }
   <ng-template pTemplate="footer">
+    @if (pullReloadPlugins().length > 0 && pullRestartReasons().length === 0) {
+      <button
+        type="button"
+        id="pull_show_plugins"
+        pButton
+        severity="secondary"
+        icon="fas fa-sync"
+        (click)="showPluginsToReload()"
+        label="{{ 'SERVICES.PULL_SHOW_PLUGINS' | translate }}"
+      ></button>
+    }
     <button
       type="button"
       pButton

@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { timer } from 'rxjs';
 import { AppConfigService } from '../common/services/app-config.service';
 import { UserPreferencesService } from '../common/services/user-preferences.service';
@@ -27,6 +28,7 @@ import { ServerInfo } from '../common/models/server-info';
 import {
   PullRepoCheck,
   PullRepoName,
+  PullRepoResult,
   PullRepoState,
   PullResponse,
   PullStatusResponse,
@@ -96,6 +98,7 @@ export class ServicesComponent implements OnInit {
   protected appConfig = inject(AppConfigService);
   private userPrefs = inject(UserPreferencesService);
   private readonly log = inject(LogService);
+  private readonly router = inject(Router);
 
   //  schedulerinfo: SchedulerInfo[];
 
@@ -127,9 +130,16 @@ export class ServicesComponent implements OnInit {
   readonly pullChecks = signal<Partial<Record<PullRepoName, PullRepoCheck>>>({});
   readonly pullStatusPending = signal(false);
   readonly pullRepoNames: PullRepoName[] = ['core', 'plugins'];
-  /** True if the last pull moved a checkout, i.e. the running core is older than the files on disk. */
-  readonly pullRestartNeeded = computed(
-    () => this.pullResult()?.repos.some((repo) => repo.changed) ?? false,
+  /** Why the last pull needs a restart of the core to run the updated code; empty if it does not. */
+  readonly pullRestartReasons = computed(() => this.pullResult()?.impact?.restart ?? []);
+  /** Plugins the last pull updated; a reload is enough for them (never set if a restart is needed). */
+  readonly pullReloadPlugins = computed(() => this.pullResult()?.impact?.reload ?? []);
+  /** True if the last pull moved a checkout, but neither a restart nor a reload is needed. */
+  readonly pullNothingNeeded = computed(
+    () =>
+      (this.pullResult()?.repos.some((repo) => repo.changed) ?? false) &&
+      this.pullRestartReasons().length === 0 &&
+      this.pullReloadPlugins().length === 0,
   );
 
   // -----------------------------------------------------
@@ -438,6 +448,19 @@ export class ServicesComponent implements OnInit {
   }
 
   // -------------------------------------------------------
+  // re-read branch and pull availability (they change when a checkout is switched), then the pull status
+  //
+  refreshPull() {
+    this.dataServiceServer
+      .getServerinfo()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((response) => {
+        this.serverInfo.set(<ServerInfo>response);
+        this.loadPullStatus();
+      });
+  }
+
+  // -------------------------------------------------------
   // how the server's checkouts stand against their upstream (fetches, so it can take a moment)
   //
   loadPullStatus() {
@@ -492,8 +515,20 @@ export class ServicesComponent implements OnInit {
     return !states.every((state) => state === 'current' || state === 'ahead');
   }
 
+  /** Top-level directories with changes in a pulled checkout (the plugins for the plugins checkout), sorted. */
+  updatedAreas(repo: PullRepoResult): string[] {
+    const areas = repo.files.filter((file) => file.includes('/')).map((file) => file.split('/')[0]);
+    return [...new Set(areas)].sort();
+  }
+
   closePullResult() {
     this.pullResult.set(null);
+  }
+
+  /** Closes the pull result and opens the plugin configuration, where the updated plugins are marked. */
+  showPluginsToReload() {
+    this.closePullResult();
+    void this.router.navigate(['/plugins/config']);
   }
 
   // -------------------------------------------------------

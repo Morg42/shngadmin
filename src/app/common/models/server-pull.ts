@@ -10,8 +10,18 @@ export interface PullRepoResult {
   status: 'ok' | 'error' | 'skipped';
   /** git's output, or the reason for an error or skip */
   text: string;
-  /** True if the checkout moved, i.e. a core restart is needed to run the new code */
+  /** True if the checkout moved, i.e. the files on disk differ from what the running core loaded */
   changed: boolean;
+  /** Paths that differ between the old and the new HEAD, relative to the repository root */
+  files: string[];
+}
+
+/** What the pulled changes demand of the running core. */
+export interface PullImpact {
+  /** Why a restart is needed; empty if none is */
+  restart: string[];
+  /** Configuration names of the plugins to reload instead; always empty if a restart is needed */
+  reload: string[];
 }
 
 export interface PullResponse {
@@ -19,6 +29,8 @@ export interface PullResponse {
   /** Set if the request was refused as a whole, e.g. because another pull is running */
   text?: string;
   repos: PullRepoResult[];
+  /** Missing if the request was refused as a whole */
+  impact?: PullImpact;
 }
 
 export type PullRepoState =

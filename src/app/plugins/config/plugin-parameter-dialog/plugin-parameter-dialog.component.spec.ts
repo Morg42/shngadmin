@@ -114,8 +114,7 @@ describe('PluginParameterDialogComponent', () => {
     expect(param('plainstring_param')['desc']).toBe('Serieller Port');
   });
 
-  it('classic/state/description are derived purely from meta', () => {
-    expect(component.classic()).toBe(false);
+  it('state/description are derived purely from meta', () => {
     expect(component.state()).toBe('');
     expect(component.description()).toBe('Test plugin');
   });

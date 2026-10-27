@@ -3,7 +3,7 @@
 SHNG_DIR="$HOME/shng"
 SHNG_BRANCH="develop"
 REQUIRED_BRANCH="develop"
-FORCE=false   # --force: skip the shng-branch guard and always run
+FORCE=false   # --force: skip the shng-branch guard, always run, fail on any branch
 
 # ── Parse optional flags ──────────────────────────────────────────────────────
 for _arg in "$@"; do
@@ -28,8 +28,8 @@ if $FORCE || [[ "$SHNG_CURRENT" == "$SHNG_BRANCH" ]]; then
     TEST_EXIT=$?
 
     if [ $TEST_EXIT -ne 0 ]; then
-        if [ "$CURRENT_BRANCH" = "$REQUIRED_BRANCH" ]; then
-            echo "[pre-commit] tests FAILED on '$REQUIRED_BRANCH' — aborting commit" >&2
+        if $FORCE || [ "$CURRENT_BRANCH" = "$REQUIRED_BRANCH" ]; then
+            echo "[pre-commit] tests FAILED on '$CURRENT_BRANCH' — aborting" >&2
             exit 1
         else
             echo "[pre-commit] tests FAILED (not '$REQUIRED_BRANCH', continuing anyway)"

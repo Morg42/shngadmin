@@ -26,6 +26,7 @@ import { PluginsInstalled } from '../../../common/models/plugins-installed';
 import { LogService } from '../../../common/services/log.service';
 import { PluginsApiService } from '../../../common/services/plugins-api.service';
 import { SharedService } from '../../../common/services/shared.service';
+import { removalState, removalStateLabelKey } from '../../../common/utils/plugin-state.utils';
 
 /** Extracted from PluginConfigComponent's "add a plugin instance" flow.
  *  Bundles the set-configuration-name sub-dialog, which is only ever
@@ -53,6 +54,9 @@ import { SharedService } from '../../../common/services/shared.service';
   ],
 })
 export class AddPluginDialogComponent {
+  protected readonly removalState = removalState;
+  protected readonly removalStateLabelKey = removalStateLabelKey;
+
   private readonly destroyRef = inject(DestroyRef);
   private readonly pluginsApi = inject(PluginsApiService);
   private readonly shared = inject(SharedService);

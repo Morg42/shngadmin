@@ -14,6 +14,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ConfigApiService } from '../../common/services/config-api.service';
 import { LogService } from '../../common/services/log.service';
 import { ServerApiService } from '../../common/services/server-api.service';
+import { ServicesApiService } from '../../common/services/services-api.service';
 
 import { ConfigParameter, TableColumn } from '../../common/models/interfaces';
 import { SharedService } from '../../common/services/shared.service';
@@ -26,7 +27,6 @@ import {
 import { NgStyle } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
-import { sha512 } from 'js-sha512';
 import { PrimeTemplate } from 'primeng/api';
 import { Bind } from 'primeng/bind';
 import { ButtonDirective } from 'primeng/button';
@@ -93,6 +93,7 @@ export class SystemConfigComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private dataService = inject(ConfigApiService);
   private dataServiceServer = inject(ServerApiService);
+  private servicesApi = inject(ServicesApiService);
   private shared = inject(SharedService);
   private translate = inject(TranslateService);
   private titleService = inject(Title);
@@ -201,21 +202,6 @@ export class SystemConfigComponent implements OnInit {
     this.fillMqttDialogData();
   }
 
-  private hashPlainPasswords(data: Record<string, unknown>): void {
-    if (data['password'] && data['password'] !== '') {
-      if (!data['hashed_password']) {
-        data['hashed_password'] = sha512(data['password'] as string);
-        data['password'] = null;
-      }
-    }
-    if (data['service_password'] && data['service_password'] !== '') {
-      if (!data['service_hashed_password']) {
-        data['service_hashed_password'] = sha512(data['service_password'] as string);
-        data['service_password'] = null;
-      }
-    }
-  }
-
   private buildSectionParams(section: ConfigSection, skip: string[] = []): ConfigParameter[] {
     const params: ConfigParameter[] = [];
     for (const param in section.meta.parameters) {
@@ -289,7 +275,6 @@ export class SystemConfigComponent implements OnInit {
   }
 
   fillHttpDialogData() {
-    this.hashPlainPasswords(this.config()!.http.data);
     this.http_parameter_cols.set(this.columnDefinitions());
     this.http_parameters.set(
       this.buildSectionParams(this.config()!.http, ['password', 'service_password']),
@@ -298,7 +283,6 @@ export class SystemConfigComponent implements OnInit {
   }
 
   fillWebsocketDialogData() {
-    this.hashPlainPasswords(this.config()!.websocket.data);
     this.websocket_parameter_cols.set(this.columnDefinitions());
     this.websocket_parameters.set(
       this.buildSectionParams(this.config()!.websocket, ['password', 'service_password']),
@@ -323,7 +307,6 @@ export class SystemConfigComponent implements OnInit {
   //
   change_password_dialog($event: unknown, rowData: ConfigParameter, col_field: string) {
     this.log.log('change_password_dialog()');
-    this.log.log('hash', rowData[col_field]);
     this.pwd_hash_old = rowData[col_field] as string | null;
     this.pwd_rowData = rowData;
     this.pwd_col = col_field;
@@ -347,27 +330,44 @@ export class SystemConfigComponent implements OnInit {
         return;
       }
 
-      // const wrk = sha512(this.pwd_old);
-      if (this.pwd_hash_old !== sha512(this.pwd_old)) {
-        this.pwd_old_is_wrong = true;
-        return;
-      }
+      this.servicesApi
+        .checkPassword(this.pwd_old, this.pwd_hash_old)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((match) => {
+          if (match) {
+            this.set_new_password();
+          } else {
+            this.pwd_old_is_wrong = true;
+          }
+        });
+      return;
     }
+    this.set_new_password();
+  }
+
+  /** Store the hash of the new password (null if it is empty) in the edited row and close the dialog. */
+  private set_new_password() {
     if (this.pwd_new1 !== this.pwd_new2) {
       this.pwd_new_not_identical = true;
       return;
     }
-
-    this.log.log('pwd_new1', this.pwd_new1);
-    this.log.log('pwd_new2', this.pwd_new2);
-
-    this.pwd_hash_new = null;
-    if (this.pwd_new1 !== null) {
-      this.pwd_hash_new = sha512(this.pwd_new1);
+    if (!this.pwd_new1) {
+      this.apply_new_password_hash(null);
+      return;
     }
-    this.log.log('pwd_hash_new', this.pwd_hash_new);
+    this.servicesApi
+      .hashPassword(this.pwd_new1)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((hash) => {
+        if (hash !== null) {
+          this.apply_new_password_hash(hash);
+        }
+      });
+  }
 
-    this.pwd_rowData![this.pwd_col!] = this.pwd_hash_new;
+  private apply_new_password_hash(hash: string | null) {
+    this.pwd_hash_new = hash;
+    this.pwd_rowData![this.pwd_col!] = hash;
     this.pwd_change_dialog_display = false;
     this.check_values();
   }
@@ -538,9 +538,10 @@ export class SystemConfigComponent implements OnInit {
         data['http']['data'][this.http_parameters()[p].name] = this.http_parameters()[p].value;
       }
     }
-    // remove plain passwords
-    data['http']['data']['password'] = null;
-    data['http']['data']['service_password'] = null;
+    // plaintext passwords from etc/module.yaml: the backend stores them as hashes (unless a hash is set) and removes them
+    const httpConfig = this.config()!.http.data as Record<string, unknown>;
+    data['http']['data']['password'] = httpConfig['password'] || null;
+    data['http']['data']['service_password'] = httpConfig['service_password'] || null;
 
     data['websocket'] = {};
     data['websocket']['data'] = {};

@@ -31,6 +31,7 @@ import { firstValueFrom } from 'rxjs';
 import { AppComponent, HttpLoaderFactory } from './app/app.component';
 import { appRoutes } from './app/app.routes';
 import { getBaseUrl, jwtOptionsFactory } from './app/bootstrap.utils';
+import { authErrorInterceptor } from './app/common/interceptors/auth-error.interceptor';
 import { connectivityInterceptor } from './app/common/interceptors/connectivity.interceptor';
 import { ServerApiService } from './app/common/services/server-api.service';
 import { StreamService } from './app/common/services/stream.service';
@@ -258,7 +259,10 @@ bootstrapApplication(AppComponent, {
     StreamService,
     TranslateService,
     provideAnimationsAsync(),
-    provideHttpClient(withInterceptorsFromDi(), withInterceptors([connectivityInterceptor])),
+    provideHttpClient(
+      withInterceptorsFromDi(),
+      withInterceptors([connectivityInterceptor, authErrorInterceptor]),
+    ),
     // '.dark-mode' (rather than the default 'system'/media-query-driven
     // selector) since dark mode here is an explicit user/admin choice, not
     // OS-preference-driven — see ThemeService, which toggles this class on

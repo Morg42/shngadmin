@@ -2,7 +2,6 @@
 // Datatype for <shng-server>:<port>/api/plugins/config.json
 //
 export interface PluginsConfig {
-  readonly: boolean;
   plugin_config: Record<string, Record<string, unknown>>;
 }
 
@@ -29,7 +28,6 @@ export interface PluginMetaInfo {
 
 export interface PluginSectionConfig {
   plugin_name?: string;
-  class_path?: string;
   instance?: string;
   _meta?: PluginMetaInfo;
   _loaded?: boolean;

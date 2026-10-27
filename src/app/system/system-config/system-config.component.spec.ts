@@ -15,6 +15,7 @@ import { AppConfigService } from '../../common/services/app-config.service';
 import { AuthService } from '../../common/services/auth.service';
 import { ConfigApiService } from '../../common/services/config-api.service';
 import { ServerApiService } from '../../common/services/server-api.service';
+import { ServicesApiService } from '../../common/services/services-api.service';
 import { SharedService } from '../../common/services/shared.service';
 import { SystemConfigComponent } from './system-config.component';
 
@@ -44,6 +45,11 @@ describe('SystemConfigComponent', () => {
     getServerinfo: jest.fn(() => of({})),
   };
 
+  const mockServicesApi = {
+    hashPassword: jest.fn((pw: string) => of('hash-of-' + pw)),
+    checkPassword: jest.fn((pw: string, hash: string) => of(hash === 'hash-of-' + pw)),
+  };
+
   const mockSharedService = {
     setGuiLanguage: () => {},
     getDescription: (d: any) => (d ? (d['en'] ?? d['de'] ?? '') : ''),
@@ -66,6 +72,7 @@ describe('SystemConfigComponent', () => {
         provideHttpClientTesting(),
         { provide: ConfigApiService, useValue: mockConfigApi },
         { provide: ServerApiService, useValue: mockServerApi },
+        { provide: ServicesApiService, useValue: mockServicesApi },
         { provide: AuthService, useValue: createMockAuthService() },
         { provide: AppConfigService, useValue: createMockAppConfigService() },
       ],
@@ -203,6 +210,62 @@ describe('SystemConfigComponent', () => {
       param('deprecated_warnings').value = true;
       component.saveSettings();
       expect(mockServerApi.getServerinfo).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // change_password() - old password check and new hash come from the backend
+  // -------------------------------------------------------------------------
+
+  describe('change_password', () => {
+    let row: Record<string, unknown>;
+
+    beforeEach(() => {
+      row = { value: 'hash-of-old' };
+      component.change_password_dialog(null, row as any, 'value');
+    });
+
+    it('stores the backend hash of the new password', () => {
+      component.pwd_old = 'old';
+      component.pwd_new1 = 'new';
+      component.pwd_new2 = 'new';
+
+      component.change_password(null);
+
+      expect(row['value']).toBe('hash-of-new');
+      expect(component.pwd_change_dialog_display).toBe(false);
+    });
+
+    it('rejects a wrong old password', () => {
+      component.pwd_old = 'wrong';
+      component.pwd_new1 = 'new';
+      component.pwd_new2 = 'new';
+
+      component.change_password(null);
+
+      expect(component.pwd_old_is_wrong).toBe(true);
+      expect(row['value']).toBe('hash-of-old');
+    });
+
+    it('rejects different new passwords', () => {
+      component.pwd_old = 'old';
+      component.pwd_new1 = 'new';
+      component.pwd_new2 = 'other';
+
+      component.change_password(null);
+
+      expect(component.pwd_new_not_identical).toBe(true);
+      expect(row['value']).toBe('hash-of-old');
+    });
+
+    it('an empty new password removes the hash', () => {
+      component.pwd_old = 'old';
+      component.pwd_new1 = null;
+      component.pwd_new2 = null;
+
+      component.change_password(null);
+
+      expect(row['value']).toBeNull();
     });
   });
 });

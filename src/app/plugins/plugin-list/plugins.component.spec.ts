@@ -68,6 +68,15 @@ describe('PluginsComponent', () => {
     expect(rows.length).toBe(fixtureData.length);
   });
 
+  it('shows a type icon for every plugin', () => {
+    const cells = fixture.nativeElement.querySelectorAll('tbody tr td:nth-child(2)');
+    expect(cells.length).toBe(fixtureData.length);
+    cells.forEach((cell: HTMLElement) => {
+      expect(cell.querySelector('img')).not.toBeNull();
+      expect(cell.textContent?.trim()).toBe('');
+    });
+  });
+
   it('should sort plugins by pluginname+configname', () => {
     // after sort, check first plugin matches alphabetically first entry
     const sorted = [...fixtureData].sort((a, b) => {

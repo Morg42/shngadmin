@@ -1,8 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map, shareReplay, take } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { catchError, map, shareReplay, take } from 'rxjs/operators';
 
 import { AppConfigService } from './app-config.service';
 import { LogService } from './log.service';
@@ -103,6 +103,13 @@ export class AuthService {
             this.log.log(anon + 'login:', 'fail');
             return false;
           }
+        }),
+        catchError((err: HttpErrorResponse) => {
+          if (err.status === 401) {
+            this.log.log('login:', 'rejected');
+            return of(false);
+          }
+          return throwError(() => err);
         }),
       );
   }

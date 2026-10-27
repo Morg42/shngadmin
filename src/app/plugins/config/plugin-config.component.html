@@ -123,8 +123,8 @@
             <td [style.opacity]="row.loaded ? '1' : '0.5'">
               @if (row['type'] && ['web', 'protocol', 'interface', 'gateway', 'system'].includes(row['type'])) {
                 <img [src]="'assets/img/plugin_' + row['type'] + '.svg'" style="width: 25px" width="25" height="25" />
-              } @else if (row['type'] === 'classic') {
-                &nbsp;-
+              } @else if (row['type'] === 'unknown') {
+                <span [title]="'PLUGIN.UNKNOWN' | translate">&nbsp;-</span>
               } @else {
                 <img ngSrc="assets/img/plugin_defaultlogo.png" style="width: 25px" height="300" width="300" />
               }
@@ -136,6 +136,13 @@
                 &nbsp;<fa-icon
                   style="color: var(--shng-warning)"
                   title="{{ 'PLUGIN.DEPRECATED' | translate }}"
+                  [icon]="faExclamationTriangle"
+                ></fa-icon>
+              }
+              @if (row['plugin'].charAt(0) === '!') {
+                &nbsp;<fa-icon
+                  style="color: var(--shng-red)"
+                  title="{{ 'PLUGIN.DEFUNCT' | translate }}"
                   [icon]="faExclamationTriangle"
                 ></fa-icon>
               }
@@ -191,17 +198,15 @@
               </td>
             }
             <td style="text-align: right; white-space: nowrap" (click)="$event.stopPropagation()">
-              @if (!pluginconflist.readonly) {
-                <button
-                  pButton
-                  icon="fas fa-trash-alt"
-                  name="delete"
-                  title="{{ 'BUTTON.DELETE' | translate }}"
-                  severity="danger"
-                  size="small"
-                  (click)="deleteConfigFromRow(row)"
-                ></button>
-              }
+              <button
+                pButton
+                icon="fas fa-trash-alt"
+                name="delete"
+                title="{{ 'BUTTON.DELETE' | translate }}"
+                severity="danger"
+                size="small"
+                (click)="deleteConfigFromRow(row)"
+              ></button>
             </td>
           </tr>
         }
@@ -221,7 +226,6 @@
   [meta]="dialog_meta"
   [currentConfig]="dialog_currentConfig"
   [siblingConfigs]="dialog_siblingConfigs"
-  [isReadonly]="dialog_readonly"
   (saved)="onParameterDialogSaved($event)"
 />
 

@@ -343,7 +343,7 @@
     "type": "gateway",
     "version": "1.0.0"
   },
-  "priv_sample_classicplugin": {
+  "priv_sample_untypedplugin": {
     "description": {
       "de": "Implementierung von ...",
       "en": "Plugin implements ..."

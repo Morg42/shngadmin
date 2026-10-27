@@ -32,6 +32,11 @@ import {
   validateValue,
   ValidationError,
 } from '../../../common/utils/input-validation.utils';
+import {
+  removalState,
+  removalStateLabelKey,
+  removalStateTextKey,
+} from '../../../common/utils/plugin-state.utils';
 
 /** Extracted from PluginConfigComponent's parameter-edit flow (former
  *  rowClicked()/saveConfig()). Bundles the validation-errors sub-dialog,
@@ -54,6 +59,10 @@ import {
   ],
 })
 export class PluginParameterDialogComponent {
+  protected readonly removalState = removalState;
+  protected readonly removalStateLabelKey = removalStateLabelKey;
+  protected readonly removalStateTextKey = removalStateTextKey;
+
   private readonly destroyRef = inject(DestroyRef);
   private readonly pluginsApi = inject(PluginsApiService);
   private readonly translate = inject(TranslateService);
@@ -69,22 +78,10 @@ export class PluginParameterDialogComponent {
   /** Other confnames configuring the same plugin, for the copy-from
    *  dropdown. Empty for single-instance plugins. */
   readonly siblingConfigs = input<{ confname: string; config: PluginSectionConfig }[]>([]);
-  readonly isReadonly = input<boolean>(false);
 
   readonly visible = model(false);
 
   readonly saved = output<{ confname: string; enabled: string; instance: string }>();
-
-  readonly classic = computed(() => {
-    const meta = this.meta();
-    let classic = true;
-    if (meta != null && meta.plugin !== undefined) {
-      if (meta.plugin.type !== undefined && meta.plugin.type !== 'classic') {
-        classic = false;
-      }
-    }
-    return classic;
-  });
 
   readonly state = computed(() => {
     const meta = this.meta();

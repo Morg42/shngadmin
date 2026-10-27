@@ -84,7 +84,6 @@ describe('PluginConfigComponent', () => {
   it('should set pluginconflist from fixture data', () => {
     // pluginconflist is populated in the subscribe callback
     expect(component.pluginconflist).toBeTruthy();
-    expect(component.pluginconflist.readonly).toBe(fixtureData.readonly);
   });
 
   it('should set up cols with 6 column definitions', () => {
@@ -223,6 +222,16 @@ describe('PluginConfigComponent', () => {
     const cli = component.configuredplugins().find((p) => p.confname === 'cli')!;
     expect(cli.loaded).toBe(true);
     expect(cli.running).toBe(false);
+  });
+
+  it('labels a plugin whose metadata has no type as unknown', () => {
+    const untyped = component.configuredplugins().find((p) => p.confname === 'sampleuntyped')!;
+    expect(untyped.type).toBe('unknown');
+  });
+
+  it('keeps the type from the metadata', () => {
+    const backend = component.configuredplugins().find((p) => p.confname === 'backend')!;
+    expect(backend.type).toBe('system');
   });
 
   it('defaults running/loaded to false for an unloaded plugin (develop)', () => {
@@ -420,7 +429,7 @@ describe('PluginConfigComponent', () => {
   // rowClicked(): sibling configs for the copy-from dropdown
   // -------------------------------------------------------------------------
 
-  it('rowClicked() finds siblings sharing the same class_path (dreambox_wz/sz/az fixture)', () => {
+  it('rowClicked() finds siblings sharing the same plugin_name (dreambox_wz/sz/az fixture)', () => {
     const row = component.configuredplugins().find((p) => p.confname === 'dreambox_wz')!;
     component.rowClicked(null, row);
 

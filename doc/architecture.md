@@ -16,7 +16,7 @@
 6. [Service Layer](#6-service-layer)
 7. [Authentication](#7-authentication)
 8. [Route Guards](#8-route-guards)
-9. [WebSocket Layer](#9-websocket-layer)
+9. [Stream Layer (SSE)](#9-stream-layer-sse)
 10. [HTTP Pipeline](#10-http-pipeline)
 11. [Reactive State: Signals and Observables](#11-reactive-state-signals-and-observables)
 12. [Change Detection: Zoneless + OnPush](#12-change-detection-zoneless--onpush)
@@ -36,7 +36,7 @@ shngAdmin is a **Single-Page Application (SPA)** that runs entirely in the brows
 
 The server (written in Python) exposes two interfaces:
 - A **REST API** at `/api/` for configuration reads and writes.
-- A **WebSocket endpoint** for real-time metric streaming and item-value subscriptions. Host and port are not fixed — they're read from the server's own config and delivered to the browser at startup (see Section 3).
+- A **Server-Sent-Events stream** at `/api/stream/` for real-time metric streaming and item-value subscriptions (changed with `PATCH /api/stream/<connectionId>`, see Section 9).
 
 The Angular app communicates with both, renders the results as interactive pages, and sends commands back (restart server, save a logic file, change a setting, etc.).
 
@@ -46,7 +46,7 @@ Browser                              SmartHomeNG Python server
   │  Angular SPA         │──HTTPS REST─▶│  REST API  /api/   │
   │  shngAdmin           │◀─────────────│                    │
   │                      │              │                    │
-  │                      │◀─WebSocket──▶│  WS Server         │
+  │                      │◀─────SSE─────│  SSE /api/stream   │
   └──────────────────────┘              └────────────────────┘
 ```
 
@@ -119,7 +119,7 @@ Fires a second, fuller request:
 GET /api/server/info   →   full ServerInfo  { tz, branches, itemtree settings, developer_mode, … }
 ```
 
-The response patches the remaining `AppConfigService` fields not already covered by the `APP_INITIALIZER`'s basic-info call. `TopNavigationComponent` also calls `WebsocketPluginService.connect()` at this point — by now `wsHost`/`wsPort` are already known.
+The response patches the remaining `AppConfigService` fields not already covered by the `APP_INITIALIZER`'s basic-info call. `SystemComponent` and `ItemTreeComponent` call `StreamService.connect()` once `serverReady$` has emitted.
 
 ### 3.6 Router activates the first route
 
@@ -170,7 +170,7 @@ In the template, `items` is read as a function call: `{{ items().length }}`, `@f
 
 Both represent "a value that changes over time," but they play different roles here:
 - **`signal()`** — a synchronous, always-has-a-current-value container. Reading it (`mySignal()`) inside a template or a `computed()` automatically registers that read as a dependency; Angular knows exactly which views to re-check when it changes. This is the default for component state in this codebase.
-- **RxJS Observables** — still used for anything inherently asynchronous or event-stream-shaped: HTTP responses, WebSocket messages, router events, `debounceTime`/`switchMap` pipelines. The bridge between the two is `toSignal()` (Observable → signal, for one-shot or push-based data at a component boundary) and, more rarely, `toObservable()` (signal → Observable).
+- **RxJS Observables** — still used for anything inherently asynchronous or event-stream-shaped: HTTP responses, stream (SSE) events, router events, `debounceTime`/`switchMap` pipelines. The bridge between the two is `toSignal()` (Observable → signal, for one-shot or push-based data at a component boundary) and, more rarely, `toObservable()` (signal → Observable).
 
 ### Templates
 
@@ -200,7 +200,7 @@ Always present. Contains:
 
 ### `TopNavigationComponent`
 
-Renders the horizontal navigation tabs. On init, fetches the full server info and connects the WebSocket. Reflects `AuthService.loggedIn$` to show/hide the login link, and reflects `ThemeService.darkMode$` to keep the light/dark/system toggle's own icon in sync (Section 13).
+Renders the horizontal navigation tabs. On init, fetches the full server info. Reflects `AuthService.loggedIn$` to show/hide the login link, and reflects `ThemeService.darkMode$` to keep the light/dark/system toggle's own icon in sync (Section 13).
 
 ### `OfflineBannerComponent`
 
@@ -263,7 +263,7 @@ this.appConfig.serverReady$.pipe(take(1)).subscribe(() => {
 | Observable | Emits when | Used by |
 |---|---|---|
 | `ready$` | `apiUrl` is set (ServerApiService ctor) | ConnectivityService |
-| `serverReady$` | `wsPort` is set | Anything gating on the WebSocket being connectable |
+| `serverReady$` | `wsPort` is set | `SystemComponent` and `ItemTreeComponent`, which open the event stream |
 | `authReady$` | `loginRequired` is set | `appReadyGuard`, `authGuard` |
 | `config$` | any `patch()` call | anything needing reactive config |
 
@@ -328,7 +328,7 @@ A grab-bag of utilities with no HTTP calls of its own:
 - `is_knx_groupaddress()`, `is_ipv4()`, `is_ipv6()`, `is_mac()`, `is_hostname()` — validators used by config/plugin parameter forms.
 - `getDescription(dict)` — picks the right language out of a `{de:..., en:..., fr:...}` description object, following the fallback language order.
 - `setGuiLanguage()` — switches the active `TranslateService` language.
-- `monitoredItemsList` — a `signal` holding the item-tree's live-monitored items. It lives here (a root singleton), not on `ItemTreeComponent` or `WebsocketPluginService`, because both of those are destroyed and recreated on navigation — this is what lets the monitored-items table survive navigating away and back, and (via a `localStorage['shng.items.monitored']` mirror, paths only) survive a full page reload too.
+- `monitoredItemsList` — a `signal` holding the item-tree's live-monitored items. It lives here (a root singleton), not on `ItemTreeComponent` or `StreamService`, because both of those are destroyed and recreated on navigation — this is what lets the monitored-items table survive navigating away and back, and (via a `localStorage['shng.items.monitored']` mirror, paths only) survive a full page reload too.
 
 ### 6.8 `UserPreferencesService`
 
@@ -435,7 +435,7 @@ placed **only on the parent route** — child routes deliberately don't repeat i
 
 `src/app/common/guards/app-ready.guard.ts`
 
-**Problem it solves**: components need `wsPort` and other server config before they can safely call the API or connect the WebSocket.
+**Problem it solves**: components need `wsPort` and other server config before they can safely call the API or open the event stream.
 
 **How it works**: fast-path returns `true` synchronously if `AppConfigService.snapshot.loginRequired !== null` — which, because of the `APP_INITIALIZER` described in Section 3.2, is already true by the time routing starts on essentially every real navigation. Falls back to waiting on `authReady$` with a 1-second timeout for the rare edge case where the guard runs before that initializer resolves.
 
@@ -455,55 +455,37 @@ placed **only on the parent route** — child routes deliberately don't repeat i
 
 ---
 
-## 9. WebSocket Layer
+## 9. Stream Layer (SSE)
 
-The WebSocket connection provides two things:
-1. **Real-time item value updates** — when a sensor value changes in SHNG, it is pushed to all subscribed browser clients.
-2. **System metric streaming** — CPU load, memory, swap, disk I/O, thread counts — for the live charts on the System dashboard.
+Live data does not come from polling and no longer uses a WebSocket. The server pushes it over one Server-Sent-Events stream (`GET /api/stream/`, backend `modules/admin/api_stream.py` in the SmartHomeNG core); the browser changes what it receives with REST `PATCH` requests. The stream provides two things:
+1. **Real-time item value updates** — when a sensor value changes in SHNG, it is pushed to the subscribed browser.
+2. **System metric streaming** — CPU load, memory, swap, disk usage, thread counts — for the live charts on the System dashboard.
 
-### 9.1 `WebsocketService` — the raw transport
+### 9.1 `StreamService`
 
-`src/app/common/services/websocket.service.ts`
+`src/app/common/services/stream.service.ts`
 
-Owns the `WebSocket` object. Responsibilities:
-- Connect to `ws://host:wsPort/...` (host/port come from `AppConfigService`, resolved at connect time).
-- Expose `messages$` (`Subject<MessageEvent>`) and `open$` (`Subject<void>`) as Observables.
-- Queue outgoing messages while the socket is closed; flush them on reconnect.
-- Auto-reconnect with exponential backoff: 2 → 4 → 8 → 16 → 30 seconds.
+Responsibilities:
+- `connect()` first calls `GET /api/stream/token` (normal JWT authorisation) to mint a short-lived, single-use token, then opens `new EventSource('/api/stream/?token=…')`.
+- The server's first event is `connection` with a `connectionId`. The service answers by sending its complete current subscription state (monitored item paths, series subscriptions) with `PATCH /api/stream/<connectionId>` (`{ addItems, removeItems, addSeries, removeSeries }`). A new `connectionId` means the backend knows no subscriptions, so no deltas are tracked across reconnects.
+- Incoming events: `item` (passed to the callback registered via `getMonitoredItems()`) and `series` (matched by `sid` against each metric and written to that metric's signal).
+- Auto-reconnect with exponential backoff: 2 → 4 → 8 → 16 → 30 seconds, reset when a `connection` event arrives. `disconnect()` closes the stream and stops reconnecting.
 
-This service still deliberately uses RxJS `Subject`s, not signals — it's the low-level transport layer, and its job is to model an event *stream*, which is what Observables are for. It has nothing to do with the app being zoneless (Section 12): whether a message arrives via a zone-patched callback or a raw native one makes no difference to how signals propagate.
-
-### 9.2 `WebsocketPluginService` — the domain protocol
-
-`src/app/common/services/websocket-plugin.service.ts`
-
-Understands the SHNG WebSocket message protocol. It subscribes to `WebsocketService.messages$` and routes incoming JSON messages by their `cmd` field. Unlike the raw transport, its entire *public* surface is `signal`s — components read `websocketPlugin.systemload()` directly in a template rather than subscribing.
-
-**Connection flow on open:** sends an `identity` message (`{ cmd: 'identity', sw, ver, browser, bver }`) on every connect/reconnect.
-
-**Outgoing message types:**
-
-| cmd | Purpose |
-|---|---|
-| `identity` | Announce browser info to server |
-| `monitor` | Subscribe to item value updates: `{ cmd: 'monitor', items: ['item.path', ...] }` |
-| `series` | Request historical data: `{ cmd: 'series', item: 'systemload', start, end, count }` |
-
-**Incoming message types:** `item` (routed to whatever callback is currently registered via `getMonitoredItems()`) and `series` (routed by matching `sid` against each metric's own signal, then `.update()`d).
+The public surface is `signal`s — components read `stream.systemload()` directly in a template rather than subscribing. Each incoming series message publishes a **new** `SeriesData` value (copy-based update), so signal consumers re-render.
 
 **Public signals** (all `signal<SeriesData>`): `systemload`, `systemmemory`, `systemswap`, `memory`, `threads`, `workerThreads`, `idleWorkerThreads`, `activeWorkerThreads`, `disk`.
 
-**Data normalisation**:
-- Timestamps from the server are in seconds; JavaScript `Date` uses milliseconds — the service multiplies by 1000.
-- Memory values are in bytes from the server; the service divides to display in MB.
+**Data normalisation**: memory series arrive in bytes and are divided to MB (`/1000/1000`); timestamps are converted to the display format with `SharedService.getTimeStamp()`.
 
-### 9.3 Item monitoring
+**Instances**: `SystemComponent` and `ItemTreeComponent` each declare their own `providers: [StreamService]`, so each page owns a private stream that is opened after `serverReady$` emits and closed in `ngOnDestroy`. The stream is not shared across pages.
 
-`ItemTreeComponent.monitorItem(path, true)` calls `WebsocketPluginService.getMonitoredItems(paths, callback)`, registering a callback that writes into `SharedService.monitoredItemsList` (a signal — see 6.7) on every incoming `item` message. Because that list lives on a root singleton and mirrors itself to `localStorage`, the monitored-items table keeps working correctly across both in-app navigation and a full page reload, re-subscribing to the same paths as soon as the WebSocket reconnects.
+### 9.2 Item monitoring
 
-### 9.4 Why two services?
+`ItemTreeComponent.monitorItem(path, true)` calls `StreamService.getMonitoredItems(paths, callback)`. The service compares the paths with its current set and sends one `PATCH` containing only the added and removed paths. The callback writes into `SharedService.monitoredItemsList` (a signal — see 6.7) on every incoming `item` event. Because that list lives on a root singleton and mirrors itself to `localStorage`, the monitored-items table keeps working across both in-app navigation and a full page reload, re-subscribing to the same paths as soon as the new stream announces its `connectionId`.
 
-`WebsocketService` only knows about raw WebSocket mechanics. `WebsocketPluginService` only knows about SHNG's domain protocol. This separation means you can test the protocol layer by feeding it fake `MessageEvent` objects without needing a real WebSocket connection.
+### 9.3 Series subscriptions
+
+`getSeriesLoad()`, `getSeriesSystemMemory()`, `getSeriesSwap()`, `getSeriesMemory()`, `getSeriesThreads()`, `getSeriesWorkerThreads()` and `getSeriesDisk()` each register a series subscription for the matching `env.*` item (average, period `start` .. `now`, `count` points) with a `PATCH`, and remember it so it is re-sent after a reconnect.
 
 ---
 
@@ -705,7 +687,7 @@ const label = this.translate.instant('ITEMS.SEARCH_PLACEHOLDER');
 
 ### System (`src/app/system/`)
 
-`SystemComponent` — resource-usage dashboard: license text, plugin/documentation/testsuite package status (from PyPI), and real-time charts (CPU load, memory, swap, disk, threads, worker threads) fed by `WebsocketPluginService`'s signals into Chart.js instances.
+`SystemComponent` — resource-usage dashboard: license text, plugin/documentation/testsuite package status (from PyPI), and real-time charts (CPU load, memory, swap, disk, threads, worker threads) fed by `StreamService`'s signals into Chart.js instances.
 
 `SystemConfigComponent` (`/system/config`) — editor for SHNG's core `etc/*.yaml` config, plus a check/enable flow for the newer `etc/`-based config layout, and a restart-core button.
 
@@ -715,7 +697,7 @@ const label = this.translate.instant('ITEMS.SEARCH_PLACEHOLDER');
 - Left panel: a PrimeNG `p-tree` of the full item hierarchy, with path/name filtering and expand/collapse-all.
 - Right panel: selected item's full details (value, type, update/change timestamps and who caused them, eval/trigger/cron config), with an inline value editor.
 - Create / Edit / Rename-or-move / Delete dialogs, each with its own validation (e.g. delete offers to clean up references to the item found elsewhere in the config; rename can auto-create missing ancestor items).
-- A monitored-items tab: pin any item to watch its live value via the WebSocket, independent of tree navigation — see Section 9.3 for how that survives navigation and reload.
+- A monitored-items tab: pin any item to watch its live value via the event stream, independent of tree navigation — see Section 9.3 for how that survives navigation and reload.
 
 Also in this folder: `ItemConfigurationComponent` (`/items/config`, raw item-definition YAML file editor), `StructsComponent` and `StructConfigurationComponent` (struct browsing/editing), and `AttributeValueInputComponent` (shared type-aware input, also used by the plugin config editor).
 

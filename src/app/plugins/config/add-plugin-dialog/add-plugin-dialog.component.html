@@ -98,14 +98,11 @@
                     <tr style="cursor: pointer" (click)="selectPlugin(iplugin)">
                       <td style="padding-left: 15px">
                         {{ iplugin }}
-                        @if (
-                          plugins_installed()[iplugin].state &&
-                          plugins_installed()[iplugin].state.toLowerCase() === 'deprecated'
-                        ) {
+                        @if (removalState(plugins_installed()[iplugin].state); as toBeRemoved) {
                           &nbsp;
                           <fa-icon
                             style="color: var(--shng-warning)"
-                            title="{{ 'PLUGIN.DEPRECATED' | translate }}"
+                            title="{{ removalStateLabelKey(toBeRemoved) | translate }}"
                             [icon]="faExclamationTriangle"
                           ></fa-icon>
                         }
@@ -163,13 +160,11 @@
           <tr style="cursor: pointer" (click)="selectPlugin(iplugin)">
             <td style="padding-left: 15px">
               {{ iplugin }}
-              @if (
-                plugins_installed()[iplugin].state && plugins_installed()[iplugin].state.toLowerCase() === 'deprecated'
-              ) {
+              @if (removalState(plugins_installed()[iplugin].state); as toBeRemoved) {
                 &nbsp;
                 <fa-icon
                   style="color: var(--shng-warning)"
-                  title="{{ 'PLUGIN.DEPRECATED' | translate }}"
+                  title="{{ removalStateLabelKey(toBeRemoved) | translate }}"
                   [icon]="faExclamationTriangle"
                 ></fa-icon>
               }

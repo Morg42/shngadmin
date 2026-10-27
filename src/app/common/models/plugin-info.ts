@@ -10,7 +10,6 @@ export interface PlugininfoType {
   configname: string;
   version: string;
   state: string;
-  smartplugin: boolean;
   multiinstance: boolean;
   configuration_needed: boolean;
   instancename: string;

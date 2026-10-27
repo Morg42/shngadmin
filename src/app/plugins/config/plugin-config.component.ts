@@ -46,6 +46,7 @@ import {
   PluginsConfig,
   PluginSectionConfig,
 } from '../../common/models/plugins-config';
+import { removalState } from '../../common/utils/plugin-state.utils';
 import { AddPluginDialogComponent } from './add-plugin-dialog/add-plugin-dialog.component';
 import { PluginParameterDialogComponent } from './plugin-parameter-dialog/plugin-parameter-dialog.component';
 
@@ -180,7 +181,6 @@ export class PluginConfigComponent implements OnInit {
 
   // for list of installed plugins dialog
   readonly dialog_display = signal(false);
-  dialog_readonly = false;
   dialog_configname!: string;
   dialog_pluginname!: string;
   dialog_meta?: PluginMetaInfo;
@@ -252,17 +252,16 @@ export class PluginConfigComponent implements OnInit {
     for (const plg in plugin_config) {
       if (plugin_config.hasOwnProperty(plg)) {
         const confname = plg;
-        const plgname = (plugin_config[plg].plugin_name ?? plugin_config[plg].class_path) as
-          | string
-          | undefined;
+        const plgname = plugin_config[plg].plugin_name;
         const instance = plugin_config[plg].instance;
 
         const meta = plugin_config[confname]._meta;
 
         let deprecated = '-';
         if (meta?.plugin) {
-          if (meta.plugin.state && meta.plugin.state.toLowerCase() === 'deprecated') {
-            deprecated = '+';
+          const toBeRemoved = removalState(meta.plugin.state);
+          if (toBeRemoved) {
+            deprecated = toBeRemoved === 'defunct' ? '!' : '+';
           } else if (meta.plugin.state && meta.plugin.state.toLowerCase() === 'develop') {
             deprecated = 'd';
           } else {
@@ -284,18 +283,11 @@ export class PluginConfigComponent implements OnInit {
           conf.enabled = 'false';
         }
 
-        if (meta == null || !meta.plugin) {
-          conf.type = 'classic';
-        } else {
-          conf.type = meta.plugin.type;
-        }
+        conf.type = meta?.plugin?.type || 'unknown';
 
         let desc: unknown = plugin_config[plg]._description;
-        if (conf.type === undefined || conf.type === 'classic') {
-          conf.type = 'classic';
-          if (plugin_config[plg]._meta != null) {
-            desc = plugin_config[plg]._meta?.plugin?.description;
-          }
+        if (conf.type === 'unknown' && meta != null) {
+          desc = meta.plugin?.description;
         }
         const plgdesc = this.shared.getDescription(
           desc as Record<string, string> | string | null | undefined,
@@ -325,19 +317,16 @@ export class PluginConfigComponent implements OnInit {
     this.dialog_meta = conf._meta;
     this.dialog_currentConfig = conf;
     this.dialog_siblingConfigs = this.buildSiblingConfigs(rowdata.confname, conf);
-    this.dialog_readonly = this.pluginconflist.readonly;
 
     this.dialog_display.set(true);
   }
 
-  /** Other sections sharing the same plugin identity (plugin_name, falling
-   *  back to class_path for classic plugins - same fallback already used
-   *  above for the row's display name). */
+  /** Other sections sharing the same plugin_name. */
   private buildSiblingConfigs(
     confname: string,
     conf: PluginSectionConfig,
   ): { confname: string; config: PluginSectionConfig }[] {
-    const identity = conf.plugin_name ?? conf.class_path;
+    const identity = conf.plugin_name;
     if (!identity) {
       return [];
     }
@@ -345,7 +334,7 @@ export class PluginConfigComponent implements OnInit {
     const siblings: { confname: string; config: PluginSectionConfig }[] = [];
     for (const otherConfname in pconf) {
       const other = pconf[otherConfname];
-      if (otherConfname !== confname && (other.plugin_name ?? other.class_path) === identity) {
+      if (otherConfname !== confname && other.plugin_name === identity) {
         siblings.push({ confname: otherConfname, config: other });
       }
     }

@@ -80,6 +80,32 @@ describe('AuthService (no token)', () => {
     expect(results).toEqual([true, true]);
   });
 
+  it('login() resolves false when the server rejects the credentials with 401', () => {
+    const http = TestBed.inject(HttpTestingController);
+    let result: boolean | undefined;
+
+    service.login({ username: 'admin', password: 'wrong' }).subscribe((r) => (result = r));
+    http
+      .expectOne('/api/authenticate/user')
+      .flush(
+        { error: 'invalid user name or password' },
+        { status: 401, statusText: 'Unauthorized' },
+      );
+
+    expect(result).toBe(false);
+    expect(service.isLoggedIn()).toBe(false);
+  });
+
+  it('ensureLoggedIn() resolves false when anonymous login is rejected with 401', () => {
+    const http = TestBed.inject(HttpTestingController);
+    let result: boolean | undefined;
+
+    service.ensureLoggedIn().subscribe((r) => (result = r));
+    http.expectOne('/api/authenticate/user').flush({}, { status: 401, statusText: 'Unauthorized' });
+
+    expect(result).toBe(false);
+  });
+
   it('ensureLoggedIn() re-attempts login after logout() clears the cache', () => {
     const http = TestBed.inject(HttpTestingController);
 

@@ -683,7 +683,7 @@
         "logfiles": []
       }
     },
-    "plugins.priv_sample_classicplugin": {
+    "plugins.priv_sample_untypedplugin": {
       "not_conf": true,
       "active": {
         "disabled": false,

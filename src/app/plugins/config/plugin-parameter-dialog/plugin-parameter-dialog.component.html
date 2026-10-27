@@ -55,20 +55,20 @@
       </tr>
     }
   </table>
-  @if (state() && state().toLowerCase() === 'deprecated') {
+  @if (removalState(state()); as toBeRemoved) {
     <table style="width: 100%">
       <tr>
         <td align="center" style="width: 30px">
           <fa-icon
             style="color: var(--shng-warning)"
-            title="{{ 'PLUGIN.DEPRECATED' | translate }}"
+            title="{{ removalStateLabelKey(toBeRemoved) | translate }}"
             [icon]="faExclamationTriangle"
           ></fa-icon>
         </td>
         <td>
-          <strong>{{ 'PLUGIN.DEPRECATED' | translate }}:</strong>
+          <strong>{{ removalStateLabelKey(toBeRemoved) | translate }}:</strong>
           <p style="padding: 0; margin: 0; background-color: var(--shng-cell-alt-bg); border: 0">
-            {{ 'PLUGIN.DEPRECATED_TEXT' | translate }}
+            {{ removalStateTextKey(toBeRemoved) | translate }}
           </p>
         </td>
       </tr>
@@ -76,92 +76,72 @@
   }
   <br />
 
-  @if (!classic()) {
-    <p-table
-      [style]="{ minHeight: '200px', height: 'calc(80vh - 200px)' }"
-      [columns]="parameter_cols"
-      [value]="parameters()"
-      selectionMode="single"
-    >
-      <ng-template pTemplate="header" let-columns>
-        <tr>
-          @for (col of columns; track col.field) {
-            <th [pSortableColumn]="col.field" [ngStyle]="{ width: col.width }">
-              {{ col.header | translate }}
-              @if (col.field !== '') {
-                <p-sortIcon
-                  [field]="col.field"
-                  ariaLabel="Activate to sort"
-                  ariaLabelDesc="Activate to sort in descending order"
-                  ariaLabelAsc="Activate to sort in ascending order"
-                ></p-sortIcon>
+  <p-table
+    [style]="{ minHeight: '200px', height: 'calc(80vh - 200px)' }"
+    [columns]="parameter_cols"
+    [value]="parameters()"
+    selectionMode="single"
+  >
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        @for (col of columns; track col.field) {
+          <th [pSortableColumn]="col.field" [ngStyle]="{ width: col.width }">
+            {{ col.header | translate }}
+            @if (col.field !== '') {
+              <p-sortIcon
+                [field]="col.field"
+                ariaLabel="Activate to sort"
+                ariaLabelDesc="Activate to sort in descending order"
+                ariaLabelAsc="Activate to sort in ascending order"
+              ></p-sortIcon>
+            }
+          </th>
+        }
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns">
+      <tr>
+        @for (col of columns; track col.field) {
+          <td>
+            @if (col.field === 'value') {
+              <app-dynamic-field [row]="rowData" [col]="col"></app-dynamic-field>
+            }
+            @if (col.field !== 'value') {
+              @if (col.field !== 'desc') {
+                {{ rowData[col.field] }}
               }
-            </th>
-          }
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-rowData let-columns="columns">
-        <tr>
-          @for (col of columns; track col.field) {
-            <td>
-              @if (isReadonly() === false && col.field === 'value') {
-                <app-dynamic-field [row]="rowData" [col]="col"></app-dynamic-field>
+              @if (col.field === 'desc') {
+                <div [innerHTML]="rowData[col.field]"></div>
               }
-              @if (isReadonly() === true || col.field !== 'value') {
-                @if (isReadonly() === true || col.field !== 'desc') {
-                  {{ rowData[col.field] }}
-                }
-                @if (isReadonly() === true || col.field === 'desc') {
-                  <div [innerHTML]="rowData[col.field]"></div>
-                }
-              }
-            </td>
-          }
-        </tr>
-      </ng-template>
-    </p-table>
-  }
-  @if (classic()) {
-    <div>
-      {{ 'PLUGIN.CLASSIC_NOT_CONFIGURABLE' | translate }}
-    </div>
-    <br />
-  }
+            }
+          </td>
+        }
+      </tr>
+    </ng-template>
+  </p-table>
 
   <ng-template pTemplate="footer">
-    @if (isReadonly() === false) {
-      @if (saveError()) {
-        <span style="color: var(--shng-danger); font-size: var(--font-size-base); margin-right: 1rem">
-          <i class="fa fa-exclamation-triangle"></i>&nbsp;{{ saveError() }}
-        </span>
-      }
-      <button
-        pButton
-        type="button"
-        icon="fa fa-check"
-        (click)="saveConfig()"
-        label="{{ 'BUTTON.SAVE' | translate }}"
-        severity="success"
-      ></button>
-      <button
-        pButton
-        type="button"
-        icon="fa fa-times"
-        (click)="abort()"
-        label="{{ 'BUTTON.ABORT' | translate }}"
-        severity="secondary"
-      ></button>
+    @if (saveError()) {
+      <span style="color: var(--shng-danger); font-size: var(--font-size-base); margin-right: 1rem">
+        <i class="fa fa-exclamation-triangle"></i>&nbsp;{{ saveError() }}
+      </span>
     }
-    @if (isReadonly() === true) {
-      <button
-        pButton
-        type="button"
-        icon="fa fa-times"
-        (click)="visible.set(false)"
-        label="{{ 'BUTTON.CLOSE' | translate }}"
-        severity="success"
-      ></button>
-    }
+    <button
+      pButton
+      type="button"
+      icon="fa fa-check"
+      (click)="saveConfig()"
+      label="{{ 'BUTTON.SAVE' | translate }}"
+      severity="success"
+    ></button>
+    <button
+      pButton
+      type="button"
+      icon="fa fa-times"
+      (click)="abort()"
+      label="{{ 'BUTTON.ABORT' | translate }}"
+      severity="secondary"
+    ></button>
   </ng-template>
 </p-dialog>
 

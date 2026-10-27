@@ -12,6 +12,10 @@
  *     Returns the response; of({}) on HTTP error
  *   - deleteCacheFile(filename) — PUT /api/services/cachefile_delete?filename=
  *     Returns the response; of({}) on HTTP error
+ *   - hashPassword(password) — PUT /api/services/hashpassword/
+ *     Returns the hash; null on HTTP error
+ *   - checkPassword(password, hash) — PUT /api/services/checkpassword/
+ *     Returns the match flag; false on HTTP error
  */
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
@@ -178,5 +182,47 @@ describe('ServicesApiService', () => {
       .expectOne((r) => r.url.includes('missing.cache'))
       .flush({ error: 'err' }, { status: 500, statusText: 'Server Error' });
     expect(result).toEqual({});
+  });
+
+  // -------------------------------------------------------------------------
+  // hashPassword / checkPassword
+  // -------------------------------------------------------------------------
+
+  it('hashPassword() sends the password as PUT body and returns the hash', () => {
+    let result: string | null | undefined;
+    service.hashPassword('secret').subscribe((r) => (result = r));
+    const req = http.expectOne('/api/services/hashpassword/');
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toBe('secret');
+    req.flush({ hash: 'pbkdf2_sha256$600000$s$d' });
+    expect(result).toBe('pbkdf2_sha256$600000$s$d');
+  });
+
+  it('hashPassword() returns null on HTTP error', () => {
+    let result: string | null | undefined;
+    service.hashPassword('secret').subscribe((r) => (result = r));
+    http
+      .expectOne('/api/services/hashpassword/')
+      .flush('err', { status: 500, statusText: 'Server Error' });
+    expect(result).toBeNull();
+  });
+
+  it('checkPassword() sends password and hash and returns the match flag', () => {
+    let result: boolean | undefined;
+    service.checkPassword('secret', 'h').subscribe((r) => (result = r));
+    const req = http.expectOne('/api/services/checkpassword/');
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual({ password: 'secret', hash: 'h' });
+    req.flush({ match: true });
+    expect(result).toBe(true);
+  });
+
+  it('checkPassword() returns false on HTTP error', () => {
+    let result: boolean | undefined;
+    service.checkPassword('secret', 'h').subscribe((r) => (result = r));
+    http
+      .expectOne('/api/services/checkpassword/')
+      .flush('err', { status: 500, statusText: 'Server Error' });
+    expect(result).toBe(false);
   });
 });

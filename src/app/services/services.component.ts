@@ -38,7 +38,6 @@ import { SharedService } from '../common/services/shared.service';
 
 import { NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { sha512 } from 'js-sha512';
 import { MessageService, PrimeTemplate } from 'primeng/api';
 import { Bind } from 'primeng/bind';
 import { ButtonDirective } from 'primeng/button';
@@ -281,7 +280,12 @@ export class ServicesComponent implements OnInit {
 
   createPwdHash() {
     this.log.log('createPwdHash');
-    this.pwd_hash = sha512(this.pwd_clear);
+    this.dataService
+      .hashPassword(this.pwd_clear)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((hash) => {
+        this.pwd_hash = hash ?? '';
+      });
   }
 
   checkYaml() {

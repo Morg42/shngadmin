@@ -1,10 +1,18 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AppConfigService } from './app-config.service';
 import { LogService } from './log.service';
+
+interface PasswordHashResult {
+  hash: string;
+}
+
+interface PasswordCheckResult {
+  match: boolean;
+}
 
 interface EvalResult {
   expression: string;
@@ -150,6 +158,42 @@ export class ServicesApiService {
             err.error.error,
         );
         return of({});
+      }),
+    );
+  }
+
+  /**
+   * Create a salted password hash on the backend (PUT /api/services/hashpassword/).
+   *
+   * Emits the hash, or null if the backend could not create it.
+   */
+  hashPassword(password: string): Observable<string | null> {
+    const url = this.appConfig.apiUrl + 'services/hashpassword/';
+    return this.http.put<PasswordHashResult>(url, password).pipe(
+      map((response) => response?.hash ?? null),
+      catchError((err: HttpErrorResponse) => {
+        this.log.error(
+          'ServicesApiService.hashPassword: Could not create password hash - ' + err.message,
+        );
+        return of(null);
+      }),
+    );
+  }
+
+  /**
+   * Check a password against a password hash on the backend (PUT /api/services/checkpassword/).
+   *
+   * Emits false if the password does not match or the backend could not check it.
+   */
+  checkPassword(password: string, hash: string): Observable<boolean> {
+    const url = this.appConfig.apiUrl + 'services/checkpassword/';
+    return this.http.put<PasswordCheckResult>(url, { password, hash }).pipe(
+      map((response) => response?.match === true),
+      catchError((err: HttpErrorResponse) => {
+        this.log.error(
+          'ServicesApiService.checkPassword: Could not check password - ' + err.message,
+        );
+        return of(false);
       }),
     );
   }

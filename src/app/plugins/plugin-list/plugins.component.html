@@ -113,13 +113,7 @@
                     title="{{ 'PLUGIN.' + plugin.metadata.type | uppercase | translate }}"
                   />
                 }
-                @if (plugin.smartplugin !== true) {
-                  -
-                }
-                @if (
-                  plugin.smartplugin === true &&
-                  !['web', 'protocol', 'interface', 'gateway', 'system', 'classic'].includes(plugin.metadata.type)
-                ) {
+                @if (!['web', 'protocol', 'interface', 'gateway', 'system'].includes(plugin.metadata.type)) {
                   <img
                     ngSrc="assets/img/plugin_defaultlogo.png"
                     style="width: 25px; cursor: pointer"
@@ -130,11 +124,8 @@
               </td>
 
               <td class="py-1">
-                @if (plugin.smartplugin === true && plugin.multiinstance === true) {
+                @if (plugin.multiinstance === true) {
                   MI
-                }
-                @if (plugin.smartplugin !== true) {
-                  Cl
                 }
               </td>
 

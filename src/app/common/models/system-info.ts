@@ -1,5 +1,5 @@
 //
-// Datatype for <shng-server>:<port>/admin/systeminfo.json
+// Datatype for <shng-server>:<port>/api/system/info
 //
 export interface SystemInfo {
   now: string;

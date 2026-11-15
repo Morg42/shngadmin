@@ -19,6 +19,7 @@ import { ToggleSwitch } from 'primeng/toggleswitch';
 import { ItemDetails } from '../../../common/models/item-details';
 import { ItemReference } from '../../../common/models/item-reference';
 import { ItemsApiService } from '../../../common/services/items-api.service';
+import { itemOperationErrorMessage } from '../item-operation-error.utils';
 
 /** Extracted from ItemTreeComponent's delete flow. deleteItemHasFile/
  *  deleteItemHasChildren/deleteItemDescendantCount/countDescendants moved
@@ -200,8 +201,7 @@ export class DeleteItemDialogComponent {
         },
         error: (err: HttpErrorResponse) => {
           this.deleteItemError.set(
-            (err.error?.error as string | undefined) ??
-              this.translate.instant('ITEMS.DELETE_FAILED'),
+            itemOperationErrorMessage(err, this.translate, 'ITEMS.DELETE_FAILED'),
           );
         },
       });

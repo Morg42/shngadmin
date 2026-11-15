@@ -33,6 +33,7 @@ import {
 } from '../../../common/utils/input-validation.utils';
 import { AttributeBrowserComponent } from '../../attribute-browser/attribute-browser.component';
 import { AttributeValueInputComponent } from '../../attribute-value-input/attribute-value-input.component';
+import { itemOperationErrorMessage } from '../item-operation-error.utils';
 import { computeMissingAncestors } from '../item-tree-path.utils';
 
 /** Extracted from ItemTreeComponent's create-item flow. Self-sufficient: fetches
@@ -270,8 +271,7 @@ export class CreateItemDialogComponent {
         },
         error: (err: HttpErrorResponse) => {
           this.newItemError.set(
-            (err.error?.error as string | undefined) ??
-              this.translate.instant('ITEMS.CREATE_FAILED'),
+            itemOperationErrorMessage(err, this.translate, 'ITEMS.CREATE_FAILED'),
           );
         },
       });

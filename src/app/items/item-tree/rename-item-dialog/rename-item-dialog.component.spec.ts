@@ -149,6 +149,42 @@ describe('RenameItemDialogComponent', () => {
     expect(component.visible()).toBe(true);
   });
 
+  it('submitRenameItem() shows the busy message when another item operation is still running', () => {
+    mockItemsApi.renameItem.mockReturnValue(
+      throwError(() => ({
+        status: 409,
+        error: {
+          error: "Item operation 'rename_item(a.b)' is still running - retry when it has finished",
+        },
+      })),
+    );
+    component.open();
+    component.renameItemNewPathInput = 'a.newname';
+
+    component.submitRenameItem();
+
+    expect(component.renameItemError()).toBe('ITEMS.OPERATION_BUSY');
+    expect(component.visible()).toBe(true);
+  });
+
+  it('submitRenameItem() shows the busy message for a copy when another item operation is still running', () => {
+    mockItemsApi.copyItem.mockReturnValue(
+      throwError(() => ({
+        status: 409,
+        error: {
+          error: "Item operation 'rename_item(a.b)' is still running - retry when it has finished",
+        },
+      })),
+    );
+    fixture.componentRef.setInput('isCopy', true);
+    component.open();
+    component.renameItemNewPathInput = 'a.newname';
+
+    component.submitRenameItem();
+
+    expect(component.renameItemError()).toBe('ITEMS.OPERATION_BUSY');
+  });
+
   it('submitRenameItem() shows a specific message when the target would be a child of itself', () => {
     mockItemsApi.renameItem.mockReturnValue(
       throwError(() => ({ error: { error: 'cannot become a child of itself' } })),

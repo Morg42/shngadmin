@@ -102,14 +102,6 @@ export function createMockAuthService() {
   };
 }
 
-/** Minimal stub for OlddataService — no WebSocket. */
-export function createMockOlddataService() {
-  return {
-    getValue: (_item: string) => of(null),
-    subscribe: () => {},
-  };
-}
-
 /** Minimal stub for StreamService. */
 export function createMockStreamService() {
   return {

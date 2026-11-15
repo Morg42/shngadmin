@@ -25,6 +25,7 @@ import {
   ItemRelativeReferenceFlagged,
 } from '../../../common/models/item-copy-result';
 import { ItemsApiService } from '../../../common/services/items-api.service';
+import { itemOperationErrorMessage } from '../item-operation-error.utils';
 import { computeMissingAncestors, findAndExpandNodeByPath } from '../item-tree-path.utils';
 
 /** Extracted from ItemTreeComponent's rename/copy flow. Bundles the three
@@ -323,7 +324,9 @@ export class RenameItemDialogComponent {
           if (RenameItemDialogComponent.CYCLE_PATTERN.test(message ?? '')) {
             this.renameItemError.set(this.translate.instant('ITEMS.RENAME_CYCLE'));
           } else {
-            this.renameItemError.set(message ?? this.translate.instant('ITEMS.RENAME_FAILED'));
+            this.renameItemError.set(
+              itemOperationErrorMessage(err, this.translate, 'ITEMS.RENAME_FAILED'),
+            );
           }
         },
       });
@@ -366,7 +369,9 @@ export class RenameItemDialogComponent {
             return;
           }
           this.renameItemSubmitting.set(false);
-          this.renameItemError.set(message ?? this.translate.instant('ITEMS.COPY_FAILED'));
+          this.renameItemError.set(
+            itemOperationErrorMessage(err, this.translate, 'ITEMS.COPY_FAILED'),
+          );
         },
       });
   }
@@ -414,8 +419,11 @@ export class RenameItemDialogComponent {
       (err: HttpErrorResponse) => {
         this.renameItemSubmitting.set(false);
         this.renameItemError.set(
-          (err.error?.error as string | undefined) ??
-            this.translate.instant(isCopy ? 'ITEMS.COPY_FAILED' : 'ITEMS.RENAME_FAILED'),
+          itemOperationErrorMessage(
+            err,
+            this.translate,
+            isCopy ? 'ITEMS.COPY_FAILED' : 'ITEMS.RENAME_FAILED',
+          ),
         );
       },
     );

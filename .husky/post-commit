@@ -7,15 +7,17 @@
 #   Returns to the 'work' branch when done.
 #
 # Release mode (called by release.sh):
-#   sa-deploy.sh --release
+#   sa-deploy.sh --release [--shng-branch=<release branch>]
 #   Runs only on the 'master' branch.
-#   Requires shng to be checked out on 'develop'.
+#   Requires shng to be checked out on 'develop' (override with --shng-branch=).
 #   Does NOT switch branches when done — caller manages branch state.
+#
+# Environment: ADMINUI_DIR and SHNG_DIR override $HOME/shngadmin and $HOME/shng.
 
 set -euo pipefail
 
 # ── Always run from the adminUI repo root ────────────────────────────────────
-cd "$HOME/shngadmin"
+cd "${ADMINUI_DIR:-$HOME/shngadmin}"
 
 # ── Parse flags ───────────────────────────────────────────────────────────────
 RELEASE_MODE=false
@@ -29,16 +31,15 @@ done
 unset _arg
 
 # ── Configuration ─────────────────────────────────────────────────────────────
-SHNG_DIR="$HOME/shng"
+SHNG_DIR="${SHNG_DIR:-$HOME/shng}"
 SHNG_TARGET="$SHNG_DIR/modules/admin/webif/static"
+SHNG_BRANCH="${SHNG_BRANCH_OVERRIDE:-develop}"
 
 if $RELEASE_MODE; then
     REQUIRED_BRANCH="master"
-    SHNG_BRANCH="develop"
     LOG_TAG="[sa-deploy --release]"
 else
     REQUIRED_BRANCH="develop"
-    SHNG_BRANCH="${SHNG_BRANCH_OVERRIDE:-develop}"
     LOG_TAG="[sa-deploy]"
     # Hook guard: only run for the repo owner
     [ "$(whoami)" = "sh" ] || exit 0

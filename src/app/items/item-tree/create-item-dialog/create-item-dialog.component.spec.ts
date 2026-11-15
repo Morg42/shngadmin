@@ -264,6 +264,22 @@ describe('CreateItemDialogComponent', () => {
     expect(createdSpy).toHaveBeenCalledWith('mynewitem');
   });
 
+  it('submitNewItem() shows the busy message when another item operation is still running', () => {
+    mockItemsApi.createItem.mockReturnValue(
+      throwError(() => ({
+        status: 409,
+        error: {
+          error: "Item operation 'rename_item(a.b)' is still running - retry when it has finished",
+        },
+      })),
+    );
+    component.newItemName = 'mynewitem';
+
+    component.submitNewItem();
+
+    expect(component.newItemError()).toBe('ITEMS.OPERATION_BUSY');
+  });
+
   it('submitNewItem() surfaces a server-side error as newItemError and does not emit created', () => {
     mockItemsApi.createItem.mockReturnValue(throwError(() => ({ error: { error: 'boom' } })));
     const createdSpy = jest.fn();

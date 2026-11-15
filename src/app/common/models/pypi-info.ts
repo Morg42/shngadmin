@@ -1,5 +1,5 @@
 //
-// Datatype for <shng-server>:<port>/admin/pypi.json
+// Datatype for <shng-server>:<port>/api/server/pypi
 //
 export interface PypiInfo {
   name: string;

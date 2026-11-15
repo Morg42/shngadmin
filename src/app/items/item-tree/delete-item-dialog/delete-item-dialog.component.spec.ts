@@ -240,6 +240,23 @@ describe('DeleteItemDialogComponent', () => {
     expect(deletedSpy).toHaveBeenCalled();
   });
 
+  it('confirmDeleteItem() shows the busy message when another item operation is still running', () => {
+    fixture.componentRef.setInput('itemDetails', { path: 'a', filename: 'created' } as ItemDetails);
+    component.deleteItemReferences.set([]);
+    mockItemsApi.deleteItem.mockReturnValue(
+      throwError(() => ({
+        status: 409,
+        error: {
+          error: "Item operation 'rename_item(a.b)' is still running - retry when it has finished",
+        },
+      })),
+    );
+
+    component.confirmDeleteItem();
+
+    expect(component.deleteItemError()).toBe('ITEMS.OPERATION_BUSY');
+  });
+
   it('confirmDeleteItem() surfaces a server-side error and does not emit deleted', () => {
     fixture.componentRef.setInput('itemDetails', { path: 'a', filename: 'created' } as ItemDetails);
     component.deleteItemReferences.set([]);

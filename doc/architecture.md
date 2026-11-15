@@ -3,6 +3,8 @@
 > **Audience**: A Python developer who understands how web applications work conceptually, but is new to Angular and TypeScript.  This guide assumes you can read code but do not yet know Angular idioms.
 >
 > **Goal**: By the end you should be able to navigate the codebase confidently, understand why things are structured the way they are, and make changes without breaking the parts you didn't touch.
+>
+> **Scope**: concepts, rationale and how-tos. The lists that go stale quickly (routes, backend endpoints per service, model fields, file catalogue, who-injects-what) are not written by hand: they are generated into [maps.md](maps.md), see Section 20.
 
 ---
 
@@ -27,6 +29,7 @@
 17. [Testing Approach](#17-testing-approach)
 18. [Development Setup and Tooling](#18-development-setup-and-tooling)
 19. [Where to Make Common Changes](#19-where-to-make-common-changes)
+20. [Reference Maps (generated)](#20-reference-maps-generated)
 
 ---
 
@@ -50,6 +53,34 @@ Browser                              SmartHomeNG Python server
   └──────────────────────┘              └────────────────────┘
 ```
 
+![System architecture](_resources/01-system-architecture.svg)
+
+### 1.1 What kind of program is this?
+
+Before anything Angular-specific, it helps to know what category of program this is. In a traditional web app (Django, Flask with Jinja templates) the server renders a full HTML page for every click. In a SPA the server sends one HTML file plus a pre-compiled JavaScript bundle once; after that the browser rewrites the DOM itself and only exchanges JSON with the backend, much like `requests.get()` in Python, but running inside the browser:
+
+```
+TRADITIONAL WEB APP (Django/Flask)          SINGLE-PAGE APPLICATION (Angular)
+  click "Users" → GET /users/                 load once     → GET /  (index.html + JS bundle)
+                ← server renders full page    click "Items" → JavaScript rewrites the DOM,
+  click "Edit"  → GET /users/5/edit/                          then GET /api/items/list/
+                ← server renders full page                  ← JSON only
+```
+
+The backend (SmartHomeNG's REST API) never knows or cares about page transitions. It only sees JSON API calls and the one event stream.
+
+### 1.2 One interaction, end to end
+
+What happens when you open `/logics` and press **Trigger** on a logic:
+
+1. The Router sees the URL change and runs `appReadyGuard` and `authGuard` (Section 8). Both pass at once on a warm app.
+2. The Router activates `LogicsListComponent`; Angular creates it and `inject()` hands it `LogicsApiService`, `Router` and the other services it declared.
+3. The component holds the logics as a signal fed by an Observable: `toSignal(merge(of(undefined), refresh$).pipe(switchMap(() => api.getLogics())))`. Subscribing starts `GET /api/logics/`.
+4. `LogicsApiService.getLogics()` builds the URL from `AppConfigService.apiUrl`. On the way out the request passes the interceptors (Section 10): the JWT is attached, the connectivity interceptor watches the result.
+5. The response arrives; the signal receives it and `computed()` signals derive the user logics, system logics and the group structure. Writing to the signal schedules a re-render (Section 12).
+6. The template renders `@for` loops over those signals.
+7. A click on **Trigger** calls `triggerLogic(name)` → `LogicsApiService.setLogicState(name, 'trigger')` → `PUT /api/logics/<name>?action=trigger`. On success the component calls `refresh$.next()`, which makes the `toSignal()` pipeline fetch the list again, and the cycle repeats from step 4.
+
 ---
 
 ## 2. Technology Stack
@@ -62,13 +93,12 @@ Browser                              SmartHomeNG Python server
 | Icons | PrimeIcons + FontAwesome (`@fortawesome/angular-fontawesome` 4) | Icon fonts |
 | Charts | Chart.js 4 | Canvas-based graphs for system metrics |
 | Code editing | CodeMirror 6 | Embedded editor (Python, YAML, JS, XML) |
-| Translation | ngx-translate | Runtime language switching (en/de/fr, plus partial da/fi/nb/nl/sv) |
+| Translation | ngx-translate | Runtime language switching (en/de/fr) |
 | Auth tokens | @auth0/angular-jwt | JWT decode, expiry check, attaches the `Authorization` header via DI |
-| Hashing | js-sha512 | SHA-512 password hashing before sending |
 | Testing | Jest 30 + jest-preset-angular (**zoneless** test environment) | Unit tests; runs in Node (no browser needed) |
 | Linting | ESLint + angular-eslint | Code quality |
 | Formatting | Prettier | Consistent code style |
-| Git hooks | Husky + lint-staged | Auto-format, type-check and test on commit |
+| Git hooks | Husky + lint-staged | Auto-format on commit; format, lint, type check, tests and e2e visual regression before a push to `develop`/`master` (Section 18) |
 
 **TypeScript vs Python**: TypeScript is structurally typed — the compiler checks that objects have the right fields and method signatures, but at runtime it is plain JavaScript.  Interfaces (like `ServerInfo`) are compile-time only; they vanish after compilation.
 
@@ -90,10 +120,13 @@ This is the entry point, equivalent to Python's `if __name__ == '__main__'`.  It
 - Creates Angular's **dependency-injection container** (called the "injector").  Think of it as a dict that maps class names to singleton instances.
 - Registers `provideZonelessChangeDetection()` — the change-detection strategy for the whole app (Section 12).
 - Registers all **root-level providers**: the Router, translation service, JWT module, PrimeNG theme, HTTP client, and a few singleton services.
-- Runs two `APP_INITIALIZER`s **in parallel, before the router starts its first navigation**:
-  1. `ServerApiService.getServerBasicinfo()` — `GET /api/server/`. Critically, this single response patches `loginRequired`, `wsHost`, and `wsPort` into `AppConfigService` all at once. Doing this as an `APP_INITIALIZER` (rather than from a component's `ngOnInit`, which is how it used to work) means the router's own guards never have to wait on a component to even exist first.
-  2. `ServerApiService.checkForUpdate()` — `HEAD`s `index.html`, compares its `ETag`/`Last-Modified` fingerprint against the one cached from the previous load (`localStorage['shng.index_fingerprint']`). If they differ, a new build has been deployed since this tab last loaded, and the page force-reloads via a cache-busting URL.
+- Runs three `APP_INITIALIZER`s **in parallel, before the router starts its first navigation**:
+  1. `ServerApiService.getServerBasicinfo()` — `GET /api/server/`. Critically, this single response patches `clientIp`, `wsHost`, `wsPort`, `loginRequired`, `startPage` and the language defaults into `AppConfigService` all at once. Doing this as an `APP_INITIALIZER` (rather than from a component's `ngOnInit`, which is how it used to work) means the router's own guards never have to wait on a component to even exist first.
+  2. `ServerApiService.checkForUpdate()` — `HEAD`s `index.html`, compares its `ETag`/`Last-Modified` fingerprint against the one cached from the previous load (`localStorage['shng.index_fingerprint']`). If they differ, a new build has been deployed since this tab last loaded, and the page force-reloads via a cache-busting URL (`?_cb=<timestamp>`; `AppComponent` strips the parameter again after the reload). It uses `document.baseURI`, so it also works when the app is mounted under a sub-path.
+  3. `suppressBrowserTypeaheadOnSelect()` — keeps the find-as-you-type feature of Firefox-family browsers from hijacking keys typed on a focused select.
 - Renders `AppComponent` into the `<app-root>` element in `index.html`.
+
+![Bootstrap sequence](_resources/02-bootstrap-sequence.svg)
 
 ### 3.3 Singleton services instantiate
 
@@ -101,7 +134,7 @@ Before any component runs, Angular creates root-provided services as they're fir
 
 **`AppConfigService`** — creates a `BehaviorSubject<AppConfig>` seeded with safe defaults.  Language is pre-populated from the user's saved preference (`UserPreferencesService`, `localStorage`) so the UI renders in the right language even before the server responds.
 
-**`ServerApiService`** (constructor) — reads `window.location` to build the `apiUrl` string (e.g. `http://192.168.1.10:8383/api/`), and patches this into `AppConfigService`.
+**`ServerApiService`** (constructor) — patches `apiUrl` (the relative path `/api/`), `dataUrl` (the injected `BASE_URL`, i.e. the page's `<base href>`) and `hostIp` into `AppConfigService`.
 
 **`ConnectivityService`** (constructor) — waits for `AppConfig.ready$` (emits once `apiUrl` is set), then starts the heartbeat timer.
 
@@ -119,15 +152,15 @@ Fires a second, fuller request:
 GET /api/server/info   →   full ServerInfo  { tz, branches, itemtree settings, developer_mode, … }
 ```
 
-The response patches the remaining `AppConfigService` fields not already covered by the `APP_INITIALIZER`'s basic-info call. `SystemComponent` and `ItemTreeComponent` call `StreamService.connect()` once `serverReady$` has emitted.
+The response patches the remaining `AppConfigService` fields not already covered by the `APP_INITIALIZER`'s basic-info call. (`serverReady$` has normally emitted already after that call.) `SystemComponent` and `ItemTreeComponent` call `StreamService.connect()` once `serverReady$` has emitted.
 
 ### 3.6 Router activates the first route
 
-The Router tries to activate `/system` (the default redirect from `/`). It runs the guards first:
+The Router activates `/`, whose `redirectTo` is a function evaluated at navigation time: it returns `AppConfigService.startPage`, taken from the server's `admin.start_page` setting (default `dashboard`). An unrecognised or stale value falls back to `dashboard` (`resolveStartRoute()` in `app.routes.ts`) instead of redirecting into a 404. The guards run first:
 1. `appReadyGuard` — checks `AppConfigService.snapshot.loginRequired !== null`. Because the `APP_INITIALIZER` in 3.2 already resolved before the router started, this is almost always already `true` and the guard passes synchronously with no wait at all. A 1-second fallback timeout exists only for the rare case where the guard is evaluated before that `APP_INITIALIZER` has finished.
 2. `authGuard` — checks login state / `authReady$` (3-second timeout, falls back to redirecting to `/login`).
 
-Once both pass, Angular downloads the `system` feature chunk and renders the system dashboard.
+Once both pass, Angular downloads the target feature chunk and renders it.
 
 ---
 
@@ -141,13 +174,13 @@ Every component in this app uses **signals** for its reactive state and `ChangeD
 
 ```typescript
 @Component({
-  selector: 'app-items',       // use as <app-items> in HTML
-  templateUrl: './items.component.html',
-  styleUrls: ['./items.component.css'],
+  selector: 'app-example',       // use as <app-example> in HTML
+  templateUrl: './example.component.html',
+  styleUrls: ['./example.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, ...],  // what this component uses (standalone, no NgModules)
 })
-export class ItemsComponent implements OnInit {
+export class ExampleComponent implements OnInit {
   private readonly apiService = inject(ItemsApiService);  // DI: get singleton
 
   readonly items = signal<Item[]>([]);   // reactive state — a getter-like function
@@ -160,11 +193,37 @@ export class ItemsComponent implements OnInit {
 }
 ```
 
+(Illustrative: the real components mostly use `toSignal()` instead of the explicit `subscribe()`, see Section 11.)
+
 In the template, `items` is read as a function call: `{{ items().length }}`, `@for (item of items(); track item.id) { ... }`.
 
 ### Dependency Injection
 
-`inject(SomeService)` is how you get singletons. Angular's injector creates `SomeService` once and hands the same instance to every class that asks for it. This is the same concept as Python's dependency-injection containers (e.g. `dependency-injector`), but built into the framework.
+`inject(SomeService)` is how you get singletons. Angular's injector creates `SomeService` once and hands the same instance to every class that asks for it. This is the same concept as Python's dependency-injection containers (e.g. `dependency-injector`), but built into the framework. In Python you would write the equivalent by passing collaborators to `__init__`:
+
+```python
+class LogicsComponent:
+    def __init__(self, api_service, logger):
+        self.api = api_service
+        self.log = logger
+```
+
+Angular does that wiring for you; the class only declares what it needs (`private readonly api = inject(LogicsApiService)`).
+
+### Angular building blocks in Python terms
+
+| Angular | Python analogy |
+|---|---|
+| **Component** | A class that owns a piece of the UI: data attributes, methods, and a template (like a Jinja2 file, but tightly coupled to the class). |
+| **Service** | A class that does work without a UI: HTTP calls, data transformation, shared state. Created once by the injector, passed to whoever asks. Like a db session or a `requests.Session` handed to a function. |
+| **Route / lazy chunk** | Like a URL blueprint in `__init__.py`, except the browser downloads that package's JavaScript only the first time its URL is visited. |
+| **Template** | An HTML file with extra syntax (below), like Jinja2. |
+| **`signal()`** | A module-level variable whose every read and write is tracked: reading it in a template registers "re-render me when this changes". Read by calling it, `mySignal()`; write with `.set(value)`. |
+| **`computed()`** | A `functools.cached_property` that recomputes when the signals it read change. |
+| **Observable** | A lazy stream of values, more like a generator than a coroutine: nothing happens until someone subscribes. |
+| **`BehaviorSubject`** | An Observable that remembers its last value and replays it to late subscribers. |
+| **Guard** | A function that runs before a route activates and may allow, redirect or block it (like a Flask `before_request`). |
+| **Interceptor** | HTTP middleware that sees every request and response. |
 
 ### Signals vs. Observables
 
@@ -200,18 +259,21 @@ Always present. Contains:
 
 ### `TopNavigationComponent`
 
-Renders the horizontal navigation tabs. On init, fetches the full server info. Reflects `AuthService.loggedIn$` to show/hide the login link, and reflects `ThemeService.darkMode$` to keep the light/dark/system toggle's own icon in sync (Section 13).
+Renders the horizontal navigation tabs. On init, fetches the full server info. Reflects `AuthService.loggedIn$` to show/hide the login link, shows the connected-server hostname and a context-sensitive Help menu, and reflects `ThemeService.darkMode$` to keep the light/dark/system toggle's own icon in sync (Section 13).
 
 ### `OfflineBannerComponent`
 
 Subscribes to `ConnectivityService.online$` and `ConnectivityService.retryIn$`. When `online$` emits `false`, shows a sticky banner at the top with a countdown to the next reconnect attempt. Provides a "Retry now" button.
 
+![Component tree](_resources/03-component-tree.svg)
+
 ### Feature modules
 
-Each area of the admin UI is a separate **lazy-loaded route group**. Angular downloads the JavaScript for that route group only when the user navigates there for the first time. All eight are guarded by `[appReadyGuard, authGuard]` at the top-level route only (child routes deliberately don't repeat the guards — see Section 8).
+Each area of the admin UI is a separate **lazy-loaded route group**. Angular downloads the JavaScript for that route group only when the user navigates there for the first time. All nine are guarded by `[appReadyGuard, authGuard]` at the top-level route only (child routes deliberately don't repeat the guards — see Section 8). The complete route table, including the redirects and the child routes, is generated into [maps.md](maps.md).
 
 | Route | Routes file | What it does |
 |---|---|---|
+| `/dashboard` | `dashboard/dashboard.routes.ts` | At-a-glance status cards (`DashboardOverviewComponent`); the default landing page, see 3.6 |
 | `/system` | `system/system.routes.ts` | Resource-usage dashboard (`SystemComponent`) and core config editor (`SystemConfigComponent`) |
 | `/items` | `items/items.routes.ts` | Browse the item tree, view/edit/create/rename/delete items, edit item-definition files, browse structs |
 | `/logics` | `logics/logics.routes.ts` | List, group, create, edit, enable/trigger Python logic scripts |
@@ -221,7 +283,27 @@ Each area of the admin UI is a separate **lazy-loaded route group**. Angular dow
 | `/logs` | `logs/logs.routes.ts` | View log files, configure loggers and log handlers |
 | `/services` | `services/services.routes.ts` | YAML checker/converter, eval tester, backup/restore, cache cleanup, functions editor |
 
-A handful of legacy paths (`/item_tree`, `/logics-list`, `/logics-groups`, `/threads`, `/plugins_list`) still redirect to their current locations for old bookmarks.
+A handful of legacy paths (`/item_tree`, `/logics-list`, `/logics-groups`, `/threads`, `/plugins_list`) still redirect to their current locations for old bookmarks. `/dev` (style guide) is only available in development builds (`devOnlyGuard`).
+
+### Folder layout
+
+```
+src/app/
+├── app.component.*, app.routes.ts, bootstrap.utils.ts   root shell, top-level routes, bootstrap helpers
+├── common/            shared by all features
+│   ├── services/      AppConfig, Auth, Connectivity, Stream, Theme, Shared, ... and the *-api.service.ts files
+│   ├── models/        TypeScript interfaces of the server responses
+│   ├── guards/        appReadyGuard, authGuard, devOnlyGuard
+│   ├── interceptors/  connectivity, auth-error
+│   ├── components/    code-editor, dynamic-field, file-editor-layout, offline-banner
+│   ├── directives/    decimal-input
+│   └── utils/         input/validation/version helpers
+├── dashboard/ system/ items/ logics/ plugins/ scenes/ schedulers/ logs/ services/
+│                      one folder per navigation section (each with a *.routes.ts)
+├── top-navigation/    navigation bar, Help menu, theme picker (not under common/)
+├── login/ no-access/ not-found/   outside the guarded routes
+└── dev/               style guide (development builds only)
+```
 
 ### Shared components
 
@@ -229,7 +311,11 @@ Located in `src/app/common/components/`:
 
 **`CodeEditorComponent`** — wraps CodeMirror 6. Used everywhere the user edits code or config text: logic source, YAML files, struct/scene/item-definition files. Supports Python, YAML, JavaScript, and XML syntax highlighting, autocomplete, and a full-screen mode (toggled by a button or F11; also attempts the browser's native Fullscreen API, falling back to a CSS overlay if that's unavailable — e.g. inside an iframe).
 
-**`DynamicFieldComponent`** and **`AttributeValueInputComponent`** — items and plugin parameters can be of many different types (number, bool, string, list, dict, IP address, KNX group address, ...). These two components render the right input widget based on the attribute's declared type, so the item/plugin editors don't need a giant `@switch` of their own.
+**`DynamicFieldComponent`** — config and plugin parameters can be of many different types (number, bool, string, list, dict, IP address, KNX group address, ...). It renders the right input widget based on the parameter's declared type (used by the plugin configuration editor, the core configuration table and the logic parameter table).
+
+**`AttributeValueInputComponent`** (`items/attribute-value-input/`) — the type-aware input of the item create/edit dialogs, fed by the attribute catalog (Section 6.10).
+
+**`FileEditorLayoutComponent`** — shared grid layout (toolbar, file list, editor slot) of the file-editor pages: item, struct, scene and function configuration.
 
 ---
 
@@ -256,15 +342,15 @@ this.appConfig.serverReady$.pipe(take(1)).subscribe(() => {
 });
 ```
 
-`AppConfig` fields: `loginRequired`, `apiUrl`, `dataUrl`, `hostIp`, `wsHost`, `wsPort`, `clientIp`, `tz`, `tzname`, `tznameST`, `tznameDST`, `coreBranch`, `pluginsBranch`, `itemtreeFullpath`, `itemtreeSearchstart`, `developerMode`, `clickDropdownHeader`, `helpLocalAvailable`, `darkModeDefault`, `resourceGraphPeriod`, `restartStopsOnly`, `fallbackLanguageOrder`, `defaultLanguage`.
+`AppConfig` fields: `loginRequired`, `apiUrl`, `dataUrl`, `hostIp`, `wsHost`, `wsPort`, `clientIp`, `tz`, `tzname`, `tznameST`, `tznameDST`, `coreBranch`, `pluginsBranch`, `itemtreeFullpath`, `itemtreeSearchstart`, `developerMode`, `clickDropdownHeader`, `helpLocalAvailable`, `darkModeDefault`, `resourceGraphPeriod`, `restartStopsOnly`, `systemPowerAvailable`, `corePullAvailable`, `pluginsPullAvailable`, `fallbackLanguageOrder`, `defaultLanguage`, `startPage`.
 
 **Key Observables on AppConfigService:**
 
 | Observable | Emits when | Used by |
 |---|---|---|
 | `ready$` | `apiUrl` is set (ServerApiService ctor) | ConnectivityService |
-| `serverReady$` | `wsPort` is set | `SystemComponent` and `ItemTreeComponent`, which open the event stream |
-| `authReady$` | `loginRequired` is set | `appReadyGuard`, `authGuard` |
+| `serverReady$` | `wsPort` is set (normally by the `getServerBasicinfo()` initializer) | `SystemComponent` and `ItemTreeComponent`, which open the event stream |
+| `authReady$` | `loginRequired` is set | `appReadyGuard` (fallback path), `authGuard` |
 | `config$` | any `patch()` call | anything needing reactive config |
 
 ### 6.2 `ServerApiService`
@@ -276,9 +362,8 @@ Handles HTTP calls about the server itself:
 - `getServerBasicinfo()` — `GET /api/server/` — called from an `APP_INITIALIZER` before routing starts; patches `loginRequired`, `wsHost`, `wsPort`, `clientIp` (see Section 3.2).
 - `getServerinfo()` — `GET /api/server/info` — full config; patches the rest of `AppConfig` (tz, branches, developer mode, etc).
 - `getShngServerStatus()` — `GET /api/server/status/` — polled by the Services page.
-- `restartShngServer()` — `PUT /api/server/restart/`.
-- `getSystemStats()` — `GET /api/system/info`.
-- `getPypiInfo()` — `GET /api/server/pypi`.
+- `restartShngServer()`, `stopShngServer()`, `poweroffHost()`, `rebootHost()`, `pullCore()`, `pullPlugins()`, `pullAll()` — `PUT /api/server/<action>/`; `getPullStatus()` — `GET /api/server/pull_status`.
+- `getSystemStats()` — `GET /api/system/info`; `getDatabaseInfo()` — `GET /api/database/info`; `getPypiInfo()` — `GET /api/server/pypi`.
 - `downloadConfigBackup()` — `GET /api/files/backup/` (blob response).
 - `checkForUpdate()` — stale-build detection, see Section 3.2.
 
@@ -377,7 +462,15 @@ Each service injects `HttpClient`, reads `apiUrl` from `AppConfigService` to bui
 | `StructsApiService` | `/api/items/structs/` — struct definitions (note: nested under `items/`, not its own top-level path) |
 | `ServerApiService` | see 6.2 |
 
-There is no `OlddataService` or `/admin/*.json` legacy endpoint layer any more — everything goes through `/api/`.
+There is no `OlddataService` or `/admin/*.json` legacy endpoint layer any more — everything goes through `/api/`. The method-by-method endpoint list is generated into [maps.md](maps.md).
+
+### 6.10 `AttributeCatalogService`
+
+`src/app/common/services/attribute-catalog.service.ts`
+
+Loads the combined core + plugin item-attribute catalog (`ItemsApiService.getCoreItemAttributes()` plus the plugin metadata from `PluginsApiService`) and groups the suggestions by source (`core` or a plugin name). It feeds the attribute autocomplete of the item create/edit dialogs (`items/attribute-browser/`, `items/attribute-value-input/`).
+
+![Service map](_resources/04-service-map.svg)
 
 ---
 
@@ -393,14 +486,9 @@ Token contents (decoded by `jwtHelper.decodeToken()`): `iat` (issued-at), `exp` 
 
 ### 7.2 Password hashing
 
-Passwords are **never sent in plain text**. Before the `POST /api/authenticate/user` request, `AuthService.login()` applies SHA-512 with a fixed salt:
+`AuthService.login()` sends username and password as entered; the API is meant to be reached over https only. The backend checks the password against the `hashed_password` of the http module (salted PBKDF2; legacy unsalted SHA-512 hashes are still accepted). shngAdmin never hashes passwords itself: the Services page and the password dialog of the system configuration call `PUT /api/services/hashpassword/` and `PUT /api/services/checkpassword/`, and plaintext passwords saved with the http configuration are hashed by the backend.
 
-```
-username_hash = sha512(username + "shNG0160$")
-password_hash = sha512(sha512(password) + "shNG0160$")     ← password is double-hashed
-```
-
-Empty username/password (the anonymous-login case) are sent as-is, not hashed.
+![Authentication flow](_resources/05-auth-flow.svg)
 
 ### 7.3 Token storage
 
@@ -408,7 +496,7 @@ The token lives in `sessionStorage['token']` — it survives page reloads in the
 
 ### 7.4 Anonymous login
 
-If SHNG is configured with `login_required: false`, the app performs an "anonymous login": a POST with empty (unhashed) credentials. The server still issues a JWT, so the same code path handles both cases.
+If SHNG is configured with `login_required: false`, the app performs an "anonymous login": a POST with empty credentials. The server still issues a JWT, so the same code path handles both cases.
 
 ### 7.5 Token renewal
 
@@ -416,7 +504,7 @@ If SHNG is configured with `login_required: false`, the app performs an "anonymo
 
 ### 7.6 How the token actually gets attached to requests
 
-There is no hand-written auth interceptor. `@auth0/angular-jwt`'s `JwtModule.forRoot(...)` is registered in `main.ts`, configured via a `jwtOptionsFactory` (`src/app/bootstrap.utils.ts`) that supplies `tokenGetter: () => authService.getToken()` and `allowedDomains: [window.location.hostname]` (same-origin only — tokens are never sent to third-party URLs). It attaches automatically to every matching request via `provideHttpClient(withInterceptorsFromDi(), ...)`.
+There is no hand-written interceptor that *adds* the token. `@auth0/angular-jwt`'s `JwtModule.forRoot(...)` is registered in `main.ts`, configured via a `jwtOptionsFactory` (`src/app/bootstrap.utils.ts`) that supplies `tokenGetter: () => authService.getToken()` and `allowedDomains: [window.location.hostname]` (same-origin only — tokens are never sent to third-party URLs). It attaches automatically to every matching request via `provideHttpClient(withInterceptorsFromDi(), ...)`. What happens when the server rejects a token is handled by the auth-error interceptor (Section 10.2).
 
 ---
 
@@ -424,12 +512,16 @@ There is no hand-written auth interceptor. `@auth0/angular-jwt`'s `JwtModule.for
 
 Guards are functions that run before a route is activated. They can allow, redirect, or block navigation.
 
-All 8 top-level feature routes have:
+![Route guards](_resources/06-route-guards.svg)
+
+All 9 top-level feature routes (`dashboard`, `system`, `items`, `logics`, `schedulers`, `plugins`, `scenes`, `logs`, `services`) have:
 ```typescript
 canActivate: [appReadyGuard, authGuard]
 ```
 
 placed **only on the parent route** — child routes deliberately don't repeat it, or the wait would multiply with every route segment.
+
+The `/dev` route (style guide) is guarded by `devOnlyGuard` (`src/app/common/guards/dev-only.guard.ts`) instead, which blocks it outside development builds.
 
 ### 8.1 `appReadyGuard`
 
@@ -460,6 +552,8 @@ placed **only on the parent route** — child routes deliberately don't repeat i
 Live data does not come from polling and no longer uses a WebSocket. The server pushes it over one Server-Sent-Events stream (`GET /api/stream/`, backend `modules/admin/api_stream.py` in the SmartHomeNG core); the browser changes what it receives with REST `PATCH` requests. The stream provides two things:
 1. **Real-time item value updates** — when a sensor value changes in SHNG, it is pushed to the subscribed browser.
 2. **System metric streaming** — CPU load, memory, swap, disk usage, thread counts — for the live charts on the System dashboard.
+
+![Stream flow](_resources/07-stream-flow.svg)
 
 ### 9.1 `StreamService`
 
@@ -493,15 +587,25 @@ The public surface is `signal`s — components read `stream.systemload()` direct
 
 Every HTTP request passes through a chain of interceptors before it reaches the network, and through the same chain (in reverse) on the way back.
 
+![HTTP pipeline](_resources/08-http-pipeline.svg)
+
+The chain is registered in `main.ts`: `provideHttpClient(withInterceptorsFromDi(), withInterceptors([connectivityInterceptor, authErrorInterceptor]))`. The JWT module is a DI-based interceptor and therefore runs before the functional ones.
+
 ### 10.1 JWT attachment (`@auth0/angular-jwt`)
 
 Not a file under `common/interceptors/` — it's a DI-registered module (see Section 7.6). Automatically injects the `Authorization: Bearer <token>` header on every same-origin request.
 
-### 10.2 Connectivity Interceptor
+### 10.2 Auth Error Interceptor
+
+`src/app/common/interceptors/auth-error.interceptor.ts`
+
+The backend answers a request without a valid token (missing, expired, forged) with HTTP 401. For such an `/api/` response (except the login request itself, which the login form handles) the interceptor drops the token; if the server requires a login it navigates to `/login` with the current URL as `returnUrl`, otherwise it fetches a new anonymous token. The error is passed on to the caller unchanged.
+
+### 10.3 Connectivity Interceptor
 
 `src/app/common/interceptors/connectivity.interceptor.ts`
 
-The only hand-written interceptor in the app, a **functional interceptor** (the modern Angular style):
+A **functional interceptor** (the modern Angular style):
 
 ```typescript
 export const connectivityInterceptor: HttpInterceptorFn = (req, next) => {
@@ -519,15 +623,11 @@ export const connectivityInterceptor: HttpInterceptorFn = (req, next) => {
 
 The `cancelOfflineDebounce()` call handles a subtle case: Angular destroys a component (e.g. navigating away), which cancels any in-flight HTTP requests. Those cancellations also produce status 0. The debounce (1.5 s window, owned by `ConnectivityService`) prevents this from falsely triggering the offline banner: if the *next* page's requests succeed, the timer is cleared and the banner never shows.
 
-### 10.3 URL construction
+### 10.4 URL construction
 
-API services don't hard-code host:port. They read `appConfig.apiUrl`, built from `window.location` at startup:
+API services don't hard-code host:port. They read `appConfig.apiUrl`, the relative path `/api/` set by `ServerApiService`'s constructor, so requests go to the origin that served the app (`appConfig.dataUrl` holds the base URL).
 
-```
-apiUrl = "http://" + window.location.hostname + ":" + window.location.port + "/api/"
-```
-
-In development, a proxy (`proxy.conf.js`) forwards `/api/` and `/admin/` requests from `localhost:4200` to the real SHNG server. In production, SHNG serves the Angular app at the same origin, so no proxy is needed.
+In development, a proxy (`proxy.conf.js`) forwards `/api/`, `/admin/`, `/plugin/` and `/gstatic/` requests from `localhost:4200` to the real SHNG server. In production, SHNG serves the Angular app at the same origin, so no proxy is needed.
 
 ---
 
@@ -654,7 +754,6 @@ Translation is handled by `@ngx-translate`. Translation files are JSON files in 
 - `en.json` — English (default)
 - `de.json` — German
 - `fr.json` — French
-- `da.json`, `fi.json`, `nb.json`, `nl.json`, `sv.json` — partial Scandinavian/Dutch translations
 
 ### Language selection cascade
 
@@ -677,17 +776,23 @@ const label = this.translate.instant('ITEMS.SEARCH_PLACEHOLDER');
 
 ### Adding/updating translations
 
-1. Add the key to `en.json` (and other language files).
+1. Add the key to `en.json`, `de.json` and `fr.json` (by hand; keep the three files in step).
 2. Use the key in templates or components.
-3. Run `npm run i18n:extract` to scan the source and update all JSON files with missing keys.
+3. Run `npm run i18n:check`. It extracts the keys used in `src/` into a temporary file and reports keys used but missing in `en.json`, keys that exist in `en.json` but not in `de.json`/`fr.json` (and vice versa), and keys in `en.json` the extractor did not find. It never writes to `src/` (`--strict` makes it exit non-zero for CI use).
+
+Why the report-only approach: `ngx-translate-extract` reorders the keys of the files it writes, and its `--clean` option would delete keys that are built at run time (`translate.instant('PREFIX.' + name)`); it also reports a few string literals that are not keys. Treat "not found in src/" as a hint, not as proof that a key is unused.
 
 ---
 
 ## 15. Feature Modules In Depth
 
+### Dashboard (`src/app/dashboard/`)
+
+`DashboardOverviewComponent` (`/dashboard`, the default landing page) shows five status cards: system status (hostname, SHNG version/uptime, OS, Python/venv, item and logic counts — fetched once), stopped plugins (polled every 15 s, per-row Start button), overdue schedulers (polled every 15 s: active cyclic/cron entries past their `next` fire time by more than a grace window), an optional database-connection card (only rendered when a `database` plugin instance is configured: driver, database name, host, connection status, engine version) and a full-width tail of recent warnings/errors (polled every 15 s, `LogsApiService.getMemlogTail()`). The polled cards and the system-status card carry a stale/error indicator (icon + tooltip, dimmed body, last-known-good data kept on failure); the database card is the deliberate exception — it stays hidden rather than showing a stale indicator, because there is nothing to be stale about when the feature isn't configured. Per-field detection rules are documented in `dashboard-overview.component.ts`.
+
 ### System (`src/app/system/`)
 
-`SystemComponent` — resource-usage dashboard: license text, plugin/documentation/testsuite package status (from PyPI), and real-time charts (CPU load, memory, swap, disk, threads, worker threads) fed by `StreamService`'s signals into Chart.js instances.
+`SystemComponent` (`/system`, also `/system/systemproperties`) — resource-usage dashboard: license text, plugin/documentation/testsuite package status (from PyPI), and real-time charts (CPU load, memory, swap, disk, threads, worker threads) fed by `StreamService`'s signals into Chart.js instances.
 
 `SystemConfigComponent` (`/system/config`) — editor for SHNG's core `etc/*.yaml` config, plus a check/enable flow for the newer `etc/`-based config layout, and a restart-core button.
 
@@ -696,10 +801,10 @@ const label = this.translate.instant('ITEMS.SEARCH_PLACEHOLDER');
 `ItemTreeComponent` (`/items`) — the core of SHNG's data model. Items are variables representing sensor readings, actuator states, and computed values, arranged in a dotted hierarchy (`env.core.threads`, etc.). This is the largest component in the app:
 - Left panel: a PrimeNG `p-tree` of the full item hierarchy, with path/name filtering and expand/collapse-all.
 - Right panel: selected item's full details (value, type, update/change timestamps and who caused them, eval/trigger/cron config), with an inline value editor.
-- Create / Edit / Rename-or-move / Delete dialogs, each with its own validation (e.g. delete offers to clean up references to the item found elsewhere in the config; rename can auto-create missing ancestor items).
-- A monitored-items tab: pin any item to watch its live value via the event stream, independent of tree navigation — see Section 9.3 for how that survives navigation and reload.
+- Create / Edit / Rename-or-move / Delete dialogs (`item-tree/*-dialog/`), all backed by `ItemsApiService`: create accepts a full multi-level path (`mkdir -p` style, with auto-created ancestors) and offers type-aware attribute inputs fed by `AttributeCatalogService`; edit works on the item's complete attribute set; rename uses a single path field (a changed parent segment is a move, same endpoint); delete looks up references first, offers to clean them up and requires explicit confirmation for recursive deletes. Structural operations are serialised by the backend, which answers `409` while another one is still running — the UI shows a "another item operation is still running" message.
+- A monitored-items tab: pin any item to watch its live value via the event stream, independent of tree navigation — see Section 9.2 for how that survives navigation and reload.
 
-Also in this folder: `ItemConfigurationComponent` (`/items/config`, raw item-definition YAML file editor), `StructsComponent` and `StructConfigurationComponent` (struct browsing/editing), and `AttributeValueInputComponent` (shared type-aware input, also used by the plugin config editor).
+Also in this folder: `ItemConfigurationComponent` (`/items/config`, raw item-definition YAML file editor), `StructsComponent` and `StructConfigurationComponent` (struct browsing/editing), and `AttributeBrowserComponent`/`AttributeValueInputComponent` (the attribute catalog browser and type-aware input of the create/edit dialogs).
 
 ### Logics (`src/app/logics/`)
 
@@ -724,7 +829,7 @@ Logics are Python scripts that run inside SHNG.
 
 `SchedulersComponent` (`/schedulers`) — scheduled task info, split into tabs by group (item / logic / plugin / other / trigger).
 
-`ThreadsComponent` (`/schedulers/threads`) — the Python thread list with a live count.
+`ThreadsComponent` (`/schedulers/threads`) — the Python thread list with a live count; the task a thread is running can be inspected and cancelled (`ThreadsApiService.getThreadTask()`/`cancelThreadTask()`).
 
 ### Logs (`src/app/logs/`)
 
@@ -758,7 +863,7 @@ Key models:
 
 **`AppConfig`** (`app-config.service.ts` — not a model file) — the internal config shape, see Section 6.1.
 
-There is no `system-info.ts`/`pypi-info.ts`/`item-details.ts` dependency on the old `/admin/*.json` endpoints any more, even though a few of those files' own doc comments still mention them — the actual HTTP calls all go through `/api/...` now (Section 6.9).
+There is no dependency on the old `/admin/*.json` endpoints any more — the HTTP calls all go through `/api/...` (Section 6.9). The complete list of models and their fields is generated into [maps.md](maps.md).
 
 ---
 
@@ -766,7 +871,7 @@ There is no `system-info.ts`/`pypi-info.ts`/`item-details.ts` dependency on the 
 
 Tests use **Jest** (not Karma/Jasmine), running **zoneless** — `jest-preset-angular`'s `setupZonelessTestEnv()` (`src/setup-jest.ts`), matching the app's own runtime.  Jest runs in Node.js with a DOM simulation (`jest-environment-jsdom`), so tests are fast — no browser required.
 
-Test files sit next to the source files: `items.component.spec.ts` is in the same directory as `items.component.ts`.
+Test files sit next to the source files: `item-tree.component.spec.ts` is in the same directory as `item-tree.component.ts`.
 
 **One consequence of zoneless testing worth knowing up front**: Angular's `fakeAsync()`/`tick()` test helpers require `zone.js` internally, regardless of whether the app under test uses it — they simply don't work in this project. Anywhere a test needs to control time (e.g. an RxJS `timer()`-driven poll), use Jest's own fake timers instead:
 ```typescript
@@ -781,29 +886,33 @@ it('polls after the tab is opened', async () => {
 
 ### Test helper (`src/testing/test-helpers.ts`)
 
-Provides mock factory functions so you don't repeat boilerplate in every spec:
+Provides mock factory functions so you don't repeat boilerplate in every spec: `createMockServerApiService()`, `createMockAppConfigService()`, `createMockAuthService()`, `createMockStreamService()`, `createMockAttributeCatalogService(catalog?)`, plus `translateTestingModule`.
 
 ```typescript
-const mockAuth = createMockAuthService({ isLoggedIn: true });
-const mockConfig = createMockAppConfigService({ wsPort: '2121' });
+providers: [
+  { provide: AuthService, useValue: createMockAuthService() },
+  { provide: AppConfigService, useValue: createMockAppConfigService() },
+],
 ```
+
+The factories return plain objects; a spec that needs different values overrides the property it cares about (`{ ...createMockAuthService(), isLoggedIn: () => true }`).
 
 ### Typical component test structure
 
 ```typescript
-describe('ItemsComponent', () => {
-  let component: ItemsComponent;
-  let fixture: ComponentFixture<ItemsComponent>;
+describe('ExampleComponent', () => {
+  let component: ExampleComponent;
+  let fixture: ComponentFixture<ExampleComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ItemsComponent],
+      imports: [ExampleComponent],
       providers: [
         { provide: AuthService, useValue: createMockAuthService() },
         { provide: ItemsApiService, useValue: { getItems: () => of([]) } },
       ],
     });
-    fixture = TestBed.createComponent(ItemsComponent);
+    fixture = TestBed.createComponent(ExampleComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -828,7 +937,7 @@ npm run test:coverage # with coverage report
 
 ### Prerequisites
 
-- Node.js 20+ (an even-numbered/LTS release is recommended — the CLI warns on odd-numbered non-LTS versions)
+- Node.js 22 or later (see `Install_Environment.md`; Angular 21 itself requires `^20.19.0 || ^22.12.0 || >=24.0.0`). An even-numbered/LTS release is recommended — the CLI warns on odd-numbered non-LTS versions.
 - npm
 
 ### Install and run
@@ -863,12 +972,18 @@ npm run format       # format all source files with Prettier
 npm run lint          # run ESLint
 ```
 
-Prettier, `tsc --noEmit`, and the full Jest suite all run automatically on commit (via Husky + lint-staged). **Note**: Jest and `tsc` do not catch Angular template compilation errors — a broken binding in an `.html` file (e.g. a `[target]` accidentally turned into `[target()]` by a careless find/replace) will pass both and only fail `ng build`/`npm run build`. Always run a full build after any template edit before committing.
+Husky hooks (`.husky/`): the **pre-commit** hook formats the staged files with Prettier (lint-staged) and runs the Jest suite when the SmartHomeNG checkout is on its deployment branch. The **pre-push** hook gates pushes to `master`/`develop` with the format check, ESLint, `tsc --noEmit`, the Jest suite with coverage and the Playwright visual-regression tests (`npm run test:e2e`). The **post-commit** hook builds and deploys the app into the SmartHomeNG checkout on `develop`. **Note**: Jest and `tsc` do not catch Angular template compilation errors — a broken binding in an `.html` file (e.g. a `[target]` accidentally turned into `[target()]` by a careless find/replace) will pass both and only fail `ng build`/`npm run build`. Always run a full build after any template edit before committing.
 
-### Translation extraction
+### Translation check
 
 ```bash
-npm run i18n:extract  # scan sources, update all translation JSON files
+npm run i18n:check    # report missing/unused translation keys; never writes (Section 14)
+```
+
+### Reference maps
+
+```bash
+npm run doc:maps      # regenerate doc/maps.md from src/app (Section 20)
 ```
 
 ---
@@ -891,8 +1006,8 @@ npm run i18n:extract  # scan sources, update all translation JSON files
 
 1. Add the key and English text to `src/assets/i18n/en.json`.
 2. Use it: `{{ 'YOUR.KEY' | translate }}` in template or `this.translate.instant('YOUR.KEY')` in code.
-3. Run `npm run i18n:extract` to propagate to other language files.
-4. Add translations to at least `de.json` if known.
+3. Add the same key to `de.json` and `fr.json` (translations, or the English text as a placeholder).
+4. Run `npm run i18n:check` to see whether the three files are still in step.
 
 ### Add a new feature page
 
@@ -907,6 +1022,7 @@ npm run i18n:extract  # scan sources, update all translation JSON files
    }
    ```
 4. Add a nav link in `top-navigation.component.html`.
+5. Run `npm run doc:maps` so the route table in `doc/maps.md` includes the new page.
 
 ### Change how a service decides something
 
@@ -929,4 +1045,40 @@ Or add the real service if it has no side effects in tests.
 
 ---
 
-*Source: `src/` directory of shngAdmin, branch `work`.*
+---
+
+## 20. Reference Maps (generated)
+
+Earlier versions of this documentation carried hand-written lists: the backend endpoint of every API-service method, the field list of every model, a one-line summary per source file, a service-dependency diagram and a component tree per feature. They were dropped from the prose because they go stale with every refactoring and the code already states them. They are still needed after a pause in development — to find where something lives or what talks to which endpoint — so they are generated from the source into [maps.md](maps.md):
+
+| Map | Answers | Derived from |
+|---|---|---|
+| Routes | Which URL shows which component, which guards protect it, which paths are redirects | `app.routes.ts`, `*/*.routes.ts` |
+| Backend endpoints per API service | Which method calls which HTTP verb and URL | `common/services/*-api.service.ts` |
+| Models | Which interfaces exist and which fields they declare | `common/models/*.ts` |
+| Dependencies | Which services a component or service injects, which provides its own `StreamService` | `inject(X)` calls, constructor parameters, `providers: [...]` |
+| Source files | Which symbols a file exports, with the first sentence of its doc comment | every non-spec `.ts` file below `src/app` |
+
+**Regenerate** after structural changes, or when coming back to the project:
+
+```bash
+npm run doc:maps                     # writes doc/maps.md
+node scripts/generate-doc-maps.js --out /tmp/maps.md   # elsewhere, e.g. to diff against the committed one
+```
+
+`doc/maps.md` records the commit and branch it was generated from. The script (`scripts/generate-doc-maps.js`, no dependencies beyond Node) reads the sources with regular expressions, not with the TypeScript compiler, so it is deliberately small and easy to adapt, but it only knows the patterns this code base uses today. A `?` in the output or a missing row means a construct it does not understand (for example a URL built in a helper rather than in the method); extend the matching function in the script — `routesMap()`, `endpointsMap()`, `modelsMap()`, `dependenciesMap()`, `filesMap()` — instead of patching the generated file.
+
+**By hand, when the script is not an option** (the commands behind each map):
+
+```bash
+grep -rn "path:" src/app --include='*.routes.ts'                              # routes
+grep -rnE "this\.http\s*\.(get|put|post|patch|delete)" src/app/common/services   # endpoints
+grep -rn "inject(" src/app --include='*.ts' | grep -v spec                 # dependencies
+grep -rn "^export " src/app/common/models                                  # models
+```
+
+**Diagrams**: the SVG files in `_resources/` are hand-drawn and not generated. When a structural change makes one wrong (a new interceptor, a new feature page, a changed bootstrap step), edit the SVG text; `rsvg-convert -o /tmp/check.png <file>.svg` renders it for a quick visual check.
+
+---
+
+*Source: `src/` directory of shngAdmin, branch `work`; reviewed against the code 2026-11-06.*

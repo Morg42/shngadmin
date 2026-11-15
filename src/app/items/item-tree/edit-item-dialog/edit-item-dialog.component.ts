@@ -30,6 +30,7 @@ import {
 } from '../../../common/utils/input-validation.utils';
 import { AttributeBrowserComponent } from '../../attribute-browser/attribute-browser.component';
 import { AttributeValueInputComponent } from '../../attribute-value-input/attribute-value-input.component';
+import { itemOperationErrorMessage } from '../item-operation-error.utils';
 
 /** Extracted from ItemTreeComponent's edit-item flow. Same shape as
  *  CreateItemDialogComponent (B4), but reactive rather than an imperative
@@ -192,7 +193,7 @@ export class EditItemDialogComponent {
         },
         error: (err: HttpErrorResponse) => {
           this.editItemError.set(
-            (err.error?.error as string | undefined) ?? this.translate.instant('ITEMS.EDIT_FAILED'),
+            itemOperationErrorMessage(err, this.translate, 'ITEMS.EDIT_FAILED'),
           );
         },
       });

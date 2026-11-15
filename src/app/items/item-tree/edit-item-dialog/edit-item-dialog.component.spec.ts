@@ -138,6 +138,23 @@ describe('EditItemDialogComponent', () => {
     expect(savedSpy).toHaveBeenCalledWith('a');
   });
 
+  it('submitEditItem() shows the busy message when another item operation is still running', () => {
+    fixture.componentRef.setInput('itemDetails', { path: 'a', type: 'num' } as ItemDetails);
+    mockItemsApi.editItem.mockReturnValue(
+      throwError(() => ({
+        status: 409,
+        error: {
+          error: "Item operation 'rename_item(a.b)' is still running - retry when it has finished",
+        },
+      })),
+    );
+    component.visible.set(true);
+
+    component.submitEditItem();
+
+    expect(component.editItemError()).toBe('ITEMS.OPERATION_BUSY');
+  });
+
   it('submitEditItem() surfaces an error, keeps the dialog open and does not emit saved', () => {
     fixture.componentRef.setInput('itemDetails', { path: 'a', type: 'num' } as ItemDetails);
     mockItemsApi.editItem.mockReturnValue(

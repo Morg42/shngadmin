@@ -1,5 +1,5 @@
 //
-// Datatype for <shng-server>:<port>/admin/items.json
+// Datatype for <shng-server>:<port>/api/items/<path>
 //
 
 export interface ItemDetails {

@@ -360,6 +360,7 @@
     "COPY_IN_PROGRESS": "Item wird kopiert — dies kann dauern, wenn sich ein Plugin neu verbinden muss …",
     "COPY_SUCCESS_TITLE": "Item kopiert",
     "COPY_FAILED": "Item konnte nicht kopiert werden",
+    "OPERATION_BUSY": "Ein anderer Item-Vorgang läuft noch - bitte nach dessen Abschluss erneut versuchen",
     "COPY_REFERENCES_NOTICE": "{{count}} Referenz(en) sollten überprüft werden",
     "COPY_REFERENCES_NOTICE_HINT": "Klicken, um zu sehen, welche Referenzen auf das Original zeigen bleiben oder nach dem Kopieren nicht mehr korrekt sein könnten",
     "COPY_REFERENCES_TITLE": "Referenzen, die überprüft werden sollten",

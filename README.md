@@ -4,18 +4,24 @@ Admin interface for SmartHomeNG — Angular app included in the admin module of 
 
 ---
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 20.x, currently running on Angular 21 (zoneless — see `architecture.md`).
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 20.x, currently running on Angular 21 (zoneless — see [`doc/architecture.md`](doc/architecture.md)).
 
 ### Node.js requirement
 
 Node.js 22 or later is required. Check the active version with `node --version`.
 If needed, switch versions with `nvm use 22`.
 
+## Documentation
+
+- [`doc/architecture.md`](doc/architecture.md) — how the app works: concepts, rationale, how-tos (start here, also if you come from Python rather than Angular).
+- [`doc/maps.md`](doc/maps.md) — generated reference maps (routes, backend endpoints per API service, models, dependencies, source files). Regenerate with `npm run doc:maps`.
+- `npm run i18n:check` — report-only check of the translation files.
+
 ## Development server
 
 Run `npm start` (or `ng serve` directly) for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-By default it proxies API/WebSocket calls to whatever SmartHomeNG instance is configured in `proxy.conf.js` — edit the `PROXY_TARGET` constant near the top of that file to point at your own server.
+By default it proxies API and event-stream calls to whatever SmartHomeNG instance is configured in `proxy.conf.js` — edit the `PROXY_TARGET` constant near the top of that file to point at your own server.
 
 ## Code scaffolding
 

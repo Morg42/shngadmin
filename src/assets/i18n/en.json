@@ -360,6 +360,7 @@
     "COPY_IN_PROGRESS": "Copying — this can take a while if a plugin needs to reconnect...",
     "COPY_SUCCESS_TITLE": "Item copied",
     "COPY_FAILED": "Could not copy item",
+    "OPERATION_BUSY": "Another item operation is still running - please try again when it has finished",
     "COPY_REFERENCES_NOTICE": "{{count}} reference(s) need review",
     "COPY_REFERENCES_NOTICE_HINT": "Click to see which references were left pointing at the original, or may no longer be correct after the copy",
     "COPY_REFERENCES_TITLE": "References that may need attention",

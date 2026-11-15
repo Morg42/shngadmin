@@ -26,9 +26,9 @@
   <!-- appReadyGuard box -->
   <rect x="270" y="116" width="320" height="68" rx="6" fill="#FEF3C7" stroke="#FCD34D" stroke-width="2"/>
   <text x="430" y="136" text-anchor="middle" font-size="11" font-weight="bold" fill="#78350F">① appReadyGuard</text>
-  <text x="430" y="152" text-anchor="middle" font-size="9" fill="#92400E">Subscribe to AppConfig.serverReady$ (emits when wsPort ≠ '').</text>
-  <text x="430" y="165" text-anchor="middle" font-size="9" fill="#92400E">5 s timeout → falls back to snapshot (always passes). map(() =&gt; true).</text>
-  <text x="430" y="178" text-anchor="middle" font-size="9" fill="#92400E">Purpose: delay until the full server config has been received.</text>
+  <text x="430" y="152" text-anchor="middle" font-size="9" fill="#92400E">Fast path: AppConfig.snapshot.loginRequired !== null → true (synchronous).</text>
+  <text x="430" y="165" text-anchor="middle" font-size="9" fill="#92400E">Else wait for authReady$; 1 s timeout → passes anyway (a slow server never blocks navigation).</text>
+  <text x="430" y="178" text-anchor="middle" font-size="9" fill="#92400E">Purpose: delay until the first /api/server/ response has been received.</text>
 
   <line x1="430" y1="184" x2="430" y2="204" stroke="#374151" stroke-width="1.5" marker-end="url(#a)"/>
 
@@ -79,7 +79,7 @@
   <rect x="692" y="416" width="156" height="72" rx="6" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1.5"/>
   <text x="770" y="436" text-anchor="middle" font-size="10" font-weight="bold" fill="#78350F">User logs in</text>
   <text x="770" y="452" text-anchor="middle" font-size="9" fill="#92400E">AuthService.login() posts</text>
-  <text x="770" y="464" text-anchor="middle" font-size="9" fill="#92400E">hashed credentials.</text>
+  <text x="770" y="464" text-anchor="middle" font-size="9" fill="#92400E">credentials.</text>
   <text x="770" y="476" text-anchor="middle" font-size="9" fill="#92400E">On success → navigate to</text>
   <text x="770" y="488" text-anchor="middle" font-size="9" fill="#92400E">returnUrl.</text>
 
@@ -88,22 +88,22 @@
   <text x="144" y="430" text-anchor="middle" font-size="11" font-weight="bold" fill="#0369A1">Where guard data comes from</text>
 
   <text x="24" y="450" font-size="9" fill="#0369A1">authReady$ populated by:</text>
-  <text x="24" y="465" font-size="9" fill="#374151">  AppComponent.ngOnInit()</text>
+  <text x="24" y="465" font-size="9" fill="#374151">  APP_INITIALIZER getServerBasicinfo()</text>
   <text x="24" y="478" font-size="9" fill="#374151">    GET /api/server/  →  login_required field</text>
   <text x="24" y="491" font-size="9" fill="#374151">    AppConfig.patch({loginRequired})</text>
   <text x="24" y="504" font-size="9" fill="#374151">    BehaviorSubject emits → authReady$ fires</text>
 
   <text x="24" y="520" font-size="9" fill="#0369A1">serverReady$ populated by:</text>
-  <text x="24" y="533" font-size="9" fill="#374151">  TopNavigation.ngOnInit()</text>
-  <text x="24" y="546" font-size="9" fill="#374151">    GET /api/server/info  →  wsPort field</text>
+  <text x="24" y="533" font-size="9" fill="#374151">  APP_INITIALIZER getServerBasicinfo()</text>
+  <text x="24" y="546" font-size="9" fill="#374151">    GET /api/server/  →  websocket_port field</text>
   <text x="24" y="559" font-size="9" fill="#374151">    AppConfig.patch({wsPort})  →  emits</text>
 
   <!-- Routes list -->
   <rect x="300" y="464" width="380" height="108" rx="6" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
   <text x="490" y="482" text-anchor="middle" font-size="10" font-weight="bold" fill="#334155">Protected Routes (all have canActivate: [appReadyGuard, authGuard])</text>
-  <text x="310" y="498" font-size="9" fill="#475569">/system    /services   /items     /logics</text>
-  <text x="310" y="513" font-size="9" fill="#475569">/schedulers  /plugins   /scenes    /logs</text>
+  <text x="310" y="498" font-size="9" fill="#475569">/dashboard  /system  /services  /items  /logics</text>
+  <text x="310" y="513" font-size="9" fill="#475569">/schedulers  /plugins  /scenes  /logs</text>
   <text x="310" y="530" font-size="9" fill="#6B7280">Open routes (no guards):</text>
-  <text x="310" y="545" font-size="9" fill="#475569">/login   /**  (NotFoundComponent)</text>
-  <text x="310" y="560" font-size="9" fill="#475569">/  (redirects to /system — redirect, not a component)</text>
+  <text x="310" y="545" font-size="9" fill="#475569">/login   /**  (NotFoundComponent)   /dev (devOnlyGuard)</text>
+  <text x="310" y="560" font-size="9" fill="#475569">/  (redirects to the configured startPage, default /dashboard)</text>
 </svg>

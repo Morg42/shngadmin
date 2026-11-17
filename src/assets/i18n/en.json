@@ -469,6 +469,11 @@
     "RENAME_FILE_IN_USE": "This filename is already used by another logic.",
     "RENAME_FILE_CASE_NOOP": "Filenames are stored in lowercase — this change has no effect.",
     "GROUP": "Group(s)",
+    "RUNTIME_WARN": "Runtime warning (s)",
+    "RUNTIME_WARN_HINT": "Seconds a run may take before a warning is logged. Empty: global runtime_warn from smarthome.yaml (default 120), 0: no warning.",
+    "RUNTIME_CANCEL": "Runtime cancel (s)",
+    "RUNTIME_CANCEL_HINT": "Seconds after which a run is cancelled automatically. Empty: never.",
+    "RUNTIME_INVALID": "Must be empty or a number of seconds >= 0",
     "SAVED": "Saved",
     "SAVED_AND_LOADED": "Saved and loaded",
     "RENAMED": "Logic renamed"

@@ -213,6 +213,42 @@ describe('LogicsEditComponent', () => {
       );
     });
 
+    it('saves runtime_warn and runtime_cancel seconds with the other parameters', () => {
+      component.logic.update((l) => ({ ...l, runtime_warn: 360, runtime_cancel: 900 }));
+      mockLogicsApi.saveLogicParameters.mockClear();
+
+      component.saveParameters(false);
+
+      expect(mockLogicsApi.saveLogicParameters).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ runtime_warn: 360, runtime_cancel: 900 }),
+      );
+    });
+
+    it('saves 0 as a value and an empty field as null (unset)', () => {
+      component.logic.update((l) => ({ ...l, runtime_warn: 0, runtime_cancel: null }));
+      mockLogicsApi.saveLogicParameters.mockClear();
+
+      component.saveParameters(false);
+
+      const params = mockLogicsApi.saveLogicParameters.mock.calls[0][1];
+      expect(params.runtime_warn).toBe(0);
+      expect(params.runtime_cancel).toBeNull();
+    });
+
+    it('rejects a negative runtime_warn without saving, shows a sticky error toast', () => {
+      component.logic.update((l) => ({ ...l, runtime_warn: -5 }));
+      mockLogicsApi.saveLogicParameters.mockClear();
+      const addSpy = jest.spyOn(TestBed.inject(MessageService), 'add');
+
+      component.saveParameters(false);
+
+      expect(mockLogicsApi.saveLogicParameters).not.toHaveBeenCalled();
+      expect(addSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ severity: 'error', summary: 'runtime_warn', sticky: true }),
+      );
+    });
+
     it('does not call onSaved when validation fails', () => {
       component.parameters.set([{ name: 'my_param', type: 'mac', value: 'not-a-mac' }]);
       (component as any).shared.is_mac = () => false;
@@ -221,6 +257,34 @@ describe('LogicsEditComponent', () => {
       component.saveParameters(true, onSaved);
 
       expect(onSaved).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('runtime thresholds', () => {
+    it('parametersChanged() reports an edited runtime_warn', () => {
+      component.runtimeWarnOrig = null;
+      component.logic.update((l) => ({ ...l, runtime_warn: 360 }));
+
+      expect(component.parametersChanged()).toBe(true);
+    });
+
+    it('parametersChanged() treats undefined and null as unchanged', () => {
+      component.logic.update((l) => ({ ...l, runtime_warn: null, runtime_cancel: null }));
+      component.runtimeWarnOrig = null;
+      component.runtimeCancelOrig = null;
+
+      expect(component.parametersChanged()).toBe(false);
+    });
+
+    it('discardChanges() restores the original runtime values', () => {
+      component.runtimeWarnOrig = 120;
+      component.runtimeCancelOrig = null;
+      component.logic.update((l) => ({ ...l, runtime_warn: 999, runtime_cancel: 5 }));
+
+      component.discardChanges();
+
+      expect(component.logic().runtime_warn).toBe(120);
+      expect(component.logic().runtime_cancel).toBeNull();
     });
   });
 });

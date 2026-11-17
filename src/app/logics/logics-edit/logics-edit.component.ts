@@ -100,6 +100,8 @@ export class LogicsEditComponent implements OnInit {
   logicGroupOrig!: string | string[] | null;
   logicCycleOrig!: string | null;
   logicCrontabOrig!: string | string[] | null;
+  runtimeWarnOrig: number | null = null;
+  runtimeCancelOrig: number | null = null;
   logicWatchitemOrig!: LogicsWatchItem[];
 
   readonly parameters = signal<ConfigParameter[]>([]);
@@ -374,6 +376,9 @@ export class LogicsEditComponent implements OnInit {
         }
         logic.crontab = this.shared.listToString(logic.crontab);
 
+        logic.runtime_warn = logic.runtime_warn ?? null;
+        logic.runtime_cancel = logic.runtime_cancel ?? null;
+
         if (logic.watch_item === undefined) {
           logic.watch_item = [];
         }
@@ -404,6 +409,8 @@ export class LogicsEditComponent implements OnInit {
         this.logicGroupOrig = logic.group ?? null;
         this.logicCycleOrig = logic.cycle;
         this.logicCrontabOrig = logic.crontab ?? null;
+        this.runtimeWarnOrig = logic.runtime_warn;
+        this.runtimeCancelOrig = logic.runtime_cancel;
         this.logicWatchitemOrig = Array.from(logic.watch_item);
       });
 
@@ -443,6 +450,12 @@ export class LogicsEditComponent implements OnInit {
       if (!(logic.cycle === null && this.logicCycleOrig === '')) {
         return true;
       }
+    }
+    if (
+      (logic.runtime_warn ?? null) !== this.runtimeWarnOrig ||
+      (logic.runtime_cancel ?? null) !== this.runtimeCancelOrig
+    ) {
+      return true;
     }
     if (logic.logic_description !== this.logicDescriptionOrig) {
       if (!(logic.logic_description === null && this.logicDescriptionOrig === '')) {
@@ -575,6 +588,8 @@ export class LogicsEditComponent implements OnInit {
       group: this.logicGroupOrig,
       cycle: this.logicCycleOrig,
       crontab: this.logicCrontabOrig,
+      runtime_warn: this.runtimeWarnOrig,
+      runtime_cancel: this.runtimeCancelOrig,
       watch_item: Array.from(this.logicWatchitemOrig),
     }));
     this.logicGroupChips.set(
@@ -596,6 +611,11 @@ export class LogicsEditComponent implements OnInit {
     isIpv6: (v) => this.shared.is_ipv6(v),
     isHostname: (v) => this.shared.is_hostname(v),
   };
+
+  /** True for an empty field (unset) or a number of seconds >= 0. */
+  private isValidSeconds(value: number | null | undefined): boolean {
+    return value === null || value === undefined || (Number.isFinite(value) && value >= 0);
+  }
 
   saveParameters(reload: boolean, onSaved?: (loaded?: boolean) => void) {
     // this.log.log('LoggingConfigurationComponent.saveParameters');
@@ -619,6 +639,19 @@ export class LogicsEditComponent implements OnInit {
     const params: Record<string, unknown> = {};
 
     const logic = this.logic();
+    for (const name of ['runtime_warn', 'runtime_cancel'] as const) {
+      if (!this.isValidSeconds(logic[name])) {
+        this.messageService.clear();
+        this.messageService.add({
+          severity: 'error',
+          summary: name,
+          detail: this.translate.instant('LOGIC_EDIT.RUNTIME_INVALID'),
+          sticky: true,
+        });
+        return;
+      }
+      params[name] = logic[name] ?? null;
+    }
     const cycle = !(parseInt(logic.cycle ?? '', 10) > 0) ? null : logic.cycle;
     params['logic_description'] = logic.logic_description;
     params['group'] = this.shared.stringToList(
@@ -668,6 +701,8 @@ export class LogicsEditComponent implements OnInit {
         this.logicGroupOrig = this.logic().group ?? null;
         this.logicCycleOrig = this.logic().cycle;
         this.logicCrontabOrig = this.logic().crontab ?? null;
+        this.runtimeWarnOrig = this.logic().runtime_warn ?? null;
+        this.runtimeCancelOrig = this.logic().runtime_cancel ?? null;
 
         this.logicChanged.set(this.hasLogicChanged());
 

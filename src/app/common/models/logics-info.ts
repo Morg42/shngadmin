@@ -6,6 +6,10 @@ import { LogicsWatchItem } from './logics-watch-item';
 export interface LogicsinfoType {
   crontab: string | string[] | null;
   cycle: string | null;
+  /** Seconds a run may take before a warning is logged; null/undefined = global default, 0 = off. */
+  runtime_warn?: number | null;
+  /** Seconds after which a run is cancelled automatically; null/undefined = never. */
+  runtime_cancel?: number | null;
   enabled: boolean;
   filename: string;
   last_run: string;

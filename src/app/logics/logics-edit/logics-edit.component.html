@@ -426,6 +426,38 @@
                 </td>
               </tr>
               <tr>
+                <td>{{ 'LOGIC_EDIT.RUNTIME_WARN' | translate }}</td>
+                <td colspan="3">
+                  <input
+                    [(ngModel)]="logic().runtime_warn"
+                    (ngModelChange)="logicChanged.set(hasLogicChanged())"
+                    type="number"
+                    min="0"
+                    step="1"
+                    pInputText
+                    name="runtime_warn"
+                    title="{{ 'LOGIC_EDIT.RUNTIME_WARN_HINT' | translate }}"
+                    style="width: 150px"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>{{ 'LOGIC_EDIT.RUNTIME_CANCEL' | translate }}</td>
+                <td colspan="3">
+                  <input
+                    [(ngModel)]="logic().runtime_cancel"
+                    (ngModelChange)="logicChanged.set(hasLogicChanged())"
+                    type="number"
+                    min="0"
+                    step="1"
+                    pInputText
+                    name="runtime_cancel"
+                    title="{{ 'LOGIC_EDIT.RUNTIME_CANCEL_HINT' | translate }}"
+                    style="width: 150px"
+                  />
+                </td>
+              </tr>
+              <tr>
                 <td>
                   Watch Item(s)
                   @if (logic().watch_item !== undefined) {

@@ -26,6 +26,7 @@ import { ConfigParameter, TableColumn } from '../../../common/models/interfaces'
 import { PluginMetaInfo, PluginSectionConfig } from '../../../common/models/plugins-config';
 import { PluginsApiService } from '../../../common/services/plugins-api.service';
 import { SharedService } from '../../../common/services/shared.service';
+import { resolveParamType } from '../../../common/utils/input-type.utils';
 import {
   formatValidationError,
   StringTypeValidators,
@@ -199,7 +200,7 @@ export class PluginParameterDialogComponent {
 
           const paramdata: ConfigParameter = {
             name: param,
-            type: pm.type,
+            type: resolveParamType(pm.type, pm.hide),
             gui_type: pm.gui_type,
             valid_list: pm.valid_list,
             valid_min: pm.valid_min,
@@ -215,9 +216,6 @@ export class PluginParameterDialogComponent {
             paramdata['default'] = this.shared.listToString(
               pm.default as string | string[] | undefined,
             );
-          }
-          if (pm.hide && ['str', 'int'].indexOf(pm.type ?? '') !== -1) {
-            paramdata['type'] = 'hide' + '-' + pm.type;
           }
 
           const initial_unset = conf[param] === undefined || conf[param] === null;

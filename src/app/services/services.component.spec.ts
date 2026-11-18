@@ -78,6 +78,7 @@ describe('ServicesComponent', () => {
     CheckYamlText: () => of('OK'),
     CheckEvalData: () => of({ expression: '', type: 'str', result: '' }),
     ConvertToYamlText: () => of(''),
+    generateSecret: jest.fn((): Observable<string | null> => of('generated-secret')),
   };
 
   const mockFilesApi = {
@@ -150,6 +151,35 @@ describe('ServicesComponent', () => {
 
   it('should set the first cache entry filename correctly', () => {
     expect(component.cacheInfo()[0].filename).toBe(cacheFixture[0].filename);
+  });
+
+  describe('secret generator row', () => {
+    function generateButton(): HTMLButtonElement {
+      return fixture.nativeElement.querySelector('#generate_secret');
+    }
+
+    function secretField(): HTMLInputElement {
+      return fixture.nativeElement.querySelector('#generated_secret');
+    }
+
+    it('shows a secret from the backend in a readonly field', () => {
+      generateButton().click();
+      fixture.detectChanges();
+
+      expect(component.generated_secret()).toBe('generated-secret');
+      expect(secretField().value).toBe('generated-secret');
+      expect(secretField().readOnly).toBe(true);
+    });
+
+    it('clears the field when the backend could not generate a secret', () => {
+      component.generated_secret.set('old');
+      mockServicesApi.generateSecret.mockReturnValueOnce(of(null));
+
+      generateButton().click();
+      fixture.detectChanges();
+
+      expect(secretField().value).toBe('');
+    });
   });
 
   it('should build valid_languagelist with 3 language options', () => {

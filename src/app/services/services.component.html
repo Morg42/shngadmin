@@ -293,6 +293,36 @@
                     ></button>
                   </td>
                 </tr>
+                <tr>
+                  <td class="row-icon">
+                    <img src="assets/img/password.svg" alt="Icon secret" width="48" height="48" />
+                  </td>
+                  <td>
+                    {{ 'SERVICES.GENERATE_SECRET' | translate }}
+                  </td>
+                  <td>
+                    <input
+                      class="form-control"
+                      [value]="generated_secret()"
+                      readonly
+                      id="generated_secret"
+                      #generatedSecret
+                      style="width: 250px; font-family: monospace"
+                      (focus)="generatedSecret.select()"
+                    />
+                  </td>
+                  <td>
+                    <button
+                      pButton
+                      type="button"
+                      icon="fa fa-key"
+                      (click)="createSecret()"
+                      id="generate_secret"
+                      label="{{ 'BUTTON.GENERATE_SECRET' | translate }}"
+                      severity="success"
+                    ></button>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>

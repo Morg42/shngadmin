@@ -18,6 +18,7 @@ import { ServicesApiService } from '../../common/services/services-api.service';
 
 import { ConfigParameter, TableColumn } from '../../common/models/interfaces';
 import { SharedService } from '../../common/services/shared.service';
+import { resolveParamType } from '../../common/utils/input-type.utils';
 import {
   formatValidationError,
   StringTypeValidators,
@@ -46,10 +47,15 @@ interface ParameterMeta {
   valid_max?: unknown;
   default?: unknown;
   mandatory?: boolean;
+  /** True if the value is masked in the GUI (a password). */
+  hide?: boolean;
   /** True if a saved change applies to the running core without a restart. */
   live?: boolean;
   description?: Record<string, string>;
 }
+
+/** Parameter types whose empty value is saved as null, so the core falls back to the default. */
+const BLANK_IS_UNSET_TYPES: readonly string[] = ['str', 'hide-str'];
 
 interface ConfigSection {
   meta: { parameters: Record<string, ParameterMeta> };
@@ -238,7 +244,7 @@ export class SystemConfigComponent implements OnInit {
 
     const paramdata = {
       name: param,
-      type: meta['parameters'][param]['type'],
+      type: resolveParamType(meta['parameters'][param]['type'], meta['parameters'][param]['hide']),
       gui_type: meta['parameters'][param]['gui_type'],
       valid_list: meta['parameters'][param]['valid_list'],
       valid_min: meta['parameters'][param]['valid_min'],
@@ -465,6 +471,18 @@ export class SystemConfigComponent implements OnInit {
     return false;
   }
 
+  /** Row values of a section by parameter name; an empty str/hide-str value is set to null (unset) in the row and the result. */
+  private sectionData(params: ConfigParameter[]): Record<string, unknown> {
+    const data: Record<string, unknown> = {};
+    for (const param of params) {
+      if (param.value === '' && BLANK_IS_UNSET_TYPES.includes(param.type ?? '')) {
+        param.value = null;
+      }
+      data[param.name] = param.value;
+    }
+    return data;
+  }
+
   saveSettings() {
     let errors_found = false;
     this.validation_dialog_text = [];
@@ -512,74 +530,17 @@ export class SystemConfigComponent implements OnInit {
     // evaluated before the values are normalized for sending, which would show up as changes
     const restartNeeded = this.restartNeeded();
 
-    const data: Record<string, any> = {};
-    data['common'] = {};
-    data['common']['data'] = {};
-    for (const p in this.common_parameters()) {
-      if (this.common_parameters().hasOwnProperty(p)) {
-        if (
-          this.common_parameters()[p].value === '' &&
-          this.common_parameters()[p].type === 'str'
-        ) {
-          this.common_parameters()[p].value = null;
-        }
-        data['common']['data'][this.common_parameters()[p].name] =
-          this.common_parameters()[p].value;
-      }
-    }
-
-    data['http'] = {};
-    data['http']['data'] = {};
-    for (const p in this.http_parameters()) {
-      if (this.http_parameters().hasOwnProperty(p)) {
-        if (this.http_parameters()[p].value === '' && this.http_parameters()[p].type === 'str') {
-          this.http_parameters()[p].value = null;
-        }
-        data['http']['data'][this.http_parameters()[p].name] = this.http_parameters()[p].value;
-      }
-    }
+    const data: Record<string, { data: Record<string, unknown> }> = {
+      common: { data: this.sectionData(this.common_parameters()) },
+      http: { data: this.sectionData(this.http_parameters()) },
+      websocket: { data: this.sectionData(this.websocket_parameters()) },
+      admin: { data: this.sectionData(this.admin_parameters()) },
+      mqtt: { data: this.sectionData(this.mqtt_parameters()) },
+    };
     // plaintext passwords from etc/module.yaml: the backend stores them as hashes (unless a hash is set) and removes them
     const httpConfig = this.config()!.http.data as Record<string, unknown>;
     data['http']['data']['password'] = httpConfig['password'] || null;
     data['http']['data']['service_password'] = httpConfig['service_password'] || null;
-
-    data['websocket'] = {};
-    data['websocket']['data'] = {};
-    for (const p in this.websocket_parameters()) {
-      if (this.websocket_parameters().hasOwnProperty(p)) {
-        if (
-          this.websocket_parameters()[p].value === '' &&
-          this.websocket_parameters()[p].type === 'str'
-        ) {
-          this.websocket_parameters()[p].value = null;
-        }
-        data['websocket']['data'][this.websocket_parameters()[p].name] =
-          this.websocket_parameters()[p].value;
-      }
-    }
-
-    data['admin'] = {};
-    data['admin']['data'] = {};
-    for (const p in this.admin_parameters()) {
-      if (this.admin_parameters().hasOwnProperty(p)) {
-        if (this.admin_parameters()[p].value === '' && this.admin_parameters()[p].type === 'str') {
-          this.admin_parameters()[p].value = null;
-        }
-        data['admin']['data'][this.admin_parameters()[p].name] = this.admin_parameters()[p].value;
-      }
-    }
-
-    data['mqtt'] = {};
-    data['mqtt']['data'] = {};
-    for (const p in this.mqtt_parameters()) {
-      if (this.mqtt_parameters().hasOwnProperty(p)) {
-        if (this.mqtt_parameters()[p].value === '' && this.mqtt_parameters()[p].type === 'str') {
-          this.mqtt_parameters()[p].value = null;
-        }
-        data['mqtt']['data'][this.mqtt_parameters()[p].name] = this.mqtt_parameters()[p].value;
-        // this.log.warn(this.mqtt_parameters()[p].name, this.mqtt_parameters()[p].type, this.mqtt_parameters()[p].value);
-      }
-    }
 
     this.dataService
       .saveConfig(data)

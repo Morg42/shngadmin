@@ -178,6 +178,24 @@ describe('SystemConfigComponent', () => {
       expect(ok).toBe(false);
     });
   });
+  describe('hidden parameters', () => {
+    const mqttParam = (name: string) => component.mqtt_parameters().find((p) => p.name === name)!;
+
+    it('masks a parameter declared with hide', () => {
+      expect(mqttParam('password').type).toBe('hide-str');
+      expect(mqttParam('user').type).toBe('str');
+    });
+
+    it('saves an emptied hidden parameter as unset', () => {
+      const save = jest.spyOn(mockConfigApi, 'saveConfig');
+      mqttParam('password').value = '';
+      component.saveSettings();
+      const sent = save.mock.calls[0][0] as Record<string, { data: Record<string, unknown> }>;
+      expect(sent['mqtt'].data['password']).toBeNull();
+      save.mockRestore();
+    });
+  });
+
   describe('saveSettings: live options', () => {
     const param = (name: string) => component.common_parameters().find((p) => p.name === name)!;
 

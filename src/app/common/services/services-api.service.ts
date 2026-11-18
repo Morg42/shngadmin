@@ -14,6 +14,10 @@ interface PasswordCheckResult {
   match: boolean;
 }
 
+interface GeneratedSecretResult {
+  secret: string;
+}
+
 interface EvalResult {
   expression: string;
   type: string;
@@ -194,6 +198,24 @@ export class ServicesApiService {
           'ServicesApiService.checkPassword: Could not check password - ' + err.message,
         );
         return of(false);
+      }),
+    );
+  }
+
+  /**
+   * Create a random secret (256 bit, URL-safe) on the backend (PUT /api/services/generatesecret/).
+   *
+   * Emits the secret, or null if the backend could not create it.
+   */
+  generateSecret(): Observable<string | null> {
+    const url = this.appConfig.apiUrl + 'services/generatesecret/';
+    return this.http.put<GeneratedSecretResult>(url, null).pipe(
+      map((response) => response?.secret ?? null),
+      catchError((err: HttpErrorResponse) => {
+        this.log.error(
+          'ServicesApiService.generateSecret: Could not create secret - ' + err.message,
+        );
+        return of(null);
       }),
     );
   }

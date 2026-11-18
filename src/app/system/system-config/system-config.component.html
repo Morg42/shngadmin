@@ -110,7 +110,12 @@
                   @for (col of columns; track col.field) {
                     <td>
                       @if (dialog_readonly === false && col.field === 'value') {
-                        <app-dynamic-field [row]="rowData" [col]="col" (changed)="check_values()"></app-dynamic-field>
+                        <app-dynamic-field
+                          [row]="rowData"
+                          [col]="col"
+                          [allowGenerate]="false"
+                          (changed)="check_values()"
+                        ></app-dynamic-field>
                         @if (rowData.type === 'password' && rowData[col.field] === null) {
                           <button
                             pButton

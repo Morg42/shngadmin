@@ -16,6 +16,8 @@
  *     Returns the hash; null on HTTP error
  *   - checkPassword(password, hash) — PUT /api/services/checkpassword/
  *     Returns the match flag; false on HTTP error
+ *   - generateSecret() — PUT /api/services/generatesecret/
+ *     Returns the secret; null on HTTP error
  */
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
@@ -224,5 +226,23 @@ describe('ServicesApiService', () => {
       .expectOne('/api/services/checkpassword/')
       .flush('err', { status: 500, statusText: 'Server Error' });
     expect(result).toBe(false);
+  });
+
+  it('generateSecret() sends PUT /api/services/generatesecret/ and returns the secret', () => {
+    let result: string | null | undefined;
+    service.generateSecret().subscribe((r) => (result = r));
+    const req = http.expectOne('/api/services/generatesecret/');
+    expect(req.request.method).toBe('PUT');
+    req.flush({ secret: 'abc_-123' });
+    expect(result).toBe('abc_-123');
+  });
+
+  it('generateSecret() returns null on HTTP error', () => {
+    let result: string | null | undefined;
+    service.generateSecret().subscribe((r) => (result = r));
+    http
+      .expectOne('/api/services/generatesecret/')
+      .flush('err', { status: 500, statusText: 'Server Error' });
+    expect(result).toBeNull();
   });
 });

@@ -115,6 +115,8 @@ export class ServicesComponent implements OnInit {
   pwd_clear = '';
   pwd_hash!: string;
   pwd_show!: boolean;
+  /** Last secret from createSecret(), empty if none or the backend could not create one. */
+  readonly generated_secret = signal('');
 
   readonly backup_disabled = signal(false);
   readonly restore_disabled = signal(false);
@@ -285,6 +287,16 @@ export class ServicesComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((hash) => {
         this.pwd_hash = hash ?? '';
+      });
+  }
+
+  /** Show a new random secret from the backend, e.g. for a plain-text token in a plugin configuration. */
+  createSecret() {
+    this.dataService
+      .generateSecret()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((secret) => {
+        this.generated_secret.set(secret ?? '');
       });
   }
 

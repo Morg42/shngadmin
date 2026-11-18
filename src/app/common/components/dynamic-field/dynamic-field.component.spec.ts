@@ -1,5 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Observable, of } from 'rxjs';
+import { translateTestingModule } from '../../../../testing/test-helpers';
 import { ConfigParameter, TableColumn } from '../../models/interfaces';
+import { ServicesApiService } from '../../services/services-api.service';
 import { DynamicFieldComponent } from './dynamic-field.component';
 
 describe('DynamicFieldComponent', () => {
@@ -7,6 +10,8 @@ describe('DynamicFieldComponent', () => {
   let component: DynamicFieldComponent;
 
   const col: TableColumn = { field: 'value', header: 'Value' };
+  let generated: Observable<string | null>;
+  const mockServicesApi = { generateSecret: jest.fn(() => generated) };
 
   function setRow(row: ConfigParameter) {
     fixture.componentRef.setInput('row', row);
@@ -15,8 +20,11 @@ describe('DynamicFieldComponent', () => {
   }
 
   beforeEach(async () => {
+    generated = of('generated-secret');
+    mockServicesApi.generateSecret.mockClear();
     await TestBed.configureTestingModule({
-      imports: [DynamicFieldComponent],
+      imports: [DynamicFieldComponent, translateTestingModule],
+      providers: [{ provide: ServicesApiService, useValue: mockServicesApi }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DynamicFieldComponent);
@@ -139,5 +147,77 @@ describe('DynamicFieldComponent', () => {
       );
     }
     expect(row['value']).toBe(536);
+  });
+
+  // -------------------------------------------------------------------------
+  // secret fields (password, hide-str): masked with a reveal toggle and a
+  // button that fills in a random secret created by the backend.
+  // -------------------------------------------------------------------------
+
+  function generateButton(): HTMLButtonElement | null {
+    return fixture.nativeElement.querySelector('button.generate-secret');
+  }
+
+  it.each(['password', 'hide-str'])('offers secret generation for a %s parameter', (type) => {
+    setRow({ name: 'token', value: null, type });
+    expect(component.canGenerate).toBe(true);
+    expect(generateButton()).not.toBeNull();
+  });
+
+  it.each(['str', 'hide-int', 'int'])('offers no secret generation for a %s parameter', (type) => {
+    setRow({ name: 'x', value: null, type });
+    expect(component.canGenerate).toBe(false);
+    expect(generateButton()).toBeNull();
+  });
+
+  it('offers no secret generation when the parent disables it', () => {
+    fixture.componentRef.setInput('allowGenerate', false);
+    setRow({ name: 'hashed_password', value: null, type: 'password' });
+    expect(component.canGenerate).toBe(false);
+    expect(generateButton()).toBeNull();
+  });
+
+  it('writes the generated secret into the row and reports the change', () => {
+    const row: ConfigParameter = { name: 'token', value: 'old', type: 'hide-str' };
+    setRow(row);
+    const changed = jest.fn();
+    component.changed.subscribe(changed);
+
+    generateButton()!.click();
+
+    expect(mockServicesApi.generateSecret).toHaveBeenCalledTimes(1);
+    expect(row['value']).toBe('generated-secret');
+    expect(changed).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the value when the backend could not generate a secret', () => {
+    generated = of(null);
+    const row: ConfigParameter = { name: 'token', value: 'old', type: 'password' };
+    setRow(row);
+    const changed = jest.fn();
+    component.changed.subscribe(changed);
+
+    generateButton()!.click();
+
+    expect(row['value']).toBe('old');
+    expect(changed).not.toHaveBeenCalled();
+  });
+
+  it('shows a generated secret in the input', async () => {
+    setRow({ name: 'token', value: null, type: 'password' });
+    generateButton()!.click();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(input().value).toBe('generated-secret');
+  });
+
+  it('masks a secret with a reveal toggle', () => {
+    setRow({ name: 'token', value: 'abc', type: 'password' });
+    expect(input().type).toBe('password');
+    expect(
+      fixture.nativeElement.querySelector(
+        'p-password [data-pc-section="maskicon"], p-password svg',
+      ),
+    ).not.toBeNull();
   });
 });

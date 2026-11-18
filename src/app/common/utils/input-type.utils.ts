@@ -65,6 +65,22 @@ export function resolveInputKind(
   return 'text';
 }
 
+/** Types that metadata `hide: true` turns into a masked GUI type ('hide-str', 'hide-int'). */
+const HIDEABLE_TYPES: readonly string[] = ['str', 'int'];
+
+/** GUI type of a parameter: a hidden str/int becomes 'hide-str'/'hide-int', any other type is kept. */
+export function resolveParamType(type: string, hide: boolean | undefined): string;
+export function resolveParamType(
+  type: string | undefined,
+  hide: boolean | undefined,
+): string | undefined;
+export function resolveParamType(
+  type: string | undefined,
+  hide: boolean | undefined,
+): string | undefined {
+  return hide && type !== undefined && HIDEABLE_TYPES.includes(type) ? `hide-${type}` : type;
+}
+
 export interface SelectOption {
   label: string;
   value: unknown;

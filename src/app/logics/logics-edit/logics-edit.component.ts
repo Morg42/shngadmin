@@ -39,6 +39,7 @@ import { LogService } from '../../common/services/log.service';
 import { LogicsApiService } from '../../common/services/logics-api.service';
 import { PluginsApiService } from '../../common/services/plugins-api.service';
 import { SharedService } from '../../common/services/shared.service';
+import { resolveParamType } from '../../common/utils/input-type.utils';
 import {
   formatValidationError,
   StringTypeValidators,
@@ -268,7 +269,7 @@ export class LogicsEditComponent implements OnInit {
 
             const paramdata: ConfigParameter = {
               name: param,
-              type: paramdef['type'] as string,
+              type: resolveParamType(paramdef['type'] as string, paramdef['hide'] === true),
               valid_list: paramdef['valid_list'] as unknown[] | undefined,
               valid_min: paramdef['valid_min'],
               valid_max: paramdef['valid_max'],
@@ -286,9 +287,6 @@ export class LogicsEditComponent implements OnInit {
                   paramdef['default'] as string | string[] | undefined,
                 );
               }
-            }
-            if (paramdef['hide'] && ['str', 'int'].indexOf(paramdef['type'] as string) !== -1) {
-              paramdata['type'] = 'hide' + '-' + (paramdef['type'] as string);
             }
 
             if (paramdata.type === 'bool') {

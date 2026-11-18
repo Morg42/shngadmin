@@ -1,4 +1,4 @@
-import { resolveInputKind, resolveSelectOptions } from './input-type.utils';
+import { resolveInputKind, resolveParamType, resolveSelectOptions } from './input-type.utils';
 
 describe('resolveInputKind', () => {
   it('prefers select whenever a valid_list is present, regardless of type', () => {
@@ -75,5 +75,23 @@ describe('resolveSelectOptions', () => {
   it('returns undefined for a non-bool type with no valid_list', () => {
     expect(resolveSelectOptions('str', undefined)).toBeUndefined();
     expect(resolveSelectOptions('str', [])).toBeUndefined();
+  });
+});
+
+describe('resolveParamType', () => {
+  it('turns a hidden str or int into the masked GUI type', () => {
+    expect(resolveParamType('str', true)).toBe('hide-str');
+    expect(resolveParamType('int', true)).toBe('hide-int');
+  });
+
+  it('keeps the type of a parameter that is not hidden', () => {
+    expect(resolveParamType('str', false)).toBe('str');
+    expect(resolveParamType('str', undefined)).toBe('str');
+  });
+
+  it('keeps the type of a hidden parameter that has no masked GUI type', () => {
+    expect(resolveParamType('bool', true)).toBe('bool');
+    expect(resolveParamType('password', true)).toBe('password');
+    expect(resolveParamType(undefined, true)).toBeUndefined();
   });
 });

@@ -37,15 +37,31 @@
     />
   }
   @case ('password') {
-    <input
-      [(ngModel)]="row()[col().field]"
-      type="password"
-      pInputText
-      [placeholder]="placeholder"
-      [name]="col().field"
-      style="width: 100%"
-      (ngModelChange)="onChanged()"
-    />
+    <div style="display: flex; gap: 5px; align-items: center">
+      <p-password
+        [(ngModel)]="row()[col().field]"
+        [toggleMask]="true"
+        [feedback]="false"
+        [fluid]="true"
+        autocomplete="new-password"
+        [placeholder]="placeholder"
+        [name]="col().field"
+        style="flex: 1"
+        (ngModelChange)="onChanged()"
+      />
+      @if (canGenerate) {
+        <button
+          pButton
+          type="button"
+          class="generate-secret"
+          icon="fa fa-key"
+          severity="secondary"
+          [pTooltip]="'BUTTON.GENERATE_SECRET' | translate"
+          tooltipPosition="top"
+          (click)="generateSecret()"
+        ></button>
+      }
+    </div>
   }
   @case ('text-readonly') {
     <input

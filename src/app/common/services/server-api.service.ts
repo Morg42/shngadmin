@@ -107,6 +107,7 @@ export class ServerApiService {
           wsHost: this._resolveWsHost(result.websocket_host),
           wsPort: result.websocket_port ?? '',
           loginRequired: result.login_required ?? false,
+          startPage: result.start_page ?? 'dashboard',
         });
 
         this.shared.setGuiLanguage();
@@ -149,6 +150,13 @@ export class ServerApiService {
           pluginsBranch: this.shng_serverinfo.plugins_branch,
           developerMode: this.shng_serverinfo.developer_mode,
           clickDropdownHeader: this.shng_serverinfo.click_dropdown_header,
+          helpLocalAvailable: this.shng_serverinfo.help_local_available,
+          darkModeDefault: this.shng_serverinfo.dark_mode,
+          resourceGraphPeriod: this.shng_serverinfo.resource_graph_period,
+          restartStopsOnly: this.shng_serverinfo.restart_stops_only,
+          systemPowerAvailable: this.shng_serverinfo.system_power_available,
+          corePullAvailable: this.shng_serverinfo.core_pull_available,
+          pluginsPullAvailable: this.shng_serverinfo.plugins_pull_available,
           fallbackLanguageOrder: fallbackOrder,
           wsHost: this._resolveWsHost(this.shng_serverinfo.websocket_host),
           wsPort: this.shng_serverinfo.websocket_port ?? '',
@@ -182,7 +190,6 @@ export class ServerApiService {
     this.log.log('getShngServerStatus');
     const url = this.appConfig.apiUrl + 'server/status/';
     return this.http.get(url).pipe(
-      map((response) => response),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'ServerApiService (getShngServerStatus): Could not read server status - ',
@@ -194,13 +201,60 @@ export class ServerApiService {
   }
 
   restartShngServer() {
-    this.log.log('restartShngServer');
-    const url = this.appConfig.apiUrl + 'server/restart/';
-    return this.http.put(url, JSON.stringify('')).pipe(
-      map((response) => response),
+    return this.putServerAction('restart');
+  }
+
+  stopShngServer() {
+    return this.putServerAction('stop');
+  }
+
+  poweroffHost() {
+    return this.putServerAction('poweroff');
+  }
+
+  rebootHost() {
+    return this.putServerAction('reboot');
+  }
+
+  /** Fetches the upstreams and yields a PullStatusResponse, {} on HTTP error. */
+  getPullStatus() {
+    const url = this.appConfig.apiUrl + 'server/pull_status';
+    return this.http.get(url).pipe(
       catchError((err: HttpErrorResponse) => {
         this.log.error(
-          'ServerApiService (restartShngServer): Could not restart server - ',
+          'ServerApiService.getPullStatus(): Could not read pull status - ',
+          err?.error?.error || err.message || err,
+        );
+        return of({});
+      }),
+    );
+  }
+
+  /** Fast-forwards the core checkout; yields a PullResponse, {} on HTTP error. */
+  pullCore() {
+    return this.putServerAction('pull_core');
+  }
+
+  /** Fast-forwards the plugins checkout; yields a PullResponse, {} on HTTP error. */
+  pullPlugins() {
+    return this.putServerAction('pull_plugins');
+  }
+
+  /** Fast-forwards core and plugins, or neither; yields a PullResponse, {} on HTTP error. */
+  pullAll() {
+    return this.putServerAction('pull_all');
+  }
+
+  /** Issues PUT /api/server/<action>/; yields {} on HTTP error. */
+  private putServerAction(
+    action: 'restart' | 'stop' | 'poweroff' | 'reboot' | 'pull_core' | 'pull_plugins' | 'pull_all',
+  ) {
+    this.log.log(`putServerAction: ${action}`);
+    const url = this.appConfig.apiUrl + `server/${action}/`;
+    return this.http.put(url, JSON.stringify('')).pipe(
+      catchError((err: HttpErrorResponse) => {
+        this.log.error(
+          `ServerApiService (putServerAction): Could not ${action} - `,
           err?.error?.error || err.message || err,
         );
         return of({});
@@ -211,7 +265,6 @@ export class ServerApiService {
   getSystemStats() {
     const url = this.appConfig.apiUrl + 'system/info';
     return this.http.get(url).pipe(
-      map((response) => response),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'ServerApiService.getSystemStats(): Could not read system stats - ',
@@ -222,10 +275,26 @@ export class ServerApiService {
     );
   }
 
+  /** `configured: false` on any HTTP error, same shape as a real "no
+   *  database plugin loaded" response - the dashboard widget that consumes
+   *  this stays hidden either way, no separate error state needed for an
+   *  explicitly optional widget. */
+  getDatabaseInfo() {
+    const url = this.appConfig.apiUrl + 'database/info';
+    return this.http.get(url).pipe(
+      catchError((err: HttpErrorResponse) => {
+        this.log.error(
+          'ServerApiService.getDatabaseInfo(): Could not read database info - ',
+          err?.error?.error || err.message || err,
+        );
+        return of({ configured: false });
+      }),
+    );
+  }
+
   getPypiInfo() {
     const url = this.appConfig.apiUrl + 'server/pypi';
     return this.http.get(url).pipe(
-      map((response) => response),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'ServerApiService.getPypiInfo(): Could not read PyPI data - ',
@@ -253,7 +322,6 @@ export class ServerApiService {
     this.log.log('downloadConfigBackup');
     const url = this.appConfig.apiUrl + 'files/backup/';
     return this.http.get(url, { responseType: 'blob' }).pipe(
-      map((response) => response),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'ServerApiService (downloadConfigBackup): Could not download backup data - ',

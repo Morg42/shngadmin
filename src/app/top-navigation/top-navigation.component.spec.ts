@@ -1,8 +1,8 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import {
@@ -14,6 +14,9 @@ import { AppConfigService } from '../common/services/app-config.service';
 import { AuthService } from '../common/services/auth.service';
 import { ServerApiService } from '../common/services/server-api.service';
 import { TopNavigationComponent } from './top-navigation.component';
+
+@Component({ template: '', standalone: true })
+class BlankTestComponent {}
 
 describe('TopNavigationComponent', () => {
   let component: TopNavigationComponent;
@@ -28,13 +31,13 @@ describe('TopNavigationComponent', () => {
 
     const mockAuth = {
       ...createMockAuthService(),
-      login: jest.fn().mockReturnValue(of(false)),
+      ensureLoggedIn: jest.fn().mockReturnValue(of(false)),
     };
 
     await TestBed.configureTestingModule({
       imports: [TopNavigationComponent, translateTestingModule],
       providers: [
-        provideRouter([]),
+        provideRouter([{ path: '**', component: BlankTestComponent }]),
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: ServerApiService, useValue: mockServerApi },
@@ -58,6 +61,107 @@ describe('TopNavigationComponent', () => {
   });
 
   it('loggedIn is initially false', () => {
-    expect(component.loggedIn).toBe(false);
+    expect(component.loggedIn()).toBe(false);
+  });
+
+  it('helpUrl falls back to the official docs when local docs are unavailable', () => {
+    expect(component.helpUrl).toBe(component.helpUrlOfficial);
+    expect(component.helpUrlOfficial).toContain('smarthomeng.github.io/smarthome/admin/');
+  });
+
+  it('helpUrl points to the section-specific admin doc page for the current route', () => {
+    component['currentUrl'].set('/items');
+    expect(component.helpUrlOfficial).toContain('/admin/items.html');
+  });
+
+  it('helpUrl falls back to the generic admin page for unmapped routes', () => {
+    component['currentUrl'].set('/login');
+    expect(component.helpUrlOfficial).toContain('/admin/admin.html');
+  });
+
+  it('helpUrlDev points to the same section page on the develop-branch docs mirror', () => {
+    component['currentUrl'].set('/plugins');
+    expect(component.helpUrlDev).toBe('https://smarthomeng.github.io/dev_doc/admin/plugins.html');
+  });
+
+  it('nonMasterBranch is false when both core and plugins are on master', () => {
+    expect(component.nonMasterBranch).toBe(false);
+  });
+
+  it('nonMasterBranch is true when core is on a non-master branch', () => {
+    component['appConfig'].coreBranch = 'edit-item';
+    expect(component.nonMasterBranch).toBe(true);
+  });
+
+  it('nonMasterBranch is true when plugins is on a non-master branch', () => {
+    component['appConfig'].pluginsBranch = 'edit-item';
+    expect(component.nonMasterBranch).toBe(true);
+  });
+
+  it('updates the Help link source signal on navigation (OnPush reactivity)', async () => {
+    // currentUrl is a signal read by the help getters, so a change marks
+    // the OnPush component dirty without any manual markForCheck.
+    await TestBed.inject(Router).navigateByUrl('/');
+    expect(component['currentUrl']()).toBe('/');
+  });
+
+  it('forces an immediate check when the theme changes, so the toggle icon never goes stale', () => {
+    // detectChanges (not markForCheck) is required here: this component
+    // observed markForCheck alone leave the icon stale when the theme
+    // changes from deep inside the getServerinfo()/login() async chain,
+    // where nothing else guarantees a following zone tick actually runs.
+    const detectChanges = jest.spyOn(component['cdr'], 'detectChanges');
+    component['theme'].setPreference('dark');
+    expect(detectChanges).toHaveBeenCalled();
+  });
+});
+
+describe('TopNavigationComponent auth-before-server-info ordering', () => {
+  // Regression test: getServerinfo() hits /api/server/info, which requires a
+  // valid auth token (unlike the public /api/server/ basic-info call).
+  // Calling it before the anonymous login that establishes a token only
+  // worked by accident, on a reload that reused a leftover valid token from
+  // sessionStorage - on a genuinely fresh session the backend silently
+  // dropped every field of the response (developer_mode included, no
+  // error), and nothing ever retried it. ensureLoggedIn() must settle first.
+  it('calls ensureLoggedIn() before getServerinfo()', async () => {
+    const callOrder: string[] = [];
+    const mockServerApi = {
+      getServerBasicinfo: () => of({}),
+      getServerinfo: jest.fn(() => {
+        callOrder.push('getServerinfo');
+        return of({});
+      }),
+      shng_serverinfo: {},
+    };
+    const mockAuth = {
+      ...createMockAuthService(),
+      ensureLoggedIn: jest.fn(() => {
+        callOrder.push('ensureLoggedIn');
+        return of(true);
+      }),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [TopNavigationComponent, translateTestingModule],
+      providers: [
+        provideRouter([{ path: '**', component: BlankTestComponent }]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: ServerApiService, useValue: mockServerApi },
+        { provide: AuthService, useValue: mockAuth },
+        { provide: AppConfigService, useValue: createMockAppConfigService() },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    })
+      .overrideComponent(TopNavigationComponent, {
+        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      })
+      .compileComponents();
+
+    const fixture = TestBed.createComponent(TopNavigationComponent);
+    fixture.detectChanges();
+
+    expect(callOrder).toEqual(['ensureLoggedIn', 'getServerinfo']);
   });
 });

@@ -1,10 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { BehaviorSubject } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { catchError, map, shareReplay, take } from 'rxjs/operators';
 
-import { sha512 } from 'js-sha512';
 import { AppConfigService } from './app-config.service';
 import { LogService } from './log.service';
 
@@ -44,6 +43,12 @@ export class AuthService {
 
   logTimestamp: number = 0;
 
+  // Caches the in-flight (or last-settled) anonymous login request so
+  // concurrent callers of ensureLoggedIn() - authGuard and
+  // TopNavigationComponent - share one request instead of each firing
+  // their own anonymous login POST.
+  private ensureLoggedIn$: Observable<boolean> | null = null;
+
   constructor() {
     this.isLoginRequired = true;
     this.tokenRenewal = true;
@@ -66,21 +71,11 @@ export class AuthService {
     this.log.log('authService.login() entering');
     this.logTimestamp = this.getTimestamp();
 
-    const send_hash = 'shNG0160$';
-    const send_credentials: Record<string, string> = {};
-
-    send_credentials.username = '';
-    if (credentials.username !== '') {
-      send_credentials.username = sha512(credentials.username + send_hash);
-    }
-
-    send_credentials.password = '';
-    if (credentials.password !== '') {
-      send_credentials.password = sha512(sha512(credentials.password) + send_hash);
-    }
+    // sent as-is: the API is only ever meant to be reachable over https, per the admin module's TLS docs
+    const send_credentials = { username: credentials.username, password: credentials.password };
 
     const apiUrl = '/api/';
-    this.log.log('login', apiUrl + 'authenticate/user', { send_credentials });
+    this.log.log('login', apiUrl + 'authenticate/user', { username: send_credentials.username });
     return this.http
       .post<{ token?: string }>(apiUrl + 'authenticate/user', JSON.stringify(send_credentials))
       .pipe(
@@ -109,13 +104,39 @@ export class AuthService {
             return false;
           }
         }),
+        catchError((err: HttpErrorResponse) => {
+          if (err.status === 401) {
+            this.log.log('login:', 'rejected');
+            return of(false);
+          }
+          return throwError(() => err);
+        }),
       );
+  }
+
+  /**
+   * Resolves once an anonymous login attempt has settled - immediately with
+   * `true` if already logged in (real or anonymous), otherwise triggers (or
+   * joins an already in-flight) anonymous login and resolves with its
+   * result. Use this instead of calling login() directly wherever a caller
+   * merely needs a token to exist before proceeding (as opposed to actually
+   * submitting user-entered credentials, which is what the login form does).
+   */
+  ensureLoggedIn(): Observable<boolean> {
+    if (this.isLoggedIn()) {
+      return of(true);
+    }
+    if (!this.ensureLoggedIn$) {
+      this.ensureLoggedIn$ = this.login({ username: '', password: '' }).pipe(shareReplay(1));
+    }
+    return this.ensureLoggedIn$;
   }
 
   logout() {
     this._token = null;
     sessionStorage.removeItem('token');
     this.currentUser = null;
+    this.ensureLoggedIn$ = null;
     this.loggedIn$.next(false);
   }
 

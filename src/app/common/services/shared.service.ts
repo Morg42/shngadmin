@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, effect, inject, signal } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AppConfigService } from './app-config.service';
 import { LogService } from './log.service';
@@ -11,12 +11,44 @@ export class SharedService {
   private appConfig = inject(AppConfigService);
   private readonly log = inject(LogService);
 
-  /** Persists the monitored-item list across item-tree component navigation.
-   *  Stored here because WebsocketPluginService is component-scoped. */
-  public monitoredItemsList: [string, Record<string, unknown>][] = [];
+  private static readonly MONITORED_ITEMS_KEY = 'shng.items.monitored';
+
+  /** Persists the monitored-item list across item-tree component navigation
+   *  AND across full page reloads (item paths only - see loadMonitoredPaths).
+   *  Stored here because StreamService is component-scoped. A signal
+   *  so item-tree's live table stays reactive under OnPush without a manual
+   *  ping subscription - every update publishes a new array reference. */
+  public readonly monitoredItemsList = signal<[string, Record<string, unknown>][]>(
+    SharedService.loadMonitoredPaths(),
+  );
 
   constructor() {
     this.log.log('SharedService constructor called');
+
+    // Persist paths only, not the live data - a stale cached value would be
+    // misleading, and item-tree already re-fetches fresh data on (re)connect
+    // for every path found here (see ItemTreeComponent.ngOnInit).
+    effect(() => {
+      const paths = this.monitoredItemsList().map(([path]) => path);
+      try {
+        localStorage.setItem(SharedService.MONITORED_ITEMS_KEY, JSON.stringify(paths));
+      } catch {
+        // Storage unavailable/full - monitoring still works for this session,
+        // it just won't survive a reload.
+      }
+    });
+  }
+
+  private static loadMonitoredPaths(): [string, Record<string, unknown>][] {
+    try {
+      const raw = localStorage.getItem(SharedService.MONITORED_ITEMS_KEY);
+      if (!raw) return [];
+      const paths = JSON.parse(raw) as unknown;
+      if (!Array.isArray(paths)) return [];
+      return paths.filter((p) => typeof p === 'string').map((path) => [path, {}]);
+    } catch {
+      return [];
+    }
   }
 
   ageToString(age: number) {
@@ -229,10 +261,14 @@ export class SharedService {
     return order[index] ?? 'en';
   }
 
-  getDescription(descriptionDict: Record<string, string> | undefined | null): string {
-    if (!descriptionDict) {
+  getDescription(description: Record<string, string> | string | undefined | null): string {
+    if (!description) {
       return '';
     }
+    if (typeof description === 'string') {
+      return description;
+    }
+    const descriptionDict = description;
 
     const lang = this.appConfig.defaultLanguage;
     let desc = descriptionDict[lang];
@@ -244,5 +280,44 @@ export class SharedService {
       desc = descriptionDict[this.getFallbackLanguage(1)];
     }
     return desc ?? '';
+  }
+
+  /** Joins a list into a single pipe-delimited display string. A plain
+   *  string input is passed through unchanged (already-joined values flow
+   *  back through here from round-tripped form state); `null` stays `null`
+   *  so callers that distinguish "no value" from "empty value" still can. */
+  listToString(list: string | string[] | null | undefined, delimiter = ' | '): string | null {
+    if (list === null) {
+      return null;
+    }
+    if (typeof list === 'string') {
+      return list;
+    }
+    if (list === undefined) {
+      return '';
+    }
+    return list.join(delimiter);
+  }
+
+  /** Inverse of listToString: splits on the delimiter (trimmed, so the
+   *  default splits on a bare '|') and trims each entry. */
+  stringToList(str: string | null | undefined, delimiter = ' | '): string[] {
+    if (str === null || str === undefined || str.trim() === '') {
+      return [];
+    }
+    const sep = delimiter.trim() || delimiter;
+    return str.split(sep).map((s) => s.trim());
+  }
+
+  /** Renders the plugin/parameter description mini-markdown (newlines,
+   *  `**bold**`, `*italic*`) used in both the plugin list and the
+   *  parameter-edit dialog. */
+  mdLiteToHtml(text: string): string {
+    return text
+      .replace(/\n/g, '<br>')
+      .replace(/ \*\*/g, ' <b><mark>')
+      .replace(/\*\* /g, '</mark></b> ')
+      .replace(/ \*/g, ' <i><mark>')
+      .replace(/\* /g, '</mark></i> ');
   }
 }

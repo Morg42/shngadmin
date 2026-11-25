@@ -1,69 +1,98 @@
 @switch (inputKind) {
   @case ('select') {
     <p-select
-      [options]="row.valid_list"
+      [options]="selectOptions"
       [showClear]="true"
       [placeholder]="placeholder"
-      [(ngModel)]="row[col.field]"
-      (ngModelChange)="row[col.field] = $event; onChanged()"
+      [(ngModel)]="row()[col().field]"
+      (ngModelChange)="row()[col().field] = $event; onChanged()"
       [style]="{ width: '100%' }"
+      appendTo="body"
     >
     </p-select>
   }
   @case ('number') {
-    <input
-      [(ngModel)]="row[col.field]"
-      type="number"
+    <p-inputnumber
+      [(ngModel)]="row()[col().field]"
       [min]="validMin"
       [max]="validMax"
+      [useGrouping]="false"
+      [placeholder]="placeholder"
+      [name]="col().field"
+      style="width: 100%"
+      [inputStyle]="{ width: '100%' }"
+      (ngModelChange)="onChanged()"
+    />
+  }
+  @case ('decimal') {
+    <input
+      appDecimalInput
+      [(ngModel)]="row()[col().field]"
+      type="text"
       pInputText
       [placeholder]="placeholder"
-      [name]="col.field"
+      [name]="col().field"
       style="width: 100%"
       (ngModelChange)="onChanged()"
     />
   }
   @case ('password') {
-    <input
-      [(ngModel)]="row[col.field]"
-      type="password"
-      pInputText
-      [placeholder]="placeholder"
-      [name]="col.field"
-      style="width: 100%"
-      (ngModelChange)="onChanged()"
-    />
+    <div style="display: flex; gap: 5px; align-items: center">
+      <p-password
+        [(ngModel)]="row()[col().field]"
+        [toggleMask]="true"
+        [feedback]="false"
+        [fluid]="true"
+        autocomplete="new-password"
+        [placeholder]="placeholder"
+        [name]="col().field"
+        style="flex: 1"
+        (ngModelChange)="onChanged()"
+      />
+      @if (canGenerate) {
+        <button
+          pButton
+          type="button"
+          class="generate-secret"
+          icon="fa fa-key"
+          severity="secondary"
+          [pTooltip]="'BUTTON.GENERATE_SECRET' | translate"
+          tooltipPosition="top"
+          (click)="generateSecret()"
+        ></button>
+      }
+    </div>
   }
   @case ('text-readonly') {
     <input
-      [(ngModel)]="row[col.field]"
+      [(ngModel)]="row()[col().field]"
       type="text"
       readonly
       pInputText
       [placeholder]="placeholder"
-      [name]="col.field"
+      [name]="col().field"
       style="width: 100%; color: #000077"
       (ngModelChange)="onChanged()"
     />
   }
   @case ('text-wide') {
     <input
-      [(ngModel)]="row[col.field]"
+      [(ngModel)]="row()[col().field]"
       type="text"
       pInputText
       [placeholder]="placeholder"
-      [name]="col.field"
+      [name]="col().field"
       style="width: 100%"
       (ngModelChange)="onChanged()"
     />
   }
   @case ('text') {
     <input
-      [(ngModel)]="row[col.field]"
+      [(ngModel)]="row()[col().field]"
       type="text"
       pInputText
       [placeholder]="placeholder"
-      [name]="col.field"
+      [name]="col().field"
       style="width: 100%"
       (ngModelChange)="onChanged()"
     />

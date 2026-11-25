@@ -62,6 +62,61 @@ describe('AuthService (no token)', () => {
   it('loginRequired() returns true (default constructor state)', () => {
     expect(service.loginRequired()).toBe(true);
   });
+
+  it('ensureLoggedIn() triggers exactly one anonymous login POST for two concurrent callers', () => {
+    // authGuard and TopNavigationComponent can both call this around the
+    // same time on a fresh session - they must share one request, not each
+    // fire their own anonymous login.
+    const http = TestBed.inject(HttpTestingController);
+    const results: boolean[] = [];
+
+    service.ensureLoggedIn().subscribe((r) => results.push(r));
+    service.ensureLoggedIn().subscribe((r) => results.push(r));
+
+    const reqs = http.match('/api/authenticate/user');
+    expect(reqs.length).toBe(1);
+    reqs[0].flush({ token: VALID_JWT });
+
+    expect(results).toEqual([true, true]);
+  });
+
+  it('login() resolves false when the server rejects the credentials with 401', () => {
+    const http = TestBed.inject(HttpTestingController);
+    let result: boolean | undefined;
+
+    service.login({ username: 'admin', password: 'wrong' }).subscribe((r) => (result = r));
+    http
+      .expectOne('/api/authenticate/user')
+      .flush(
+        { error: 'invalid user name or password' },
+        { status: 401, statusText: 'Unauthorized' },
+      );
+
+    expect(result).toBe(false);
+    expect(service.isLoggedIn()).toBe(false);
+  });
+
+  it('ensureLoggedIn() resolves false when anonymous login is rejected with 401', () => {
+    const http = TestBed.inject(HttpTestingController);
+    let result: boolean | undefined;
+
+    service.ensureLoggedIn().subscribe((r) => (result = r));
+    http.expectOne('/api/authenticate/user').flush({}, { status: 401, statusText: 'Unauthorized' });
+
+    expect(result).toBe(false);
+  });
+
+  it('ensureLoggedIn() re-attempts login after logout() clears the cache', () => {
+    const http = TestBed.inject(HttpTestingController);
+
+    service.ensureLoggedIn().subscribe();
+    http.expectOne('/api/authenticate/user').flush({ token: VALID_JWT });
+
+    service.logout();
+    service.ensureLoggedIn().subscribe();
+
+    http.expectOne('/api/authenticate/user').flush({ token: VALID_JWT });
+  });
 });
 
 // Valid JWT with no expiry claim — passes decodeToken without throwing.
@@ -90,5 +145,15 @@ describe('AuthService (token in sessionStorage)', () => {
 
   it('loggedIn$ starts true when token is present in sessionStorage', () => {
     expect(service.loggedIn$.getValue()).toBe(true);
+  });
+
+  it('ensureLoggedIn() resolves immediately without an HTTP call when already logged in', () => {
+    const http = TestBed.inject(HttpTestingController);
+    let result: boolean | undefined;
+
+    service.ensureLoggedIn().subscribe((r) => (result = r));
+
+    expect(result).toBe(true);
+    http.expectNone('/api/authenticate/user');
   });
 });

@@ -1,11 +1,11 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   DestroyRef,
   inject,
   OnInit,
-  ViewChild,
+  signal,
+  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -47,7 +47,6 @@ import { ServicesApiService } from '../../common/services/services-api.service';
 })
 export class StructConfigurationComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
-  private readonly cdr = inject(ChangeDetectorRef);
   private translate = inject(TranslateService);
   private fileService = inject(FilesApiService);
   private dataService = inject(ServicesApiService);
@@ -55,22 +54,22 @@ export class StructConfigurationComponent implements OnInit {
   private readonly log = inject(LogService);
   private readonly messageService = inject(MessageService);
 
-  @ViewChild('codeeditor') codeEditor?: CodeEditorComponent;
+  readonly codeEditor = viewChild<CodeEditorComponent>('codeeditor');
 
-  filelist!: string[];
-  structFiles!: SelectItem[];
+  readonly filelist = signal<string[]>([]);
+  readonly structFiles = signal<SelectItem[]>([]);
   selectedStructfile!: SelectItem;
-  structsDir = './structs'; // updated from backend on init
+  readonly structsDir = signal('./structs'); // updated from backend on init
 
-  myEditFilename = '';
-  myTextarea = '';
-  myTextareaOrig = '';
+  readonly myEditFilename = signal('');
+  readonly myTextarea = signal('');
+  readonly myTextareaOrig = signal('');
 
-  cmReadOnly = true;
+  readonly cmReadOnly = signal(true);
 
   editorHelp_display = false;
-  error_display = false;
-  myTextOutput = '';
+  readonly error_display = signal(false);
+  readonly myTextOutput = signal('');
   newconfig_display = false;
   newFilename = '';
   add_enabled = false;
@@ -86,18 +85,19 @@ export class StructConfigurationComponent implements OnInit {
   ngOnInit() {
     this.getStructFile('');
 
-    this.structFiles = [];
-
     this.setTitle(this.translate.instant('MENU.ITEM_STRUCT_CONFIGURATION'));
+    this.loadFileList();
+  }
+
+  private loadFileList() {
     this.fileService
       .getfileList('structs')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
         const r = response as { dir: string; files: string[] };
-        this.structsDir = r.dir;
-        this.filelist = r.files;
-        this.structFiles = this.filelist.map((fn) => <SelectItem>{ label: fn, value: fn });
-        this.cdr.markForCheck();
+        this.structsDir.set(r.dir);
+        this.filelist.set(r.files);
+        this.structFiles.set(r.files.map((fn) => <SelectItem>{ label: fn, value: fn }));
       });
   }
 
@@ -107,7 +107,7 @@ export class StructConfigurationComponent implements OnInit {
   }
 
   deleteConfig() {
-    this.delete_param = { config: this.myEditFilename };
+    this.delete_param = { config: this.myEditFilename() };
     this.confirmdelete_display = true;
   }
 
@@ -115,14 +115,13 @@ export class StructConfigurationComponent implements OnInit {
     this.confirmdelete_display = false;
 
     this.fileService
-      .deleteFile('structs', this.myEditFilename)
+      .deleteFile('structs', this.myEditFilename())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
-        this.myEditFilename = '';
-        this.myTextarea = '';
-        this.cmReadOnly = true;
+        this.myEditFilename.set('');
+        this.myTextarea.set('');
+        this.cmReadOnly.set(true);
         this.ngOnInit();
-        this.cdr.markForCheck();
       });
 
     return true;
@@ -133,8 +132,8 @@ export class StructConfigurationComponent implements OnInit {
     this.add_enabled = false;
     if (this.newFilename.length > 0) {
       this.add_enabled = true;
-      for (const fileNo in this.filelist) {
-        const fn = this.filelist[fileNo].slice(0, -5); // strip '.yaml'
+      for (const fname of this.filelist()) {
+        const fn = fname.slice(0, -5); // strip '.yaml'
         if (this.newFilename === fn) {
           this.add_enabled = false;
           this.fileExists = true;
@@ -146,29 +145,19 @@ export class StructConfigurationComponent implements OnInit {
   addFile() {
     this.newconfig_display = false;
 
-    this.myTextarea = '# ' + this.newFilename + '.yaml\n';
-    this.myTextareaOrig = this.myTextarea;
-    this.myEditFilename = this.newFilename;
-    this.cmReadOnly = false;
+    const text = '# ' + this.newFilename + '.yaml\n';
+    this.myTextarea.set(text);
+    this.myTextareaOrig.set(text);
+    this.myEditFilename.set(this.newFilename);
+    this.cmReadOnly.set(false);
 
     this.fileService
-      .createFile('structs', this.myEditFilename, this.myTextarea)
+      .createFile('structs', this.myEditFilename(), this.myTextarea())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.myTextareaOrig = this.myTextarea;
-          this.structFiles = [];
-          this.fileService
-            .getfileList('structs')
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe((response) => {
-              const r = response as { dir: string; files: string[] };
-              this.structsDir = r.dir;
-              this.filelist = r.files;
-              this.structFiles = this.filelist.map((fn) => <SelectItem>{ label: fn, value: fn });
-              this.cdr.markForCheck();
-            });
-          this.cdr.markForCheck();
+          this.myTextareaOrig.set(this.myTextarea());
+          this.loadFileList();
         },
         error: (err) => {
           if (err?.status === 409) {
@@ -176,15 +165,14 @@ export class StructConfigurationComponent implements OnInit {
               severity: 'warn',
               summary: this.translate.instant('COMMON.FILE_EXISTS_TITLE'),
               detail: this.translate.instant('COMMON.FILE_EXISTS_HINT', {
-                filename: this.myEditFilename,
+                filename: this.myEditFilename(),
               }),
               life: 5000,
             });
           }
-          this.myEditFilename = '';
-          this.myTextarea = '';
-          this.cmReadOnly = true;
-          this.cdr.markForCheck();
+          this.myEditFilename.set('');
+          this.myTextarea.set('');
+          this.cmReadOnly.set(true);
         },
       });
   }
@@ -195,17 +183,16 @@ export class StructConfigurationComponent implements OnInit {
       filename = filename.slice(0, -5);
       this.getStructFile(filename);
     } else {
-      this.myEditFilename = '';
-      this.myTextarea = '';
-      this.cmReadOnly = true;
-      this.myTextarea = this.translate.instant('STRUCT_CONFIG.FILETYPE_UNSUPPORTED');
+      this.myEditFilename.set('');
+      this.cmReadOnly.set(true);
+      this.myTextarea.set(this.translate.instant('STRUCT_CONFIG.FILETYPE_UNSUPPORTED'));
     }
   }
 
   getStructFile(filename: string) {
-    this.myEditFilename = '';
-    this.myTextarea = '';
-    this.cmReadOnly = true;
+    this.myEditFilename.set('');
+    this.myTextarea.set('');
+    this.cmReadOnly.set(true);
     if (filename === '') {
       return;
     }
@@ -215,37 +202,33 @@ export class StructConfigurationComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
-          this.myTextarea = response;
-          this.myTextareaOrig = response;
-          this.myEditFilename = filename;
-          this.cmReadOnly = false;
-          this.cdr.markForCheck();
+          this.myTextarea.set(response);
+          this.myTextareaOrig.set(response);
+          this.myEditFilename.set(filename);
+          this.cmReadOnly.set(false);
         },
         error: () => {
-          this.myTextarea = this.translate.instant('STRUCT_CONFIG.FILE_NOT_FOUND');
-          this.cdr.markForCheck();
+          this.myTextarea.set(this.translate.instant('STRUCT_CONFIG.FILE_NOT_FOUND'));
         },
       });
   }
 
   saveConfig() {
     this.dataService
-      .CheckYamlText(this.myTextarea)
+      .CheckYamlText(this.myTextarea())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        this.myTextOutput = response as string;
-        if (this.myTextOutput.startsWith('ERROR:')) {
-          this.error_display = true;
+        this.myTextOutput.set(response as string);
+        if (this.myTextOutput().startsWith('ERROR:')) {
+          this.error_display.set(true);
         } else {
           this.fileService
-            .saveFile('structs', this.myEditFilename, this.myTextarea)
+            .saveFile('structs', this.myEditFilename(), this.myTextarea())
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
-              this.myTextareaOrig = this.myTextarea;
-              this.cdr.markForCheck();
+              this.myTextareaOrig.set(this.myTextarea());
             });
         }
-        this.cdr.markForCheck();
       });
   }
 }

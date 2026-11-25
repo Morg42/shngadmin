@@ -1,11 +1,12 @@
 //
-// Datatype for <shng-server>:<port>/admin/items.json
+// Datatype for <shng-server>:<port>/api/items/<path>
 //
 
 export interface ItemDetails {
   path: string;
   name: string;
   description?: string;
+  remark?: string;
   type: string;
   struct?: string;
   value: string | boolean;
@@ -46,6 +47,10 @@ export interface ItemDetails {
   threshold: string;
   threshold_crossed: string;
   config: Record<string, unknown>;
+  /** Complete current attribute set (core + generic), safe to send back via
+   *  PATCH /api/items/{path} as-is — unlike `config` above (item.conf only),
+   *  which omits core attributes like type/eval/trigger entirely. */
+  editable_config: Record<string, unknown>;
   logics: {
     name: string;
     description: string;

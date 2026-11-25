@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" font-family="'Segoe UI',Arial,sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6B7280"/>
+    </marker>
+  </defs>
+  <rect width="900" height="620" fill="#F9FAFB"/>
+  <text x="450" y="26" text-anchor="middle" font-size="16" font-weight="bold" fill="#111827">shngAdmin — Service Layers</text>
+  <text x="450" y="43" text-anchor="middle" font-size="10" fill="#6B7280">Services mostly inject services of the layers above them (exceptions are noted in the boxes). All are singletons (providedIn: 'root') unless noted. Exact lists: doc/maps.md</text>
+  <text x="20" y="66" font-size="9" font-weight="bold" fill="#6B7280">FOUNDATION</text>
+  <rect x="20" y="72" width="270" height="62" rx="6" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+  <text x="155.0" y="89" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#334155">LogService</text>
+  <text x="155.0" y="105" text-anchor="middle" font-size="8.5" fill="#475569">Wraps console.log/warn/error.</text>
+  <text x="155.0" y="118" text-anchor="middle" font-size="8.5" fill="#475569">Silent for log()/debug() in production.</text>
+  <rect x="315" y="72" width="270" height="62" rx="6" fill="#1D4ED8" stroke="#1E3A8A" stroke-width="2"/>
+  <text x="450.0" y="89" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#FFFFFF">AppConfigService</text>
+  <text x="450.0" y="105" text-anchor="middle" font-size="8.5" fill="#DBEAFE">Central reactive config store: BehaviorSubject&lt;AppConfig&gt;.</text>
+  <text x="450.0" y="118" text-anchor="middle" font-size="8.5" fill="#DBEAFE">Injects UserPreferencesService.</text>
+  <rect x="610" y="72" width="270" height="62" rx="6" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+  <text x="745.0" y="89" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#334155">UserPreferencesService</text>
+  <text x="745.0" y="105" text-anchor="middle" font-size="8.5" fill="#475569">localStorage blob 'shngadmin_prefs':</text>
+  <text x="745.0" y="118" text-anchor="middle" font-size="8.5" fill="#475569">language and theme preference.</text>
+  <text x="20" y="160" font-size="9" font-weight="bold" fill="#6B7280">INFRASTRUCTURE (inject AppConfigService, mostly LogService)</text>
+  <rect x="20" y="166" width="205" height="66" rx="6" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1.5"/>
+  <text x="122.5" y="183" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#78350F">ServerApiService</text>
+  <text x="122.5" y="199" text-anchor="middle" font-size="8.5" fill="#92400E">Bootstrap GET /api/server/, stale check,</text>
+  <text x="122.5" y="212" text-anchor="middle" font-size="8.5" fill="#92400E">server actions, system/pypi/db info.</text>
+  <text x="122.5" y="225" text-anchor="middle" font-size="8.5" fill="#92400E">+ SharedService, TranslateService, UserPrefs</text>
+  <rect x="238" y="166" width="205" height="66" rx="6" fill="#FCE7F3" stroke="#F9A8D4" stroke-width="1.5"/>
+  <text x="340.5" y="183" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#831843">AuthService</text>
+  <text x="340.5" y="199" text-anchor="middle" font-size="8.5" fill="#9D174D">JWT in sessionStorage, login/logout,</text>
+  <text x="340.5" y="212" text-anchor="middle" font-size="8.5" fill="#9D174D">isLoggedIn(), renewal at 50% TTL.</text>
+  <text x="340.5" y="225" text-anchor="middle" font-size="8.5" fill="#9D174D">+ HttpClient, JwtHelperService</text>
+  <rect x="456" y="166" width="205" height="66" rx="6" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1.5"/>
+  <text x="558.5" y="183" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#78350F">ConnectivityService</text>
+  <text x="558.5" y="199" text-anchor="middle" font-size="8.5" fill="#92400E">Heartbeat every 10 s, offline debounce</text>
+  <text x="558.5" y="212" text-anchor="middle" font-size="8.5" fill="#92400E">1.5 s, backoff 2→30 s: online$, retryIn$.</text>
+  <text x="558.5" y="225" text-anchor="middle" font-size="8.5" fill="#92400E">+ HttpClient</text>
+  <rect x="674" y="166" width="205" height="66" rx="6" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+  <text x="776.5" y="183" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#334155">ThemeService</text>
+  <text x="776.5" y="199" text-anchor="middle" font-size="8.5" fill="#475569">light / dark / system preference,</text>
+  <text x="776.5" y="212" text-anchor="middle" font-size="8.5" fill="#475569">applies .dark-mode to &lt;html&gt;.</text>
+  <text x="776.5" y="225" text-anchor="middle" font-size="8.5" fill="#475569">+ UserPreferencesService</text>
+  <rect x="20" y="244" width="205" height="66" rx="6" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+  <text x="122.5" y="261" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#334155">SharedService</text>
+  <text x="122.5" y="277" text-anchor="middle" font-size="8.5" fill="#475569">Formatting, validators, language helper,</text>
+  <text x="122.5" y="290" text-anchor="middle" font-size="8.5" fill="#475569">monitoredItemsList signal (+ localStorage).</text>
+  <text x="122.5" y="303" text-anchor="middle" font-size="8.5" fill="#475569">+ TranslateService</text>
+  <rect x="238" y="244" width="205" height="66" rx="6" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1.5"/>
+  <text x="340.5" y="261" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#5B21B6">StreamService (SSE)</text>
+  <text x="340.5" y="277" text-anchor="middle" font-size="8.5" fill="#6D28D9">EventSource /api/stream/, PATCH subscriptions,</text>
+  <text x="340.5" y="290" text-anchor="middle" font-size="8.5" fill="#6D28D9">signals per series, reconnect backoff.</text>
+  <text x="340.5" y="303" text-anchor="middle" font-size="8.5" fill="#6D28D9">Private instance per System/ItemTree page</text>
+  <rect x="456" y="244" width="205" height="66" rx="6" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+  <text x="558.5" y="261" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#334155">AttributeCatalogService</text>
+  <text x="558.5" y="277" text-anchor="middle" font-size="8.5" fill="#475569">Core + plugin item-attribute catalog</text>
+  <text x="558.5" y="290" text-anchor="middle" font-size="8.5" fill="#475569">for the item create/edit dialogs.</text>
+  <text x="558.5" y="303" text-anchor="middle" font-size="8.5" fill="#475569">+ ItemsApiService, PluginsApiService</text>
+  <rect x="674" y="244" width="205" height="66" rx="6" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1.5"/>
+  <text x="776.5" y="261" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#78350F">Interceptors</text>
+  <text x="776.5" y="277" text-anchor="middle" font-size="8.5" fill="#92400E">connectivityInterceptor → ConnectivityService</text>
+  <text x="776.5" y="290" text-anchor="middle" font-size="8.5" fill="#92400E">authErrorInterceptor → Auth, Router, AppConfig</text>
+  <text x="776.5" y="303" text-anchor="middle" font-size="8.5" fill="#92400E">JWT (auth0) → AuthService.getToken()</text>
+  <line x1="450" y1="134" x2="450" y2="160" stroke="#6B7280" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="450" y1="310" x2="450" y2="336" stroke="#6B7280" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="20" y="350" font-size="9" font-weight="bold" fill="#6B7280">DOMAIN API SERVICES (14, one per backend domain: AppConfigService + HttpClient + LogService)</text>
+  <rect x="20" y="356" width="860" height="144" rx="6" fill="#F0FDF4" stroke="#86EFAC" stroke-width="1.5"/>
+  <text x="34" y="378" font-size="9" fill="#166534"><tspan font-weight="bold" fill="#14532D">ItemsApiService</tspan>  /api/items/ — tree, details, CRUD, references</text>
+  <text x="464" y="378" font-size="9" fill="#166534"><tspan font-weight="bold" fill="#14532D">LogicsApiService</tspan>  /api/logics/ — list, state, groups, parameters</text>
+  <text x="34" y="394" font-size="9" fill="#166534"><tspan font-weight="bold" fill="#14532D">PluginsApiService</tspan>  /api/plugins/, /api/plugin/{name}/</text>
+  <text x="464" y="394" font-size="9" fill="#166534"><tspan font-weight="bold" fill="#14532D">ScenesApiService</tspan>  /api/scenes/</text>
+  <text x="34" y="410" font-size="9" fill="#166534"><tspan font-weight="bold" fill="#14532D">SchedulersApiService</tspan>  /api/schedulers/</text>
+  <text x="464" y="410" font-size="9" fill="#166534"><tspan font-weight="bold" fill="#14532D">ThreadsApiService</tspan>  /api/threads/ — list, task, cancel</text>
+  <text x="34" y="426" font-size="9" fill="#166534"><tspan font-weight="bold" fill="#14532D">LogsApiService</tspan>  /api/logs/ — files, chunks, memlog tail</text>
+  <text x="464" y="426" font-size="9" fill="#166534"><tspan font-weight="bold" fill="#14532D">LoggersApiService</tspan>  /api/loggers/</text>
+  <text x="34" y="442" font-size="9" fill="#166534"><tspan font-weight="bold" fill="#14532D">ServicesApiService</tspan>  /api/services/ — eval, yaml, cache, password</text>
+  <text x="464" y="442" font-size="9" fill="#166534"><tspan font-weight="bold" fill="#14532D">ConfigApiService</tspan>  /api/config/</text>
+  <text x="34" y="458" font-size="9" fill="#166534"><tspan font-weight="bold" fill="#14532D">FilesApiService</tspan>  /api/files/{type}/</text>
+  <text x="464" y="458" font-size="9" fill="#166534"><tspan font-weight="bold" fill="#14532D">FunctionsApiService</tspan>  /api/functions/</text>
+  <text x="34" y="474" font-size="9" fill="#166534"><tspan font-weight="bold" fill="#14532D">StructsApiService</tspan>  /api/items/structs/</text>
+  <text x="464" y="474" font-size="9" fill="#166534"><tspan font-weight="bold" fill="#14532D">ServerApiService</tspan>  /api/server/ (infrastructure layer above)</text>
+  <text x="450" y="516" text-anchor="middle" font-size="8.5" fill="#166534">Each injects AppConfigService, HttpClient, LogService; LogicsApi and PluginsApi also MessageService (PrimeNG toasts), LogsApi also ServerApiService.</text>
+  <rect x="20" y="540" width="860" height="62" rx="6" fill="#F3F4F6" stroke="#D1D5DB"/>
+  <text x="34" y="558" font-size="9.5" font-weight="bold" fill="#374151">Reading the map</text>
+  <text x="34" y="573" font-size="9" fill="#4B5563">Arrows show the usual direction (a layer uses the layers above it); AttributeCatalogService is the one infrastructure service using API services. Feature components inject the domain API services they need,</text>
+  <text x="34" y="586" font-size="9" fill="#4B5563">plus SharedService, StreamService (own provider on SystemComponent and ItemTreeComponent) or AttributeCatalogService where required.</text>
+</svg>

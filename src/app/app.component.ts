@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   DestroyRef,
   inject,
   OnInit,
+  signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
@@ -26,9 +26,10 @@ import { OfflineBannerComponent } from './common/components/offline-banner/offli
 import { AuthService } from './common/services/auth.service';
 import { LogService } from './common/services/log.service';
 import { UserPreferencesService } from './common/services/user-preferences.service';
+import { formatVersionDetail } from './common/utils/version.utils';
 import { TopNavigationComponent } from './top-navigation/top-navigation.component';
 // git-version.auto.ts is generated at build time by scripts/generate-version.js
-import { APP_VERSION, BUILD_PATH, GIT_BRANCH, GIT_COMMIT, GIT_REF } from './git-version.auto';
+import { APP_VERSION, GIT_BRANCH, GIT_COMMIT, GIT_REF } from './git-version.auto';
 
 // Allow ngx-translate to find translation files on other path than /assets/i18n/...
 export function HttpLoaderFactory(http: HttpClient) {
@@ -41,12 +42,11 @@ export const APP_NAME = 'shngAdmin';
 export { APP_VERSION };
 
 // Detailed version string matching the format SmartHomeNG core uses:
-//   v{semver}-{short-hash}.{branch}  in  {path}  ({ref})
+//   v{semver}+{short-hash}.{branch}  ({ref})
 // Populated from git-version.auto.ts which is regenerated on every build
 // via the prebuild/prestart npm hooks.
-export const APP_VERSION_DETAIL = `v${APP_VERSION}-${GIT_COMMIT}.${GIT_BRANCH}`;
+export const APP_VERSION_DETAIL = formatVersionDetail(APP_VERSION, GIT_COMMIT, GIT_BRANCH);
 export const APP_VERSION_REF = `(${GIT_REF})`;
-export const APP_BUILD_PATH = BUILD_PATH;
 
 @Component({
   selector: 'app-root',
@@ -57,7 +57,6 @@ export const APP_BUILD_PATH = BUILD_PATH;
 })
 export class AppComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
-  private readonly cdr = inject(ChangeDetectorRef);
   private readonly log = inject(LogService);
   private translate = inject(TranslateService);
   public authService = inject(AuthService);
@@ -70,20 +69,20 @@ export class AppComponent implements OnInit {
   public APP_VERSION = APP_VERSION;
 
   title = 'shngadmin';
-  navigating = false;
+  readonly navigating = signal(false);
 
   constructor() {
     this.log.log('AppComponent.constructor:');
 
     this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
       if (event instanceof NavigationStart) {
-        this.navigating = true;
+        this.navigating.set(true);
       } else if (
         event instanceof NavigationEnd ||
         event instanceof NavigationCancel ||
         event instanceof NavigationError
       ) {
-        this.navigating = false;
+        this.navigating.set(false);
 
         // Strip the cache-busting _cb parameter injected by checkForUpdate()
         // after a stale-frontend reload.  Use Location.replaceState (not
@@ -98,7 +97,6 @@ export class AppComponent implements OnInit {
           this.location.replaceState(clean);
         }
       }
-      this.cdr.markForCheck();
     });
 
     this.translate.addLangs(['en', 'de', 'fr']);

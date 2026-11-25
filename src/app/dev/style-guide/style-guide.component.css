@@ -1,0 +1,19 @@
+.style-guide {
+  padding: var(--page-padding);
+}
+
+.style-guide-table {
+  border-collapse: collapse;
+}
+
+.style-guide-table th,
+.style-guide-table td {
+  padding: 8px 12px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.severity-label {
+  font-weight: var(--font-weight-bold);
+  text-transform: capitalize;
+}

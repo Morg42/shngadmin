@@ -3,8 +3,14 @@
  * Import from spec files to reduce boilerplate.
  */
 
+import { signal } from '@angular/core';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
+import {
+  AttributeCatalogEntry,
+  AttributeCatalogService,
+  AttributeGroup,
+} from '../app/common/services/attribute-catalog.service';
 
 // ---------------------------------------------------------------------------
 // Translate helpers
@@ -46,9 +52,13 @@ export function createMockAppConfigService() {
     tzname: 'CET',
     tznameDST: 'CEST',
     fallbackLanguageOrder: ['en', 'de'],
+    startPage: 'dashboard',
     itemtreeFullpath: true,
     itemtreeSearchstart: 3,
     developerMode: false,
+    helpLocalAvailable: false,
+    coreBranch: 'master',
+    pluginsBranch: 'master',
     config$: new BehaviorSubject({
       loginRequired: null,
       apiUrl: '/api/',
@@ -67,6 +77,7 @@ export function createMockAppConfigService() {
       itemtreeSearchstart: 3,
       developerMode: false,
       clickDropdownHeader: true,
+      helpLocalAvailable: false,
       fallbackLanguageOrder: ['en', 'de'],
       dataUrl: '',
     }).asObservable(),
@@ -85,34 +96,76 @@ export function createMockAuthService() {
     loggedIn$: new BehaviorSubject<boolean>(false),
     logout: () => {},
     login: (_creds: unknown) => of(false),
+    ensureLoggedIn: () => of(true),
     getToken: () => null,
     isSecuredByLogin: () => true,
   };
 }
 
-/** Minimal stub for OlddataService — no WebSocket. */
-export function createMockOlddataService() {
+/** Minimal stub for StreamService. */
+export function createMockStreamService() {
   return {
-    getValue: (_item: string) => of(null),
-    subscribe: () => {},
+    connect: () => {},
+    disconnect: () => {},
+    getMonitoredItems: () => {},
+    getSeriesLoad: () => {},
+    getSeriesSystemMemory: () => {},
+    getSeriesSwap: () => {},
+    getSeriesMemory: () => {},
+    getSeriesThreads: () => {},
+    getSeriesWorkerThreads: () => {},
+    getSeriesDisk: () => {},
+    systemload: signal({ series: [], tsdiff: 0 }),
+    systemmemory: signal({ series: [], tsdiff: 0 }),
+    systemswap: signal({ series: [], tsdiff: 0 }),
+    memory: signal({ series: [], tsdiff: 0 }),
+    threads: signal({ series: [], tsdiff: 0 }),
+    workerThreads: signal({ series: [], tsdiff: 0 }),
+    idleWorkerThreads: signal({ series: [], tsdiff: 0 }),
+    activeWorkerThreads: signal({ series: [], tsdiff: 0 }),
+    disk: signal({ series: [], tsdiff: 0 }),
   };
 }
 
-/** Minimal stub for WebsocketService. */
-export function createMockWebsocketService() {
-  return {
-    connect: () => {},
-    send: () => {},
-    messages$: new BehaviorSubject(null),
-    open$: new BehaviorSubject(null),
-  };
-}
+/** Minimal stub for AttributeCatalogService — attributeCatalog/attributeGroups
+ *  default empty (loadAttributeCatalog() is a jest.fn(), so nothing populates
+ *  them unless the caller passes a pre-built catalog). Pass a catalog to seed
+ *  attributeCatalog directly, skipping the merge logic covered separately in
+ *  attribute-catalog.service.spec.ts; attributeGroups is derived from it here
+ *  (same grouping rules as the real service) since callers rely on both. */
+export function createMockAttributeCatalogService(
+  catalog: Record<string, AttributeCatalogEntry> = {},
+) {
+  const bySource = new Map<string, { name: string; entry: AttributeCatalogEntry }[]>();
+  for (const [name, entry] of Object.entries(catalog)) {
+    if (AttributeCatalogService.ATTRIBUTES_WITH_DEDICATED_FIELDS.includes(name)) continue;
+    const list = bySource.get(entry.source) ?? [];
+    list.push({ name, entry });
+    bySource.set(entry.source, list);
+  }
+  for (const list of bySource.values()) {
+    list.sort((a, b) => a.name.localeCompare(b.name));
+  }
+  const sources = [...bySource.keys()].sort((a, b) =>
+    a === 'core' ? -1 : b === 'core' ? 1 : a.localeCompare(b),
+  );
+  const attributeGroups: AttributeGroup[] = sources.map((source) => ({
+    source,
+    entries: bySource.get(source)!,
+  }));
 
-/** Minimal stub for WebsocketPluginService. */
-export function createMockWebsocketPluginService() {
   return {
-    connect: () => {},
-    send: () => {},
-    messages$: new BehaviorSubject(null),
+    attributeCatalog: signal(catalog),
+    attributeCatalogLoaded: signal(Object.keys(catalog).length > 0),
+    attributeGroups: signal(attributeGroups),
+    loadAttributeCatalog: jest.fn(),
+    attributeDescription: jest.fn().mockReturnValue(''),
+    attributeType: jest.fn().mockReturnValue(''),
+    attributeValidList: jest.fn().mockReturnValue(undefined),
+    attributeValidMin: jest.fn().mockReturnValue(undefined),
+    attributeValidMax: jest.fn().mockReturnValue(undefined),
+    // Callable, not a getter - the real service exposes this as a computed()
+    // signal, so consuming templates call it as itemTypeOptions().
+    itemTypeOptions: () => (catalog['type']?.valid_list ?? []).map((t) => ({ label: t, value: t })),
   };
 }

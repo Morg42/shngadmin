@@ -1,16 +1,27 @@
 <div class="shngbody">
   <div class="shng-page-header">
     <span>{{ 'MENU.PLUGINS_LIST' | translate }}</span>
+    @if (spinner_display()) {
+      <span
+        style="margin-left: 1rem; font-size: var(--font-size-base); color: var(--text-muted); vertical-align: middle"
+      >
+        <p-progressSpinner
+          [style]="{ width: '18px', height: '18px' }"
+          styleClass="plugin-loading-spinner"
+        ></p-progressSpinner>
+        &nbsp;{{ spinner_header() }}
+      </span>
+    }
     <span style="position: relative; display: inline-block; margin-left: auto">
       <input
         pInputText
         type="text"
         [placeholder]="'FILTER' | translate"
-        [value]="filterText"
+        [value]="filterText()"
         (input)="onFilterChange($any($event.target).value)"
         style="width: 220px; padding-right: 2rem"
       />
-      @if (filterText) {
+      @if (filterText()) {
         <span
           class="pi pi-times"
           style="
@@ -27,7 +38,7 @@
     </span>
   </div>
   <div class="body-content shng-page-body">
-    @if (loading) {
+    @if (loading()) {
       <div style="display: flex; align-items: center; padding: 1rem 0; gap: 0.5rem; color: var(--text-muted)">
         <p-progressSpinner
           [style]="{ width: '24px', height: '24px' }"
@@ -36,7 +47,7 @@
         {{ 'PLUGIN.LOADINFO' | translate }}
       </div>
     }
-    @if (!loading) {
+    @if (!loading()) {
       <table id="1" class="table table-striped table-hover shng-list-table">
         <thead>
           <tr class="shng_heading">
@@ -45,49 +56,47 @@
             <th style="width: 50px; border-top: 0">{{ 'PLUGIN.TYPE' | translate }}</th>
             <th class="sortable-th" style="width: 200px; border-top: 0" (click)="sortBy('configname')">
               {{ 'PLUGIN.CONFIGNAME' | translate }}
-              @if (sortField === 'configname') {
-                <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+              @if (sortField() === 'configname') {
+                <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
               }
             </th>
             <th class="sortable-th" style="width: 210px; border-top: 0" (click)="sortBy('pluginname')">
               {{ 'PLUGIN.PLUGINNAME' | translate }}
-              @if (sortField === 'pluginname') {
-                <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+              @if (sortField() === 'pluginname') {
+                <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
               }
             </th>
             <th class="sortable-th" style="width: 140px; border-top: 0" (click)="sortBy('instancename')">
               {{ 'PLUGIN.INSTANCE' | translate }}
-              @if (sortField === 'instancename') {
-                <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+              @if (sortField() === 'instancename') {
+                <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
               }
             </th>
             <th class="sortable-th" style="width: 110px; border-top: 0" (click)="sortBy('version')">
               {{ 'PLUGIN.VERSION' | translate }}
-              @if (sortField === 'version') {
-                <span class="sort-indicator">{{ sortOrder === 1 ? '▲' : '▼' }}</span>
+              @if (sortField() === 'version') {
+                <span class="sort-indicator">{{ sortOrder() === 1 ? '▲' : '▼' }}</span>
               }
             </th>
             <th style="width: 40px; border-top: 0">{{ 'PLUGIN.WEBIF' | translate }}</th>
             <th style="min-width: 160px; width: 220px; border-top: 0">{{ 'PLUGIN.HELP' | translate }}</th>
-            @if (developerMode) {
-              <th style="min-width: 100px; width: 200px; border-top: 0">{{ 'PLUGIN.ACTIONS' | translate }}</th>
-            }
+            <th style="min-width: 100px; width: 200px; border-top: 0">{{ 'PLUGIN.ACTIONS' | translate }}</th>
           </tr>
         </thead>
         <tbody>
-          @for (plugin of filteredPlugins; track plugin.configname) {
+          @for (plugin of filteredPlugins(); track plugin.configname) {
             <tr (click)="selectedPlugin = plugin; showPluginDetails = true" style="cursor: pointer">
               <td class="py-1">
                 @if (plugin.stopped === true) {
                   <fa-icon
-                    style="color: red"
+                    style="color: var(--shng-red)"
                     [icon]="faPauseCircle"
                     title="{{ 'PLUGIN.DISABLED' | translate }}"
                   ></fa-icon>
                 }
                 @if (plugin.stopped !== true) {
                   <fa-icon
-                    style="color: green"
+                    style="color: var(--shng-green)"
                     [icon]="faPlayCircle"
                     title="{{ 'PLUGIN.ENABLED' | translate }}"
                   ></fa-icon>
@@ -104,13 +113,7 @@
                     title="{{ 'PLUGIN.' + plugin.metadata.type | uppercase | translate }}"
                   />
                 }
-                @if (plugin.smartplugin !== true) {
-                  -
-                }
-                @if (
-                  plugin.smartplugin === true &&
-                  !['web', 'protocol', 'interface', 'gateway', 'system', 'classic'].includes(plugin.metadata.type)
-                ) {
+                @if (!['web', 'protocol', 'interface', 'gateway', 'system'].includes(plugin.metadata.type)) {
                   <img
                     ngSrc="assets/img/plugin_defaultlogo.png"
                     style="width: 25px; cursor: pointer"
@@ -121,11 +124,8 @@
               </td>
 
               <td class="py-1">
-                @if (plugin.smartplugin === true && plugin.multiinstance === true) {
+                @if (plugin.multiinstance === true) {
                   MI
-                }
-                @if (plugin.smartplugin !== true) {
-                  Cl
                 }
               </td>
 
@@ -155,14 +155,15 @@
               <td class="py-1">{{ plugin.version }}</td>
               <td class="py-1" (click)="$event.stopPropagation()">
                 @if (plugin.webif_url !== '') {
-                  <button name="webif" class="btn btn-outline-primary btn-sm" (click)="goToLink(plugin.webif_url)">
-                    <i
-                      class="fas fa-link"
-                      aria-hidden="true"
-                      title="{{ 'PLUGIN.OPEN_WEBIF' | translate }}"
-                      style="color: var(--shng-blue)"
-                    ></i>
-                  </button>
+                  <button
+                    pButton
+                    name="webif"
+                    title="{{ 'PLUGIN.OPEN_WEBIF' | translate }}"
+                    icon="fas fa-link"
+                    severity="primary"
+                    size="small"
+                    (click)="goToLink(plugin.webif_url)"
+                  ></button>
                 }
                 @if (plugin.webif_url === '') {
                   <a style="padding-right: 35px"></a>
@@ -172,112 +173,95 @@
                 @if (plugin.documentation_config_doc !== undefined && plugin.documentation_config_doc !== '') {
                   <!-- configuration information -->
                   <button
+                    pButton
                     name="configdoc"
-                    class="btn btn-outline-dark btn-sm mr-1"
+                    title="{{ 'PLUGIN.OPEN_CONFIGINFO' | translate }}"
+                    icon="fas fa-info fa-lg fa-icon-grey"
+                    severity="secondary"
+                    size="small"
+                    class="mr-1"
                     (click)="goToLink(plugin.documentation_config_doc)"
-                  >
-                    <i
-                      class="fas fa-info fa-lg fa-icon-grey"
-                      aria-hidden="true"
-                      title="{{ 'PLUGIN.OPEN_CONFIGINFO' | translate }}"
-                    ></i>
-                  </button>
+                  ></button>
                 }
                 @if (plugin.documentation_user_doc !== undefined && plugin.documentation_user_doc !== '') {
                   <!-- plugin documentation (user_doc) -->
                   <button
+                    pButton
                     name="plugindoc"
-                    class="btn btn-outline-dark btn-sm mr-1"
+                    title="{{ 'PLUGIN.OPEN_DOC' | translate }}"
+                    icon="fas fa-book fa-lg fa-icon-grey"
+                    severity="secondary"
+                    size="small"
+                    class="mr-1"
                     (click)="goToLink(plugin.documentation_user_doc)"
-                  >
-                    <i
-                      class="fas fa-book fa-lg fa-icon-grey"
-                      aria-hidden="true"
-                      title="{{ 'PLUGIN.OPEN_DOC' | translate }}"
-                    ></i>
-                  </button>
+                  ></button>
                 }
                 @if (plugin.metadata.documentation !== undefined && plugin.metadata.documentation !== '') {
                   <!-- Additional information -->
                   <button
+                    pButton
                     name="additionaldoc"
-                    class="btn btn-outline-dark btn-sm mr-1"
+                    title="{{ 'PLUGIN.OPEN_ADDITIONAL' | translate }}"
+                    icon="fas fa-file-alt fa-lg fa-icon-grey"
+                    severity="secondary"
+                    size="small"
+                    class="mr-1"
                     (click)="goToLink(plugin.metadata.documentation)"
-                  >
-                    <i
-                      class="fas fa-file-alt fa-lg fa-icon-grey"
-                      aria-hidden="true"
-                      title="{{ 'PLUGIN.OPEN_ADDITIONAL' | translate }}"
-                    ></i>
-                  </button>
+                  ></button>
                 }
                 @if (plugin.metadata.support !== undefined && plugin.metadata.support !== '') {
                   <button
+                    pButton
                     name="support"
-                    class="btn btn-outline-dark btn-sm mr-1"
+                    title="{{ 'PLUGIN.OPEN_SUPPORT_THREAD' | translate }}"
+                    icon="fas fa-comment-dots fa-lg fa-icon-grey"
+                    severity="secondary"
+                    size="small"
+                    class="mr-1"
                     (click)="goToLink(plugin.metadata.support)"
-                  >
-                    <i
-                      class="fas fa-comment-dots fa-lg fa-icon-grey"
-                      aria-hidden="true"
-                      title="{{ 'PLUGIN.OPEN_SUPPORT_THREAD' | translate }}"
-                    ></i>
-                  </button>
+                  ></button>
                 }
                 @if (plugin.blog_url !== undefined && plugin.blog_url !== '') {
-                  <button name="blog" class="btn btn-outline-dark btn-sm mr-1" (click)="goToLink(plugin.blog_url)">
-                    <i
-                      class="fas fa-blog fa-lg fa-icon-grey"
-                      aria-hidden="true"
-                      title="{{ 'PLUGIN.OPEN_BLOGS' | translate }}"
-                    ></i>
-                  </button>
+                  <button
+                    pButton
+                    name="blog"
+                    title="{{ 'PLUGIN.OPEN_BLOGS' | translate }}"
+                    icon="fas fa-blog fa-lg fa-icon-grey"
+                    severity="secondary"
+                    size="small"
+                    class="mr-1"
+                    (click)="goToLink(plugin.blog_url)"
+                  ></button>
                 }
               </td>
 
-              @if (developerMode) {
-                <td class="py-1" (click)="$event.stopPropagation()">
-                  @if (plugin.stoppable) {
-                    @if (plugin.stopped) {
-                      <button
-                        disabled="true"
-                        name="reload"
-                        title="{{ 'PLUGIN.RELOAD' | translate }}"
-                        class="btn btn-outline-dark btn-sm mr-1"
-                        (click)="reloadPlugin(plugin.configname)"
-                      >
-                        <i class="fas fa-sync"></i>
-                      </button>
-                      <button
-                        name="enable"
-                        title="{{ 'PLUGIN.START' | translate }}"
-                        class="btn btn-outline-dark btn-sm mr-1"
-                        (click)="startPlugin(plugin.configname)"
-                      >
-                        <i class="fas fa-play"></i>
-                      </button>
-                    } @else {
-                      <button
-                        disabled="true"
-                        name="reload"
-                        title="{{ 'PLUGIN.RELOAD' | translate }}"
-                        class="btn btn-outline-dark btn-sm mr-1"
-                        (click)="reloadPlugin(plugin.configname)"
-                      >
-                        <i class="fas fa-sync"></i>
-                      </button>
-                      <button
-                        name="disable"
-                        title="{{ 'PLUGIN.STOP' | translate }}"
-                        class="btn btn-outline-dark btn-sm mr-1"
-                        (click)="stopPlugin(plugin.configname)"
-                      >
-                        <i class="fas fa-pause"></i>
-                      </button>
-                    }
+              <td class="py-1" (click)="$event.stopPropagation()">
+                @if (plugin.stoppable) {
+                  @if (plugin.stopped) {
+                    <button
+                      pButton
+                      name="enable"
+                      title="{{ 'PLUGIN.START' | translate }}"
+                      icon="fas fa-play"
+                      severity="primary"
+                      size="small"
+                      class="mr-1"
+                      (click)="startPlugin(plugin.configname)"
+                    ></button>
+                  } @else {
+                    <button
+                      pButton
+                      name="disable"
+                      title="{{ 'PLUGIN.STOP' | translate }}"
+                      icon="fas fa-pause"
+                      severity="warn"
+                      size="small"
+                      class="mr-1"
+                      (click)="stopPlugin(plugin.configname)"
+                    ></button>
                   }
-                </td>
-              }
+                }
+              </td>
             </tr>
           }
         </tbody>
@@ -307,20 +291,22 @@
 
     @if (selectedPlugin.metadata.state && selectedPlugin.metadata.state.toLowerCase() === 'deprecated') {
       <fa-icon style="color: var(--shng-warning)" [icon]="faExclamationTriangle"></fa-icon>
-      <a style="width: 50%; padding: 0; background-color: #ffffff; border: 0"
+      <a style="width: 50%; padding: 0; background-color: var(--shng-page-bg); border: 0"
         ><strong>&nbsp; {{ 'PLUGIN.DEPRECATED' | translate }}:</strong></a
       >
       <br />
-      <p style="padding: 0; background-color: #f2f2f2; border: 0">{{ 'PLUGIN.DEPRECATED_TEXT' | translate }}</p>
+      <p style="padding: 0; background-color: var(--shng-cell-alt-bg); border: 0">
+        {{ 'PLUGIN.DEPRECATED_TEXT' | translate }}
+      </p>
     }
 
     @if (selectedPlugin.parameters && selectedPlugin.parameters.length !== 0) {
       <table class="table" style="padding: 0">
         <tr>
-          <td style="width: 50%; padding: 0; background-color: #ffffff; border: 0">
+          <td style="width: 50%; padding: 0; background-color: var(--shng-page-bg); border: 0">
             <strong>{{ 'PLUGIN.PARAMETERS' | translate }}:</strong>
           </td>
-          <td style="width: 50%; padding: 0; background-color: #ffffff; border: 0"></td>
+          <td style="width: 50%; padding: 0; background-color: var(--shng-page-bg); border: 0"></td>
         </tr>
         <tr>
           <!-- Parameters: left column -->
@@ -370,11 +356,11 @@
     @if (selectedPlugin.attributes && selectedPlugin.attributes.length !== 0) {
       <table class="table">
         <tr>
-          <td style="width: 33%; padding: 0; background-color: #ffffff; border: 0">
+          <td style="width: 33%; padding: 0; background-color: var(--shng-page-bg); border: 0">
             <strong>{{ 'PLUGIN.ITEM ATTRIBUTES' | translate }}:</strong>
           </td>
-          <td style="width: 33%; padding: 0; background-color: #ffffff; border: 0"></td>
-          <td style="width: 33%; padding: 0; background-color: #ffffff; border: 0"></td>
+          <td style="width: 33%; padding: 0; background-color: var(--shng-page-bg); border: 0"></td>
+          <td style="width: 33%; padding: 0; background-color: var(--shng-page-bg); border: 0"></td>
         </tr>
         <tr>
           <!-- Item Attributes: left column -->
@@ -498,14 +484,14 @@
 
     <ng-template #footer>
       <button
+        pButton
         type="button"
         tabindex="1"
         autofocus="autofocus"
-        class="btn btn-primary btn-sm btn-shng"
+        severity="primary"
+        label="{{ 'BUTTON.CLOSE' | translate }}"
         (click)="showPluginDetails = false"
-      >
-        {{ 'BUTTON.CLOSE' | translate }}
-      </button>
+      ></button>
     </ng-template>
   </p-dialog>
 }

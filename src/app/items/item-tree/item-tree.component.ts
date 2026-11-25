@@ -1,31 +1,25 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   DestroyRef,
-  ElementRef,
   inject,
   OnDestroy,
   OnInit,
-  ViewChild,
+  signal,
+  viewChild,
 } from '@angular/core';
 import { AppConfigService } from '../../common/services/app-config.service';
+import { AttributeCatalogService } from '../../common/services/attribute-catalog.service';
+import { CreateItemDialogComponent } from './create-item-dialog/create-item-dialog.component';
+import { DeleteItemDialogComponent } from './delete-item-dialog/delete-item-dialog.component';
+import { EditItemDialogComponent } from './edit-item-dialog/edit-item-dialog.component';
+import { RenameItemDialogComponent } from './rename-item-dialog/rename-item-dialog.component';
 
 import { TranslateDirective, TranslatePipe, TranslateService } from '@ngx-translate/core';
 
-import {
-  faCircleNotch,
-  faFolder,
-  faFolderOpen,
-  faList,
-  faSearch,
-  faStop,
-  faSync,
-  faThumbtack,
-  faTrashAlt,
-} from '@fortawesome/free-solid-svg-icons';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
-import { PrimeTemplate, TreeNode } from 'primeng/api';
+import { MenuItem, PrimeTemplate, TreeNode } from 'primeng/api';
 import { TreeNodeSelectEvent } from 'primeng/tree';
 
 import { ItemDetails } from '../../common/models/item-details';
@@ -33,24 +27,26 @@ import { ItemTree } from '../../common/models/item-tree';
 import { ItemsApiService } from '../../common/services/items-api.service';
 import { LogService } from '../../common/services/log.service';
 import { SharedService } from '../../common/services/shared.service';
-import { WebsocketPluginService } from '../../common/services/websocket-plugin.service';
-import { WebsocketService } from '../../common/services/websocket.service';
+import { StreamService } from '../../common/services/stream.service';
 
 import { NgTemplateOutlet } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
-import { RouterLink } from '@angular/router';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Bind } from 'primeng/bind';
+import { ButtonDirective } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
+import { Menu } from 'primeng/menu';
 import { Ripple } from 'primeng/ripple';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
+import { Textarea } from 'primeng/textarea';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 import { Tooltip } from 'primeng/tooltip';
 import { Tree } from 'primeng/tree';
-import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { rebuildOnLangChange } from '../../common/utils/translate.utils';
+import { findAndExpandNodeByPath } from './item-tree-path.utils';
 
 type MonitoredItem = [string, Record<string, unknown>];
 
@@ -58,7 +54,7 @@ type MonitoredItem = [string, Record<string, unknown>];
   selector: 'app-items',
   templateUrl: 'item-tree.component.html',
   styleUrls: ['item-tree.component.css'],
-  providers: [WebsocketService, WebsocketPluginService],
+  providers: [StreamService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     Bind,
@@ -68,49 +64,84 @@ type MonitoredItem = [string, Record<string, unknown>];
     Tab,
     TabPanels,
     TabPanel,
+    ButtonDirective,
     Dialog,
     TranslateDirective,
     Tooltip,
-    FaIconComponent,
     Tree,
     PrimeTemplate,
     ToggleSwitch,
+    Textarea,
     FormsModule,
     RouterLink,
     NgTemplateOutlet,
     TranslatePipe,
+    CreateItemDialogComponent,
+    EditItemDialogComponent,
+    RenameItemDialogComponent,
+    DeleteItemDialogComponent,
+    Menu,
   ],
 })
 export class ItemTreeComponent implements OnDestroy, OnInit {
-  @ViewChild('treeEl') private treeEl!: ElementRef<HTMLElement>;
-  @ViewChild('treeDetailEl') private treeDetailEl!: ElementRef<HTMLElement>;
+  /** Called imperatively from itemActionsMenuItems' Edit/Rename/Copy
+   *  commands - see EditItemDialogComponent.open()'s doc comment for why.
+   *  renameItemDialog is also read directly from the template, for the
+   *  failed/copy-references badges next to the "more actions" button (see
+   *  RenameItemDialogComponent's own doc comment on why those live here
+   *  instead of inside that component's own dialogs). */
+  private readonly editItemDialog = viewChild(EditItemDialogComponent);
+  readonly renameItemDialog = viewChild(RenameItemDialogComponent);
+  private readonly deleteItemDialog = viewChild(DeleteItemDialogComponent);
 
   faSearch = faSearch;
-  faCircleNotch = faCircleNotch;
-  faFolder = faFolder;
-  faFolderOpen = faFolderOpen;
-  faSync = faSync;
-  faList = faList;
-  faStop = faStop;
-  faTrashAlt = faTrashAlt;
-  faThumbtack = faThumbtack;
 
-  itemcount = 0;
-  itemtree!: ItemTree;
-  itemdetails: ItemDetails = <ItemDetails>{};
-  itemdetailsloaded = false;
+  readonly itemcount = signal(0);
+  readonly itemdetails = signal<ItemDetails>(<ItemDetails>{});
+  readonly itemdetailsloaded = signal(false);
+
+  /** Bound to <app-create-item-dialog>'s [(visible)] - everything else about
+   *  the create-item flow (fields, validation, submission) is self-contained
+   *  there now. */
+  readonly newItem_display = signal(false);
+
+  /** Bound to <app-edit-item-dialog>'s [(visible)] - everything else about
+   *  the edit-item flow (fields, validation, submission) is self-contained
+   *  there now. */
+  readonly editItem_display = signal(false);
+
+  /** Bound to <app-rename-item-dialog>'s [(visible)] - everything else
+   *  about the rename/copy flow (fields, validation, submission, the three
+   *  satellite dialogs) is self-contained there now. */
+  readonly renameItem_display = signal(false);
+  /** Bound to <app-rename-item-dialog>'s [isCopy] - set by the "⋮" menu's
+   *  Rename/Copy commands right before calling open(), see
+   *  itemActionsMenuItems below. */
+  readonly renameItemIsCopy = signal(false);
+
+  /** Bound to <app-delete-item-dialog>'s [(visible)] - everything else
+   *  about the delete flow (reference checks, cleanup, confirmation) is
+   *  self-contained there now. */
+  readonly deleteItem_display = signal(false);
 
   /** Delegate to SharedService (true root singleton) so the list survives
-   *  navigation — WebsocketPluginService is component-scoped and gets destroyed */
+   *  navigation — StreamService is component-scoped and gets destroyed.
+   *  monitoredItemsList is a signal, so reading it here (from a getter invoked
+   *  during template evaluation) keeps this reactive under OnPush. */
   get monitoredItems(): MonitoredItem[] {
-    return this.shared.monitoredItemsList;
+    return this.shared.monitoredItemsList();
   }
 
   filesTree0!: {}[];
-  filteredTree!: {}[];
-  searchStart_param = {};
-  treeIsFiltered = false;
+  readonly filteredTree = signal<{}[]>([]);
+  readonly searchStart_param = signal<object>({});
+  readonly treeIsFiltered = signal(false);
   selectedFile!: TreeNode;
+  /** Average rendered row height (px) of a .p-tree-node-content, used
+   *  by [virtualScrollItemSize] to compute how many rows fit in the
+   *  viewport — measured at the default font size; rows don't wrap, so
+   *  it stays accurate across the responsive font-size breakpoints too. */
+  readonly treeVirtualScrollItemSize = 18;
 
   item_val!: { value: unknown };
   alertText = '';
@@ -118,48 +149,23 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
   Object = Object;
   JSON = JSON;
 
-  selectedNode: unknown;
-
-  update_age = '';
-  change_age = '';
-  previous_update_age = '';
-  previous_change_age = '';
-
-  data: unknown;
+  readonly update_age = signal('');
+  readonly change_age = signal('');
+  readonly previous_update_age = signal('');
+  readonly previous_change_age = signal('');
 
   private readonly destroyRef = inject(DestroyRef);
-  private readonly cdr = inject(ChangeDetectorRef);
   private itemsApi = inject(ItemsApiService);
   private translate = inject(TranslateService);
-  private websocketPluginService = inject(WebsocketPluginService);
+  private readonly attributeCatalogService = inject(AttributeCatalogService);
+  private streamService = inject(StreamService);
   public shared = inject(SharedService);
   private titleService = inject(Title);
   private appConfig = inject(AppConfigService);
   private readonly log = inject(LogService);
-
-  monitoredItemsUpdateSubscription: Subscription | null = null;
+  private readonly route = inject(ActivatedRoute);
 
   showItemAlert = false;
-
-  private readonly resizeHandler = () => this.resizeItemTree();
-
-  resizeItemTree() {
-    const browserHeight = window.innerHeight;
-    const tree = this.treeEl?.nativeElement;
-    const treeDetail = this.treeDetailEl?.nativeElement;
-
-    // initially offsetTop is off by a number of pixels — correction via fixed offset
-    const offsetTop = 167;
-    const offsetTopDetail = 200;
-    const height = String(Math.round(-1 * offsetTop - 35 + browserHeight) + 'px');
-    const heightDetail = String(Math.round(-1 * offsetTopDetail - 35 + browserHeight) + 'px');
-    if (tree && treeDetail) {
-      tree.style.height = height;
-      tree.style.maxHeight = height;
-      treeDetail.style.height = heightDetail;
-      treeDetail.style.maxHeight = heightDetail;
-    }
-  }
 
   static htmlDecode(input: string): string {
     if (!input) return '';
@@ -176,21 +182,60 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
     this.log.log('ItemTreeComponent.ngOnInit:');
 
     this.setTitle(this.translate.instant('ITEMS.ITEMS'));
-    this.getItemtree();
+    this.getItemtree(this.route.snapshot.queryParamMap.get('select') ?? undefined);
+    this.attributeCatalogService.loadAttributeCatalog();
 
-    window.addEventListener('resize', this.resizeHandler, false);
-    this.resizeItemTree();
-
-    // Defer the WebSocket connection until wsPort is available (same reasoning
-    // as system.component — see serverReady$ comment there).
+    // Defer the stream connection until server config is available (same reasoning as system.component).
     this.appConfig.serverReady$.pipe(take(1), takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      this.websocketPluginService.connect();
-      // Re-register monitored items that survived navigation
+      this.streamService.connect();
+      // Re-register monitored items that survived navigation or a reload
+      // (SharedService restores paths from localStorage - see its comment).
       if (this.monitoredItems.length > 0) {
         const monitoredDataFunction = this.monitoredDataFunction.bind(this);
-        this.websocketPluginService.getMonitoredItems(this.monitoredItems, monitoredDataFunction);
+        this.streamService.getMonitoredItems(this.monitoredItems, monitoredDataFunction);
+        this.fetchDataForEmptyMonitoredItems();
       }
     });
+
+    // Only build eagerly if the initial translation file has already
+    // loaded (same guard as top-navigation's loggedIn$ handler) - otherwise
+    // translate.instant() below would return raw i18n keys, and rely on
+    // onLangChange below to build once it arrives instead.
+    if (this.translate.currentLang) {
+      this.buildItemActionsMenu();
+    }
+    rebuildOnLangChange(this.translate, this.destroyRef, () => this.buildItemActionsMenu());
+  }
+
+  /** Items restored from localStorage start with an empty data placeholder -
+   *  the stream only pushes a fresh value on the item's NEXT change,
+   *  which could be a long wait for a rarely-changing item, so fetch each
+   *  placeholder's current details right away instead of leaving it blank. */
+  private fetchDataForEmptyMonitoredItems() {
+    for (const [path, data] of this.monitoredItems) {
+      if (Object.keys(data).length > 0) continue;
+      this.itemsApi
+        .getItemDetails(path)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((response) => {
+          const details = (response as ItemDetails[])[0];
+          if (!details) return;
+          this.applyMonitoredDataUpdates(
+            new Map([
+              [
+                path,
+                {
+                  value: details.value,
+                  last_update: details.last_update,
+                  last_change: details.last_change,
+                  last_update_by: details.updated_by,
+                  last_change_by: details.changed_by,
+                },
+              ],
+            ]),
+          );
+        });
+    }
   }
 
   closeAlert(item_oldvalue: unknown) {
@@ -199,29 +244,47 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
   }
 
   ngOnDestroy(): void {
-    window.removeEventListener('resize', this.resizeHandler, false);
-    this.monitoredItemsUpdateSubscription?.unsubscribe();
-    this.websocketPluginService.disconnect();
+    this.streamService.disconnect();
   }
 
-  getItemtree() {
+  /** Rebuilding filteredTree (via structuredClone in filterNodes()) creates new
+   *  TreeNode objects, so any prior selection no longer matches by reference and
+   *  the details panel appears to lose its selection. Pass selectPath (e.g. the
+   *  path just created) to re-resolve and re-select the equivalent node by path
+   *  once the new tree is in place. */
+  getItemtree(selectPath?: string) {
     this.itemsApi
       .getItemTree()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
           const [itemcount, tree] = response as [number, ItemTree];
-          this.itemcount = itemcount;
+          this.itemcount.set(itemcount);
           this.filesTree0 = tree as unknown as {}[];
           this.filterNodes('');
-          this.searchStart_param = { number: String(this.appConfig.itemtreeSearchstart) };
-          this.cdr.markForCheck();
+          this.searchStart_param.set({
+            number: String(Number(this.appConfig.itemtreeSearchstart) || 3),
+          });
+          if (selectPath) {
+            this.selectNodeByPath(selectPath);
+          }
         },
         error: (error) => {
           this.log.log('ERROR: ItemsComponent: itemsApi.getItemTree():');
           this.log.log(error);
         },
       });
+  }
+
+  private selectNodeByPath(path: string) {
+    const node = findAndExpandNodeByPath(
+      this.filteredTree() as (TreeNode & { path: string })[],
+      path,
+    );
+    if (node) {
+      this.selectedFile = node;
+      this.getDetails(path);
+    }
   }
 
   updateValue(
@@ -275,21 +338,15 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
   }
 
   sortMonitoredItems() {
-    this.monitoredItems.sort(function (a, b) {
-      return a[0].toLowerCase() > b[0].toLowerCase()
-        ? 1
-        : b[0].toLowerCase() > a[0].toLowerCase()
-          ? -1
-          : 0;
-    });
-  }
-
-  updateMonitoredItem(itempath: string, itemdata: unknown) {
-    for (let i = 0; i < this.monitoredItems.length; i++) {
-      if (this.monitoredItems[i][0] === itempath) {
-        this.monitoredItems[i][1] = itemdata as Record<string, unknown>;
-      }
-    }
+    this.shared.monitoredItemsList.update((items) =>
+      [...items].sort((a, b) =>
+        a[0].toLowerCase() > b[0].toLowerCase()
+          ? 1
+          : b[0].toLowerCase() > a[0].toLowerCase()
+            ? -1
+            : 0,
+      ),
+    );
   }
 
   remove_none(caller: string) {
@@ -300,20 +357,30 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
     return caller;
   }
 
+  /** Callback handed to StreamService.getMonitoredItems() - invoked
+   *  directly from handleResponseItem() on every 'item' stream event, so
+   *  this is the only place monitored values actually get updated. Publishes
+   *  one new array (immutable update) covering every item in the message,
+   *  rather than one signal write per item. */
   monitoredDataFunction(raw: unknown) {
-    // Callback function that receives the data from the websocket session
     const data = raw as { items: MonitoredItem[] };
-    this.data = data;
-    const self = this;
-    for (let i = 0; i < data.items.length; i++) {
-      data.items[i][1]['last_update_by'] = this.remove_none(
-        data.items[i][1]['last_update_by'] as string,
-      );
-      data.items[i][1]['last_change_by'] = this.remove_none(
-        data.items[i][1]['last_change_by'] as string,
-      );
-      self.updateMonitoredItem(data.items[i][0], data.items[i][1]);
+    const updates = new Map<string, Record<string, unknown>>();
+    for (const [path, itemdata] of data.items) {
+      itemdata['last_update_by'] = this.remove_none(itemdata['last_update_by'] as string);
+      itemdata['last_change_by'] = this.remove_none(itemdata['last_change_by'] as string);
+      updates.set(path, itemdata);
     }
+    this.applyMonitoredDataUpdates(updates);
+  }
+
+  /** Immutably patches the data half of every [path, data] entry in
+   *  shared.monitoredItemsList whose path is a key of updates, leaving
+   *  other entries untouched - shared by the stream push handler above
+   *  and the one-off details fetch for restored placeholder rows. */
+  private applyMonitoredDataUpdates(updates: Map<string, Record<string, unknown>>) {
+    this.shared.monitoredItemsList.update((items) =>
+      items.map((item) => (updates.has(item[0]) ? [item[0], updates.get(item[0])!] : item)),
+    );
   }
 
   monitorItem(path: string, monitorIt: boolean) {
@@ -325,49 +392,28 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
 
       // this.getDetails(path);
 
+      const details = this.itemdetails();
       const data: Record<string, unknown> = {};
-      data['value'] = this.itemdetails.value;
-      data['last_update'] = this.itemdetails.last_update;
-      data['last_change'] = this.itemdetails.last_change;
-      data['last_update_by'] = this.itemdetails.updated_by;
-      data['last_change_by'] = this.itemdetails.changed_by;
+      data['value'] = details.value;
+      data['last_update'] = details.last_update;
+      data['last_change'] = details.last_change;
+      data['last_update_by'] = details.updated_by;
+      data['last_change_by'] = details.changed_by;
 
       const monItem: MonitoredItem = [path, data as Record<string, unknown>];
-      this.monitoredItems.push(monItem);
+      this.shared.monitoredItemsList.update((items) => [...items, monItem]);
       this.sortMonitoredItems();
       // bind the callback function to the context of the item-tree component
       const monitoredDataFunction = this.monitoredDataFunction.bind(this);
-      this.websocketPluginService.getMonitoredItems(this.monitoredItems, monitoredDataFunction);
-      this.getMonitoredValues();
+      this.streamService.getMonitoredItems(this.monitoredItems, monitoredDataFunction);
     } else {
-      // stop monitoring the item
-      for (let i = this.monitoredItems.length - 1; i >= 0; i--) {
-        if (this.monitoredItems[i][0] === path) {
-          this.monitoredItems.splice(i, 1);
-          // NOTE: no break — all entries with this path are removed, not just the first
-        }
-      }
+      // stop monitoring the item — removes all entries with this path, not just the first
+      this.shared.monitoredItemsList.update((items) => items.filter((item) => item[0] !== path));
     }
   }
 
   isItemMonitored(path: string) {
-    for (let i = this.monitoredItems.length - 1; i >= 0; i--) {
-      if (this.monitoredItems[i][0] === path) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  getMonitoredValues() {
-    this.log.log('getMonitoredValues()');
-    this.monitoredItemsUpdateSubscription?.unsubscribe();
-    this.monitoredItemsUpdateSubscription = this.websocketPluginService.monitoredItemsUpdate$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.log.error('monitoredItemsUpdate$');
-        this.log.log(this.websocketPluginService.monitor.items);
-      });
+    return this.shared.monitoredItemsList().some((item) => item[0] === path);
   }
 
   getDetails(path: string) {
@@ -404,7 +450,6 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
             this.showDetails(details);
 
             this.log.warn('getDetails', details.logics);
-            this.cdr.markForCheck();
           },
           error: (error) => {
             this.log.log('ERROR: ItemsComponent: itemsApi.getItemDetails():');
@@ -416,34 +461,48 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
     }
   }
 
+  /** Backend returns the source filename without extension (since shng dyn-item); display it
+   *  consistently with how filenames are shown elsewhere in the app (e.g. item-configuration). */
+  get definedInFilename(): string {
+    const filename = this.itemdetails().filename;
+    return filename && !filename.endsWith('.yaml') ? filename + '.yaml' : filename;
+  }
+
   showDetails(response?: unknown) {
     this.log.log('showDetails:');
     this.log.log({ response });
 
     if (response === undefined) {
-      this.itemdetails = <ItemDetails>{};
-      this.itemdetails.config = {};
-      this.update_age = this.shared.ageToString(0);
-      this.change_age = this.shared.ageToString(0);
-      this.previous_update_age = this.shared.ageToString(0);
-      this.previous_change_age = this.shared.ageToString(0);
+      const details = <ItemDetails>{};
+      details.config = {};
+      this.itemdetails.set(details);
+      this.update_age.set(this.shared.ageToString(0));
+      this.change_age.set(this.shared.ageToString(0));
+      this.previous_update_age.set(this.shared.ageToString(0));
+      this.previous_change_age.set(this.shared.ageToString(0));
     } else {
-      this.itemdetails = response as ItemDetails;
-
-      this.update_age = this.shared.ageToString(this.itemdetails.update_age);
-      this.change_age = this.shared.ageToString(this.itemdetails.change_age);
-      this.previous_update_age = this.shared.ageToString(this.itemdetails.previous_update_age);
-      this.previous_change_age = this.shared.ageToString(this.itemdetails.previous_change_age);
+      const details = response as ItemDetails;
+      this.itemdetails.set(details);
+      this.update_age.set(this.shared.ageToString(details.update_age));
+      this.change_age.set(this.shared.ageToString(details.change_age));
+      this.previous_update_age.set(this.shared.ageToString(details.previous_update_age));
+      this.previous_change_age.set(this.shared.ageToString(details.previous_change_age));
     }
-    this.itemdetailsloaded = true;
+    this.itemdetailsloaded.set(true);
   }
 
   /* ----------------------------------------------
    * For PrimeNG Tree:
    */
 
+  /** appConfig.itemtreeSearchstart is undefined until the async
+   *  /api/server/info response patches it in — Number(undefined) is
+   *  NaN, and every comparison with NaN is false, so typing before that
+   *  response lands would silently never filter at all. Falls back to
+   *  AppConfigService's own DEFAULT_CONFIG value (3) for that window. */
   filterTree(treeModel: unknown, value: string) {
-    if (value.length >= Number(this.appConfig.itemtreeSearchstart)) {
+    const threshold = Number(this.appConfig.itemtreeSearchstart) || 3;
+    if (value.length >= threshold) {
       this.filterNodes(value);
     } else {
       this.filterNodes('');
@@ -452,57 +511,64 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
 
   filterNodes(value: string) {
     value = value.toLowerCase();
-    this.filteredTree = structuredClone(this.filesTree0);
-    this.treeIsFiltered = false;
+    const tree = structuredClone(this.filesTree0);
     if (value && value !== '') {
-      this.treeIsFiltered = true;
-      this.prune(this.filteredTree, value);
+      this.prune(tree as TreeNode[], value);
+      this.filteredTree.set(tree);
+      this.treeIsFiltered.set(true);
       this.expandAll();
+    } else {
+      this.filteredTree.set(tree);
+      this.treeIsFiltered.set(false);
     }
   }
 
   clearFilter(event: unknown, filter: { value: string }) {
     filter.value = '';
     this.filterTree(event, filter.value);
-    this.itemdetailsloaded = false;
+    this.itemdetailsloaded.set(false);
   }
 
-  prune(array: TreeNode[], filter: string) {
+  /** Removes every node (and its whole subtree) that neither matches
+   *  *filter* itself nor has any descendant that does, mutating *array*
+   *  in place. Recurses into children BEFORE deciding whether to keep
+   *  the node, and never returns early out of the loop — every sibling
+   *  at every level gets evaluated, regardless of where a match is
+   *  found elsewhere in the tree. */
+  prune(array: TreeNode[], filter: string): boolean {
+    let anyKept = false;
     for (let i = array.length - 1; i >= 0; i--) {
       const obj = array[i];
       if (obj.children) {
-        if (this.prune(obj.children, filter)) {
-          if (obj.children.length === 0) {
-            array.splice(i, 1);
-          }
-          return true;
-        }
+        this.prune(obj.children, filter);
       }
-      if ((obj.label ?? '').toLowerCase().indexOf(filter) === -1) {
-        if ((obj.children ?? []).length === 0) {
-          array.splice(i, 1);
-        }
+      const ownMatch = (obj.label ?? '').toLowerCase().indexOf(filter) !== -1;
+      const hasMatchingChildren = (obj.children?.length ?? 0) > 0;
+      if (ownMatch || hasMatchingChildren) {
+        anyKept = true;
+      } else {
+        array.splice(i, 1);
       }
     }
-    return false;
+    return anyKept;
   }
 
   nodeSelect(event: TreeNodeSelectEvent) {
     const node = event.node as TreeNode & { path: string };
     this.log.log('Node Selected: ' + node.label);
-    this.itemdetailsloaded = false;
+    this.itemdetailsloaded.set(false);
     this.getDetails(node.path);
   }
 
   expandAll() {
-    this.filteredTree.forEach((node) => {
-      this.expandRecursive(node, true);
+    this.filteredTree().forEach((node) => {
+      this.expandRecursive(node as TreeNode, true);
     });
   }
 
   collapseAll() {
-    this.filteredTree.forEach((node) => {
-      this.expandRecursive(node, false);
+    this.filteredTree().forEach((node) => {
+      this.expandRecursive(node as TreeNode, false);
     });
   }
 
@@ -513,5 +579,76 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
         this.expandRecursive(childNode, isExpand);
       });
     }
+  }
+
+  /** Menu model for the "more actions" (⋮) popup — Edit/Rename/Copy/Delete,
+   *  replacing what used to be four separate buttons in the item-detail card's
+   *  header, which didn't scale to narrow/mobile layouts. None of the entries
+   *  are individually disabled: a disabled PrimeNG MenuItem doesn't fire its
+   *  click handler at all, so there'd be no way to explain why short of a
+   *  tooltip on a disabled element, which has its own hover problems (see the
+   *  standalone Copy button's earlier fix, before it moved in here). Copy
+   *  always opens its dialog and explains a non-persisted item's disabled
+   *  state inline in the dialog body instead.
+   *
+   *  A signal set once by buildItemActionsMenu(), not a getter: a getter
+   *  re-evaluated on every change-detection tick returns a brand-new array
+   *  of brand-new object literals each time, and PrimeNG's p-menu renders
+   *  [model] via *ngFor with no trackBy - it can't tell that "new" array
+   *  apart from a different one, so it tears down and rebuilds every <li>
+   *  (and its click listener) on every unrelated CD tick that happens while
+   *  the popup is open (e.g. a stream-pushed monitored-item update). If
+   *  that teardown lands between a real click's mousedown and mouseup,
+   *  Chrome drops the click entirely instead of retargeting it - a silent
+   *  no-op, confirmed live via DOM/click instrumentation, not fixable by
+   *  waiting since the rebuilds aren't on a fixed schedule.
+   *
+   *  Plain signal(), not computed() - nothing this depends on is itself a
+   *  signal (rebuilds are triggered by ngOnInit and translate.onLangChange,
+   *  an RxJS event), so there's no signal dependency for computed() to
+   *  track. See rename-item-dialog.component.ts's renameItemParentTreeNodes
+   *  for the computed() counterpart, used there because that value derives
+   *  from a real signal input. */
+  readonly itemActionsMenuItems = signal<MenuItem[]>([]);
+
+  private buildItemActionsMenu() {
+    this.itemActionsMenuItems.set([
+      {
+        label: this.translate.instant('BUTTON.EDIT'),
+        icon: 'pi pi-pencil',
+        command: () => this.editItemDialog()?.open(),
+      },
+      {
+        label: this.translate.instant('BUTTON.RENAME'),
+        icon: 'pi pi-arrow-right-arrow-left',
+        command: () => {
+          this.renameItemIsCopy.set(false);
+          this.renameItemDialog()?.open();
+        },
+      },
+      {
+        label: this.translate.instant('BUTTON.COPY'),
+        icon: 'pi pi-copy',
+        command: () => {
+          this.renameItemIsCopy.set(true);
+          this.renameItemDialog()?.open();
+        },
+      },
+      { separator: true },
+      {
+        label: this.translate.instant('BUTTON.DELETE'),
+        icon: 'pi pi-trash',
+        styleClass: 'menu-item-danger',
+        command: () => this.deleteItemDialog()?.open(),
+      },
+    ]);
+  }
+
+  /** deleted output handler for <app-delete-item-dialog> - nothing to
+   *  re-select after a delete (unlike create/rename/copy), just clear the
+   *  now-gone item's details and reload the tree. */
+  onItemDeleted() {
+    this.showDetails();
+    this.getItemtree();
   }
 }

@@ -58,19 +58,19 @@ describe('LoggerListComponent', () => {
   });
 
   it('should populate loggersList with all logger keys sorted', () => {
-    expect(component.loggersList.length).toBe(loggerNames.length);
-    expect(component.loggersList[0]).toBe(loggerNames[0]);
+    expect(component.loggersList().length).toBe(loggerNames.length);
+    expect(component.loggersList()[0]).toBe(loggerNames[0]);
   });
 
   it('should populate active_plugins from fixture', () => {
-    expect(component.active_plugins.length).toBe(fixtureData.active_plugins.length);
+    expect(component.active_plugins().length).toBe(fixtureData.active_plugins.length);
   });
 
   it('should populate active_logics from fixture', () => {
-    expect(component.active_logics.length).toBe(fixtureData.active_logics.length);
+    expect(component.active_logics().length).toBe(fixtureData.active_logics.length);
   });
 
   it('should populate definedHandlers from fixture', () => {
-    expect(component.definedHandlers.length).toBe(fixtureData.defined_handlers.length);
+    expect(component.definedHandlers().length).toBe(fixtureData.defined_handlers.length);
   });
 });

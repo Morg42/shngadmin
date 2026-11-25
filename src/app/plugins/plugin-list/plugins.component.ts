@@ -1,31 +1,37 @@
+import { NgOptimizedImage, UpperCasePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   DestroyRef,
-  inject,
   OnInit,
+  computed,
+  inject,
+  signal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { Title } from '@angular/platform-browser';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
   faExclamationTriangle,
   faLaptopCode,
   faPauseCircle,
   faPlayCircle,
 } from '@fortawesome/free-solid-svg-icons';
-import { AppConfigService } from '../../common/services/app-config.service';
-
-import { NgOptimizedImage, UpperCasePipe } from '@angular/common';
-import { Title } from '@angular/platform-browser';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { TranslateDirective, TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { MessageService } from 'primeng/api';
 import { Bind } from 'primeng/bind';
+import { ButtonDirective } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { ProgressSpinner } from 'primeng/progressspinner';
+import { Subject, merge, of } from 'rxjs';
+import { finalize, map, switchMap, tap } from 'rxjs/operators';
 import { PlugininfoType } from '../../common/models/plugin-info';
 import { LogService } from '../../common/services/log.service';
 import { PluginsApiService } from '../../common/services/plugins-api.service';
+
+/** Load/unload/reload lifecycle actions live on the /plugins/config page - this page only ever drives start/stop. */
+type PluginRunStateAction = 'start' | 'stop';
 
 @Component({
   selector: 'app-plugins',
@@ -37,6 +43,7 @@ import { PluginsApiService } from '../../common/services/plugins-api.service';
     FaIconComponent,
     NgOptimizedImage,
     Bind,
+    ButtonDirective,
     Dialog,
     InputText,
     ProgressSpinner,
@@ -47,11 +54,10 @@ import { PluginsApiService } from '../../common/services/plugins-api.service';
 })
 export class PluginsComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
-  private readonly cdr = inject(ChangeDetectorRef);
   private pluginsDataService = inject(PluginsApiService);
   private translate = inject(TranslateService);
+  private readonly messageService = inject(MessageService);
   private titleService = inject(Title);
-  private appConfig = inject(AppConfigService);
   private readonly log = inject(LogService);
 
   faPlayCircle = faPlayCircle;
@@ -59,82 +65,89 @@ export class PluginsComponent implements OnInit {
   faExclamationTriangle = faExclamationTriangle; // signal deprecated plugin
   faCode = faLaptopCode; // signal plugin in state "develop"
 
-  plugininfo!: PlugininfoType[];
-  developerMode!: boolean;
-  loading = true;
+  /** Emits to re-fetch the plugin list (after start/stop actions). */
+  private readonly refresh$ = new Subject<void>();
 
-  sortField = '';
-  sortOrder: 1 | -1 = 1;
+  readonly loading = signal(true);
 
-  sortBy(field: string): void {
-    this.sortOrder = this.sortField === field ? (this.sortOrder === 1 ? -1 : 1) : 1;
-    this.sortField = field;
-    const ord = this.sortOrder;
-    this.plugininfo.sort((a, b) => {
+  readonly spinner_display = signal(false);
+  readonly spinner_header = signal('');
+
+  /** Base plugin list, sorted by pluginname+configname; refetched on every
+   *  refresh$ emission. */
+  private readonly rawPlugininfo = toSignal(
+    merge(of(undefined), this.refresh$).pipe(
+      tap(() => this.loading.set(true)),
+      switchMap(() => this.pluginsDataService.getPluginsInfo()),
+      map((response) => {
+        const list = Array.isArray(response) ? (response as PlugininfoType[]) : [];
+        return [...list].sort((a, b) =>
+          a.pluginname + a.configname.toLowerCase() > b.pluginname + b.configname.toLowerCase()
+            ? 1
+            : b.pluginname + b.configname.toLowerCase() > a.pluginname + a.configname.toLowerCase()
+              ? -1
+              : 0,
+        );
+      }),
+      tap(() => this.loading.set(false)),
+    ),
+    { initialValue: [] as PlugininfoType[] },
+  );
+
+  readonly sortField = signal('');
+  readonly sortOrder = signal<1 | -1>(1);
+
+  /** Column-sorted view - pure computed over a copy. */
+  readonly plugininfo = computed(() => {
+    const list = this.rawPlugininfo();
+    const field = this.sortField();
+    if (!field) {
+      return list;
+    }
+    const ord = this.sortOrder();
+    return [...list].sort((a, b) => {
       const av = String((a as unknown as Record<string, unknown>)[field] ?? '').toLowerCase();
       const bv = String((b as unknown as Record<string, unknown>)[field] ?? '').toLowerCase();
       return av < bv ? -ord : av > bv ? ord : 0;
     });
-    this.cdr.markForCheck();
+  });
+
+  sortBy(field: string): void {
+    this.sortOrder.set(this.sortField() === field ? (this.sortOrder() === 1 ? -1 : 1) : 1);
+    this.sortField.set(field);
   }
 
-  filterText = '';
+  readonly filterText = signal('');
 
   onFilterChange(value: string): void {
-    this.filterText = value;
-    this.cdr.markForCheck();
+    this.filterText.set(value);
   }
 
   clearFilter(): void {
-    this.filterText = '';
-    this.cdr.markForCheck();
+    this.filterText.set('');
   }
 
-  get filteredPlugins(): PlugininfoType[] {
-    if (!this.filterText) return this.plugininfo;
-    const f = this.filterText.toLowerCase();
-    return this.plugininfo.filter(
+  readonly filteredPlugins = computed<PlugininfoType[]>(() => {
+    const f = this.filterText().toLowerCase();
+    if (!f) return this.plugininfo();
+    return this.plugininfo().filter(
       (p) =>
         p.configname.toLowerCase().includes(f) ||
         p.pluginname.toLowerCase().includes(f) ||
         p.instancename.toLowerCase().includes(f),
     );
-  }
+  });
 
   showPluginDetails = false;
   selectedPlugin: PlugininfoType | null = null;
 
-  public setTitle(newTitle: string) {
-    this.titleService.setTitle(newTitle);
-  }
-
   ngOnInit() {
     this.log.log('PluginsComponent.ngOnInit');
-
-    this.setTitle(this.translate.instant('MENU.PLUGINS_LIST'));
-    this.developerMode = this.appConfig.developerMode;
-    this.getPlugins();
+    this.titleService.setTitle(this.translate.instant('MENU.PLUGINS_LIST'));
   }
 
-  getPlugins() {
-    this.loading = true;
-    this.cdr.markForCheck();
-    this.pluginsDataService
-      .getPluginsInfo()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((response) => {
-        this.plugininfo = response as PlugininfoType[];
-        this.plugininfo.sort(function (a, b) {
-          return a.pluginname + a.configname.toLowerCase() >
-            b.pluginname + b.configname.toLowerCase()
-            ? 1
-            : b.pluginname + b.configname.toLowerCase() > a.pluginname + a.configname.toLowerCase()
-              ? -1
-              : 0;
-        });
-        this.loading = false;
-        this.cdr.detectChanges();
-      });
+  private getPlugins() {
+    this.refresh$.next();
   }
 
   parameterLines(parameters: number) {
@@ -157,36 +170,56 @@ export class PluginsComponent implements OnInit {
     window.open(url, '_blank');
   }
 
-  stopPlugin(pluginConfigName: string) {
-    // this.log.log('stopPlugin', {pluginConfigName});
+  private _runStateAction(pluginConfigName: string, action: PluginRunStateAction): void {
+    const spinnerKey: Record<PluginRunStateAction, string> = {
+      start: 'PLUGIN.STARTING',
+      stop: 'PLUGIN.STOPPING',
+    };
+    const successKey: Record<PluginRunStateAction, string> = {
+      start: 'PLUGIN.STARTED',
+      stop: 'PLUGIN.STOPPED_OK',
+    };
+    const errorKey: Record<PluginRunStateAction, string> = {
+      start: 'PLUGIN.START_FAILED',
+      stop: 'PLUGIN.STOP_FAILED',
+    };
+
+    this.spinner_display.set(true);
+    this.spinner_header.set(this.translate.instant(spinnerKey[action]));
 
     this.pluginsDataService
-      .setPluginState(pluginConfigName, 'stop')
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((response) => {
+      .setPluginState(pluginConfigName, action)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.spinner_display.set(false);
+        }),
+      )
+      .subscribe((result) => {
         this.getPlugins();
+        if (result === true) {
+          this.messageService.add({
+            severity: 'success',
+            summary: this.translate.instant(successKey[action]),
+            detail: pluginConfigName,
+            life: 3000,
+          });
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: this.translate.instant(errorKey[action]),
+            detail: pluginConfigName,
+            sticky: true,
+          });
+        }
       });
+  }
+
+  stopPlugin(pluginConfigName: string) {
+    this._runStateAction(pluginConfigName, 'stop');
   }
 
   startPlugin(pluginConfigName: string) {
-    // this.log.log('startPlugin', {pluginConfigName});
-
-    this.pluginsDataService
-      .setPluginState(pluginConfigName, 'start')
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((response) => {
-        this.getPlugins();
-      });
-  }
-
-  reloadPlugin(pluginConfigName: string) {
-    // this.log.log('reloadPlugin', {pluginConfigName});
-
-    this.pluginsDataService
-      .setPluginState(pluginConfigName, 'reload')
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((response) => {
-        this.getPlugins();
-      });
+    this._runStateAction(pluginConfigName, 'start');
   }
 }

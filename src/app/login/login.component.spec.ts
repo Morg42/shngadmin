@@ -57,6 +57,6 @@ describe('LoginComponent', () => {
   });
 
   it('invalidLogin is initially falsy', () => {
-    expect(component.invalidLogin).toBeFalsy();
+    expect(component.invalidLogin()).toBeFalsy();
   });
 });

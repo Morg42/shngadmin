@@ -10,6 +10,26 @@ body {
   --menu-background-color: #eee;
   --menu-background-color-hover: #777;
   --menu-background-color-active: #ccc;
+  --drawer-bg: #fff;
+  --drawer-border: #e8e8e8;
+  --drawer-section-bg: #f4f4f4;
+  --dropdown-bg: #f9f9f9;
+  --dropdown-hover-bg: #ddd;
+  --dropdown-hover-color: black;
+}
+
+:host-context(.dark-mode) {
+  --menu-textcolor: #ccc;
+  --menu-textcolor-hover: #fff;
+  --menu-background-color: #2a2a2a;
+  --menu-background-color-hover: #444444;
+  --menu-background-color-active: #555555;
+  --drawer-bg: #1e1e1e;
+  --drawer-border: #3a3a3a;
+  --drawer-section-bg: #272727;
+  --dropdown-bg: #2a2a2a;
+  --dropdown-hover-bg: #444444;
+  --dropdown-hover-color: #fff;
 }
 
 .navbar {
@@ -43,9 +63,19 @@ body {
 }
 
 .topnav {
-  overflow: hidden;
   background-color: var(--menu-background-color);
   width: 100%;
+}
+
+/* Clearfix for the floated children (.dropdown/.help/.theme/.logout etc) —
+   deliberately not overflow:hidden: .help/.theme are position:relative so
+   their dropdown's containing block is that (small, predictable) wrapper
+   rather than an ancestor further up, and overflow:hidden here would clip
+   that dropdown at the 55px navbar height. */
+.topnav::after {
+  content: '';
+  display: table;
+  clear: both;
 }
 
 .dropdown .show-caret {
@@ -60,6 +90,7 @@ body {
   padding: 14px 10px;
   text-decoration: none;
   font-size: var(--font-size-nav);
+  line-height: normal; /* match .dropbtn's button-default line-height so all tabs are the same height */
 }
 
 .dropdown {
@@ -68,7 +99,9 @@ body {
   overflow: hidden;
 }
 
-.dropdown .dropbtn {
+.dropdown .dropbtn,
+.help-btn,
+.theme-btn {
   font-size: var(--font-size-nav);
   border: none;
   outline: none;
@@ -79,17 +112,30 @@ body {
   margin: 0;
 }
 
-.dropdown-content {
+.dropdown-content,
+.help-dropdown-content,
+.theme-dropdown-content {
   display: none;
   position: absolute;
-  background-color: #f9f9f9;
+  background-color: var(--dropdown-bg);
   min-width: 160px;
   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
   z-index: 5; /* 4 instead of 1 to stay on top of codemirror linenumbers */
+}
+
+.dropdown-content {
   margin-left: 15px;
 }
 
-.dropdown-content a {
+.help-dropdown-content,
+.theme-dropdown-content {
+  top: 100%;
+  right: 0;
+}
+
+.dropdown-content a,
+.help-dropdown-content a,
+.theme-dropdown-content a {
   float: none;
   color: var(--menu-textcolor);
   padding: 12px 16px;
@@ -107,17 +153,23 @@ body {
 }
 
 .topnav a:hover,
-.dropdown:hover .dropbtn {
+.dropdown:hover .dropbtn,
+.help:hover .help-btn,
+.theme:hover .theme-btn {
   background-color: var(--menu-background-color-hover);
   color: var(--menu-textcolor-hover);
 }
 
-.dropdown-content a:hover {
-  background-color: #ddd;
-  color: black;
+.dropdown-content a:hover,
+.help-dropdown-content a:hover,
+.theme-dropdown-content a:hover {
+  background-color: var(--dropdown-hover-bg);
+  color: var(--dropdown-hover-color);
 }
 
-.dropdown:hover .dropdown-content {
+.dropdown:hover .dropdown-content,
+.help:hover .help-dropdown-content,
+.theme:hover .theme-dropdown-content {
   display: block;
 }
 
@@ -183,7 +235,8 @@ body {
   background-color: var(--menu-background-color-active);
 }
 
-.dropdown-content a.active {
+.dropdown-content a.active,
+.theme-dropdown-content a.active {
   background-color: var(--menu-background-color-active);
 }
 
@@ -208,6 +261,28 @@ body {
 
 .topnav .logout i {
   margin-right: 4px;
+}
+
+.topnav .help {
+  margin-right: 5px;
+  float: right;
+  position: relative;
+}
+
+.topnav a.help i,
+.help-btn i {
+  margin-right: 4px;
+}
+
+.help-btn,
+.theme-btn {
+  cursor: pointer;
+}
+
+.topnav .theme {
+  margin-right: 5px;
+  float: right;
+  position: relative;
 }
 
 /* Mobile controls bar (hamburger + logout icon) — hidden on desktop */
@@ -236,7 +311,8 @@ body {
   color: var(--menu-textcolor-hover);
 }
 
-.hamburger {
+.hamburger,
+.navbar-mobile .theme-btn {
   background: none;
   border: none;
   font-size: 1.4rem;
@@ -249,7 +325,8 @@ body {
   box-sizing: border-box;
 }
 
-.hamburger:hover {
+.hamburger:hover,
+.navbar-mobile .theme-btn:hover {
   background-color: var(--menu-background-color-hover);
   color: var(--menu-textcolor-hover);
 }
@@ -263,7 +340,7 @@ body {
   right: 0;
   width: 280px;
   height: calc(100vh - 55px);
-  background: #fff;
+  background: var(--drawer-bg);
   box-shadow: -2px 0 12px rgba(0, 0, 0, 0.25);
   transform: translateX(100%);
   transition: transform 0.25s ease;
@@ -286,7 +363,7 @@ body {
   color: var(--menu-textcolor);
   text-decoration: none;
   font-size: var(--font-size-nav);
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: 1px solid var(--drawer-border);
 }
 
 .drawer > a:hover {
@@ -300,7 +377,7 @@ body {
 
 /* Drawer sections (items with submenu) */
 .drawer-section {
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: 1px solid var(--drawer-border);
 }
 
 .drawer-section-header {
@@ -339,7 +416,7 @@ body {
 
 .drawer-section-items {
   display: none;
-  background: #f4f4f4;
+  background: var(--drawer-section-bg);
 }
 
 .drawer-section.open .drawer-section-items {
@@ -352,7 +429,7 @@ body {
   color: var(--menu-textcolor);
   text-decoration: none;
   font-size: var(--font-size-sm);
-  border-bottom: 1px solid #ececec;
+  border-bottom: 1px solid var(--drawer-border);
 }
 
 .drawer-section-items a:hover {
@@ -365,6 +442,9 @@ body {
 }
 
 .drawer-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   padding: 16px 20px;
   border-top: 2px solid #ddd;
 }
@@ -400,6 +480,15 @@ body {
   }
   .topnav .logout-small {
     display: initial;
+  }
+  .topnav a.help,
+  .help-btn {
+    font-size: 0;
+  }
+  .topnav a.help i,
+  .help-btn i {
+    font-size: var(--font-size-nav);
+    margin-right: 0;
   }
 }
 

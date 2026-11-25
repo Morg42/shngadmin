@@ -104,6 +104,7 @@
         "deprecated_warnings": {
           "type": "bool",
           "default": false,
+          "live": true,
           "description": {
             "de": "Advanced: Warnungen loggen, wenn Funktionen/Methoden aufgerufen werden, die als veraltet gekennzeichnet sind",
             "en": "Advanced: Log warnings, if functions/methods are used which are flaged as deprecated",

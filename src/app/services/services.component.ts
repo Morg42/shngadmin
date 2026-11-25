@@ -1,15 +1,17 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
+  computed,
   DestroyRef,
   inject,
   OnInit,
-  ViewChild,
+  signal,
+  viewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { timer } from 'rxjs';
 import { AppConfigService } from '../common/services/app-config.service';
 import { UserPreferencesService } from '../common/services/user-preferences.service';
@@ -23,11 +25,19 @@ import { ServicesApiService } from '../common/services/services-api.service';
 
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ServerInfo } from '../common/models/server-info';
+import {
+  PullRepoCheck,
+  PullRepoName,
+  PullRepoResult,
+  PullRepoState,
+  PullResponse,
+  PullStatusResponse,
+  PullTarget,
+} from '../common/models/server-pull';
 import { SharedService } from '../common/services/shared.service';
 
 import { NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { sha512 } from 'js-sha512';
 import { MessageService, PrimeTemplate } from 'primeng/api';
 import { Bind } from 'primeng/bind';
 import { ButtonDirective } from 'primeng/button';
@@ -77,7 +87,6 @@ export interface CacheEntryType {
 })
 export class ServicesComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
-  private readonly cdr = inject(ChangeDetectorRef);
   private translate = inject(TranslateService);
   public shared = inject(SharedService);
   private fileService = inject(FilesApiService);
@@ -85,81 +94,115 @@ export class ServicesComponent implements OnInit {
   private readonly messageService = inject(MessageService);
   private dataServiceServer = inject(ServerApiService);
   private titleService = inject(Title);
-  private appConfig = inject(AppConfigService);
+  protected appConfig = inject(AppConfigService);
   private userPrefs = inject(UserPreferencesService);
   private readonly log = inject(LogService);
+  private readonly router = inject(Router);
 
   //  schedulerinfo: SchedulerInfo[];
 
-  serverInfo = <ServerInfo>{};
-  default_language!: string;
-  shng_status!: string;
+  readonly serverInfo = signal(<ServerInfo>{});
+  readonly default_language = signal('');
+  readonly shng_status = signal('');
   status_errorcount = 0;
 
-  valid_languagelist: { label: string; value: string }[] = [];
+  readonly valid_languagelist = signal<{ label: string; value: string }[]>([]);
 
   valid_default_language = '          ';
-  selected_language: string | null = null;
-  shng_statuscode = 0;
+  readonly selected_language = signal<string | null>(null);
+  readonly shng_statuscode = signal(0);
 
   pwd_clear = '';
   pwd_hash!: string;
   pwd_show!: boolean;
+  /** Last secret from createSecret(), empty if none or the backend could not create one. */
+  readonly generated_secret = signal('');
 
-  backup_disabled = false;
-  restore_disabled = false;
-  show_backup_confirm = false;
-  show_restore_chooser = false;
+  readonly backup_disabled = signal(false);
+  readonly restore_disabled = signal(false);
+  readonly show_backup_confirm = signal(false);
+  /** Host power action waiting for the user's confirmation, null if none. */
+  readonly pendingPowerAction = signal<'poweroff' | 'reboot' | null>(null);
+  readonly show_restore_chooser = signal(false);
+  /** Result of the last pull, shown in a dialog until closed; null if there is none. */
+  readonly pullResult = signal<PullResponse | null>(null);
+  readonly pullRunning = signal(false);
+  /** Per checkout how it stands against its upstream; a checkout is missing if that is not known. */
+  readonly pullChecks = signal<Partial<Record<PullRepoName, PullRepoCheck>>>({});
+  readonly pullStatusPending = signal(false);
+  readonly pullRepoNames: PullRepoName[] = ['core', 'plugins'];
+  /** Why the last pull needs a restart of the core to run the updated code; empty if it does not. */
+  readonly pullRestartReasons = computed(() => this.pullResult()?.impact?.restart ?? []);
+  /** Plugins the last pull updated; a reload is enough for them (never set if a restart is needed). */
+  readonly pullReloadPlugins = computed(() => this.pullResult()?.impact?.reload ?? []);
+  /** True if the last pull moved a checkout, but neither a restart nor a reload is needed. */
+  readonly pullNothingNeeded = computed(
+    () =>
+      (this.pullResult()?.repos.some((repo) => repo.changed) ?? false) &&
+      this.pullRestartReasons().length === 0 &&
+      this.pullReloadPlugins().length === 0,
+  );
 
   // -----------------------------------------------------
   //  Vars for the EVAL syntax checker
   //
-  @ViewChild('evalcodeeditor') evalCodeEditor?: CodeEditorComponent;
-  @ViewChild('evalcodeeditor2') evalCodeEditor2?: CodeEditorComponent;
+  readonly evalCodeEditor = viewChild<CodeEditorComponent>('evalcodeeditor');
+  readonly evalCodeEditor2 = viewChild<CodeEditorComponent>('evalcodeeditor2');
 
   myEvalTextarea = '';
   myRelativeTo = '';
-  myEvalResult = '';
-  myResultType = '';
+  readonly myEvalResult = signal('');
+  readonly myResultType = signal('');
 
-  myEvalTextOutput = '';
+  readonly myEvalTextOutput = signal('');
 
   // -----------------------------------------------------
   //  Vars for the YAML syntax checker
   //
-  @ViewChild('codeeditor') codeEditor?: CodeEditorComponent;
-  @ViewChild('codeeditor2') codeEditor2?: CodeEditorComponent;
+  readonly codeEditor = viewChild<CodeEditorComponent>('codeeditor');
+  readonly codeEditor2 = viewChild<CodeEditorComponent>('codeeditor2');
 
   myTextarea = '';
 
-  myTextOutput = '';
+  readonly myTextOutput = signal('');
 
   // -----------------------------------------------------
   //  Vars for the YAML converter
   //
-  @ViewChild('convertercodeeditor') converterCodeEditor?: CodeEditorComponent;
-  @ViewChild('convertercodeeditor2') converterCodeEditor2?: CodeEditorComponent;
+  readonly converterCodeEditor = viewChild<CodeEditorComponent>('convertercodeeditor');
+  readonly converterCodeEditor2 = viewChild<CodeEditorComponent>('convertercodeeditor2');
 
   myConverterTextarea = '';
 
-  myConverterTextOutput = '';
+  readonly myConverterTextOutput = signal('');
 
-  cacheInfo: CacheEntryType[] = [];
-  cacheAllChecked!: boolean;
+  private readonly rawCacheInfo = signal<CacheEntryType[]>([]);
+  readonly cacheAllChecked = signal(false);
 
-  cacheSortField = '';
-  cacheSortOrder: 1 | -1 = 1;
+  readonly cacheSortField = signal('');
+  readonly cacheSortOrder = signal<1 | -1>(1);
 
-  sortCache(field: string): void {
-    this.cacheSortOrder = this.cacheSortField === field ? (this.cacheSortOrder === 1 ? -1 : 1) : 1;
-    this.cacheSortField = field;
-    const ord = this.cacheSortOrder;
-    this.cacheInfo.sort((a, b) => {
+  /** Column-sorted view - pure computed over a copy; the entry objects stay
+   *  identity-stable, so checkbox mutations (checked flags) keep working. */
+  readonly cacheInfo = computed(() => {
+    const list = this.rawCacheInfo();
+    const field = this.cacheSortField();
+    if (!field) {
+      return list;
+    }
+    const ord = this.cacheSortOrder();
+    return [...list].sort((a, b) => {
       const av = String((a as unknown as Record<string, unknown>)[field] ?? '').toLowerCase();
       const bv = String((b as unknown as Record<string, unknown>)[field] ?? '').toLowerCase();
       return av < bv ? -ord : av > bv ? ord : 0;
     });
-    this.cdr.markForCheck();
+  });
+
+  sortCache(field: string): void {
+    this.cacheSortOrder.set(
+      this.cacheSortField() === field ? (this.cacheSortOrder() === 1 ? -1 : 1) : 1,
+    );
+    this.cacheSortField.set(field);
   }
 
   public setTitle(newTitle: string) {
@@ -173,28 +216,25 @@ export class ServicesComponent implements OnInit {
       .getServerinfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        this.shng_status = '?';
-        this.default_language = this.appConfig.defaultLanguage;
+        this.shng_status.set('?');
+        this.default_language.set(this.appConfig.defaultLanguage);
 
-        this.serverInfo = <ServerInfo>response;
+        this.serverInfo.set(<ServerInfo>response);
 
         this.getShngStatus();
 
-        //        this.valid_languagelist = [{label: 'English', value: 'en'},{label: 'Deutsch', value: 'de'},{label: 'Français', value: 'fr'},
-        //        {label: 'Polski', value: 'pl'}];
-        this.valid_languagelist = [
+        this.valid_languagelist.set([
           { label: 'English', value: 'en' },
           { label: 'Deutsch', value: 'de' },
           { label: 'Français', value: 'fr' },
-        ];
+        ]);
 
-        // this.valid_default_language = 'Deutsch';
-        this.selected_language = this.default_language;
+        this.selected_language.set(this.default_language());
 
         this.setTitle(this.translate.instant('SERVICES.SERVICES'));
 
         this.loadCacheOrphans();
-        this.cdr.markForCheck();
+        this.loadPullStatus();
       });
   }
 
@@ -203,17 +243,15 @@ export class ServicesComponent implements OnInit {
       .getCacheOrphans()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        this.cacheInfo = <CacheEntryType[]>response;
-        this.cacheAllChecked = false;
-        // this.log.log('loadChacheOrphans', this.cacheInfo);
-        this.cdr.markForCheck();
+        this.rawCacheInfo.set(Array.isArray(response) ? (response as CacheEntryType[]) : []);
+        this.cacheAllChecked.set(false);
       });
   }
 
   deleteCacheEntry(entryNr: number) {
     // this.log.log('deleteCacheEntry', this.cacheInfo[entryNr].filename);
     this.dataService
-      .deleteCacheFile(this.cacheInfo[entryNr].filename)
+      .deleteCacheFile(this.cacheInfo()[entryNr].filename)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.loadCacheOrphans();
@@ -222,9 +260,9 @@ export class ServicesComponent implements OnInit {
 
   deleteCacheSelected() {
     const filelist: string[] = [];
-    for (let i = 0; i < this.cacheInfo.length; i++) {
-      if (this.cacheInfo[i].checked) {
-        filelist.push(this.cacheInfo[i].filename);
+    for (const entry of this.cacheInfo()) {
+      if (entry.checked) {
+        filelist.push(entry.filename);
       }
     }
 
@@ -237,14 +275,29 @@ export class ServicesComponent implements OnInit {
   }
 
   cacheCheckAll() {
-    for (let i = 0; i < this.cacheInfo.length; i++) {
-      this.cacheInfo[i].checked = this.cacheAllChecked;
+    for (const entry of this.cacheInfo()) {
+      entry.checked = this.cacheAllChecked();
     }
   }
 
   createPwdHash() {
     this.log.log('createPwdHash');
-    this.pwd_hash = sha512(this.pwd_clear);
+    this.dataService
+      .hashPassword(this.pwd_clear)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((hash) => {
+        this.pwd_hash = hash ?? '';
+      });
+  }
+
+  /** Show a new random secret from the backend, e.g. for a plain-text token in a plugin configuration. */
+  createSecret() {
+    this.dataService
+      .generateSecret()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((secret) => {
+        this.generated_secret.set(secret ?? '');
+      });
   }
 
   checkYaml() {
@@ -254,8 +307,7 @@ export class ServicesComponent implements OnInit {
       .CheckYamlText(this.myTextarea)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        this.myTextOutput = response as string;
-        this.cdr.markForCheck();
+        this.myTextOutput.set(response as string);
       });
   }
 
@@ -266,14 +318,13 @@ export class ServicesComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
         const myResponse = response as { expression: string; type: string; result: unknown };
-        this.myEvalTextOutput = myResponse.expression;
-        this.myResultType = myResponse.type;
-        if (this.myResultType === 'list' || this.myResultType === 'dict') {
-          this.myEvalResult = JSON.stringify(myResponse.result);
+        this.myEvalTextOutput.set(myResponse.expression);
+        this.myResultType.set(myResponse.type);
+        if (myResponse.type === 'list' || myResponse.type === 'dict') {
+          this.myEvalResult.set(JSON.stringify(myResponse.result));
         } else {
-          this.myEvalResult = String(myResponse.result);
+          this.myEvalResult.set(String(myResponse.result));
         }
-        this.cdr.markForCheck();
       });
   }
 
@@ -284,17 +335,16 @@ export class ServicesComponent implements OnInit {
       .ConvertToYamlText(this.myConverterTextarea)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response) => {
-        this.myConverterTextOutput = response as string;
-        this.cdr.markForCheck();
+        this.myConverterTextOutput.set(response as string);
       });
   }
 
   setLanguage() {
-    this.log.log('setLanguage', this.selected_language);
-    this.appConfig.setDefaultLanguage(this.selected_language!);
-    this.userPrefs.setLanguage(this.selected_language!); // persist across reloads
+    this.log.log('setLanguage', this.selected_language());
+    this.appConfig.setDefaultLanguage(this.selected_language()!);
+    this.userPrefs.setLanguage(this.selected_language()!); // persist across reloads
     this.shared.setGuiLanguage();
-    this.default_language = this.appConfig.defaultLanguage;
+    this.default_language.set(this.appConfig.defaultLanguage);
   }
 
   // -------------------------------------------------------
@@ -325,14 +375,15 @@ export class ServicesComponent implements OnInit {
           // shng is not running
           this.status_errorcount += 1;
           this.log.log('getShngStatus', 'SmartHomeNG not running');
-          this.shng_status = this.translate_shngStatus('waiting') + '...';
+          this.shng_status.set(this.translate_shngStatus('waiting') + '...');
         } else {
           // this.log.log('getShngStatus', res.code, res.text);
-          this.shng_statuscode = res.code;
-          this.shng_status = this.translate_shngStatus(res.text ?? '');
+          this.shng_statuscode.set(res.code);
+          let status = this.translate_shngStatus(res.text ?? '');
           if (res.details !== undefined) {
-            this.shng_status += ' (' + res.details + ')';
+            status += ' (' + res.details + ')';
           }
+          this.shng_status.set(status);
           this.status_errorcount = 0;
         }
         if (this.status_errorcount < 20) {
@@ -351,10 +402,9 @@ export class ServicesComponent implements OnInit {
             .subscribe(() => this.getShngStatus());
         } else {
           this.log.warn('getShngStatus', 'Statuspolling aborted');
-          this.shng_status = this.translate_shngStatus('not active');
-          this.shng_statuscode = -1;
+          this.shng_status.set(this.translate_shngStatus('not active'));
+          this.shng_statuscode.set(-1);
         }
-        this.cdr.markForCheck();
       });
   }
 
@@ -368,10 +418,170 @@ export class ServicesComponent implements OnInit {
       .subscribe((response) => {
         const res = response as { result?: string };
         this.log.log('restartShng', res.result);
-        this.shng_status = this.translate_shngStatus('Restart clicked');
-        this.shng_statuscode = -1;
-        this.cdr.markForCheck();
+        this.shng_status.set(this.translate_shngStatus('Restart clicked'));
+        this.shng_statuscode.set(-1);
       });
+  }
+
+  // -------------------------------------------------------
+  // stop SmartHomeNG server application (without restarting it)
+  //
+  stopShng() {
+    this.dataServiceServer
+      .stopShngServer()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((response) => {
+        const res = response as { result?: string };
+        this.log.log('stopShng', res.result);
+        this.shng_status.set(this.translate_shngStatus('Stopping'));
+        this.shng_statuscode.set(-1);
+      });
+  }
+
+  // -------------------------------------------------------
+  // update the core and/or plugins checkout of the server (git pull); the
+  // core has to be restarted separately to run the updated code
+  //
+  pull(target: PullTarget) {
+    const request =
+      target === 'core'
+        ? this.dataServiceServer.pullCore()
+        : target === 'plugins'
+          ? this.dataServiceServer.pullPlugins()
+          : this.dataServiceServer.pullAll();
+    this.pullRunning.set(true);
+    request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((response) => {
+      const res = response as Partial<PullResponse>;
+      this.log.log('pull', target, res.result);
+      this.pullResult.set(
+        res.repos !== undefined
+          ? (res as PullResponse)
+          : { result: 'error', text: this.translate.instant('SERVICES.PULL_FAILED'), repos: [] },
+      );
+      this.pullRunning.set(false);
+      this.loadPullStatus();
+    });
+  }
+
+  // -------------------------------------------------------
+  // re-read branch and pull availability (they change when a checkout is switched), then the pull status
+  //
+  refreshPull() {
+    this.dataServiceServer
+      .getServerinfo()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((response) => {
+        this.serverInfo.set(<ServerInfo>response);
+        this.loadPullStatus();
+      });
+  }
+
+  // -------------------------------------------------------
+  // how the server's checkouts stand against their upstream (fetches, so it can take a moment)
+  //
+  loadPullStatus() {
+    if (!this.pullAvailable('core') && !this.pullAvailable('plugins')) {
+      return;
+    }
+    this.pullStatusPending.set(true);
+    this.dataServiceServer
+      .getPullStatus()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((response) => {
+        const checks: Partial<Record<PullRepoName, PullRepoCheck>> = {};
+        for (const check of (response as Partial<PullStatusResponse>).repos ?? []) {
+          checks[check.repo] = check;
+        }
+        this.pullChecks.set(checks);
+        this.pullStatusPending.set(false);
+      });
+  }
+
+  private pullAvailable(repo: PullRepoName): boolean {
+    return repo === 'core' ? this.appConfig.corePullAvailable : this.appConfig.pluginsPullAvailable;
+  }
+
+  /** Branch the checkout is on. */
+  pullBranch(repo: PullRepoName): string {
+    return repo === 'core' ? this.appConfig.coreBranch : this.appConfig.pluginsBranch;
+  }
+
+  /** State of a checkout against its upstream; undefined if not (yet) known. */
+  pullStateOf(repo: PullRepoName): PullRepoState | undefined {
+    return this.pullAvailable(repo) ? this.pullChecks()[repo]?.state : 'no_upstream';
+  }
+
+  /**
+   * True if the pull button for the target makes sense. Only a known state disables it: a
+   * checkout that is up to date, or one that cannot be fast-forwarded. While the state is
+   * unknown (still fetching, fetch failed) the button stays usable.
+   */
+  canPull(target: PullTarget): boolean {
+    if (this.pullRunning()) {
+      return false;
+    }
+    const repos = target === 'all' ? this.pullRepoNames : [target];
+    if (!repos.every((repo) => this.pullAvailable(repo))) {
+      return false;
+    }
+    const states = repos.map((repo) => this.pullStateOf(repo));
+    if (states.some((state) => state === 'diverged' || state === 'blocked')) {
+      return false;
+    }
+    return !states.every((state) => state === 'current' || state === 'ahead');
+  }
+
+  /** Top-level directories with changes in a pulled checkout (the plugins for the plugins checkout), sorted. */
+  updatedAreas(repo: PullRepoResult): string[] {
+    const areas = repo.files.filter((file) => file.includes('/')).map((file) => file.split('/')[0]);
+    return [...new Set(areas)].sort();
+  }
+
+  closePullResult() {
+    this.pullResult.set(null);
+  }
+
+  /** Closes the pull result and opens the plugin configuration, where the updated plugins are marked. */
+  showPluginsToReload() {
+    this.closePullResult();
+    void this.router.navigate(['/plugins/config']);
+  }
+
+  // -------------------------------------------------------
+  // power off / reboot the host system (after confirmation)
+  //
+  askPowerAction(action: 'poweroff' | 'reboot') {
+    this.pendingPowerAction.set(action);
+  }
+
+  cancelPowerAction() {
+    this.pendingPowerAction.set(null);
+  }
+
+  confirmPowerAction() {
+    const action = this.pendingPowerAction();
+    this.pendingPowerAction.set(null);
+    if (action === null) {
+      return;
+    }
+    const request =
+      action === 'poweroff'
+        ? this.dataServiceServer.poweroffHost()
+        : this.dataServiceServer.rebootHost();
+    request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((response) => {
+      const res = response as { result?: string; text?: string };
+      this.log.log('confirmPowerAction', action, res.result);
+      if (res.result === 'ok') {
+        this.shng_status.set(this.translate_shngStatus('Stopping'));
+        this.shng_statuscode.set(-1);
+      } else {
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translate.instant('SERVICES.POWER_ACTION_FAILED'),
+          detail: res.text ?? '',
+        });
+      }
+    });
   }
 
   downloadBackup() {
@@ -381,12 +591,12 @@ export class ServicesComponent implements OnInit {
     const yyyy = todayDate.getFullYear();
     const today = yyyy + '-' + mm + '-' + dd;
 
-    this.backup_disabled = true;
-    this.restore_disabled = true;
+    this.backup_disabled.set(true);
+    this.restore_disabled.set(true);
 
     let filename = '';
-    if (this.serverInfo.backup_stem != null) {
-      filename = this.serverInfo.backup_stem;
+    if (this.serverInfo().backup_stem != null) {
+      filename = this.serverInfo().backup_stem;
     }
     if (filename !== '') {
       filename += '_';
@@ -400,22 +610,16 @@ export class ServicesComponent implements OnInit {
         const res = response as Blob;
         // saveAs(res, 'shng_config_backup_' + today + '.zip');
         saveAs(res, filename);
-        this.show_backup_confirm = true;
-        this.backup_disabled = false;
-        this.restore_disabled = false;
+        this.show_backup_confirm.set(true);
+        this.backup_disabled.set(false);
+        this.restore_disabled.set(false);
 
         this.ngOnInit();
-        this.cdr.markForCheck();
       });
   }
 
   restoreBackup() {
-    this.backup_disabled = true;
-    this.restore_disabled = true;
-    this.show_restore_chooser = true;
-
-    this.backup_disabled = false;
-    this.restore_disabled = false;
+    this.show_restore_chooser.set(true);
   }
 
   myUploader(event: { files: File[] }, form: { clear: () => void }) {
@@ -468,7 +672,7 @@ export class ServicesComponent implements OnInit {
         });
 
       form.clear();
-      this.show_restore_chooser = false;
+      this.show_restore_chooser.set(false);
     };
 
     // read as text file
@@ -489,6 +693,6 @@ export class ServicesComponent implements OnInit {
 */
 
     form.clear();
-    this.show_restore_chooser = false;
+    this.show_restore_chooser.set(false);
   }
 }

@@ -2,20 +2,22 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
-  EventEmitter,
   HostBinding,
-  Input,
   NgZone,
   OnChanges,
   OnDestroy,
   OnInit,
-  Output,
   SimpleChanges,
-  ViewChild,
   ViewEncapsulation,
   inject,
+  input,
+  model,
+  output,
+  viewChild,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   CompletionContext,
   CompletionResult,
@@ -38,7 +40,7 @@ import {
   syntaxHighlighting,
   unfoldAll,
 } from '@codemirror/language';
-import { gotoLine, openSearchPanel, searchKeymap } from '@codemirror/search';
+import { openSearchPanel, searchKeymap } from '@codemirror/search';
 import {
   Compartment,
   EditorSelection,
@@ -46,6 +48,7 @@ import {
   Extension,
   Transaction,
 } from '@codemirror/state';
+import { oneDark } from '@codemirror/theme-one-dark';
 import {
   EditorView,
   KeyBinding,
@@ -56,7 +59,9 @@ import {
   highlightSpecialChars,
   keymap,
   lineNumbers,
+  showDialog,
 } from '@codemirror/view';
+import { ThemeService } from '../../services/theme.service';
 
 export type CmLanguage = 'python' | 'yaml' | 'javascript' | 'xml' | 'text';
 export type CmCompletionSource = (
@@ -92,34 +97,35 @@ export type CmCompletionSource = (
 export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   private readonly el = inject(ElementRef);
   private readonly zone = inject(NgZone);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly themeService = inject(ThemeService);
 
-  @ViewChild('host', { static: true }) private hostRef!: ElementRef<HTMLDivElement>;
+  private readonly hostRef = viewChild.required<ElementRef<HTMLDivElement>>('host');
 
-  @Input() language: CmLanguage = 'text';
-  @Input() readOnly = false;
-  @Input() lineNums = true;
-  @Input() lineWrapping = false;
-  @Input() foldable = false;
-  @Input() firstLineNumber = 1;
-  @Input() value = '';
-  @Output() valueChange = new EventEmitter<string>();
+  readonly language = input<CmLanguage>('text');
+  readonly readOnly = input(false);
+  readonly lineNums = input(true);
+  readonly lineWrapping = input(false);
+  readonly foldable = input(false);
+  readonly firstLineNumber = input(1);
+  readonly value = model('');
 
   /** Extra keybindings specific to the hosting component. */
-  @Input() extraKeybindings: KeyBinding[] = [];
+  readonly extraKeybindings = input<KeyBinding[]>([]);
 
   /** Emits the new fullscreen state whenever it changes (toggle or ESC exit). */
-  @Output() fullscreenChange = new EventEmitter<boolean>();
+  readonly fullscreenChange = output<boolean>();
 
   /** Optional CM6 completion source for autocomplete (logics-edit). */
-  @Input() completionSource?: CmCompletionSource;
+  readonly completionSource = input<CmCompletionSource>();
 
   /** If set, typed text matching this regex is blocked (watch-items editor). */
-  @Input() allowedCharsPattern?: RegExp;
+  readonly allowedCharsPattern = input<RegExp>();
 
   @HostBinding('style.display') readonly hostDisplay = 'block';
 
   @HostBinding('class.cm-fullscreen')
-  private _fullscreen = false;
+  protected _fullscreen = false;
 
   private _lineWrapping!: boolean;
 
@@ -127,15 +133,21 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
   private lineNumComp = new Compartment();
   private lineWrapComp = new Compartment();
   private completionComp = new Compartment();
+  private themeComp = new Compartment();
 
   private _view?: EditorView;
+
+  /** Close handle for an open goto-line dialog, so a second trigger toggles
+   *  it shut instead of stacking a duplicate - @codemirror/search's own
+   *  gotoLine command has no such guard, it just opens another every call. */
+  private _gotoLineClose?: ReturnType<typeof showDialog>['close'];
 
   get view(): EditorView | undefined {
     return this._view;
   }
 
   ngOnInit() {
-    this._lineWrapping = this.lineWrapping;
+    this._lineWrapping = this.lineWrapping();
   }
 
   // Capture-phase document listener so Escape exits fullscreen regardless of
@@ -143,7 +155,7 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
   // Also acts as CSS-only fallback when native fullscreen is unavailable.
   private readonly _onDocKeydown = (e: KeyboardEvent) => {
     if (e.key !== 'Escape' || !this._fullscreen) return;
-    const host = this.hostRef.nativeElement as HTMLElement;
+    const host = this.hostRef().nativeElement as HTMLElement;
     const cmPanelOpen = host.querySelector('.cm-search, .cm-dialog') !== null;
     if (!cmPanelOpen) {
       this.zone.run(() => this.exitFullscreen());
@@ -160,11 +172,17 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
 
   ngAfterViewInit() {
     this._view = new EditorView({
-      state: this._buildState(this.value),
-      parent: this.hostRef.nativeElement,
+      state: this._buildState(this.value()),
+      parent: this.hostRef().nativeElement,
     });
     document.addEventListener('keydown', this._onDocKeydown, true);
     document.addEventListener('fullscreenchange', this._onFullscreenChange);
+
+    this.themeService.darkMode$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this._view?.dispatch({
+        effects: this.themeComp.reconfigure(this._themeExtension()),
+      });
+    });
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -172,15 +190,16 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
 
     if (changes['value'] && !changes['value'].firstChange) {
       const current = this._view.state.doc.toString();
-      if (current !== this.value) {
+      const value = this.value();
+      if (current !== value) {
         this._view.dispatch({
-          changes: { from: 0, to: current.length, insert: this.value ?? '' },
+          changes: { from: 0, to: current.length, insert: value ?? '' },
         });
       }
     }
     if (changes['readOnly'] && !changes['readOnly'].firstChange) {
       this._view.dispatch({
-        effects: this.readOnlyComp.reconfigure(EditorState.readOnly.of(this.readOnly)),
+        effects: this.readOnlyComp.reconfigure(EditorState.readOnly.of(this.readOnly())),
       });
     }
     if (changes['lineNums'] && !changes['lineNums'].firstChange) {
@@ -248,7 +267,7 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
 
   scrollToEnd() {
     requestAnimationFrame(() => {
-      const scroller = this.hostRef.nativeElement.querySelector(
+      const scroller = this.hostRef().nativeElement.querySelector(
         '.cm-scroller',
       ) as HTMLElement | null;
       if (scroller) {
@@ -264,11 +283,61 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
     }
   }
 
+  /**
+   * Opens the "go to line" dialog, or closes it if already open. Reimplements
+   * @codemirror/search's `gotoLine` command (same input parsing: line number,
+   * +/- relative offset, %  percentage, :column) via the public `showDialog`
+   * API instead of calling that command directly, because `showDialog` allows
+   * any number of simultaneous dialogs and `gotoLine` never guards against
+   * opening a second one - each click stacks another input row rather than
+   * toggling the existing one shut.
+   */
   triggerGotoLine() {
-    if (this._view) {
-      this._view.focus();
-      gotoLine(this._view);
+    if (!this._view) return;
+    if (this._gotoLineClose) {
+      this._view.dispatch({ effects: this._gotoLineClose });
+      this._gotoLineClose = undefined;
+      return;
     }
+    this._view.focus();
+    const view = this._view;
+    const state = view.state;
+    const line = String(state.doc.lineAt(state.selection.main.head).number);
+    const { close, result } = showDialog(view, {
+      label: state.phrase('Go to line'),
+      input: { type: 'text', name: 'line', value: line },
+      focus: true,
+      submitLabel: state.phrase('go'),
+    });
+    this._gotoLineClose = close;
+    result.then((form) => {
+      this._gotoLineClose = undefined;
+      const lineInput = form?.elements.namedItem('line') as HTMLInputElement | null;
+      const match = lineInput ? /^([+-])?(\d+)?(:\d+)?(%)?$/.exec(lineInput.value) : null;
+      if (!match) {
+        view.dispatch({ effects: close });
+        return;
+      }
+      const startLine = state.doc.lineAt(state.selection.main.head);
+      const [, sign, ln, cl, percent] = match;
+      const col = cl ? +cl.slice(1) : 0;
+      let target = ln ? +ln : startLine.number;
+      if (ln && percent) {
+        let pc = target / 100;
+        if (sign) pc = pc * (sign === '-' ? -1 : 1) + startLine.number / state.doc.lines;
+        target = Math.round(state.doc.lines * pc);
+      } else if (ln && sign) {
+        target = target * (sign === '-' ? -1 : 1) + startLine.number;
+      }
+      const docLine = state.doc.line(Math.max(1, Math.min(state.doc.lines, target)));
+      const selection = EditorSelection.cursor(
+        docLine.from + Math.max(0, Math.min(col, docLine.length)),
+      );
+      view.dispatch({
+        effects: [close, EditorView.scrollIntoView(selection.from, { y: 'center' })],
+        selection,
+      });
+    });
   }
 
   foldAtCursor() {
@@ -289,19 +358,30 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
   // ---------------------------------------------------------------------------
 
   private _lineNumsExtension(): Extension {
-    if (!this.lineNums) return [];
-    const offset = this.firstLineNumber - 1;
+    if (!this.lineNums()) return [];
+    const offset = this.firstLineNumber() - 1;
     return offset > 0 ? lineNumbers({ formatNumber: (n) => String(n + offset) }) : lineNumbers();
   }
 
   private _completionExtension(): Extension {
-    if (!this.completionSource) return autocompletion();
-    return autocompletion({ override: [this.completionSource] });
+    const completionSource = this.completionSource();
+    if (!completionSource) return autocompletion();
+    return autocompletion({ override: [completionSource] });
+  }
+
+  /** oneDark bundles its own colour theme + syntax highlighting; the default
+   * highlighting is only correct against a light background, so the two are
+   * swapped as a pair rather than layered. */
+  private _themeExtension(): Extension {
+    return this.themeService.darkMode
+      ? oneDark
+      : syntaxHighlighting(defaultHighlightStyle, { fallback: true });
   }
 
   private _buildState(doc: string): EditorState {
     const self = this;
-    const useSpacesForTab = this.language === 'yaml' || this.language === 'python';
+    const language = this.language();
+    const useSpacesForTab = language === 'yaml' || language === 'python';
 
     // Pre-process loaded content: replace any existing tabs with 4 spaces
     if (useSpacesForTab) {
@@ -364,12 +444,12 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
 
     const extensions: Extension[] = [
       EditorView.theme({ '.cm-scroller': { overflow: 'auto' } }),
-      this.readOnlyComp.of(EditorState.readOnly.of(this.readOnly)),
+      this.readOnlyComp.of(EditorState.readOnly.of(this.readOnly())),
       this.lineNumComp.of(this._lineNumsExtension()),
       this.lineWrapComp.of(this._lineWrapping ? EditorView.lineWrapping : []),
       this.completionComp.of(this._completionExtension()),
       this._languageExtension(),
-      syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+      this.themeComp.of(this._themeExtension()),
       history(),
       drawSelection(),
       highlightSpecialChars(),
@@ -378,9 +458,9 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
       indentOnInput(),
       bracketMatching(),
       closeBrackets(),
-      this.foldable ? foldGutter() : [],
+      this.foldable() ? foldGutter() : [],
       keymap.of([
-        ...this.extraKeybindings,
+        ...this.extraKeybindings(),
         ...builtinKeys,
         ...defaultKeymap,
         ...historyKeymap,
@@ -389,13 +469,14 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
       ]),
       EditorView.updateListener.of((update: ViewUpdate) => {
         if (update.docChanged) {
-          self.valueChange.emit(update.state.doc.toString());
+          self.value.set(update.state.doc.toString());
         }
       }),
     ];
 
-    if (this.allowedCharsPattern) {
-      const pattern = this.allowedCharsPattern;
+    const allowedCharsPattern = this.allowedCharsPattern();
+    if (allowedCharsPattern) {
+      const pattern = allowedCharsPattern;
       extensions.push(
         EditorState.transactionFilter.of((tr: Transaction) => {
           if (!tr.docChanged) return tr;
@@ -433,7 +514,7 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnChanges, On
   }
 
   private _languageExtension(): Extension {
-    switch (this.language) {
+    switch (this.language()) {
       case 'python':
         return python();
       case 'yaml':

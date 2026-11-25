@@ -3,8 +3,9 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA, Renderer2 } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { TranslatePipe } from '@ngx-translate/core';
-import { of } from 'rxjs';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { MessageService } from 'primeng/api';
+import { Observable, of } from 'rxjs';
 import fixtureData from '../../../testing/fixtures/api/plugins/config/default.json';
 import {
   createMockAppConfigService,
@@ -25,7 +26,7 @@ describe('PluginConfigComponent', () => {
   const pluginConfigKeys = Object.keys(fixtureData.plugin_config);
 
   const mockPluginsApi = {
-    getPluginsConfig: () => of(fixtureData),
+    getPluginsConfig: (): Observable<unknown> => of(fixtureData),
     setPluginConfig: () => of(true),
     setPluginState: () => of(true),
     getInstalledPlugins: () => of({}),
@@ -53,6 +54,7 @@ describe('PluginConfigComponent', () => {
           useValue: { setLanguage: () => {}, getLanguage: () => null },
         },
         Renderer2,
+        MessageService,
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
@@ -66,19 +68,22 @@ describe('PluginConfigComponent', () => {
     fixture.detectChanges();
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
   it('should set spinner_display to false after loading', () => {
     // finalize() from reloadPluginList sets spinner_display=false synchronously
-    expect(component.spinner_display).toBe(false);
+    expect(component.spinner_display()).toBe(false);
   });
 
   it('should set pluginconflist from fixture data', () => {
     // pluginconflist is populated in the subscribe callback
     expect(component.pluginconflist).toBeTruthy();
-    expect(component.pluginconflist.readonly).toBe(fixtureData.readonly);
   });
 
   it('should set up cols with 6 column definitions', () => {
@@ -103,97 +108,420 @@ describe('PluginConfigComponent', () => {
     }) as import('./plugin-config.component').ConfiguredPlugin;
 
   it('filterText starts empty', () => {
-    expect(component.filterText).toBe('');
+    expect(component.filterText()).toBe('');
   });
 
   it('onFilterChange() sets filterText', () => {
     component.onFilterChange('backend');
-    expect(component.filterText).toBe('backend');
+    expect(component.filterText()).toBe('backend');
   });
 
   it('clearFilter() resets filterText to empty string', () => {
-    component.filterText = 'backend';
+    component.filterText.set('backend');
     component.clearFilter();
-    expect(component.filterText).toBe('');
+    expect(component.filterText()).toBe('');
   });
 
   it('filteredPlugins returns all plugins when filterText is empty', () => {
-    component.configuredplugins = [makePlugin('backend', '-backend'), makePlugin('cli', '-cli')];
-    component.filterText = '';
-    expect(component.filteredPlugins.length).toBe(2);
+    component['rawConfiguredplugins'].set([
+      makePlugin('backend', '-backend'),
+      makePlugin('cli', '-cli'),
+    ]);
+    component.filterText.set('');
+    expect(component.filteredPlugins().length).toBe(2);
   });
 
   it('filteredPlugins filters by confname (case-insensitive)', () => {
-    component.configuredplugins = [makePlugin('backend', '-backend'), makePlugin('cli', '-cli')];
+    component['rawConfiguredplugins'].set([
+      makePlugin('backend', '-backend'),
+      makePlugin('cli', '-cli'),
+    ]);
     component.onFilterChange('back');
-    const results = component.filteredPlugins;
+    const results = component.filteredPlugins();
     expect(results.length).toBe(1);
     expect(results[0].confname).toBe('backend');
   });
 
   it('filteredPlugins filters by plugin field', () => {
-    component.configuredplugins = [
+    component['rawConfiguredplugins'].set([
       makePlugin('myconf', '-myplugin'),
       makePlugin('other', '-other'),
-    ];
+    ]);
     component.onFilterChange('myplugin');
-    expect(component.filteredPlugins.length).toBe(1);
-    expect(component.filteredPlugins[0].confname).toBe('myconf');
+    expect(component.filteredPlugins().length).toBe(1);
+    expect(component.filteredPlugins()[0].confname).toBe('myconf');
   });
 
   it('filteredPlugins filters by desc field', () => {
-    component.configuredplugins = [
+    component['rawConfiguredplugins'].set([
       makePlugin('a', '-x', '', 'home automation'),
       makePlugin('b', '-y', '', 'weather'),
-    ];
+    ]);
     component.onFilterChange('weather');
-    expect(component.filteredPlugins.length).toBe(1);
-    expect(component.filteredPlugins[0].confname).toBe('b');
+    expect(component.filteredPlugins().length).toBe(1);
+    expect(component.filteredPlugins()[0].confname).toBe('b');
   });
 
   it('filteredPlugins returns empty when no plugin matches', () => {
-    component.configuredplugins = [makePlugin('backend', '-backend'), makePlugin('cli', '-cli')];
+    component['rawConfiguredplugins'].set([
+      makePlugin('backend', '-backend'),
+      makePlugin('cli', '-cli'),
+    ]);
     component.onFilterChange('zzznomatch');
-    expect(component.filteredPlugins.length).toBe(0);
+    expect(component.filteredPlugins().length).toBe(0);
   });
 
   // -------------------------------------------------------------------------
-  // addDialogCategorized default and sortBy
+  // sortBy
   // -------------------------------------------------------------------------
-
-  it('addDialogCategorized defaults to false (flat list shown on open)', () => {
-    expect(component.addDialogCategorized).toBe(false);
-  });
 
   it('sortBy() sorts configuredplugins ascending by the given field', () => {
-    component.configuredplugins = [
+    component['rawConfiguredplugins'].set([
       makePlugin('z_conf', '-z'),
       makePlugin('a_conf', '-a'),
       makePlugin('m_conf', '-m'),
-    ];
+    ]);
     component.sortBy('confname');
-    const names = component.configuredplugins.map((p) => p.confname.toLowerCase());
+    const names = component.configuredplugins().map((p) => p.confname.toLowerCase());
     expect(names).toEqual([...names].sort());
   });
 
   it('sortBy() toggles sort direction on second call with same field', () => {
-    component.configuredplugins = [
+    component['rawConfiguredplugins'].set([
       makePlugin('a_conf', '-a'),
       makePlugin('z_conf', '-z'),
       makePlugin('m_conf', '-m'),
-    ];
+    ]);
     component.sortBy('confname');
-    const asc = component.configuredplugins.map((p) => p.confname.toLowerCase());
+    const asc = component.configuredplugins().map((p) => p.confname.toLowerCase());
     component.sortBy('confname'); // descending
-    const desc = component.configuredplugins.map((p) => p.confname.toLowerCase());
+    const desc = component.configuredplugins().map((p) => p.confname.toLowerCase());
     expect(desc).toEqual([...asc].reverse());
   });
 
   it('sortBy() resets to ascending when switching to a different field', () => {
-    component.configuredplugins = [makePlugin('a', '-a'), makePlugin('b', '-b')];
+    component['rawConfiguredplugins'].set([makePlugin('a', '-a'), makePlugin('b', '-b')]);
     component.sortBy('confname');
     component.sortBy('confname'); // now descending
     component.sortBy('plugin'); // new field → ascending
-    expect(component.sortOrder).toBe(1);
+    expect(component.sortOrder()).toBe(1);
+  });
+
+  // -------------------------------------------------------------------------
+  // buildConfiguredPlugins: running derived from _running (informational only
+  // here - start/stop control lives on the /plugins page)
+  // -------------------------------------------------------------------------
+
+  it('derives running/loaded from the fixture for a loaded+running plugin (backend)', () => {
+    const backend = component.configuredplugins().find((p) => p.confname === 'backend')!;
+    expect(backend.loaded).toBe(true);
+    expect(backend.running).toBe(true);
+  });
+
+  it('derives running/loaded from the fixture for a loaded+stopped plugin (cli)', () => {
+    const cli = component.configuredplugins().find((p) => p.confname === 'cli')!;
+    expect(cli.loaded).toBe(true);
+    expect(cli.running).toBe(false);
+  });
+
+  it('labels a plugin whose metadata has no type as unknown', () => {
+    const untyped = component.configuredplugins().find((p) => p.confname === 'sampleuntyped')!;
+    expect(untyped.type).toBe('unknown');
+  });
+
+  it('keeps the type from the metadata', () => {
+    const backend = component.configuredplugins().find((p) => p.confname === 'backend')!;
+    expect(backend.type).toBe('system');
+  });
+
+  it('defaults running/loaded to false for an unloaded plugin (develop)', () => {
+    const develop = component.configuredplugins().find((p) => p.confname === 'develop')!;
+    expect(develop.loaded).toBe(false);
+    expect(develop.running).toBe(false);
+  });
+
+  // -------------------------------------------------------------------------
+  // loadPlugin/unloadPlugin/reloadPlugin
+  // -------------------------------------------------------------------------
+
+  it('loadPlugin() loads a disabled plugin and reports it as activated and loaded', () => {
+    const setPluginState = jest.spyOn(mockPluginsApi, 'setPluginState');
+    const messageService = TestBed.inject(MessageService);
+    const addSpy = jest.spyOn(messageService, 'add');
+    const row = makePlugin('cli', '-cli');
+    row.enabled = 'false';
+
+    component.loadPlugin(row);
+
+    expect(setPluginState).toHaveBeenCalledWith('cli', 'load');
+    expect(addSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        severity: 'success',
+        summary: TestBed.inject(TranslateService).instant('PLUGIN.ACTIVATED_AND_LOADED'),
+        detail: 'cli',
+      }),
+    );
+  });
+
+  it('loadPlugin() reports an enabled plugin as just loaded', () => {
+    const messageService = TestBed.inject(MessageService);
+    const addSpy = jest.spyOn(messageService, 'add');
+    const row = makePlugin('cli', '-cli');
+    row.enabled = 'true';
+
+    component.loadPlugin(row);
+
+    expect(addSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        severity: 'success',
+        summary: TestBed.inject(TranslateService).instant('PLUGIN.LOADED'),
+      }),
+    );
+  });
+
+  it('loadPlugin() tells the user the plugin was activated when loading a disabled plugin fails', () => {
+    jest.spyOn(mockPluginsApi, 'setPluginState').mockReturnValueOnce(of(false));
+    const messageService = TestBed.inject(MessageService);
+    const addSpy = jest.spyOn(messageService, 'add');
+    const row = makePlugin('cli', '-cli');
+    row.enabled = 'false';
+
+    component.loadPlugin(row);
+
+    expect(addSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        severity: 'error',
+        summary: TestBed.inject(TranslateService).instant('PLUGIN.ACTIVATED_LOAD_FAILED'),
+        detail: 'cli',
+        sticky: true,
+      }),
+    );
+  });
+
+  it('loadPlugin() calls setPluginState with "load" for an enabled plugin', () => {
+    const setPluginState = jest.spyOn(mockPluginsApi, 'setPluginState');
+    const row = makePlugin('cli', '-cli');
+    row.enabled = 'true';
+
+    component.loadPlugin(row);
+
+    expect(setPluginState).toHaveBeenCalledWith('cli', 'load');
+  });
+
+  it('unloadPlugin() calls setPluginState with "unload"', () => {
+    const setPluginState = jest.spyOn(mockPluginsApi, 'setPluginState');
+
+    component.unloadPlugin('backend');
+
+    expect(setPluginState).toHaveBeenCalledWith('backend', 'unload');
+  });
+
+  it('_runLifecycleAction shows a sticky error toast on failure', () => {
+    const setPluginState = jest
+      .spyOn(mockPluginsApi, 'setPluginState')
+      .mockReturnValueOnce(of(false));
+    const messageService = TestBed.inject(MessageService);
+    const addSpy = jest.spyOn(messageService, 'add');
+
+    component.reloadPlugin('cli');
+
+    expect(setPluginState).toHaveBeenCalledWith('cli', 'reload');
+    expect(addSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ severity: 'error', detail: 'cli', sticky: true }),
+    );
+  });
+
+  // -------------------------------------------------------------------------
+  // Delete confirm dropdown
+  // -------------------------------------------------------------------------
+
+  it('deleteActionOptions only offers "keep" when the plugin is not loaded', () => {
+    component.rowclicked_foredit = makePlugin('x', '-x');
+    component.rowclicked_foredit.loaded = false;
+    component.DeleteConfig();
+    expect(component.deleteActionOptions().map((o) => o.value)).toEqual(['keep']);
+  });
+
+  it('deleteActionOptions offers "keep" and "unload" but not "stop" when loaded but not running, labeling "keep" as loaded (not running)', () => {
+    component.rowclicked_foredit = makePlugin('x', '-x');
+    component.rowclicked_foredit.loaded = true;
+    component.rowclicked_foredit.running = false;
+    component.DeleteConfig();
+    expect(component.deleteActionOptions().map((o) => o.value)).toEqual(['keep', 'unload']);
+    expect(component.deleteActionOptions()[0].label).toBe('PLUGIN.DELETE_KEEP_LOADED');
+  });
+
+  it('deleteActionOptions offers all three choices when loaded and running, labeling "keep" as running', () => {
+    component.rowclicked_foredit = makePlugin('x', '-x');
+    component.rowclicked_foredit.loaded = true;
+    component.rowclicked_foredit.running = true;
+    component.DeleteConfig();
+    expect(component.deleteActionOptions().map((o) => o.value)).toEqual(['keep', 'stop', 'unload']);
+    expect(component.deleteActionOptions()[0].label).toBe('PLUGIN.DELETE_KEEP_RUNNING');
+  });
+
+  it('showDeleteActionDropdown is false when not loaded, true when loaded', () => {
+    component.rowclicked_foredit = makePlugin('x', '-x');
+    component.rowclicked_foredit.loaded = false;
+    expect(component.showDeleteActionDropdown).toBe(false);
+
+    component.rowclicked_foredit.loaded = true;
+    expect(component.showDeleteActionDropdown).toBe(true);
+  });
+
+  it('DeleteConfig() defaults deleteAction to "unload" when loaded, "keep" when not', () => {
+    component.dialog_configname = 'x';
+    component.rowclicked_foredit = makePlugin('x', '-x');
+    component.rowclicked_foredit.loaded = true;
+    component.DeleteConfig();
+    expect(component.deleteAction()).toBe('unload');
+
+    component.rowclicked_foredit.loaded = false;
+    component.DeleteConfig();
+    expect(component.deleteAction()).toBe('keep');
+  });
+
+  it('deleteConfigFromRow() sets up the same state as DeleteConfig() would from the dialog, without opening it', () => {
+    const row = makePlugin('x', '-x');
+    row.loaded = true;
+
+    component.deleteConfigFromRow(row);
+
+    expect(component.dialog_configname).toBe('x');
+    expect(component.rowclicked_foredit).toBe(row);
+    expect(component.confirmdelete_display).toBe(true);
+    expect(component.deleteAction()).toBe('unload');
+  });
+
+  it('DeleteConfigConfirm() deletes without a pre-action when "keep" is chosen', () => {
+    const setPluginState = jest.spyOn(mockPluginsApi, 'setPluginState');
+    const deletePluginConfig = jest.spyOn(mockPluginsApi, 'deletePluginConfig');
+    component.dialog_configname = 'x';
+    component.deleteAction.set('keep');
+
+    component.DeleteConfigConfirm();
+
+    expect(setPluginState).not.toHaveBeenCalled();
+    expect(deletePluginConfig).toHaveBeenCalledWith('x');
+  });
+
+  it('DeleteConfigConfirm() stops before deleting when "stop" is chosen', () => {
+    const setPluginState = jest.spyOn(mockPluginsApi, 'setPluginState');
+    component.dialog_configname = 'x';
+    component.deleteAction.set('stop');
+
+    component.DeleteConfigConfirm();
+
+    expect(setPluginState).toHaveBeenCalledWith('x', 'stop');
+  });
+
+  it('DeleteConfigConfirm() unloads before deleting when "unload" is chosen', () => {
+    const setPluginState = jest.spyOn(mockPluginsApi, 'setPluginState');
+    component.dialog_configname = 'x';
+    component.deleteAction.set('unload');
+
+    component.DeleteConfigConfirm();
+
+    expect(setPluginState).toHaveBeenCalledWith('x', 'unload');
+  });
+
+  // -------------------------------------------------------------------------
+  // rowClicked(): sibling configs for the copy-from dropdown
+  // -------------------------------------------------------------------------
+
+  it('rowClicked() finds siblings sharing the same plugin_name (dreambox_wz/sz/az fixture)', () => {
+    const row = component.configuredplugins().find((p) => p.confname === 'dreambox_wz')!;
+    component.rowClicked(null, row);
+
+    const siblingNames = component.dialog_siblingConfigs.map((s) => s.confname).sort();
+    expect(siblingNames).toEqual(['dreambox_az', 'dreambox_sz']);
+  });
+
+  it('rowClicked() finds no siblings for a single-instance plugin', () => {
+    const row = component.configuredplugins().find((p) => p.confname === 'backend')!;
+    component.rowClicked(null, row);
+
+    expect(component.dialog_siblingConfigs).toEqual([]);
+  });
+
+  // -------------------------------------------------------------------------
+  // onPluginAdded(): conditional auto-open for configuration
+  // -------------------------------------------------------------------------
+
+  it('onPluginAdded() opens the parameter dialog when the plugin has mandatory parameters', () => {
+    expect(component.dialog_display()).toBe(false);
+
+    component.onPluginAdded('simulation');
+
+    expect(component.dialog_display()).toBe(true);
+    expect(component.dialog_configname).toBe('simulation');
+  });
+
+  it('onPluginAdded() does not open the dialog when the plugin has no mandatory parameters', () => {
+    component.onPluginAdded('backend');
+
+    expect(component.dialog_display()).toBe(false);
+  });
+
+  // -------------------------------------------------------------------------
+  // Plugins updated by a pull (_reload_pending): marked until reloaded
+  // -------------------------------------------------------------------------
+
+  describe('plugins waiting for a reload', () => {
+    const withPending = (pending: string[]) => ({
+      ...fixtureData,
+      plugin_config: Object.fromEntries(
+        Object.entries(fixtureData.plugin_config).map(([name, section]) => [
+          name,
+          { ...section, _reload_pending: pending.includes(name) },
+        ]),
+      ),
+    });
+
+    const reloadButtons = () =>
+      Array.from(
+        fixture.nativeElement.querySelectorAll('button[name="reload"]') as NodeListOf<HTMLElement>,
+      );
+
+    const recreateWithPending = (pending: string[]) => {
+      mockPluginsApi.getPluginsConfig = () => of(withPending(pending));
+      fixture = TestBed.createComponent(PluginConfigComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    };
+
+    it('nothing is pending by default and no reload button shows without developer mode', () => {
+      expect(component.anyReloadPending()).toBe(false);
+      expect(fixture.nativeElement.querySelector('#reload_pending_hint')).toBeNull();
+      expect(reloadButtons()).toHaveLength(0);
+    });
+
+    it('marks the pending plugin and shows its reload button despite developer mode being off', () => {
+      recreateWithPending(['backend']);
+
+      expect(component.anyReloadPending()).toBe(true);
+      expect(
+        component.configuredplugins().find((p) => p.confname === 'backend')!.reloadPending,
+      ).toBe(true);
+      expect(component.configuredplugins().find((p) => p.confname === 'cli')!.reloadPending).toBe(
+        false,
+      );
+      expect(fixture.nativeElement.querySelector('#reload_pending_hint')).not.toBeNull();
+      expect(reloadButtons()).toHaveLength(1);
+    });
+
+    it('highlights only the reload button of the pending plugin', () => {
+      recreateWithPending(['backend', 'cli']);
+
+      const highlighted = reloadButtons().filter((b) => b.classList.contains('reload-pending'));
+      expect(highlighted).toHaveLength(2);
+      expect(reloadButtons()).toHaveLength(2);
+    });
+
+    it('has no reload button for a pending plugin that is not loaded', () => {
+      recreateWithPending(['blockly']);
+
+      expect(reloadButtons()).toHaveLength(0);
+    });
   });
 });

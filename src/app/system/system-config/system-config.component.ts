@@ -1,10 +1,10 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   DestroyRef,
   inject,
   OnInit,
+  signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AppConfigService } from '../../common/services/app-config.service';
@@ -14,14 +14,20 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ConfigApiService } from '../../common/services/config-api.service';
 import { LogService } from '../../common/services/log.service';
 import { ServerApiService } from '../../common/services/server-api.service';
+import { ServicesApiService } from '../../common/services/services-api.service';
 
 import { ConfigParameter, TableColumn } from '../../common/models/interfaces';
 import { SharedService } from '../../common/services/shared.service';
+import { resolveParamType } from '../../common/utils/input-type.utils';
+import {
+  formatValidationError,
+  StringTypeValidators,
+  validateValue,
+} from '../../common/utils/input-validation.utils';
 
 import { NgStyle } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
-import { sha512 } from 'js-sha512';
 import { PrimeTemplate } from 'primeng/api';
 import { Bind } from 'primeng/bind';
 import { ButtonDirective } from 'primeng/button';
@@ -41,8 +47,15 @@ interface ParameterMeta {
   valid_max?: unknown;
   default?: unknown;
   mandatory?: boolean;
+  /** True if the value is masked in the GUI (a password). */
+  hide?: boolean;
+  /** True if a saved change applies to the running core without a restart. */
+  live?: boolean;
   description?: Record<string, string>;
 }
+
+/** Parameter types whose empty value is saved as null, so the core falls back to the default. */
+const BLANK_IS_UNSET_TYPES: readonly string[] = ['str', 'hide-str'];
 
 interface ConfigSection {
   meta: { parameters: Record<string, ParameterMeta> };
@@ -84,40 +97,39 @@ interface SystemConfig {
 })
 export class SystemConfigComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
-  private readonly cdr = inject(ChangeDetectorRef);
   private dataService = inject(ConfigApiService);
   private dataServiceServer = inject(ServerApiService);
+  private servicesApi = inject(ServicesApiService);
   private shared = inject(SharedService);
   private translate = inject(TranslateService);
   private titleService = inject(Title);
-  private appConfig = inject(AppConfigService);
+  protected appConfig = inject(AppConfigService);
   private readonly log = inject(LogService);
 
-  config!: SystemConfig;
-  lang!: string;
+  readonly config = signal<SystemConfig | null>(null);
 
-  common_parameters!: ConfigParameter[];
-  common_parameter_cols!: TableColumn[];
+  readonly common_parameters = signal<ConfigParameter[]>([]);
+  readonly common_parameter_cols = signal<TableColumn[]>([]);
   common_parameters_beforeEdit!: ConfigParameter[];
 
-  http_parameters!: ConfigParameter[];
-  http_parameter_cols!: TableColumn[];
+  readonly http_parameters = signal<ConfigParameter[]>([]);
+  readonly http_parameter_cols = signal<TableColumn[]>([]);
   http_parameters_beforeEdit!: ConfigParameter[];
 
-  websocket_parameters!: ConfigParameter[];
-  websocket_parameter_cols!: TableColumn[];
+  readonly websocket_parameters = signal<ConfigParameter[]>([]);
+  readonly websocket_parameter_cols = signal<TableColumn[]>([]);
   websocket_parameters_beforeEdit!: ConfigParameter[];
 
-  admin_parameters!: ConfigParameter[];
-  admin_parameter_cols!: TableColumn[];
+  readonly admin_parameters = signal<ConfigParameter[]>([]);
+  readonly admin_parameter_cols = signal<TableColumn[]>([]);
   admin_parameters_beforeEdit!: ConfigParameter[];
 
-  mqtt_parameters!: ConfigParameter[];
-  mqtt_parameter_cols!: TableColumn[];
+  readonly mqtt_parameters = signal<ConfigParameter[]>([]);
+  readonly mqtt_parameter_cols = signal<TableColumn[]>([]);
   mqtt_parameters_beforeEdit!: ConfigParameter[];
 
-  data_changed = false;
-  restart_core_button = false;
+  readonly data_changed = signal(false);
+  readonly restart_core_button = signal(false);
 
   dialog_readonly = false;
 
@@ -141,26 +153,26 @@ export class SystemConfigComponent implements OnInit {
   validation_dialog_text!: string[];
 
   // config_etc migration check
-  configEtcCheckResult: Record<string, any> | null = null;
-  configEtcCheckDialogVisible = false;
-  configEtcChecking = true; // auto-check starts in ngOnInit
-  configEtcEnabling = false;
+  readonly configEtcCheckResult = signal<Record<string, any> | null>(null);
+  readonly configEtcCheckDialogVisible = signal(false);
+  readonly configEtcChecking = signal(true); // auto-check starts in ngOnInit
+  readonly configEtcEnabling = signal(false);
 
   get configEtcActive(): boolean {
-    return this.config?.common?.data?.['config_etc'] === true;
+    return this.config()?.common?.data?.['config_etc'] === true;
   }
 
   get configEtcConflictDirs(): { dir: string; files: string[] }[] {
-    if (!this.configEtcCheckResult?.['conflicts']) return [];
-    return Object.entries(this.configEtcCheckResult['conflicts']).map(([dir, files]) => ({
+    if (!this.configEtcCheckResult()?.['conflicts']) return [];
+    return Object.entries(this.configEtcCheckResult()!['conflicts']).map(([dir, files]) => ({
       dir,
       files: files as string[],
     }));
   }
 
   get configEtcMigrateDirs(): { dir: string; files: string[] }[] {
-    if (!this.configEtcCheckResult?.['to_migrate']) return [];
-    return Object.entries(this.configEtcCheckResult['to_migrate']).map(([dir, files]) => ({
+    if (!this.configEtcCheckResult()?.['to_migrate']) return [];
+    return Object.entries(this.configEtcCheckResult()!['to_migrate']).map(([dir, files]) => ({
       dir,
       files: files as string[],
     }));
@@ -182,35 +194,18 @@ export class SystemConfigComponent implements OnInit {
       .getConfig()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((configResponse) => {
-        this.config = configResponse as SystemConfig;
+        this.config.set(configResponse as SystemConfig);
         // this.log.log({configResponse});
         this.fillDialogData();
-        this.cdr.markForCheck();
       });
   }
 
   fillDialogData() {
-    this.lang = this.appConfig.defaultLanguage;
     this.fillCommonDialogData();
     this.fillHttpDialogData();
     this.fillWebsocketDialogData();
     this.fillAdminDialogData();
     this.fillMqttDialogData();
-  }
-
-  private hashPlainPasswords(data: Record<string, unknown>): void {
-    if (data['password'] && data['password'] !== '') {
-      if (!data['hashed_password']) {
-        data['hashed_password'] = sha512(data['password'] as string);
-        data['password'] = null;
-      }
-    }
-    if (data['service_password'] && data['service_password'] !== '') {
-      if (!data['service_hashed_password']) {
-        data['service_hashed_password'] = sha512(data['service_password'] as string);
-        data['service_password'] = null;
-      }
-    }
   }
 
   private buildSectionParams(section: ConfigSection, skip: string[] = []): ConfigParameter[] {
@@ -243,51 +238,20 @@ export class SystemConfigComponent implements OnInit {
     param: string,
     data: Record<string, unknown>,
   ) {
-    // fill valuelist
-    const vl: { label: string; value: unknown }[] = [];
-    if (meta['parameters'][param]['valid_list'] !== undefined) {
-      for (let i = 0; i < meta['parameters'][param]['valid_list'].length; i++) {
-        vl.push({
-          label: String(meta['parameters'][param]['valid_list'][i]),
-          value: meta['parameters'][param]['valid_list'][i],
-        });
-      }
-    }
-
-    // generate a valid_list for bool parameters
-    if (meta['parameters'][param]['type'] === 'bool') {
-      vl.push({ label: 'true', value: true });
-      vl.push({ label: 'false', value: false });
-    }
-
-    // fill description with active language
-    //    const paramdesc = this.shared.getDescription(meta['parameters'][param]['description']);
-    let paramdesc = '';
-    if (meta['parameters'][param]['description'] !== undefined) {
-      paramdesc = meta['parameters'][param]['description'][this.lang];
-      if (paramdesc === '' || paramdesc === undefined) {
-        paramdesc = meta['parameters'][param]['description'][this.shared.getFallbackLanguage()];
-        if (paramdesc === '' || paramdesc === undefined) {
-          paramdesc = meta['parameters'][param]['description'][this.shared.getFallbackLanguage(1)];
-        }
-      }
-    }
-
-    paramdesc = paramdesc.replace(new RegExp('\n', 'g'), '<br>');
-    paramdesc = paramdesc.replace(new RegExp(' \\*\\*', 'g'), ' <b><mark>');
-    paramdesc = paramdesc.replace(new RegExp('\\*\\* ', 'g'), '</mark></b> ');
-    paramdesc = paramdesc.replace(new RegExp(' \\*', 'g'), ' <i><mark>');
-    paramdesc = paramdesc.replace(new RegExp('\\* ', 'g'), '</mark></i> ');
+    const paramdesc = this.shared.mdLiteToHtml(
+      this.shared.getDescription(meta['parameters'][param]['description']),
+    );
 
     const paramdata = {
       name: param,
-      type: meta['parameters'][param]['type'],
+      type: resolveParamType(meta['parameters'][param]['type'], meta['parameters'][param]['hide']),
       gui_type: meta['parameters'][param]['gui_type'],
-      valid_list: vl,
+      valid_list: meta['parameters'][param]['valid_list'],
       valid_min: meta['parameters'][param]['valid_min'],
       valid_max: meta['parameters'][param]['valid_max'],
       default: meta['parameters'][param]['default'],
       mandatory: meta['parameters'][param]['mandatory'],
+      live: meta['parameters'][param]['live'],
       value: data[param],
       desc: paramdesc,
     };
@@ -300,51 +264,48 @@ export class SystemConfigComponent implements OnInit {
   }
 
   fillCommonDialogData() {
-    this.common_parameter_cols = this.columnDefinitions();
-    this.common_parameters = this.buildSectionParams(this.config.common);
+    this.common_parameter_cols.set(this.columnDefinitions());
+    const params = this.buildSectionParams(this.config()!.common);
 
     // Move config_etc to just after deprecated_warnings for logical grouping
-    const cfgIdx = this.common_parameters.findIndex((p) => p.name === 'config_etc');
-    const anchorIdx = this.common_parameters.findIndex((p) => p.name === 'deprecated_warnings');
+    const cfgIdx = params.findIndex((p) => p.name === 'config_etc');
+    const anchorIdx = params.findIndex((p) => p.name === 'deprecated_warnings');
     if (cfgIdx > -1 && anchorIdx > -1 && cfgIdx !== anchorIdx + 1) {
-      const [cfgEntry] = this.common_parameters.splice(cfgIdx, 1);
-      const newAnchor = this.common_parameters.findIndex((p) => p.name === 'deprecated_warnings');
-      this.common_parameters.splice(newAnchor + 1, 0, cfgEntry);
+      const [cfgEntry] = params.splice(cfgIdx, 1);
+      const newAnchor = params.findIndex((p) => p.name === 'deprecated_warnings');
+      params.splice(newAnchor + 1, 0, cfgEntry);
     }
 
-    this.common_parameters_beforeEdit = JSON.parse(JSON.stringify(this.common_parameters));
+    this.common_parameters.set(params);
+    this.common_parameters_beforeEdit = JSON.parse(JSON.stringify(params));
   }
 
   fillHttpDialogData() {
-    this.hashPlainPasswords(this.config.http.data);
-    this.http_parameter_cols = this.columnDefinitions();
-    this.http_parameters = this.buildSectionParams(this.config.http, [
-      'password',
-      'service_password',
-    ]);
-    this.http_parameters_beforeEdit = JSON.parse(JSON.stringify(this.http_parameters));
+    this.http_parameter_cols.set(this.columnDefinitions());
+    this.http_parameters.set(
+      this.buildSectionParams(this.config()!.http, ['password', 'service_password']),
+    );
+    this.http_parameters_beforeEdit = JSON.parse(JSON.stringify(this.http_parameters()));
   }
 
   fillWebsocketDialogData() {
-    this.hashPlainPasswords(this.config.websocket.data);
-    this.websocket_parameter_cols = this.columnDefinitions();
-    this.websocket_parameters = this.buildSectionParams(this.config.websocket, [
-      'password',
-      'service_password',
-    ]);
-    this.websocket_parameters_beforeEdit = JSON.parse(JSON.stringify(this.websocket_parameters));
+    this.websocket_parameter_cols.set(this.columnDefinitions());
+    this.websocket_parameters.set(
+      this.buildSectionParams(this.config()!.websocket, ['password', 'service_password']),
+    );
+    this.websocket_parameters_beforeEdit = JSON.parse(JSON.stringify(this.websocket_parameters()));
   }
 
   fillAdminDialogData() {
-    this.admin_parameter_cols = this.columnDefinitions();
-    this.admin_parameters = this.buildSectionParams(this.config.admin);
-    this.admin_parameters_beforeEdit = JSON.parse(JSON.stringify(this.admin_parameters));
+    this.admin_parameter_cols.set(this.columnDefinitions());
+    this.admin_parameters.set(this.buildSectionParams(this.config()!.admin));
+    this.admin_parameters_beforeEdit = JSON.parse(JSON.stringify(this.admin_parameters()));
   }
 
   fillMqttDialogData() {
-    this.mqtt_parameter_cols = this.columnDefinitions();
-    this.mqtt_parameters = this.buildSectionParams(this.config.mqtt);
-    this.mqtt_parameters_beforeEdit = JSON.parse(JSON.stringify(this.mqtt_parameters));
+    this.mqtt_parameter_cols.set(this.columnDefinitions());
+    this.mqtt_parameters.set(this.buildSectionParams(this.config()!.mqtt));
+    this.mqtt_parameters_beforeEdit = JSON.parse(JSON.stringify(this.mqtt_parameters()));
   }
 
   // ---------------------------------------------------------
@@ -352,7 +313,6 @@ export class SystemConfigComponent implements OnInit {
   //
   change_password_dialog($event: unknown, rowData: ConfigParameter, col_field: string) {
     this.log.log('change_password_dialog()');
-    this.log.log('hash', rowData[col_field]);
     this.pwd_hash_old = rowData[col_field] as string | null;
     this.pwd_rowData = rowData;
     this.pwd_col = col_field;
@@ -376,186 +336,188 @@ export class SystemConfigComponent implements OnInit {
         return;
       }
 
-      // const wrk = sha512(this.pwd_old);
-      if (this.pwd_hash_old !== sha512(this.pwd_old)) {
-        this.pwd_old_is_wrong = true;
-        return;
-      }
+      this.servicesApi
+        .checkPassword(this.pwd_old, this.pwd_hash_old)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((match) => {
+          if (match) {
+            this.set_new_password();
+          } else {
+            this.pwd_old_is_wrong = true;
+          }
+        });
+      return;
     }
+    this.set_new_password();
+  }
+
+  /** Store the hash of the new password (null if it is empty) in the edited row and close the dialog. */
+  private set_new_password() {
     if (this.pwd_new1 !== this.pwd_new2) {
       this.pwd_new_not_identical = true;
       return;
     }
-
-    this.log.log('pwd_new1', this.pwd_new1);
-    this.log.log('pwd_new2', this.pwd_new2);
-
-    this.pwd_hash_new = null;
-    if (this.pwd_new1 !== null) {
-      this.pwd_hash_new = sha512(this.pwd_new1);
+    if (!this.pwd_new1) {
+      this.apply_new_password_hash(null);
+      return;
     }
-    this.log.log('pwd_hash_new', this.pwd_hash_new);
+    this.servicesApi
+      .hashPassword(this.pwd_new1)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((hash) => {
+        if (hash !== null) {
+          this.apply_new_password_hash(hash);
+        }
+      });
+  }
 
-    this.pwd_rowData![this.pwd_col!] = this.pwd_hash_new;
+  private apply_new_password_hash(hash: string | null) {
+    this.pwd_hash_new = hash;
+    this.pwd_rowData![this.pwd_col!] = hash;
     this.pwd_change_dialog_display = false;
     this.check_values();
   }
 
   check_values(_type?: string) {
-    this.data_changed = false;
-    for (const p in this.common_parameters) {
-      if (this.common_parameters.hasOwnProperty(p)) {
-        if (this.common_parameters[p].value !== this.common_parameters_beforeEdit[p].value) {
-          this.data_changed = true;
-          // this.log.log(this.common_parameters[p]);
+    this.data_changed.set(false);
+    for (const p in this.common_parameters()) {
+      if (this.common_parameters().hasOwnProperty(p)) {
+        if (this.common_parameters()[p].value !== this.common_parameters_beforeEdit[p].value) {
+          this.data_changed.set(true);
+          // this.log.log(this.common_parameters()[p]);
         }
       }
     }
-    for (const p in this.http_parameters) {
-      if (this.http_parameters.hasOwnProperty(p)) {
-        if (this.http_parameters[p].value !== this.http_parameters_beforeEdit[p].value) {
-          this.data_changed = true;
-          // this.log.log(this.http_parameters[p]);
+    for (const p in this.http_parameters()) {
+      if (this.http_parameters().hasOwnProperty(p)) {
+        if (this.http_parameters()[p].value !== this.http_parameters_beforeEdit[p].value) {
+          this.data_changed.set(true);
+          // this.log.log(this.http_parameters()[p]);
         }
       }
     }
-    for (const p in this.websocket_parameters) {
-      if (this.websocket_parameters.hasOwnProperty(p)) {
-        if (this.websocket_parameters[p].value !== this.websocket_parameters_beforeEdit[p].value) {
-          this.data_changed = true;
-          // this.log.log(this.websocket_parameters[p]);
+    for (const p in this.websocket_parameters()) {
+      if (this.websocket_parameters().hasOwnProperty(p)) {
+        if (
+          this.websocket_parameters()[p].value !== this.websocket_parameters_beforeEdit[p].value
+        ) {
+          this.data_changed.set(true);
+          // this.log.log(this.websocket_parameters()[p]);
         }
       }
     }
-    for (const p in this.admin_parameters) {
-      if (this.admin_parameters.hasOwnProperty(p)) {
-        if (this.admin_parameters[p].value !== this.admin_parameters_beforeEdit[p].value) {
-          this.data_changed = true;
-          // this.log.log(this.admin_parameters[p]);
+    for (const p in this.admin_parameters()) {
+      if (this.admin_parameters().hasOwnProperty(p)) {
+        if (this.admin_parameters()[p].value !== this.admin_parameters_beforeEdit[p].value) {
+          this.data_changed.set(true);
+          // this.log.log(this.admin_parameters()[p]);
         }
       }
     }
-    for (const p in this.mqtt_parameters) {
-      if (this.mqtt_parameters.hasOwnProperty(p)) {
-        if (this.mqtt_parameters[p].value !== this.mqtt_parameters_beforeEdit[p].value) {
-          this.data_changed = true;
-          // this.log.log(this.admin_parameters[p]);
+    for (const p in this.mqtt_parameters()) {
+      if (this.mqtt_parameters().hasOwnProperty(p)) {
+        if (this.mqtt_parameters()[p].value !== this.mqtt_parameters_beforeEdit[p].value) {
+          this.data_changed.set(true);
+          // this.log.log(this.admin_parameters()[p]);
         }
       }
     }
   }
 
+  /** True if any changed parameter needs a core restart to take effect, i.e. is not flagged live. */
+  private restartNeeded(): boolean {
+    const changed = (now: ConfigParameter[], before: ConfigParameter[]) =>
+      now.filter((p, i) => p.value !== before[i].value);
+    const otherSectionChanged = [
+      changed(this.http_parameters(), this.http_parameters_beforeEdit),
+      changed(this.websocket_parameters(), this.websocket_parameters_beforeEdit),
+      changed(this.admin_parameters(), this.admin_parameters_beforeEdit),
+      changed(this.mqtt_parameters(), this.mqtt_parameters_beforeEdit),
+    ].some((params) => params.length > 0);
+    const commonNeedsRestart = changed(
+      this.common_parameters(),
+      this.common_parameters_beforeEdit,
+    ).some((p) => !p['live']);
+    return otherSectionChanged || commonNeedsRestart;
+  }
+
+  private readonly parameterValidators: StringTypeValidators = {
+    isKnxGroupaddress: (v) => this.shared.is_knx_groupaddress(v),
+    isMac: (v) => this.shared.is_mac(v),
+    isIpv4: (v) => this.shared.is_ipv4(v),
+    isIpv6: (v) => this.shared.is_ipv6(v),
+    isHostname: (v) => this.shared.is_hostname(v),
+  };
+
   check_value_restrictions(parameter: ConfigParameter) {
-    let error_found = false;
-    let error_text = '';
-
-    // this.log.log('check_value_restrictions', {parameter});
-
     if (parameter['value'] === undefined) {
       parameter['value'] = null;
     }
 
-    const type = (parameter.type ?? '').toLowerCase();
-    const value = parameter.value as string;
-    const numVal = Number(parameter.value);
-    const validMin = parameter['valid_min'] as number | undefined;
-    const validMax = parameter['valid_max'] as number | undefined;
-
-    // checking data types
-    if (parameter.value !== null && parameter.value !== '') {
-      error_text = "'" + value + "' ";
-      if (type === 'knx_ga' && !this.shared.is_knx_groupaddress(value)) {
-        error_found = true;
-        error_text += this.translate.instant('PLUGIN.INVALID_KNX_ADDRESS');
-      }
-      if (type === 'mac' && !this.shared.is_mac(value)) {
-        error_found = true;
-        error_text += this.translate.instant('PLUGIN.INVALID_MAC_ADDRESS');
-      }
-      if (type === 'ipv4' && !this.shared.is_ipv4(value)) {
-        error_found = true;
-        error_text += this.translate.instant('PLUGIN.INVALID_IP_ADDRESS') + ' (v4)';
-      }
-      if (type === 'ipv6' && !this.shared.is_ipv6(value)) {
-        error_found = true;
-        error_text += this.translate.instant('PLUGIN.INVALID_IP_ADDRESS') + ' (v6)';
-      }
-      if (type === 'ip') {
-        if (!this.shared.is_ipv4(value) && !this.shared.is_ipv6(value)) {
-          if (!this.shared.is_hostname(value)) {
-            error_found = true;
-            error_text += this.translate.instant('PLUGIN.INVALID_HOSTNAME');
-          }
-        }
-      }
+    const errors = validateValue(parameter, this.parameterValidators);
+    if (errors.length === 0) {
+      return true;
     }
 
-    // check valid minimum and maximum value
-    if (parameter.value !== null && validMin !== undefined && numVal < validMin) {
-      error_found = true;
-      error_text = this.translate.instant('PLUGIN.DEFINED_MIN') + " '" + validMin + "'";
-      error_text += ', ' + this.translate.instant('PLUGIN.ACTUAL_VALUE') + " '" + value + "'";
-    }
-    if (parameter.value !== null && validMax !== undefined && numVal > validMax) {
-      error_found = true;
-      error_text = this.translate.instant('PLUGIN.DEFINED_MAX') + " '" + validMax + "'";
-      error_text += ', ' + this.translate.instant('PLUGIN.ACTUAL_VALUE') + " '" + value + "'";
-    }
+    const error_text = formatValidationError(errors[errors.length - 1], (key) =>
+      this.translate.instant(key),
+    );
+    this.validation_dialog_text.push(
+      this.translate.instant('PLUGIN.PARAMETER') + " '" + parameter['name'] + "': " + error_text,
+    );
+    this.validation_dialog_parameter = parameter['name'];
+    this.validation_dialog_display = true;
+    this.log.warn('Parameter ' + "'" + parameter['name'] + "'", error_text);
+    return false;
+  }
 
-    // check if value is mandantory
-    if ((parameter.value === null || parameter.value === '') && parameter['mandatory']) {
-      error_found = true;
-      error_text = this.translate.instant('PLUGIN.MANDATORY_VALUE');
+  /** Row values of a section by parameter name; an empty str/hide-str value is set to null (unset) in the row and the result. */
+  private sectionData(params: ConfigParameter[]): Record<string, unknown> {
+    const data: Record<string, unknown> = {};
+    for (const param of params) {
+      if (param.value === '' && BLANK_IS_UNSET_TYPES.includes(param.type ?? '')) {
+        param.value = null;
+      }
+      data[param.name] = param.value;
     }
-
-    if (error_found) {
-      this.validation_dialog_text.push(
-        this.translate.instant('PLUGIN.PARAMETER') + " '" + parameter['name'] + "': " + error_text,
-      );
-      this.validation_dialog_parameter = parameter['name'];
-
-      this.validation_dialog_display = true;
-      this.log.warn('Parameter ' + "'" + parameter['name'] + "'", error_text);
-      return false;
-    }
-    return true;
+    return data;
   }
 
   saveSettings() {
     let errors_found = false;
     this.validation_dialog_text = [];
 
-    for (const p in this.common_parameters) {
-      if (this.common_parameters.hasOwnProperty(p)) {
-        if (!this.check_value_restrictions(this.common_parameters[p])) {
+    for (const p in this.common_parameters()) {
+      if (this.common_parameters().hasOwnProperty(p)) {
+        if (!this.check_value_restrictions(this.common_parameters()[p])) {
           errors_found = true;
         }
       }
     }
-    for (const p in this.http_parameters) {
-      if (this.http_parameters.hasOwnProperty(p)) {
-        if (!this.check_value_restrictions(this.http_parameters[p])) {
+    for (const p in this.http_parameters()) {
+      if (this.http_parameters().hasOwnProperty(p)) {
+        if (!this.check_value_restrictions(this.http_parameters()[p])) {
           errors_found = true;
         }
       }
     }
-    for (const p in this.websocket_parameters) {
-      if (this.websocket_parameters.hasOwnProperty(p)) {
-        if (!this.check_value_restrictions(this.websocket_parameters[p])) {
+    for (const p in this.websocket_parameters()) {
+      if (this.websocket_parameters().hasOwnProperty(p)) {
+        if (!this.check_value_restrictions(this.websocket_parameters()[p])) {
           errors_found = true;
         }
       }
     }
-    for (const p in this.admin_parameters) {
-      if (this.admin_parameters.hasOwnProperty(p)) {
-        if (!this.check_value_restrictions(this.admin_parameters[p])) {
+    for (const p in this.admin_parameters()) {
+      if (this.admin_parameters().hasOwnProperty(p)) {
+        if (!this.check_value_restrictions(this.admin_parameters()[p])) {
           errors_found = true;
         }
       }
     }
-    for (const p in this.mqtt_parameters) {
-      if (this.mqtt_parameters.hasOwnProperty(p)) {
-        if (!this.check_value_restrictions(this.mqtt_parameters[p])) {
+    for (const p in this.mqtt_parameters()) {
+      if (this.mqtt_parameters().hasOwnProperty(p)) {
+        if (!this.check_value_restrictions(this.mqtt_parameters()[p])) {
           errors_found = true;
         }
       }
@@ -565,69 +527,20 @@ export class SystemConfigComponent implements OnInit {
       return;
     }
 
-    const data: Record<string, any> = {};
-    data['common'] = {};
-    data['common']['data'] = {};
-    for (const p in this.common_parameters) {
-      if (this.common_parameters.hasOwnProperty(p)) {
-        if (this.common_parameters[p].value === '' && this.common_parameters[p].type === 'str') {
-          this.common_parameters[p].value = null;
-        }
-        data['common']['data'][this.common_parameters[p].name] = this.common_parameters[p].value;
-      }
-    }
+    // evaluated before the values are normalized for sending, which would show up as changes
+    const restartNeeded = this.restartNeeded();
 
-    data['http'] = {};
-    data['http']['data'] = {};
-    for (const p in this.http_parameters) {
-      if (this.http_parameters.hasOwnProperty(p)) {
-        if (this.http_parameters[p].value === '' && this.http_parameters[p].type === 'str') {
-          this.http_parameters[p].value = null;
-        }
-        data['http']['data'][this.http_parameters[p].name] = this.http_parameters[p].value;
-      }
-    }
-    // remove plain passwords
-    data['http']['data']['password'] = null;
-    data['http']['data']['service_password'] = null;
-
-    data['websocket'] = {};
-    data['websocket']['data'] = {};
-    for (const p in this.websocket_parameters) {
-      if (this.websocket_parameters.hasOwnProperty(p)) {
-        if (
-          this.websocket_parameters[p].value === '' &&
-          this.websocket_parameters[p].type === 'str'
-        ) {
-          this.websocket_parameters[p].value = null;
-        }
-        data['websocket']['data'][this.websocket_parameters[p].name] =
-          this.websocket_parameters[p].value;
-      }
-    }
-
-    data['admin'] = {};
-    data['admin']['data'] = {};
-    for (const p in this.admin_parameters) {
-      if (this.admin_parameters.hasOwnProperty(p)) {
-        if (this.admin_parameters[p].value === '' && this.admin_parameters[p].type === 'str') {
-          this.admin_parameters[p].value = null;
-        }
-        data['admin']['data'][this.admin_parameters[p].name] = this.admin_parameters[p].value;
-      }
-    }
-
-    data['mqtt'] = {};
-    data['mqtt']['data'] = {};
-    for (const p in this.mqtt_parameters) {
-      if (this.mqtt_parameters.hasOwnProperty(p)) {
-        if (this.mqtt_parameters[p].value === '' && this.mqtt_parameters[p].type === 'str') {
-          this.mqtt_parameters[p].value = null;
-        }
-        data['mqtt']['data'][this.mqtt_parameters[p].name] = this.mqtt_parameters[p].value;
-        // this.log.warn(this.mqtt_parameters[p].name, this.mqtt_parameters[p].type, this.mqtt_parameters[p].value);
-      }
-    }
+    const data: Record<string, { data: Record<string, unknown> }> = {
+      common: { data: this.sectionData(this.common_parameters()) },
+      http: { data: this.sectionData(this.http_parameters()) },
+      websocket: { data: this.sectionData(this.websocket_parameters()) },
+      admin: { data: this.sectionData(this.admin_parameters()) },
+      mqtt: { data: this.sectionData(this.mqtt_parameters()) },
+    };
+    // plaintext passwords from etc/module.yaml: the backend stores them as hashes (unless a hash is set) and removes them
+    const httpConfig = this.config()!.http.data as Record<string, unknown>;
+    data['http']['data']['password'] = httpConfig['password'] || null;
+    data['http']['data']['service_password'] = httpConfig['service_password'] || null;
 
     this.dataService
       .saveConfig(data)
@@ -636,17 +549,20 @@ export class SystemConfigComponent implements OnInit {
         if (result) {
           this.log.log('saveSettings', 'success');
 
-          this.common_parameters_beforeEdit = JSON.parse(JSON.stringify(this.common_parameters));
-          this.http_parameters_beforeEdit = JSON.parse(JSON.stringify(this.http_parameters));
+          this.common_parameters_beforeEdit = JSON.parse(JSON.stringify(this.common_parameters()));
+          this.http_parameters_beforeEdit = JSON.parse(JSON.stringify(this.http_parameters()));
           this.websocket_parameters_beforeEdit = JSON.parse(
-            JSON.stringify(this.websocket_parameters),
+            JSON.stringify(this.websocket_parameters()),
           );
-          this.admin_parameters_beforeEdit = JSON.parse(JSON.stringify(this.admin_parameters));
-          this.mqtt_parameters_beforeEdit = JSON.parse(JSON.stringify(this.mqtt_parameters));
+          this.admin_parameters_beforeEdit = JSON.parse(JSON.stringify(this.admin_parameters()));
+          this.mqtt_parameters_beforeEdit = JSON.parse(JSON.stringify(this.mqtt_parameters()));
 
-          this.data_changed = false;
-          this.restart_core_button = true;
-          this.cdr.markForCheck();
+          this.data_changed.set(false);
+          this.restart_core_button.set(restartNeeded);
+          this.dataServiceServer
+            .getServerinfo()
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe();
         } else {
           this.log.warn('saveSettings', 'fail');
         }
@@ -654,37 +570,35 @@ export class SystemConfigComponent implements OnInit {
   }
 
   checkConfigEtc(showDialog = false) {
-    this.configEtcChecking = true;
+    this.configEtcChecking.set(true);
     this.dataService
       .checkConfigEtc()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((result) => {
-        this.configEtcCheckResult = result as Record<string, any>;
-        this.configEtcChecking = false;
+        this.configEtcCheckResult.set(result as Record<string, any>);
+        this.configEtcChecking.set(false);
         if (showDialog) {
-          this.configEtcCheckDialogVisible = true;
+          this.configEtcCheckDialogVisible.set(true);
         }
-        this.cdr.markForCheck();
       });
   }
 
   enableConfigEtc() {
-    this.configEtcEnabling = true;
+    this.configEtcEnabling.set(true);
     this.dataService
       .enableConfigEtc()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((result) => {
-        this.configEtcEnabling = false;
+        this.configEtcEnabling.set(false);
         const r = result as Record<string, any>;
         if (r?.['result'] === 'ok') {
-          this.config.common.data['config_etc'] = true;
+          this.config()!.common.data['config_etc'] = true;
           // keep the table row value in sync so saveSettings sends the correct value
-          const cfgParam = this.common_parameters?.find((p) => p.name === 'config_etc');
+          const cfgParam = this.common_parameters()?.find((p) => p.name === 'config_etc');
           if (cfgParam) cfgParam.value = true;
-          this.configEtcCheckDialogVisible = false;
-          this.restart_core_button = true;
+          this.configEtcCheckDialogVisible.set(false);
+          this.restart_core_button.set(true);
         }
-        this.cdr.markForCheck();
       });
   }
 
@@ -696,6 +610,6 @@ export class SystemConfigComponent implements OnInit {
         const res = response as { result?: string };
         this.log.log('restartShng', res.result);
       });
-    this.restart_core_button = false;
+    this.restart_core_button.set(false);
   }
 }

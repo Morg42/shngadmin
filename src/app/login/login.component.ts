@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  DestroyRef,
-  inject,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -24,11 +18,10 @@ import { AuthService } from './../common/services/auth.service';
 })
 export class LoginComponent {
   private readonly destroyRef = inject(DestroyRef);
-  private readonly cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   public authService = inject(AuthService);
-  invalidLogin!: boolean;
+  readonly invalidLogin = signal(false);
 
   signIn(credentials: { username: string; password: string }) {
     this.authService
@@ -39,8 +32,7 @@ export class LoginComponent {
           const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
           this.router.navigate([returnUrl || '/']);
         } else {
-          this.invalidLogin = true;
-          this.cdr.markForCheck();
+          this.invalidLogin.set(true);
         }
       });
   }

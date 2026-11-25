@@ -11,6 +11,7 @@
  *   - getShngServerStatus() — GET /api/server/status/ — passthrough; of({}) on error
  *   - restartShngServer() — PUT /api/server/restart/ — passthrough; of({}) on error
  *   - getSystemStats() — GET /api/system/info — passthrough; of({}) on error
+ *   - getDatabaseInfo() — GET /api/database/info — passthrough; of({ configured: false }) on error
  *   - getPypiInfo() — GET /api/server/pypi — passthrough; of([]) on error
  *   - downloadConfigBackup() — GET /api/files/backup/ (blob) — passthrough; of({}) on error
  */
@@ -168,6 +169,121 @@ describe('ServerApiService', () => {
   });
 
   // -------------------------------------------------------------------------
+  // stopShngServer
+  // -------------------------------------------------------------------------
+
+  it('stopShngServer() sends PUT /api/server/stop/', () => {
+    service.stopShngServer().subscribe();
+    const req = http.expectOne('/api/server/stop/');
+    expect(req.request.method).toBe('PUT');
+    req.flush({ result: 'ok' });
+  });
+
+  it('stopShngServer() returns {} on HTTP error', () => {
+    let result: unknown;
+    service.stopShngServer().subscribe((r) => (result = r));
+    http
+      .expectOne('/api/server/stop/')
+      .flush({ error: 'err' }, { status: 500, statusText: 'Server Error' });
+    expect(result).toEqual({});
+  });
+
+  // -------------------------------------------------------------------------
+  // poweroffHost / rebootHost
+  // -------------------------------------------------------------------------
+
+  it('poweroffHost() sends PUT /api/server/poweroff/', () => {
+    service.poweroffHost().subscribe();
+    const req = http.expectOne('/api/server/poweroff/');
+    expect(req.request.method).toBe('PUT');
+    req.flush({ result: 'ok' });
+  });
+
+  it('rebootHost() sends PUT /api/server/reboot/', () => {
+    service.rebootHost().subscribe();
+    const req = http.expectOne('/api/server/reboot/');
+    expect(req.request.method).toBe('PUT');
+    req.flush({ result: 'ok' });
+  });
+
+  it('poweroffHost() returns the response, including the error text of a failed command', () => {
+    let result: unknown;
+    service.poweroffHost().subscribe((r) => (result = r));
+    http
+      .expectOne('/api/server/poweroff/')
+      .flush({ result: 'error', text: 'Interactive authentication required' });
+    expect(result).toEqual({ result: 'error', text: 'Interactive authentication required' });
+  });
+
+  // -------------------------------------------------------------------------
+  // pullCore / pullPlugins / pullAll
+  // -------------------------------------------------------------------------
+
+  it.each([
+    ['pullCore', 'pull_core'],
+    ['pullPlugins', 'pull_plugins'],
+    ['pullAll', 'pull_all'],
+  ] as const)('%s() sends PUT /api/server/%s/', (method, action) => {
+    service[method]().subscribe();
+    const req = http.expectOne(`/api/server/${action}/`);
+    expect(req.request.method).toBe('PUT');
+    req.flush({ result: 'ok', repos: [] });
+  });
+
+  it('pullAll() returns the per-repository results', () => {
+    let result: unknown;
+    const response = {
+      result: 'error',
+      repos: [{ repo: 'core', status: 'skipped', text: 'not pulled', changed: false }],
+    };
+    service.pullAll().subscribe((r) => (result = r));
+    http.expectOne('/api/server/pull_all/').flush(response);
+    expect(result).toEqual(response);
+  });
+
+  it('pullCore() returns {} on HTTP error', () => {
+    let result: unknown;
+    service.pullCore().subscribe((r) => (result = r));
+    http
+      .expectOne('/api/server/pull_core/')
+      .flush({ error: 'err' }, { status: 500, statusText: 'Server Error' });
+    expect(result).toEqual({});
+  });
+
+  it('getPullStatus() sends GET /api/server/pull_status and returns the response', () => {
+    let result: unknown;
+    const response = {
+      result: 'ok',
+      repos: [{ repo: 'core', state: 'behind', behind: 3, ahead: 0, text: '' }],
+    };
+    service.getPullStatus().subscribe((r) => (result = r));
+    const req = http.expectOne('/api/server/pull_status');
+    expect(req.request.method).toBe('GET');
+    req.flush(response);
+    expect(result).toEqual(response);
+  });
+
+  it('getPullStatus() returns {} on HTTP error', () => {
+    let result: unknown;
+    service.getPullStatus().subscribe((r) => (result = r));
+    http
+      .expectOne('/api/server/pull_status')
+      .flush({ error: 'err' }, { status: 500, statusText: 'Server Error' });
+    expect(result).toEqual({});
+  });
+
+  it('getServerinfo() patches the pull availability into the app config', () => {
+    const patch = jest.spyOn(TestBed.inject(AppConfigService), 'patch');
+    service.getServerinfo().subscribe();
+    http
+      .expectOne('/api/server/info')
+      .flush({ core_pull_available: true, plugins_pull_available: false });
+    expect(patch).toHaveBeenCalledWith(
+      expect.objectContaining({ corePullAvailable: true, pluginsPullAvailable: false }),
+    );
+  });
+
+  // -------------------------------------------------------------------------
   // getSystemStats
   // -------------------------------------------------------------------------
 
@@ -192,6 +308,33 @@ describe('ServerApiService', () => {
       .expectOne('/api/system/info')
       .flush({ error: 'err' }, { status: 500, statusText: 'Server Error' });
     expect(result).toEqual({});
+  });
+
+  // -------------------------------------------------------------------------
+  // getDatabaseInfo
+  // -------------------------------------------------------------------------
+
+  it('getDatabaseInfo() sends GET /api/database/info', () => {
+    service.getDatabaseInfo().subscribe();
+    const req = http.expectOne('/api/database/info');
+    expect(req.request.method).toBe('GET');
+    req.flush({ configured: false });
+  });
+
+  it('getDatabaseInfo() returns the response', () => {
+    let result: unknown;
+    service.getDatabaseInfo().subscribe((r) => (result = r));
+    http.expectOne('/api/database/info').flush({ configured: true, driver: 'sqlite3' });
+    expect(result).toEqual({ configured: true, driver: 'sqlite3' });
+  });
+
+  it('getDatabaseInfo() returns { configured: false } on HTTP error', () => {
+    let result: unknown;
+    service.getDatabaseInfo().subscribe((r) => (result = r));
+    http
+      .expectOne('/api/database/info')
+      .flush({ error: 'err' }, { status: 500, statusText: 'Server Error' });
+    expect(result).toEqual({ configured: false });
   });
 
   // -------------------------------------------------------------------------

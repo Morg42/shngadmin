@@ -36,7 +36,9 @@ input::-webkit-inner-spin-button {
   --navbar-height: 60px;
   --tab-height: 41px;
   --page-padding: 18px; /* outer spacing: left / bottom / right of every page body */
-  --grid-gutter: 15px; /* Bootstrap grid gutter — set to var(--page-padding) to link with outer spacing */
+  --grid-gutter: var(
+    --page-padding
+  ); /* Bootstrap grid gutter — linked to outer spacing so every page's margin matches */
 
   /* Brand / status colours */
   --shng-blue: #709cc2;
@@ -44,12 +46,23 @@ input::-webkit-inner-spin-button {
   --shng-green: green;
   --shng-warning: #e3d304;
   --shng-orange: #ff8000;
+  /* Disruptive-but-not-destructive action buttons (stop/unload a plugin,
+     restart SmartHomeNG) — deliberately distinct from --shng-orange
+     (already used app-wide for error/warning TEXT) so a routine
+     operational button doesn't read as an alarm. */
+  --shng-amber: #c9820c;
+  /* Marks the one button among amber ones that needs doing now (reload of a
+     plugin whose files a pull updated) — a hue clearly apart from --shng-amber. */
+  --shng-attention: #e8590c;
 
   --shng-disabled: #bbb;
   --shng-border: #dee2e5;
   --shng-secondary-button: #e0e0e0;
   --shng-toggle-off: #a9a9a9;
   --shng-cell-alt-bg: #f7f7f7;
+  --shng-page-bg: #ffffff; /* page/tree/card surfaces */
+  --shng-badge-bg: #dadada; /* e.g. item-tree child-count pill */
+  --shng-badge-text: #212529;
 
   /* ── Typography ─────────────────────────────── */
   --font-family-base:
@@ -99,6 +112,7 @@ body {
   font-weight: var(--font-weight-normal);
   line-height: var(--line-height-base);
   color: var(--text-primary);
+  background-color: var(--shng-page-bg);
   min-width: 600px; /* prevent layout collapse on narrow viewports; viewport scrollbar handles the rest */
   overflow-x: auto; /* show horizontal scrollbar when content exceeds viewport width */
 }
@@ -161,6 +175,39 @@ dl {
   padding: 0;
 }
 
+/* PrimeNG p-dialog's mask (backdrop + dialog content, modal dialogs only)
+   stays interactive for the ~1.3s leave/fade-out transition after closing.
+   A click aimed at whatever's underneath (e.g. a button right behind where
+   the dialog just was) lands on the closing mask/dialog instead and is
+   silently swallowed - confirmed live via DOM/click instrumentation on
+   p-dialog specifically (the only masked PrimeNG overlay this app uses
+   today).
+   p-overlay-mask-leave-active is a class PrimeNG applies to the mask for
+   the duration of that leave transition - shared overlay-mask
+   infrastructure, not Dialog-specific (grep of node_modules/primeng shows
+   it's also used by Drawer, Table, Tree, TreeTable, Galleria, Image,
+   SpeedDial and BlockUI), so disabling pointer events on it should apply
+   the same swallowed-click protection to any of those once/if this app
+   uses them in a masked mode too - not independently verified for those.
+   !important required: PrimeNG injects its theme CSS after this file in the
+   cascade (same reasoning as the p-tabs rules above) and its own mask rule
+   sets pointer-events itself, so an equal-specificity override here loses
+   without it - confirmed live (class was present, computed pointer-events
+   stayed "auto" until !important was added). */
+.p-overlay-mask-leave-active {
+  pointer-events: none !important;
+}
+
+/* PrimeNG's Button never sets its own line-height, so it falls back to the
+   browser default ("normal", ~1.15) instead of this app's --line-height-base
+   (1.5) - the same fix already applied to the legacy .btn/.form-control
+   families (below). Other form fields (p-select etc.) end up taller because
+   they do carry an explicit 1.5 line-height, so a pButton sitting next to a
+   dropdown in the same toolbar renders a few px shorter without this. */
+.p-button {
+  line-height: var(--line-height-base);
+}
+
 /* ================================================================
    Page-frame for non-tab pages (B / C layout types)
    Mirrors PrimeNG p-tabs visually so all pages look consistent.
@@ -171,7 +218,7 @@ dl {
 /* Mimics the p-tablist bar: sits above .shng-page-body and provides
    the same visual breathing room as a real tab row. */
 .shng-page-header {
-  background: #ffffff;
+  background: var(--shng-page-bg);
   border-bottom: 1px solid var(--shng-border);
   display: flex;
   align-items: center;
@@ -186,7 +233,7 @@ dl {
 /* Mimics the p-tabpanel area: l / r / b border, no top border
    (the page-header's bottom border acts as the visual divider). */
 .shng-page-body {
-  background: #ffffff;
+  background: var(--shng-page-bg);
   border: 1px solid var(--shng-border);
   border-top: 0;
   overflow: auto;
@@ -195,72 +242,8 @@ dl {
 textarea {
   white-space: pre;
   overflow-wrap: normal;
-  overflow-x: scroll;
+  overflow-x: auto;
   font-family: var(--font-family-mono) !important;
-}
-
-/* Legacy PrimeNG v7/v8 utility class — kept because some plugin webinterfaces
-   still inject markup that references it. New code should not use this class. */
-.ui-state-highlight {
-  background-color: var(--shng-blue) !important;
-}
-
-/* Legacy PrimeNG TurboTable overrides — kept for plugin webinterfaces that
-   still use PrimeNG v7/v8 table markup. New code uses p-table (PrimeNG v17+). */
-.ui-table .ui-table-thead > tr {
-  background-color: #f0f0f0 !important;
-  border: 0 solid var(--shng-border) !important;
-  border-bottom-color: var(--shng-border) !important;
-}
-
-.ui-table .ui-table-thead > tr > th,
-.ui-table .ui-table-tfoot > tr > td {
-  background-color: #ffffff !important;
-  border: 0 solid var(--shng-border) !important;
-  border-bottom-color: var(--shng-border) !important;
-  color: #1b1d1f !important;
-}
-
-.ui-table .ui-table-tbody > tr {
-  background-color: #f0f0f0 !important;
-  border-top: 1px solid var(--shng-border) !important;
-  border-bottom: 1px solid var(--shng-border) !important;
-  border-bottom-color: var(--shng-border) !important;
-}
-.ui-table .ui-table-tbody > tr > td {
-  border: 0 solid var(--shng-border) !important;
-  border-top: 1px solid var(--shng-border) !important;
-  border-bottom: 1px solid var(--shng-border) !important;
-  background-color: inherit;
-  border-top-color: var(--shng-border) !important;
-  border-bottom-color: var(--shng-border) !important;
-}
-
-.ui-table .ui-table-tbody > tr.ui-state-highlight {
-  background-color: #186ba0 !important;
-  color: #ffffff !important;
-}
-
-.ui-table .ui-sortable-column.ui-state-highlight {
-  background-color: #ffffff !important;
-  border-bottom-color: var(--shng-border) !important;
-  color: #1b1d1f !important;
-}
-
-.ui-table .ui-table-tbody > tr:nth-child(even) {
-  background-color: #ffffff !important;
-}
-
-.ui-table .ui-sortable-column .ui-sortable-column-icon {
-  color: var(--shng-blue) !important;
-}
-
-.ui-button.ui-state-active {
-  background-color: var(--shng-blue) !important;
-}
-
-.ui-button.ui-state-passive {
-  background-color: #444444 !important;
 }
 
 .btn-primary {
@@ -270,37 +253,8 @@ textarea {
 }
 .btn-primary:hover {
   color: #fff;
-  background-color: #286090;
+  background-color: #286090 !important;
   border-color: #204d74;
-}
-
-.ui-button-success {
-  background-color: var(--shng-blue) !important;
-}
-
-.ui-button-secondary {
-  background-color: var(--shng-secondary-button) !important;
-  border-color: #cccccc !important;
-  color: #555555 !important;
-}
-
-.ui-button-danger {
-  background-color: var(--shng-red) !important;
-  border-color: #cccccc !important;
-}
-
-.ui-button-secondary2 {
-  background-color: #f0f0f0 !important;
-  border-color: #f5f5f5 !important;
-  color: #555555 !important;
-}
-
-.ui-button-secondary.ui-state-focus {
-  background-color: var(--shng-red) !important;
-}
-
-.ui-fileupload-buttonbar .ui-button {
-  background-color: var(--shng-blue) !important;
 }
 
 ui-inputswitch {
@@ -309,61 +263,6 @@ ui-inputswitch {
 
 .fa-icon-grey {
   color: var(--text-caption);
-}
-
-.ui-table .ui-table-tbody > tr.ui-state-highlight {
-  background-color: #186ba0;
-  color: #ffffff;
-}
-.ui-table .ui-table-tbody > tr.ui-contextmenu-selected {
-  background-color: var(--shng-blue);
-  color: #ffffff;
-}
-.ui-table .ui-sortable-column.ui-state-highlight .ui-sortable-column-icon {
-  color: #ffffff;
-}
-.ui-table .ui-sortable-column:not(.ui-state-highlight):hover {
-  background-color: #eeeeee;
-  border-bottom-color: var(--shng-border) !important;
-  color: #212121;
-}
-.ui-table .ui-sortable-column:not(.ui-state-highlight):hover .ui-sortable-column-icon {
-  border-bottom-color: var(--shng-border) !important;
-  color: #212121;
-}
-.ui-table.ui-table-hoverable-rows
-  .ui-table-tbody
-  > tr:not(.ui-state-highlight):not(.ui-contextmenu-selected):hover {
-  cursor: pointer;
-  border-bottom-color: var(--shng-border) !important;
-  background-color: #eeeeee;
-  color: #212121;
-}
-
-/* Vertical centering via display:table — used by legacy modal dialogs from
-   plugin webinterfaces. Modern code uses PrimeNG p-dialog instead.
-   pointer-events:none on the wrapper lets clicks fall through to the backdrop
-   so the modal can still be dismissed by clicking outside it. */
-.vertical-alignment-helper {
-  display: table;
-  height: 100%;
-  width: 100%;
-  pointer-events: none;
-}
-.vertical-align-center {
-  /* To center vertically */
-  display: table-cell;
-  vertical-align: middle;
-  pointer-events: none;
-}
-.modal-content {
-  /* Bootstrap sets the size of the modal in the modal-dialog class, we need to inherit it */
-  width: inherit;
-  max-width: inherit; /* For Bootstrap 4 - to avoid the modal window stretching full width */
-  height: inherit;
-  /* To center horizontally */
-  margin: 0 auto;
-  pointer-events: all;
 }
 
 /* Legacy plugin webinterface styles — injected by backend plugins that
@@ -445,104 +344,6 @@ a.text-shng:hover {
   font-weight: var(--font-weight-bold) !important;
 }
 
-.btn-shng {
-  color: #fff;
-  background-color: var(--shng-blue);
-  /* border-color: #2e6da4; */
-}
-.btn-shng:disabled,
-.btn-shng[disabled] {
-  color: #fff;
-  background-color: #a6c1d9;
-  /* border-color: #2e6da4; */
-}
-.btn-shng:hover:enabled {
-  color: #fff;
-  background-color: #286090;
-  border-color: #204d74;
-}
-.btn-shng-default {
-  color: #fff;
-  background-color: #337ab7;
-  border-color: #2e6da4;
-}
-.btn-shng-default:hover {
-  color: #fff;
-  background-color: #286090;
-  border-color: #204d74;
-}
-
-.btn-shng-secondary {
-  color: #fff;
-  background-color: #e0e0e0;
-}
-
-.btn-shng-outline-secondary {
-  color: #868e96;
-  background-color: transparent;
-  background-image: none;
-  border-color: #c8ccd0;
-}
-
-.btn-shng-outline-secondary:hover {
-  color: #fff;
-  background-color: #868e96;
-  border-color: #868e96;
-}
-
-.btn-shng-outline-secondary:focus,
-.btn-shng-outline-secondary.focus {
-  /*
-    box-shadow: 0 0 0 0.2rem rgba(134, 142, 150, 0.5);
-  */
-}
-
-.btn-shng-outline-secondary.disabled,
-.btn-shng-outline-secondary:disabled {
-  color: #c8ccd0;
-  background-color: transparent;
-}
-
-.btn-shng-outline-secondary:not([disabled]):not(.disabled):active,
-.btn-shng-outline-secondary:not([disabled]):not(.disabled).active,
-.show > .btn-shng-outline-secondary.dropdown-toggle {
-  color: #212529;
-  background-color: #c8ccd0;
-  border-color: #c8ccd0;
-  /*
-    box-shadow: 0 0 0 0.2rem rgba(134, 142, 150, 0.5);
-  */
-}
-
-.btn-shng-success {
-  color: #fff;
-  background-color: #408000;
-  border-color: #408000;
-}
-
-.btn-shng-success:hover {
-  color: #fff;
-  background-color: #1f601f;
-  border-color: #1f601f;
-}
-
-.btn-shng-success:focus,
-.btn-success.focus {
-  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.5);
-}
-
-.btn-shng-danger {
-  color: #fff;
-  background-color: var(--shng-red);
-  border-color: var(--shng-red);
-}
-
-.btn-shng-danger:hover {
-  color: #fff;
-  background-color: #b34700;
-  border-color: #b34700;
-}
-
 .shng_headline {
   color: var(--text-caption);
   font-size: var(--font-size-base);
@@ -570,7 +371,7 @@ a.text-shng:hover {
    These reproduce the Bootstrap 4 rules for every class that
    appears in this project's templates, allowing the Bootstrap
    package to be removed entirely.  The shng custom classes
-   (btn-shng, text-shng, shng_heading, etc.) are defined above
+   (text-shng, shng_heading, etc.) are defined above
    and are not part of Bootstrap — they remain unchanged.
    ============================================================ */
 
@@ -699,18 +500,18 @@ a.text-shng:hover {
 .table {
   width: 100%;
   margin-bottom: 1rem;
-  color: #212529;
+  color: var(--text-primary);
   border-collapse: collapse;
 }
 .table th,
 .table td {
   padding: 0.75rem;
   vertical-align: middle;
-  border-top: 1px solid #dee2e6;
+  border-top: 1px solid var(--shng-border);
 }
 .table thead th {
   vertical-align: bottom;
-  border-bottom: 2px solid #dee2e6;
+  border-bottom: 2px solid var(--shng-border);
 }
 .table-striped tbody tr:nth-of-type(odd) {
   background-color: rgba(0, 0, 0, 0.05);
@@ -728,7 +529,7 @@ a.text-shng:hover {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  background-color: #fff;
+  background-color: var(--shng-page-bg);
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 0.25rem;
 }
@@ -756,9 +557,9 @@ a.text-shng:hover {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-normal);
   line-height: var(--line-height-base);
-  color: #495057;
-  background-color: #fff;
-  border: 1px solid #ced4da;
+  color: var(--text-primary);
+  background-color: var(--shng-page-bg);
+  border: 1px solid var(--shng-border);
   border-radius: 0.25rem;
 }
 .form-control:focus {
@@ -771,8 +572,8 @@ a.text-shng:hover {
 }
 
 /* --- Buttons (base + variants used in templates) ---
-   btn-shng and btn-primary colors are defined above;
-   this block adds the structural rules they both depend on.  */
+   btn-primary colors are defined above;
+   this block adds the structural rules it depends on.  */
 .btn {
   display: inline-block;
   font-weight: var(--font-weight-normal);
@@ -799,6 +600,13 @@ a.text-shng:hover {
   cursor: not-allowed;
   pointer-events: none;
 }
+/* PrimeNG's own base layer already handles disabled pButton/p-button
+   elements (cursor/pointer-events/opacity via the themeable
+   semantic.disabledOpacity token, set in ShngPreset in main.ts) - this
+   used to hand-roll the same thing here before that token was found, and
+   is now redundant for anything carrying PrimeNG's .p-disabled/.p-component
+   classes. Kept only for .btn (the Bootstrap-remnant family, never
+   PrimeNG-rendered, so it gets none of PrimeNG's base handling). */
 .btn-sm {
   padding: 0.25rem 0.5rem;
   font-size: var(--font-size-base); /* old: --font-size-sm */
@@ -814,46 +622,59 @@ a.text-shng:hover {
   width: 100%;
 }
 
-.btn-outline-dark {
-  color: #343a40;
-  background-color: transparent;
-  border-color: #343a40;
-}
-.btn-outline-dark:hover:not([disabled]) {
-  color: #fff;
-  background-color: #343a40;
-  border-color: #343a40;
-}
-.btn-outline-dark:disabled {
-  color: #343a40;
-  opacity: 0.65;
-}
-
 .btn-outline-danger {
-  color: #dc3545;
+  color: var(--shng-red);
   background-color: transparent;
-  border-color: #dc3545;
+  border-color: var(--shng-red);
 }
 .btn-outline-danger:hover:not([disabled]) {
   color: #fff;
-  background-color: #dc3545;
-  border-color: #dc3545;
+  background-color: var(--shng-red);
+  border-color: var(--shng-red);
 }
 
 .btn-outline-primary {
-  color: #007bff;
+  color: var(--shng-blue);
   background-color: transparent;
-  border-color: #007bff;
+  border-color: var(--shng-blue);
 }
 .btn-outline-primary:hover:not([disabled]) {
   color: #fff;
-  background-color: #007bff;
-  border-color: #007bff;
+  background-color: var(--shng-blue);
+  border-color: var(--shng-blue);
+}
+
+.btn-outline-warning {
+  color: var(--shng-amber);
+  background-color: transparent;
+  border-color: var(--shng-amber);
+}
+.btn-outline-warning:hover:not([disabled]) {
+  color: #fff;
+  background-color: var(--shng-amber);
+  border-color: var(--shng-amber);
 }
 
 .btn-outline {
   background-color: transparent;
   border-color: currentColor;
+}
+
+/* Neutral/gray severities can't rely on opacity alone to distinguish disabled
+   from active — with no hue to fall back on, a dimmed gray still just reads
+   as "a gray button", not "unavailable". Swap to the dedicated disabled
+   token instead (PrimeNG's native severity="secondary" class, confirmed via
+   the style guide at /dev/style-guide that it needs this override). */
+.p-button-secondary:disabled,
+.p-button-secondary[disabled] {
+  color: var(--shng-disabled) !important;
+  border-color: var(--shng-disabled) !important;
+  background-color: transparent !important;
+  /* !important: PrimeNG's own .p-component:disabled rule (semantic.disabledOpacity,
+     main.ts) sets opacity too, loads after this file, and matches at equal
+     specificity for .p-button-secondary - needs to lose here since this neutral
+     severity wants a lower opacity than the app-wide default. */
+  opacity: 0.5 !important;
 }
 
 /* ================================================================
@@ -869,9 +690,16 @@ a.text-shng:hover {
   padding: 0.25rem !important; /* Aura default is 1rem — reduce the outer whitebox */
 }
 
-.p-tree-root {
-  background: #ffffff;
+/* :not(.p-virtualscroller) — a virtual-scroll tree's .p-tree-root IS the
+   CDK virtual-scroll viewport; forcing overflow:visible on it (as below,
+   for the normal case) breaks its ability to scroll at all. */
+.p-tree-root:not(.p-virtualscroller) {
+  background: var(--shng-page-bg);
   overflow: visible !important; /* PrimeNG injects overflow:auto — prevent inner scrollbar */
+}
+
+.p-tree-root.p-virtualscroller {
+  background: var(--shng-page-bg);
 }
 
 .p-tree-node-content {
@@ -883,7 +711,7 @@ a.text-shng:hover {
 }
 
 .p-tree-node-content.p-highlight {
-  background-color: #709cc2;
+  background-color: var(--shng-blue);
   color: #ffffff;
 }
 
@@ -979,21 +807,47 @@ a.text-shng:hover {
   margin-bottom: 0;
 }
 
-/* Tighten p-tree node row spacing */
-.p-tree .p-tree-node-content {
+/* Tighten p-tree node row spacing.
+   In virtual-scroll mode PrimeNG flattens the node hierarchy (no nested
+   .p-tree-node-children wrappers to indent via DOM nesting like the
+   normal case) and instead encodes each node's indentation as an inline
+   padding-left on this same element — :not(:has(.p-virtualscroller))
+   below excludes that case from the padding-left this rule would
+   otherwise force via the shorthand, and the second rule sets only the
+   other three sides so the inline indentation comes through. */
+.p-tree:not(:has(.p-virtualscroller)) .p-tree-node-content {
   padding: 1px 4px !important;
+}
+.p-tree .p-virtualscroller .p-tree-node-content {
+  padding-top: 1px !important;
+  padding-right: 4px !important;
+  padding-bottom: 1px !important;
 }
 .p-tree li.p-tree-node {
   padding: 0 !important;
 }
 
-/* Item-tree view (/items): plain-text labels only — halve the leading */
-.item-tree .p-tree-node-content {
+/* Item-tree view (/items): plain-text labels only — halve the leading.
+   Same virtual-scroll indentation caveat as above. */
+.item-tree:not(:has(.p-virtualscroller)) .p-tree-node-content {
   padding: 0 4px !important;
+  line-height: 1.1 !important;
+}
+.item-tree .p-virtualscroller .p-tree-node-content {
+  padding-top: 0 !important;
+  padding-right: 4px !important;
+  padding-bottom: 0 !important;
   line-height: 1.1 !important;
 }
 .item-tree .p-tree-node-toggle-button {
   height: 1.1em !important;
+}
+
+/* Items view "more actions" (⋮) menu — flags the Delete entry the same red
+   as severity="danger" pButtons used elsewhere, since a plain MenuItem has
+   no built-in severity/danger styling of its own. */
+.p-menu-item.menu-item-danger .p-menu-item-link {
+  color: var(--shng-red);
 }
 
 /* PrimeNG DataTable column headers: left-align text */
@@ -1052,13 +906,13 @@ a.text-shng:hover {
 
 /* Code editor wrapper areas: visible border */
 .items-fileeditor {
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--shng-border);
   border-radius: 4px;
 }
 
 .editor-area,
 .tab-editor-area {
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--shng-border);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -1140,8 +994,95 @@ a.text-shng:hover {
   color: var(--shng-red);
   font-weight: var(--font-weight-bold); /* sparingly: status indicator */
 }
+.shng-status-warning {
+  color: var(--shng-amber);
+  font-weight: var(--font-weight-bold); /* sparingly: status indicator */
+}
 .shng-cell-alt {
   background-color: var(--shng-cell-alt-bg);
+}
+
+/* Small count/status pill — e.g. the item-tree child-count badge */
+.shng-badge {
+  background-color: var(--shng-badge-bg);
+  color: var(--shng-badge-text);
+  border-radius: 3px;
+}
+
+/* ================================================================
+   Dark mode
+   Applied via a `dark-mode` class on <html> (ThemeService). PrimeNG's
+   own component tokens are handled separately via the preset's
+   darkModeSelector (main.ts) — this section only covers app-owned
+   semantic variables plus the handful of hardcoded light-only colours
+   (mostly black-tint rgba() overlays, which read as barely-visible on
+   a dark background and need a white-tint equivalent instead).
+   Deliberately does NOT touch the "legacy" plugin-webinterface
+   sections, which exist for markup injected by third-party plugin
+   webinterfaces, not this app.
+   ================================================================ */
+.dark-mode {
+  color-scheme: dark;
+
+  --shng-page-bg: #1e1e1e;
+  --shng-border: #444444;
+  --shng-disabled: #5a5a5a;
+  --shng-secondary-button: #3a3a3a;
+  --shng-toggle-off: #666666;
+  --shng-cell-alt-bg: #272727;
+  --shng-badge-bg: #4a4a4a;
+  --shng-badge-text: #e0e0e0;
+
+  --text-primary: #e0e0e0;
+  --text-secondary: #c0c0c0;
+  --text-muted: #9a9a9a;
+  --text-caption: #a0a0a0;
+  --text-placeholder: #6b6b6b;
+  --text-link: #6fa8dc;
+}
+
+.dark-mode .table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .card,
+.dark-mode .card-header,
+.dark-mode .item-box {
+  border-color: rgba(255, 255, 255, 0.125);
+}
+.dark-mode .card-header {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+.dark-mode .item-box {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.dark-mode .table .shng_heading th {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark-mode .p-accordionheader {
+  background-color: rgba(255, 255, 255, 0.09) !important;
+}
+.dark-mode .p-accordionheader:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+.dark-mode .p-accordionheader[data-p-active='true']:hover {
+  background-color: rgba(255, 255, 255, 0.09) !important;
+}
+
+.dark-mode .sortable-th:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+/* .table-hover's base rule (line ~420) hardcodes a light-blue #ecf3f8
+   row background for light mode. Text color already switches to the
+   dark-mode palette, but that fixed light background doesn't - pairing
+   light text on a near-white row is unreadable. Same translucent-white
+   overlay approach as the other dark-mode hover states above. */
+.dark-mode .table-hover > tbody > tr:hover > td,
+.dark-mode .table-hover > tbody > tr:hover > th {
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 /* ================================================================

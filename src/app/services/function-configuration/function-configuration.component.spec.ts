@@ -109,11 +109,11 @@ describe('FunctionConfigurationComponent', () => {
 
   it('ngOnInit() populates functionFiles from the file list', () => {
     // mockFileList has 3 entries; functionFiles should have one SelectItem per entry
-    expect(component.functionFiles.length).toBe(mockFileList.length);
+    expect(component.functionFiles().length).toBe(mockFileList.length);
   });
 
   it('functionFiles labels match the filenames from the API', () => {
-    const labels = component.functionFiles.map((f) => f.label);
+    const labels = component.functionFiles().map((f) => f.label);
     expect(labels).toEqual(mockFileList);
   });
 
@@ -138,14 +138,14 @@ describe('FunctionConfigurationComponent', () => {
   // -------------------------------------------------------------------------
 
   it('deleteConfig() captures the current filename in delete_param', () => {
-    component.myEditFilename = 'utils';
+    component.myEditFilename.set('utils');
     component.deleteConfig();
     expect((component.delete_param as { config: string }).config).toBe('utils');
   });
 
   it('deleteConfig() opens the confirm-delete dialog', () => {
     component.confirmdelete_display = false;
-    component.myEditFilename = 'utils';
+    component.myEditFilename.set('utils');
     component.deleteConfig();
     expect(component.confirmdelete_display).toBe(true);
   });
@@ -155,14 +155,14 @@ describe('FunctionConfigurationComponent', () => {
   // -------------------------------------------------------------------------
 
   it('checkInput() disables add button when newFilename is empty', () => {
-    component.filelist = mockFileList;
+    component.filelist.set(mockFileList);
     component.newFilename = '';
     component.checkInput();
     expect(component.add_enabled).toBe(false);
   });
 
   it('checkInput() enables add button when newFilename is non-empty and not taken', () => {
-    component.filelist = mockFileList;
+    component.filelist.set(mockFileList);
     component.newFilename = 'my_new_func';
     component.checkInput();
     expect(component.add_enabled).toBe(true);
@@ -170,7 +170,7 @@ describe('FunctionConfigurationComponent', () => {
   });
 
   it('checkInput() disables add and sets fileExists when filename already taken', () => {
-    component.filelist = mockFileList; // includes 'utils.py'
+    component.filelist.set(mockFileList); // includes 'utils.py'
     component.newFilename = 'utils'; // matches 'utils.py' without extension
     component.checkInput();
     expect(component.add_enabled).toBe(false);
@@ -178,7 +178,7 @@ describe('FunctionConfigurationComponent', () => {
   });
 
   it('checkInput() clears fileExists flag for new filename', () => {
-    component.filelist = mockFileList;
+    component.filelist.set(mockFileList);
     component.newFilename = 'brand_new';
     component.checkInput();
     expect(component.fileExists).toBe(false);
@@ -191,16 +191,16 @@ describe('FunctionConfigurationComponent', () => {
   it('functionFileSelected() strips .py extension and sets myEditFilename', () => {
     component.selectedFunctionfile = { label: 'utils.py', value: 'utils.py' };
     // getFunctionFile is called but just reads a file — we only care about the side-effect
-    component.myEditFilename = '';
+    component.myEditFilename.set('');
     // can't fully test without file load completing, but at least check it doesn't throw
     expect(() => component.functionFileSelected()).not.toThrow();
   });
 
   it('functionFileSelected() sets cmReadOnly=true for non-.py files', () => {
     component.selectedFunctionfile = { label: 'README.txt', value: 'README.txt' };
-    component.cmReadOnly = false;
+    component.cmReadOnly.set(false);
     component.functionFileSelected();
-    expect(component.cmReadOnly).toBe(true);
-    expect(component.myEditFilename).toBe('');
+    expect(component.cmReadOnly()).toBe(true);
+    expect(component.myEditFilename()).toBe('');
   });
 });

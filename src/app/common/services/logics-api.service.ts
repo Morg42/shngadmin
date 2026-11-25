@@ -54,10 +54,6 @@ export class LogicsApiService {
     const apiUrl = this.appConfig.apiUrl;
     let url = apiUrl + 'logics/';
     return this.http.get(url).pipe(
-      map((response) => {
-        const result = response;
-        return result;
-      }),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'LogicsApiService.getLogics(): Could not read logics data' + ' - ' + err.error.error,
@@ -69,12 +65,8 @@ export class LogicsApiService {
 
   getLogic(logicname: string) {
     const apiUrl = this.appConfig.apiUrl;
-    let url = apiUrl + 'logics/' + logicname;
+    let url = apiUrl + 'logics/' + encodeURIComponent(logicname);
     return this.http.get(url).pipe(
-      map((response) => {
-        const result = response;
-        return result;
-      }),
       catchError((err: HttpErrorResponse) => {
         this.log.error(
           'LogicsApiService.getLogic(' +
@@ -90,7 +82,7 @@ export class LogicsApiService {
 
   getLogicState(logicname: string) {
     const apiUrl = this.appConfig.apiUrl;
-    let url = apiUrl + 'logics/' + logicname + '?infotype=status';
+    let url = apiUrl + 'logics/' + encodeURIComponent(logicname) + '?infotype=status';
     return this.http.get(url).pipe(
       map((response) => {
         const result = response;
@@ -115,8 +107,11 @@ export class LogicsApiService {
     action = action.toLowerCase();
     // this.log.warn('LogicsApiService.setLogicState', {logicName}, {action});
 
+    // Clear a sticky error toast from a previous attempt so a retry that succeeds doesn't leave it stuck on screen.
+    this.messageService.clear();
+
     const apiUrl = this.appConfig.apiUrl;
-    let url = apiUrl + 'logics/' + logicName + '?action=' + action;
+    let url = apiUrl + 'logics/' + encodeURIComponent(logicName) + '?action=' + action;
     if (filename !== '') {
       url += '&filename=' + filename;
     }
@@ -156,7 +151,11 @@ export class LogicsApiService {
   renameLogic(oldName: string, newName: string, newFilename: string) {
     const apiUrl = this.appConfig.apiUrl;
     let url =
-      apiUrl + 'logics/' + oldName + '?action=rename&filename=' + encodeURIComponent(newName);
+      apiUrl +
+      'logics/' +
+      encodeURIComponent(oldName) +
+      '?action=rename&filename=' +
+      encodeURIComponent(newName);
     if (newFilename !== '') {
       url += '&newfilename=' + encodeURIComponent(newFilename);
     }
@@ -196,7 +195,7 @@ export class LogicsApiService {
     // this.log.warn('LogicsApiService.saveLogicParameters', {logicName}, {paramObj});
 
     const apiUrl = this.appConfig.apiUrl;
-    const url = apiUrl + 'logics/' + logicName + '?action=' + 'saveparameters';
+    const url = apiUrl + 'logics/' + encodeURIComponent(logicName) + '?action=' + 'saveparameters';
     return this.http.put(url, JSON.stringify(paramObj)).pipe(
       map((response) => {
         const result = response as ApiResult;
@@ -238,7 +237,7 @@ export class LogicsApiService {
 
   saveLogicGroup(groupName: string, group: unknown) {
     const apiUrl = this.appConfig.apiUrl;
-    const url = apiUrl + 'logics/' + groupName + '?action=' + 'savegroup';
+    const url = apiUrl + 'logics/' + encodeURIComponent(groupName) + '?action=' + 'savegroup';
     return this.http.put(url, JSON.stringify(group)).pipe(
       map((response) => {
         const result = response as ApiResult;
@@ -276,7 +275,7 @@ export class LogicsApiService {
 
   deleteLogicGroup(groupName: string) {
     const apiUrl = this.appConfig.apiUrl;
-    const url = apiUrl + 'logics/' + groupName + '?action=' + 'deletegroup';
+    const url = apiUrl + 'logics/' + encodeURIComponent(groupName) + '?action=' + 'deletegroup';
     return this.http.put(url, JSON.stringify('')).pipe(
       map((response) => {
         const result = response as ApiResult;

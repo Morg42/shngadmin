@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560" font-family="'Segoe UI',Arial,sans-serif">
+  <rect width="900" height="560" fill="#F9FAFB"/>
+  <text x="450" y="26" text-anchor="middle" font-size="16" font-weight="bold" fill="#111827">shngAdmin — Component Tree &amp; Feature Modules</text>
+  <text x="450" y="43" text-anchor="middle" font-size="10" fill="#6B7280">Angular renders a single page. The Router swaps feature content into the &lt;router-outlet&gt; slot.</text>
+
+  <!-- ROOT -->
+  <rect x="340" y="58" width="220" height="48" rx="6" fill="#1E40AF" stroke="#1E3A8A" stroke-width="2"/>
+  <text x="450" y="78" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">AppComponent</text>
+  <text x="450" y="94" text-anchor="middle" font-size="9" fill="#BFDBFE">Root shell — always present</text>
+
+  <!-- connector lines from root -->
+  <line x1="450" y1="106" x2="450" y2="122" stroke="#9CA3AF" stroke-width="1.5"/>
+  <!-- horizontal bar -->
+  <line x1="100" y1="122" x2="790" y2="122" stroke="#9CA3AF" stroke-width="1.5"/>
+  <!-- verticals down to children -->
+  <line x1="100" y1="122" x2="100" y2="138" stroke="#9CA3AF" stroke-width="1.5"/>
+  <line x1="270" y1="122" x2="270" y2="138" stroke="#9CA3AF" stroke-width="1.5"/>
+  <line x1="450" y1="122" x2="450" y2="138" stroke="#9CA3AF" stroke-width="1.5"/>
+  <line x1="630" y1="122" x2="630" y2="138" stroke="#9CA3AF" stroke-width="1.5"/>
+  <line x1="790" y1="122" x2="790" y2="138" stroke="#9CA3AF" stroke-width="1.5"/>
+
+  <!-- Child components -->
+  <rect x="30" y="138" width="140" height="52" rx="5" fill="#DCFCE7" stroke="#86EFAC" stroke-width="1.5"/>
+  <text x="100" y="158" text-anchor="middle" font-size="10" font-weight="bold" fill="#14532D">TopNavigation</text>
+  <text x="100" y="172" text-anchor="middle" font-size="9" fill="#166534">Component</text>
+  <text x="100" y="184" text-anchor="middle" font-size="8" fill="#166534">Menu, user info, theme picker</text>
+
+  <rect x="200" y="138" width="140" height="52" rx="5" fill="#DCFCE7" stroke="#86EFAC" stroke-width="1.5"/>
+  <text x="270" y="158" text-anchor="middle" font-size="10" font-weight="bold" fill="#14532D">OfflineBanner</text>
+  <text x="270" y="172" text-anchor="middle" font-size="9" fill="#166534">Component</text>
+  <text x="270" y="184" text-anchor="middle" font-size="8" fill="#166534">Shows retry countdown</text>
+
+  <rect x="380" y="138" width="140" height="52" rx="5" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1.5"/>
+  <text x="450" y="158" text-anchor="middle" font-size="10" font-weight="bold" fill="#1E40AF">&lt;router-outlet&gt;</text>
+  <text x="450" y="172" text-anchor="middle" font-size="9" fill="#1E3A8A">Lazy feature modules</text>
+  <text x="450" y="184" text-anchor="middle" font-size="8" fill="#1E3A8A">loaded on demand</text>
+
+  <rect x="560" y="138" width="140" height="52" rx="5" fill="#DCFCE7" stroke="#86EFAC" stroke-width="1.5"/>
+  <text x="630" y="158" text-anchor="middle" font-size="10" font-weight="bold" fill="#14532D">LoginComponent</text>
+  <text x="630" y="172" text-anchor="middle" font-size="9" fill="#166534">Shown at /login</text>
+  <text x="630" y="184" text-anchor="middle" font-size="8" fill="#166534">Not guarded</text>
+
+  <rect x="720" y="138" width="140" height="52" rx="5" fill="#DCFCE7" stroke="#86EFAC" stroke-width="1.5"/>
+  <text x="790" y="158" text-anchor="middle" font-size="10" font-weight="bold" fill="#14532D">NotFound</text>
+  <text x="790" y="172" text-anchor="middle" font-size="9" fill="#166534">Component</text>
+  <text x="790" y="184" text-anchor="middle" font-size="8" fill="#166534">Catch-all / ** route</text>
+
+  <!-- Feature modules from router-outlet -->
+  <line x1="450" y1="190" x2="450" y2="214" stroke="#3B82F6" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <line x1="58.0" y1="214" x2="842.0" y2="214" stroke="#3B82F6" stroke-width="1" stroke-dasharray="4,3"/>
+
+  <!-- 9 feature module columns (guarded: appReadyGuard + authGuard) -->
+  <line x1="58.0" y1="214" x2="58.0" y2="230" stroke="#3B82F6" stroke-width="1"/>
+  <rect x="13.0" y="230" width="90" height="116" rx="5" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1.5"/>
+  <text x="58.0" y="248" text-anchor="middle" font-size="10" font-weight="bold" fill="#78350F">dashboard/</text>
+  <text x="58.0" y="262" text-anchor="middle" font-size="8.5" fill="#92400E">/dashboard</text>
+  <text x="58.0" y="280" text-anchor="middle" font-size="8" fill="#92400E">DashboardOverview</text>
+  <text x="58.0" y="295" text-anchor="middle" font-size="8" fill="#92400E">Status cards</text>
+  <text x="58.0" y="310" text-anchor="middle" font-size="8" fill="#92400E">Stopped plugins</text>
+  <text x="58.0" y="325" text-anchor="middle" font-size="8" fill="#92400E">Overdue schedulers</text>
+  <text x="58.0" y="340" text-anchor="middle" font-size="8" fill="#92400E">Recent warnings</text>
+  <line x1="156.0" y1="214" x2="156.0" y2="230" stroke="#3B82F6" stroke-width="1"/>
+  <rect x="111.0" y="230" width="90" height="116" rx="5" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1.5"/>
+  <text x="156.0" y="248" text-anchor="middle" font-size="10" font-weight="bold" fill="#78350F">system/</text>
+  <text x="156.0" y="262" text-anchor="middle" font-size="8.5" fill="#92400E">/system</text>
+  <text x="156.0" y="280" text-anchor="middle" font-size="8" fill="#92400E">SystemComponent</text>
+  <text x="156.0" y="295" text-anchor="middle" font-size="8" fill="#92400E">CPU/RAM/disk charts</text>
+  <text x="156.0" y="310" text-anchor="middle" font-size="8" fill="#92400E">Thread charts</text>
+  <text x="156.0" y="325" text-anchor="middle" font-size="8" fill="#92400E">SystemConfig</text>
+  <text x="156.0" y="340" text-anchor="middle" font-size="8" fill="#92400E">Core config editor</text>
+  <line x1="254.0" y1="214" x2="254.0" y2="230" stroke="#3B82F6" stroke-width="1"/>
+  <rect x="209.0" y="230" width="90" height="116" rx="5" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1.5"/>
+  <text x="254.0" y="248" text-anchor="middle" font-size="10" font-weight="bold" fill="#78350F">items/</text>
+  <text x="254.0" y="262" text-anchor="middle" font-size="8.5" fill="#92400E">/items</text>
+  <text x="254.0" y="280" text-anchor="middle" font-size="8" fill="#92400E">ItemTree</text>
+  <text x="254.0" y="295" text-anchor="middle" font-size="8" fill="#92400E">Tree + item detail</text>
+  <text x="254.0" y="310" text-anchor="middle" font-size="8" fill="#92400E">Create/edit/rename/</text>
+  <text x="254.0" y="325" text-anchor="middle" font-size="8" fill="#92400E">delete dialogs</text>
+  <text x="254.0" y="340" text-anchor="middle" font-size="8" fill="#92400E">Item/struct files</text>
+  <line x1="352.0" y1="214" x2="352.0" y2="230" stroke="#3B82F6" stroke-width="1"/>
+  <rect x="307.0" y="230" width="90" height="116" rx="5" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1.5"/>
+  <text x="352.0" y="248" text-anchor="middle" font-size="10" font-weight="bold" fill="#78350F">logics/</text>
+  <text x="352.0" y="262" text-anchor="middle" font-size="8.5" fill="#92400E">/logics</text>
+  <text x="352.0" y="280" text-anchor="middle" font-size="8" fill="#92400E">LogicsList</text>
+  <text x="352.0" y="295" text-anchor="middle" font-size="8" fill="#92400E">LogicsGroups</text>
+  <text x="352.0" y="310" text-anchor="middle" font-size="8" fill="#92400E">LogicsEdit</text>
+  <text x="352.0" y="325" text-anchor="middle" font-size="8" fill="#92400E">(CodeMirror)</text>
+  <text x="352.0" y="340" text-anchor="middle" font-size="8" fill="#92400E">Enable / trigger</text>
+  <line x1="450.0" y1="214" x2="450.0" y2="230" stroke="#3B82F6" stroke-width="1"/>
+  <rect x="405.0" y="230" width="90" height="116" rx="5" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1.5"/>
+  <text x="450.0" y="248" text-anchor="middle" font-size="10" font-weight="bold" fill="#78350F">schedulers/</text>
+  <text x="450.0" y="262" text-anchor="middle" font-size="8.5" fill="#92400E">/schedulers</text>
+  <text x="450.0" y="280" text-anchor="middle" font-size="8" fill="#92400E">Schedulers</text>
+  <text x="450.0" y="295" text-anchor="middle" font-size="8" fill="#92400E">Scheduler fire times</text>
+  <text x="450.0" y="310" text-anchor="middle" font-size="8" fill="#92400E">Threads</text>
+  <text x="450.0" y="325" text-anchor="middle" font-size="8" fill="#92400E">Python thread list</text>
+  <text x="450.0" y="340" text-anchor="middle" font-size="8" fill="#92400E">Task cancel</text>
+  <line x1="548.0" y1="214" x2="548.0" y2="230" stroke="#3B82F6" stroke-width="1"/>
+  <rect x="503.0" y="230" width="90" height="116" rx="5" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1.5"/>
+  <text x="548.0" y="248" text-anchor="middle" font-size="10" font-weight="bold" fill="#78350F">plugins/</text>
+  <text x="548.0" y="262" text-anchor="middle" font-size="8.5" fill="#92400E">/plugins</text>
+  <text x="548.0" y="280" text-anchor="middle" font-size="8" fill="#92400E">Plugins</text>
+  <text x="548.0" y="295" text-anchor="middle" font-size="8" fill="#92400E">Instance overview</text>
+  <text x="548.0" y="310" text-anchor="middle" font-size="8" fill="#92400E">PluginConfig</text>
+  <text x="548.0" y="325" text-anchor="middle" font-size="8" fill="#92400E">Parameter editor</text>
+  <line x1="646.0" y1="214" x2="646.0" y2="230" stroke="#3B82F6" stroke-width="1"/>
+  <rect x="601.0" y="230" width="90" height="116" rx="5" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1.5"/>
+  <text x="646.0" y="248" text-anchor="middle" font-size="10" font-weight="bold" fill="#78350F">scenes/</text>
+  <text x="646.0" y="262" text-anchor="middle" font-size="8.5" fill="#92400E">/scenes</text>
+  <text x="646.0" y="280" text-anchor="middle" font-size="8" fill="#92400E">Scenes</text>
+  <text x="646.0" y="295" text-anchor="middle" font-size="8" fill="#92400E">Groups, values,</text>
+  <text x="646.0" y="310" text-anchor="middle" font-size="8" fill="#92400E">actions</text>
+  <text x="646.0" y="325" text-anchor="middle" font-size="8" fill="#92400E">SceneConfig</text>
+  <text x="646.0" y="340" text-anchor="middle" font-size="8" fill="#92400E">Scene file editor</text>
+  <line x1="744.0" y1="214" x2="744.0" y2="230" stroke="#3B82F6" stroke-width="1"/>
+  <rect x="699.0" y="230" width="90" height="116" rx="5" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1.5"/>
+  <text x="744.0" y="248" text-anchor="middle" font-size="10" font-weight="bold" fill="#78350F">logs/</text>
+  <text x="744.0" y="262" text-anchor="middle" font-size="8.5" fill="#92400E">/logs</text>
+  <text x="744.0" y="280" text-anchor="middle" font-size="8" fill="#92400E">LogDisplay</text>
+  <text x="744.0" y="295" text-anchor="middle" font-size="8" fill="#92400E">Chunked log viewer</text>
+  <text x="744.0" y="310" text-anchor="middle" font-size="8" fill="#92400E">LoggerList</text>
+  <text x="744.0" y="325" text-anchor="middle" font-size="8" fill="#92400E">Levels, handlers</text>
+  <text x="744.0" y="340" text-anchor="middle" font-size="8" fill="#92400E">LoggingConfig</text>
+  <line x1="842.0" y1="214" x2="842.0" y2="230" stroke="#3B82F6" stroke-width="1"/>
+  <rect x="797.0" y="230" width="90" height="116" rx="5" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1.5"/>
+  <text x="842.0" y="248" text-anchor="middle" font-size="10" font-weight="bold" fill="#78350F">services/</text>
+  <text x="842.0" y="262" text-anchor="middle" font-size="8.5" fill="#92400E">/services</text>
+  <text x="842.0" y="280" text-anchor="middle" font-size="8" fill="#92400E">Services</text>
+  <text x="842.0" y="295" text-anchor="middle" font-size="8" fill="#92400E">YAML / eval tools</text>
+  <text x="842.0" y="310" text-anchor="middle" font-size="8" fill="#92400E">Backup / restore</text>
+  <text x="842.0" y="325" text-anchor="middle" font-size="8" fill="#92400E">Cache cleanup</text>
+  <text x="842.0" y="340" text-anchor="middle" font-size="8" fill="#92400E">Functions editor</text>
+
+  <!-- Shared components box -->
+  <rect x="20" y="370" width="860" height="80" rx="6" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+  <text x="450" y="390" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155">Shared Components (src/app/common/components/)</text>
+  <text x="130" y="410" text-anchor="middle" font-size="9.5" fill="#475569">CodeEditorComponent</text>
+  <text x="130" y="424" text-anchor="middle" font-size="8.5" fill="#64748B">CodeMirror 6 — Python, YAML, JS, XML</text>
+  <text x="345" y="410" text-anchor="middle" font-size="9.5" fill="#475569">DynamicFieldComponent</text>
+  <text x="345" y="424" text-anchor="middle" font-size="8.5" fill="#64748B">Renders parameter fields by type</text>
+  <text x="560" y="410" text-anchor="middle" font-size="9.5" fill="#475569">FileEditorLayoutComponent</text>
+  <text x="560" y="424" text-anchor="middle" font-size="8.5" fill="#64748B">Toolbar / file list / editor grid</text>
+  <text x="775" y="410" text-anchor="middle" font-size="9.5" fill="#475569">OfflineBannerComponent</text>
+  <text x="775" y="424" text-anchor="middle" font-size="8.5" fill="#64748B">Sticky banner when offline</text>
+
+  <!-- Note about OnPush -->
+  <rect x="20" y="468" width="860" height="72" rx="6" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="1.5"/>
+  <text x="450" y="488" text-anchor="middle" font-size="11" font-weight="bold" fill="#065F46">Angular Change Detection: OnPush everywhere</text>
+  <text x="450" y="508" text-anchor="middle" font-size="9" fill="#047857">Every component uses ChangeDetectionStrategy.OnPush.  Angular does NOT check the component on every browser event — it only</text>
+  <text x="450" y="522" text-anchor="middle" font-size="9" fill="#047857">re-renders when an @Input reference changes, a signal it reads is written, or a toSignal() source emits.</text>
+  <text x="450" y="536" text-anchor="middle" font-size="9" fill="#047857">The app is zoneless: state lives in signals, so manual change-detection calls are the exception.</text>
+</svg>

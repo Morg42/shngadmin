@@ -37,18 +37,50 @@
       "alive": "True"
     },
     {
-      "name": "Thread-1",
-      "sort": "thread-1",
+      "name": "logics.slow",
+      "sort": "logics.slow",
       "id": 139628436793088,
       "native_id": "18237",
-      "alive": "True"
+      "alive": "True",
+      "task": {
+        "type": "logic",
+        "name": "logics.slow",
+        "started_at": "2026-10-22T10:00:00+02:00",
+        "runtime": 187.4,
+        "runtime_warn": 120,
+        "overdue": true,
+        "trigger": {
+          "by": "Scheduler",
+          "source": "cycle",
+          "source_details": null,
+          "dest": null,
+          "value": null
+        },
+        "task_id": 17,
+        "cancellable": true,
+        "cancel_requested": 12.3,
+        "cancel_requests": 2
+      }
     },
     {
-      "name": "Thread-2",
-      "sort": "thread-2",
+      "name": "plugins.foo.poll",
+      "sort": "plugins.foo.poll",
       "id": 139628428400384,
       "native_id": "18238",
-      "alive": "True"
+      "alive": "True",
+      "task": {
+        "type": "method",
+        "name": "plugins.foo.poll",
+        "started_at": "2026-10-22T10:03:05+02:00",
+        "runtime": 2.3,
+        "runtime_warn": 120,
+        "overdue": false,
+        "trigger": null,
+        "task_id": 18,
+        "cancellable": false,
+        "cancel_requested": null,
+        "cancel_requests": 0
+      }
     },
     {
       "name": "Thread-23",

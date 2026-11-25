@@ -1,5 +1,4 @@
 {
-  "readonly": false,
   "plugin_config": {
     "backend": {
       "plugin_name": "backend",
@@ -63,7 +62,9 @@
       "_description": {
         "de": "Web Interface zur Anzeige von Informationen zum System und SmartHomeNG Backend-Daten",
         "en": "webinterface for displaying system information and SmartHomeNG backend data"
-      }
+      },
+      "_loaded": true,
+      "_running": true
     },
     "blockly": {
       "plugin_name": "blockly",
@@ -249,7 +250,9 @@
       "_description": {
         "de": "Command Line Interface für SmartHomeNG - Funktioniert mit SmartHomeNG v1.4 und höher",
         "en": "Commandline interface for SmartHomeNG - Works with SmartHomeNG v1.4 and up"
-      }
+      },
+      "_loaded": true,
+      "_running": false
     },
     "develop": {
       "plugin_name": "priv_develop",
@@ -1436,8 +1439,7 @@
       }
     },
     "tankerkoenig": {
-      "class_name": "TankerKoenig",
-      "class_path": "plugins.tankerkoenig",
+      "plugin_name": "tankerkoenig",
       "apikey": "3f16971f-da07-7d31-4c51-294c2d07cf06",
       "_meta": {
         "plugin": {
@@ -2606,8 +2608,7 @@
       }
     },
     "dreambox_wz": {
-      "class_name": "Enigma2",
-      "class_path": "plugins.enigma2",
+      "plugin_name": "enigma2",
       "host": "10.0.0.91",
       "port": "80",
       "cycle": "120",
@@ -2851,8 +2852,7 @@
       }
     },
     "dreambox_sz": {
-      "class_name": "Enigma2",
-      "class_path": "plugins.enigma2",
+      "plugin_name": "enigma2",
       "host": "10.0.0.92",
       "port": "80",
       "cycle": "90",
@@ -3096,8 +3096,7 @@
       }
     },
     "dreambox_az": {
-      "class_name": "Enigma2",
-      "class_path": "plugins.enigma2",
+      "plugin_name": "enigma2",
       "host": "10.0.0.93",
       "port": "80",
       "cycle": "60",
@@ -3366,8 +3365,7 @@
       }
     },
     "HUE": {
-      "class_name": "HUE",
-      "class_path": "plugins.hue",
+      "plugin_name": "hue",
       "hue_ip": ["PhilipsHueBridge.fritz.box", "10.0.0.236"],
       "hue_port": [80, 80],
       "hue_user": ["knxbususer", "user2"],
@@ -3457,16 +3455,15 @@
         "en": "Gateway for connection to one or more Philips HUE bridges"
       }
     },
-    "sampleclassic": {
-      "plugin_name": "priv_sample_classicplugin",
+    "sampleuntyped": {
+      "plugin_name": "priv_sample_untypedplugin",
       "_meta": {
         "plugin": {
-          "type": "classic",
           "description": {
             "de": "Implementierung von ...",
             "en": "GImplementation of ..."
           },
-          "classname": "Classic"
+          "classname": "Untyped"
         }
       }
     },
@@ -4063,8 +4060,7 @@
       }
     },
     "WebServices": {
-      "class_name": "WebServices",
-      "class_path": "plugins.webservices",
+      "plugin_name": "webservices",
       "_meta": {
         "plugin": {
           "type": "web",

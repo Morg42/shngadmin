@@ -34,7 +34,7 @@ describe('LogicsEditComponent', () => {
     getLogic: () => of({ name: 'testlogic', group: '', enabled: true, logic_description: '' }),
     getLogicState: () => of({}),
     setLogicState: () => of({}),
-    saveLogicParameters: () => of({}),
+    saveLogicParameters: jest.fn().mockReturnValue(of({})),
   };
 
   beforeEach(async () => {
@@ -88,7 +88,7 @@ describe('LogicsEditComponent', () => {
     (component as any).codeEditorWatchItems = { codeMirror: cmStub };
     fixture.detectChanges();
     // Override ViewChild after detectChanges so Angular's resolution doesn't overwrite it
-    (component as any).groupAutoComplete = { show: jest.fn() };
+    (component as any).groupAutoComplete = () => ({ show: jest.fn() });
   });
 
   it('should create', () => {
@@ -100,14 +100,14 @@ describe('LogicsEditComponent', () => {
   // -------------------------------------------------------------------------
 
   it('allGroupNames is populated from the groups API response', () => {
-    expect(component.allGroupNames).toEqual(['alpha', 'beta', 'gamma']);
+    expect(component.allGroupNames()).toEqual(['alpha', 'beta', 'gamma']);
   });
 
   it('allGroupNames is sorted alphabetically (case-insensitive)', () => {
-    const sorted = [...component.allGroupNames].sort((a, b) =>
+    const sorted = [...component.allGroupNames()].sort((a, b) =>
       a.toLowerCase().localeCompare(b.toLowerCase()),
     );
-    expect(component.allGroupNames).toEqual(sorted);
+    expect(component.allGroupNames()).toEqual(sorted);
   });
 
   // -------------------------------------------------------------------------
@@ -115,32 +115,32 @@ describe('LogicsEditComponent', () => {
   // -------------------------------------------------------------------------
 
   it('searchGroups() with empty query returns all group names', () => {
-    component.logicGroupChips = [];
+    component.logicGroupChips.set([]);
     component.searchGroups({ query: '' });
     expect(component.filteredGroupNames).toEqual(['alpha', 'beta', 'gamma']);
   });
 
   it('searchGroups() filters by substring (case-insensitive)', () => {
-    component.logicGroupChips = [];
+    component.logicGroupChips.set([]);
     component.searchGroups({ query: 'a' });
     // 'alpha', 'beta', 'gamma' all contain 'a'
     expect(component.filteredGroupNames).toEqual(['alpha', 'beta', 'gamma']);
   });
 
   it('searchGroups() narrows results as query becomes more specific', () => {
-    component.logicGroupChips = [];
+    component.logicGroupChips.set([]);
     component.searchGroups({ query: 'alp' });
     expect(component.filteredGroupNames).toEqual(['alpha']);
   });
 
   it('searchGroups() returns empty array when nothing matches', () => {
-    component.logicGroupChips = [];
+    component.logicGroupChips.set([]);
     component.searchGroups({ query: 'zzz' });
     expect(component.filteredGroupNames).toEqual([]);
   });
 
   it('searchGroups() excludes already-selected chips from suggestions', () => {
-    component.logicGroupChips = ['alpha', 'gamma'];
+    component.logicGroupChips.set(['alpha', 'gamma']);
     component.searchGroups({ query: '' });
     expect(component.filteredGroupNames).toEqual(['beta']);
   });
@@ -150,13 +150,13 @@ describe('LogicsEditComponent', () => {
   // -------------------------------------------------------------------------
 
   it('onGroupFocus() sets filteredGroupNames to unused groups', () => {
-    component.logicGroupChips = ['beta'];
+    component.logicGroupChips.set(['beta']);
     component.onGroupFocus();
     expect(component.filteredGroupNames).toEqual(['alpha', 'gamma']);
   });
 
   it('onGroupFocus() with no chips selected returns all groups', () => {
-    component.logicGroupChips = [];
+    component.logicGroupChips.set([]);
     component.onGroupFocus();
     expect(component.filteredGroupNames).toEqual(['alpha', 'beta', 'gamma']);
   });
@@ -166,22 +166,125 @@ describe('LogicsEditComponent', () => {
   // -------------------------------------------------------------------------
 
   it('onGroupChipsChange() writes a pipe-separated string to logic.group', () => {
-    component.logicGroupChips = ['alpha', 'beta'];
+    component.logicGroupChips.set(['alpha', 'beta']);
     component.onGroupChipsChange();
-    expect(component.logic.group).toBe('alpha | beta');
+    expect(component.logic().group).toBe('alpha | beta');
   });
 
   it('onGroupChipsChange() writes empty string when chips are empty', () => {
-    component.logicGroupChips = [];
+    component.logicGroupChips.set([]);
     component.onGroupChipsChange();
-    expect(component.logic.group).toBe('');
+    expect(component.logic().group).toBe('');
   });
 
   it('onGroupChipsChange() marks logicChanged when chips differ from original', () => {
     // After fixture loads, logicGroupChips is [] and logicGroupOrig is the original value.
     // Adding a chip that wasn't there before should set logicChanged = true.
-    component.logicGroupChips = ['alpha'];
+    component.logicGroupChips.set(['alpha']);
     component.onGroupChipsChange();
-    expect(component.logicChanged).toBe(true);
+    expect(component.logicChanged()).toBe(true);
+  });
+
+  // -------------------------------------------------------------------------
+  // saveParameters(): validates plugin parameters before saving - previously
+  // this table had no submit-time validation at all.
+  // -------------------------------------------------------------------------
+
+  describe('saveParameters', () => {
+    it('saves when every parameter passes validation', () => {
+      component.parameters.set([{ name: 'cycle', type: 'int', value: 30 }]);
+
+      component.saveParameters(false);
+
+      expect(mockLogicsApi.saveLogicParameters).toHaveBeenCalled();
+    });
+
+    it('rejects an out-of-range parameter without saving, shows a sticky error toast', () => {
+      component.parameters.set([{ name: 'my_param', type: 'int', value: 5, valid_min: 10 }]);
+      mockLogicsApi.saveLogicParameters.mockClear();
+      const messageService = TestBed.inject(MessageService);
+      const addSpy = jest.spyOn(messageService, 'add');
+
+      component.saveParameters(false);
+
+      expect(mockLogicsApi.saveLogicParameters).not.toHaveBeenCalled();
+      expect(addSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ severity: 'error', summary: 'my_param', sticky: true }),
+      );
+    });
+
+    it('saves runtime_warn and runtime_cancel seconds with the other parameters', () => {
+      component.logic.update((l) => ({ ...l, runtime_warn: 360, runtime_cancel: 900 }));
+      mockLogicsApi.saveLogicParameters.mockClear();
+
+      component.saveParameters(false);
+
+      expect(mockLogicsApi.saveLogicParameters).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ runtime_warn: 360, runtime_cancel: 900 }),
+      );
+    });
+
+    it('saves 0 as a value and an empty field as null (unset)', () => {
+      component.logic.update((l) => ({ ...l, runtime_warn: 0, runtime_cancel: null }));
+      mockLogicsApi.saveLogicParameters.mockClear();
+
+      component.saveParameters(false);
+
+      const params = mockLogicsApi.saveLogicParameters.mock.calls[0][1];
+      expect(params.runtime_warn).toBe(0);
+      expect(params.runtime_cancel).toBeNull();
+    });
+
+    it('rejects a negative runtime_warn without saving, shows a sticky error toast', () => {
+      component.logic.update((l) => ({ ...l, runtime_warn: -5 }));
+      mockLogicsApi.saveLogicParameters.mockClear();
+      const addSpy = jest.spyOn(TestBed.inject(MessageService), 'add');
+
+      component.saveParameters(false);
+
+      expect(mockLogicsApi.saveLogicParameters).not.toHaveBeenCalled();
+      expect(addSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ severity: 'error', summary: 'runtime_warn', sticky: true }),
+      );
+    });
+
+    it('does not call onSaved when validation fails', () => {
+      component.parameters.set([{ name: 'my_param', type: 'mac', value: 'not-a-mac' }]);
+      (component as any).shared.is_mac = () => false;
+      const onSaved = jest.fn();
+
+      component.saveParameters(true, onSaved);
+
+      expect(onSaved).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('runtime thresholds', () => {
+    it('parametersChanged() reports an edited runtime_warn', () => {
+      component.runtimeWarnOrig = null;
+      component.logic.update((l) => ({ ...l, runtime_warn: 360 }));
+
+      expect(component.parametersChanged()).toBe(true);
+    });
+
+    it('parametersChanged() treats undefined and null as unchanged', () => {
+      component.logic.update((l) => ({ ...l, runtime_warn: null, runtime_cancel: null }));
+      component.runtimeWarnOrig = null;
+      component.runtimeCancelOrig = null;
+
+      expect(component.parametersChanged()).toBe(false);
+    });
+
+    it('discardChanges() restores the original runtime values', () => {
+      component.runtimeWarnOrig = 120;
+      component.runtimeCancelOrig = null;
+      component.logic.update((l) => ({ ...l, runtime_warn: 999, runtime_cancel: 5 }));
+
+      component.discardChanges();
+
+      expect(component.logic().runtime_warn).toBe(120);
+      expect(component.logic().runtime_cancel).toBeNull();
+    });
   });
 });

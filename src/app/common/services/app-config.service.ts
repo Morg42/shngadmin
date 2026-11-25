@@ -30,7 +30,34 @@ export interface AppConfig {
   itemtreeSearchstart: number;
   developerMode: boolean;
   clickDropdownHeader: boolean;
+  helpLocalAvailable: boolean;
+  // Server-side canonical default (etc/module.yaml admin: dark_mode). Seeds
+  // the theme for browsers that haven't set a local override yet — see
+  // ThemeService for the local-preference layer that takes precedence.
+  darkModeDefault: boolean;
+  // Server-side default (etc/module.yaml admin: resource_graph_period) for the
+  // initial time span requested by the System page's resource graphs, e.g.
+  // '1h'/'6h'/'24h'. A shorter span means more frequent live updates, since
+  // the backend's push interval is tied to the number of plotted points.
+  resourceGraphPeriod: string;
+  // True if the backend is running in a mode (foreground/debug/interactive)
+  // where "Restart Core" cannot actually restart the process - it can only
+  // stop it (see lib/smarthome.py SmartHome.restart()). Used to relabel the
+  // restart button so it doesn't promise a restart it can't deliver.
+  restartStopsOnly: boolean;
+  // True if smarthome.yaml allows host power actions (allow_system_power)
+  // and the host platform supports them.
+  systemPowerAvailable: boolean;
+  // True if the core / plugins checkout of the backend is on a branch with an
+  // upstream, i.e. it can be updated with "git pull" from the Services page.
+  corePullAvailable: boolean;
+  pluginsPullAvailable: boolean;
   fallbackLanguageOrder: string[];
+  // Server-side canonical default (etc/module.yaml admin: start_page) - which
+  // top-level route '' redirects to. Patched during APP_INITIALIZER
+  // (getServerBasicinfo), before the router's initial navigation resolves
+  // that redirect - see app.routes.ts.
+  startPage: string;
 
   // Language (may be updated by the user at runtime)
   defaultLanguage: string;
@@ -54,7 +81,15 @@ const DEFAULT_CONFIG: AppConfig = {
   itemtreeSearchstart: 3,
   developerMode: false,
   clickDropdownHeader: true,
+  helpLocalAvailable: false,
+  darkModeDefault: false,
+  resourceGraphPeriod: '24h',
+  restartStopsOnly: false,
+  systemPowerAvailable: false,
+  corePullAvailable: false,
+  pluginsPullAvailable: false,
   fallbackLanguageOrder: ['en', 'de'],
+  startPage: 'dashboard',
   defaultLanguage: 'en',
 };
 
@@ -141,6 +176,33 @@ export class AppConfigService {
   get developerMode(): boolean {
     return this.snapshot.developerMode;
   }
+  get helpLocalAvailable(): boolean {
+    return this.snapshot.helpLocalAvailable;
+  }
+  get darkModeDefault(): boolean {
+    return this.snapshot.darkModeDefault;
+  }
+  get resourceGraphPeriod(): string {
+    return this.snapshot.resourceGraphPeriod;
+  }
+  get restartStopsOnly(): boolean {
+    return this.snapshot.restartStopsOnly;
+  }
+  get systemPowerAvailable(): boolean {
+    return this.snapshot.systemPowerAvailable;
+  }
+  get corePullAvailable(): boolean {
+    return this.snapshot.corePullAvailable;
+  }
+  get pluginsPullAvailable(): boolean {
+    return this.snapshot.pluginsPullAvailable;
+  }
+  get coreBranch(): string {
+    return this.snapshot.coreBranch;
+  }
+  get pluginsBranch(): string {
+    return this.snapshot.pluginsBranch;
+  }
   get clickDropdownHeader(): boolean {
     return this.snapshot.clickDropdownHeader;
   }
@@ -158,6 +220,9 @@ export class AppConfigService {
   }
   get tznameDST(): string {
     return this.snapshot.tznameDST;
+  }
+  get startPage(): string {
+    return this.snapshot.startPage;
   }
 
   // ----------------------------------------------------------------

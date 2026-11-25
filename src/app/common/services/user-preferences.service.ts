@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 
+export type ThemePreference = 'light' | 'dark' | 'system';
+
 export interface UserPreferences {
   /** ISO 639-1 language code chosen by the user (e.g. 'de', 'en', 'fr'). */
   language?: string;
@@ -9,7 +11,14 @@ export interface UserPreferences {
    * Never written by the user — overwritten by every successful server response.
    */
   cachedServerLanguage?: string;
-  /** Reserved for a future dark-mode toggle. */
+  /**
+   * Theme, chosen via the title-bar menu. 'system' follows the OS's
+   * prefers-color-scheme live; undefined (never chosen) also behaves as
+   * 'system' but is kept distinct from an explicit 'system' choice so a
+   * future default change doesn't look like a user pick either way.
+   */
+  themePreference?: ThemePreference;
+  /** @deprecated Replaced by themePreference. Only read once, to migrate. */
   darkMode?: boolean;
 }
 
@@ -38,6 +47,14 @@ export class UserPreferencesService {
       // Corrupt or unreadable entry — start from a clean slate.
       localStorage.removeItem(UserPreferencesService.STORAGE_KEY);
     }
+
+    // Migrate the old boolean toggle (true/false were always explicit
+    // choices, never "follow system") to the new tri-state preference.
+    if (this.prefs.themePreference === undefined && this.prefs.darkMode !== undefined) {
+      const { darkMode, ...rest } = this.prefs;
+      this.prefs = { ...rest, themePreference: darkMode ? 'dark' : 'light' };
+      this.persist();
+    }
   }
 
   // ----------------------------------------------------------------
@@ -54,6 +71,11 @@ export class UserPreferencesService {
     return this.prefs.cachedServerLanguage;
   }
 
+  /** Saved theme preference, or undefined if the user has never chosen one. */
+  get themePreference(): ThemePreference | undefined {
+    return this.prefs.themePreference;
+  }
+
   // ----------------------------------------------------------------
   // Writes
   // ----------------------------------------------------------------
@@ -66,6 +88,11 @@ export class UserPreferencesService {
   /** Called after a successful server response to persist the server's preferred language. */
   cacheServerLanguage(lang: string): void {
     this.prefs = { ...this.prefs, cachedServerLanguage: lang };
+    this.persist();
+  }
+
+  setThemePreference(themePreference: ThemePreference): void {
+    this.prefs = { ...this.prefs, themePreference };
     this.persist();
   }
 

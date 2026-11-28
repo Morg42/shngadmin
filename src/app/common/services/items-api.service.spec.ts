@@ -10,7 +10,7 @@
  *     Returns the response; of([]) on HTTP error
  *   - getItemDetails(itemPath) — GET /api/items/{itemPath}
  *     Returns the response; of([]) on HTTP error
- *   - changeItemValue(itemPath, value) — PUT /api/items/{itemPath}
+ *   - changeItemValue(itemPath, value) — PUT /api/items/{itemPath}, errors reach the caller
  *     Sends JSON body { value: ... }; returns the response; of({}) on HTTP error
  *     Tests string, number, and boolean value types
  *   - createItem(itemPath, config, persist?, filename?) — POST /api/items/{itemPath}
@@ -32,7 +32,7 @@
  *   - removeReferences(itemPath) — POST /api/items/{itemPath}/remove_references
  *     Sends an empty body; returns the response; errors propagate (no catchError)
  */
-import { provideHttpClient } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { createMockAppConfigService } from '../../../testing/test-helpers';
@@ -214,13 +214,23 @@ describe('ItemsApiService', () => {
     expect(result).toEqual({ result: 'ok' });
   });
 
-  it('changeItemValue() returns {} on HTTP error', () => {
-    let result: unknown;
-    service.changeItemValue('home.light.switch', true).subscribe((r) => (result = r));
+  it('changeItemValue() passes a rejected value (422) on to the caller', () => {
+    let status: number | undefined;
+    let message: unknown;
+    service.changeItemValue('home.temp', 'abc').subscribe({
+      error: (err: HttpErrorResponse) => {
+        status = err.status;
+        message = err.error?.error;
+      },
+    });
     http
-      .expectOne('/api/items/home.light.switch')
-      .flush({ error: 'err' }, { status: 500, statusText: 'Server Error' });
-    expect(result).toEqual({});
+      .expectOne('/api/items/home.temp')
+      .flush(
+        { error: 'value does not match type num' },
+        { status: 422, statusText: 'Unprocessable Entity' },
+      );
+    expect(status).toBe(422);
+    expect(message).toBe('value does not match type num');
   });
 
   // -------------------------------------------------------------------------

@@ -7,8 +7,8 @@
 #   Returns to the 'work' branch when done.
 #
 # Release mode (called by release.sh):
-#   sa-deploy.sh --release [--shng-branch=<release branch>]
-#   Runs only on the 'master' branch.
+#   sa-deploy.sh --release [--skip-tests] [--shng-branch=<release branch>]
+#   Runs only on the 'master' branch. --skip-tests builds without running the tests first.
 #   Requires shng to be checked out on 'develop' (override with --shng-branch=).
 #   Does NOT switch branches when done — caller manages branch state.
 #
@@ -21,10 +21,12 @@ cd "${ADMINUI_DIR:-$HOME/shngadmin}"
 
 # ── Parse flags ───────────────────────────────────────────────────────────────
 RELEASE_MODE=false
+SKIP_TESTS=false
 SHNG_BRANCH_OVERRIDE=""
 for _arg in "$@"; do
     case "$_arg" in
         --release)        RELEASE_MODE=true ;;
+        --skip-tests)     SKIP_TESTS=true ;;
         --shng-branch=*)  SHNG_BRANCH_OVERRIDE="${_arg#*=}" ;;
     esac
 done
@@ -73,8 +75,12 @@ fi
 echo "$LOG_TAG building from '$CURRENT_BRANCH', deploying to $SHNG_TARGET"
 
 # ── Tests ─────────────────────────────────────────────────────────────────────
-echo "$LOG_TAG running tests"
-npm test -- --watchAll=false --passWithNoTests
+if $SKIP_TESTS; then
+    echo "$LOG_TAG skipping tests (--skip-tests)"
+else
+    echo "$LOG_TAG running tests"
+    npm test -- --watchAll=false --passWithNoTests
+fi
 
 # ── Build ─────────────────────────────────────────────────────────────────────
 echo "$LOG_TAG generating version info"

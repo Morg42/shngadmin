@@ -1,10 +1,31 @@
 import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { createMockAppConfigService, translateTestingModule } from '../../../testing/test-helpers';
 import { AppConfigService } from './app-config.service';
 import { SharedService } from './shared.service';
 import { StreamService } from './stream.service';
+
+/** Minimal EventSource stand-in (jsdom has none): records listeners so a test can emit server events. */
+class FakeEventSource {
+  static instances: FakeEventSource[] = [];
+  onerror: (() => void) | null = null;
+  private readonly listeners = new Map<string, (event: MessageEvent) => void>();
+
+  constructor(readonly url: string) {
+    FakeEventSource.instances.push(this);
+  }
+
+  addEventListener(type: string, listener: (event: MessageEvent) => void) {
+    this.listeners.set(type, listener);
+  }
+
+  emit(type: string, data: unknown) {
+    this.listeners.get(type)?.(new MessageEvent(type, { data: JSON.stringify(data) }));
+  }
+
+  close() {}
+}
 
 describe('StreamService', () => {
   let service: StreamService;
@@ -68,6 +89,76 @@ describe('StreamService', () => {
       expect(first.series[0][0]).toBe(t0);
 
       jest.useRealTimers();
+    });
+  });
+
+  describe('unknown monitored items', () => {
+    let http: HttpTestingController;
+    let shared: SharedService;
+
+    beforeEach(() => {
+      FakeEventSource.instances = [];
+      Object.defineProperty(globalThis, 'EventSource', {
+        value: FakeEventSource,
+        configurable: true,
+        writable: true,
+      });
+      http = TestBed.inject(HttpTestingController);
+      shared = TestBed.inject(SharedService);
+    });
+
+    afterEach(() => http.verify());
+
+    /** connect() -> token -> SSE 'connection' event, which triggers the resync PATCH. */
+    const openConnection = (connectionId: string) => {
+      service.connect();
+      http.expectOne('/api/stream/token').flush({ token: 't' });
+      FakeEventSource.instances.at(-1)!.emit('connection', { connectionId });
+      return http.expectOne(`/api/stream/${connectionId}`);
+    };
+
+    it('drops items the server reports as unknown from the monitor list', () => {
+      shared.monitoredItemsList.set([
+        ['a', {}],
+        ['gone', {}],
+      ]);
+      service.getMonitoredItems(shared.monitoredItemsList(), () => {});
+
+      const patch = openConnection('c1');
+      expect(patch.request.body.addItems).toEqual(['a', 'gone']);
+      patch.flush({ result: 'ok', unknownItems: ['gone'] });
+
+      expect(shared.monitoredItemsList().map(([path]) => path)).toEqual(['a']);
+    });
+
+    it('does not resubscribe dropped items after a reconnect', () => {
+      shared.monitoredItemsList.set([
+        ['a', {}],
+        ['gone', {}],
+      ]);
+      service.getMonitoredItems(shared.monitoredItemsList(), () => {});
+      openConnection('c1').flush({ result: 'ok', unknownItems: ['gone'] });
+
+      FakeEventSource.instances.at(-1)!.emit('connection', { connectionId: 'c2' });
+
+      const resync = http.expectOne('/api/stream/c2');
+      expect(resync.request.body.addItems).toEqual(['a']);
+      resync.flush({ result: 'ok', unknownItems: [] });
+    });
+
+    it('drops items reported by an unknownItems stream event', () => {
+      shared.monitoredItemsList.set([
+        ['a', {}],
+        ['gone', {}],
+      ]);
+      service.getMonitoredItems(shared.monitoredItemsList(), () => {});
+      openConnection('c1').flush({ result: 'ok', unknownItems: [] });
+
+      FakeEventSource.instances
+        .at(-1)!
+        .emit('unknownItems', { type: 'unknownItems', paths: ['gone'] });
+
+      expect(shared.monitoredItemsList().map(([path]) => path)).toEqual(['a']);
     });
   });
 });

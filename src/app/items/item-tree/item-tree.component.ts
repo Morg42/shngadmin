@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -46,6 +47,7 @@ import { Tooltip } from 'primeng/tooltip';
 import { Tree } from 'primeng/tree';
 import { take } from 'rxjs/operators';
 import { rebuildOnLangChange } from '../../common/utils/translate.utils';
+import { itemOperationErrorMessage } from './item-operation-error.utils';
 import { findAndExpandNodeByPath } from './item-tree-path.utils';
 
 type MonitoredItem = [string, Record<string, unknown>];
@@ -299,19 +301,13 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
     if (typeof item_value === 'boolean') {
       const strValue = item_value.toString();
       this.log.log('--> updateValue (bool): ' + strValue);
-      this.itemsApi
-        .changeItemValue(item_path, strValue)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe();
+      this.sendValue(item_path, strValue, { value: strValue });
       return;
     }
 
     if (typeof item_value === 'string') {
       this.log.log('--> updateValue (string): ' + item_value);
-      this.itemsApi
-        .changeItemValue(item_path, item_value)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe();
+      this.sendValue(item_path, item_value, { value: item_value });
       return;
     }
 
@@ -331,10 +327,27 @@ export class ItemTreeComponent implements OnDestroy, OnInit {
       }
     }
     this.log.log('--> updateValue: ' + item_value.value);
+    this.sendValue(item_path, item_value.value ?? '', item_value);
+  }
+
+  /** Send *value* to the item. If the backend refuses it (e.g. 422: wrong
+   *  type, item fading), the alert shows its message with *entered*, whose
+   *  value closeAlert() resets to the item's current value. */
+  private sendValue(item_path: string, value: string | number, entered: { value: unknown }) {
     this.itemsApi
-      .changeItemValue(item_path, item_value.value ?? '')
+      .changeItemValue(item_path, value)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe();
+      .subscribe({
+        error: (err: HttpErrorResponse) => {
+          this.item_val = entered;
+          this.alertText = itemOperationErrorMessage(
+            err,
+            this.translate,
+            'ITEMS.ALERT.VALUE REJECTED',
+          );
+          this.showItemAlert = true;
+        },
+      });
   }
 
   sortMonitoredItems() {

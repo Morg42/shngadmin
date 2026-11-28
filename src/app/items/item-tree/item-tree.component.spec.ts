@@ -1,4 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -6,7 +6,7 @@ import { provideRouter } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { Tree } from 'primeng/tree';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import {
   createMockAppConfigService,
   createMockAttributeCatalogService,
@@ -95,6 +95,28 @@ describe('ItemTreeComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('updateValue() shows the backend message when the item rejects the value', () => {
+    const rejection = new HttpErrorResponse({
+      status: 422,
+      error: { error: 'Item a.b: value "abc" does not match type list.' },
+    });
+    TestBed.inject(ItemsApiService).changeItemValue = jest
+      .fn()
+      .mockReturnValue(throwError(() => rejection));
+
+    component.updateValue('a.b', { value: 'abc' }, 'list', 'old');
+
+    expect(component.showItemAlert).toBe(true);
+    expect(component.alertText).toBe('Item a.b: value "abc" does not match type list.');
+    expect(component.item_val.value).toBe('abc');
+  });
+
+  it('updateValue() shows no alert when the value is accepted', () => {
+    component.updateValue('a.b', { value: 'x' }, 'str', 'old');
+
+    expect(component.showItemAlert).toBe(false);
   });
 
   it('getItemtree(selectPath) re-selects the node at that path in the rebuilt tree', () => {

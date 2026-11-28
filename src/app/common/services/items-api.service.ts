@@ -72,19 +72,11 @@ export class ItemsApiService {
     );
   }
 
+  /** No catchError — callers need the backend's message, e.g. the 422 for
+   *  a value the item does not accept (wrong type, item fading). */
   changeItemValue(itemPath: string, value: string | number | boolean) {
     const url = this.appConfig.apiUrl + 'items/' + encodeURIComponent(itemPath);
-    return this.http.put(url, JSON.stringify({ value })).pipe(
-      catchError((err: HttpErrorResponse) => {
-        this.log.error(
-          'ItemsApiService.changeItemValue(' +
-            itemPath +
-            '): Could not set value - ' +
-            err.error?.error,
-        );
-        return of({});
-      }),
-    );
+    return this.http.put(url, JSON.stringify({ value }));
   }
 
   /** No catchError — callers need the real error (e.g. duplicate path, or a

@@ -33,6 +33,12 @@ interface StreamSeriesEvent {
   series: SeriesEntry[];
 }
 
+/** Pushed once pending startup subscriptions are resolved: paths that name no item on the server. */
+interface StreamUnknownItemsEvent {
+  type: 'unknownItems';
+  paths: string[];
+}
+
 interface SeriesSubscription {
   sid: string;
   item: string;
@@ -40,6 +46,14 @@ interface SeriesSubscription {
   start: string;
   end: string;
   count: number;
+}
+
+/** Body of PATCH /api/stream/{connectionId}'s 200 response. */
+interface SubscriptionPatchResponse {
+  result: 'ok' | 'error';
+  description?: string;
+  /** addItems paths that name no item on the server; they were not subscribed. */
+  unknownItems?: string[];
 }
 
 type SeriesKey =
@@ -160,6 +174,11 @@ export class StreamService {
       this.handleResponseSeries(data);
     });
 
+    es.addEventListener('unknownItems', (event: MessageEvent) => {
+      const data = JSON.parse(event.data) as StreamUnknownItemsEvent;
+      this.dropUnknownItems(data.paths);
+    });
+
     es.onerror = () => {
       if (this.stopped) return;
       es.close();
@@ -196,19 +215,30 @@ export class StreamService {
   }) {
     if (!this.connectionId) return;
     this.http
-      .patch<{
-        result: string;
-        description?: string;
-      }>(this.appConfig.apiUrl + 'stream/' + encodeURIComponent(this.connectionId), patch)
+      .patch<SubscriptionPatchResponse>(
+        this.appConfig.apiUrl + 'stream/' + encodeURIComponent(this.connectionId),
+        patch,
+      )
       .subscribe({
         // HTTPError -> real status (error handler below); any other server exception -> 200 {result:'error'}
         next: (response) => {
           if (response?.result === 'error') {
             this.log.warn('StreamService: subscription patch failed', response.description);
           }
+          if (response?.unknownItems?.length) {
+            this.dropUnknownItems(response.unknownItems);
+          }
         },
         error: (err) => this.log.warn('StreamService: subscription patch failed', err),
       });
+  }
+
+  /** Removes paths the server no longer knows from the monitored set and from the persisted monitor list. */
+  private dropUnknownItems(paths: string[]) {
+    this.log.warn('StreamService: dropping unknown monitored items', paths);
+    const unknown = new Set(paths);
+    for (const path of unknown) this.monitoredItems.delete(path);
+    this.shared.monitoredItemsList.update((items) => items.filter(([path]) => !unknown.has(path)));
   }
 
   // requests monitoring of items
